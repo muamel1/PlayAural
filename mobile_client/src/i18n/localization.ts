@@ -1,7 +1,9 @@
+import ar from "../../locales/ar/client.json";
 import en from "../../locales/en/client.json";
 import vi from "../../locales/vi/client.json";
 
 const catalogs = {
+  ar,
   en,
   vi,
 };
@@ -14,6 +16,10 @@ export class MobileLocalization {
   setLocale(locale: string | undefined): void {
     if (locale === "vi") {
       this.locale = "vi";
+      return;
+    }
+    if (locale === "ar") {
+      this.locale = "ar";
       return;
     }
     this.locale = "en";

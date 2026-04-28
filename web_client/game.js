@@ -92,6 +92,7 @@ class Localization {
     static applyDocumentLanguage(locale) {
         if (document?.documentElement) {
             document.documentElement.lang = locale || "en";
+            document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
         }
     }
 

@@ -7,6 +7,7 @@ import {
   AccessibilityInfo,
   AppState,
   BackHandler,
+  I18nManager,
   Keyboard,
   KeyboardAvoidingView,
   Linking,
@@ -20,6 +21,7 @@ import {
   View,
   findNodeHandle,
 } from "react-native";
+import * as Updates from "expo-updates";
 
 import { MobileAudioManager } from "../audio/MobileAudioManager";
 import { androidForegroundService } from "../background/AndroidForegroundService";
@@ -223,7 +225,7 @@ type AuthFocusableItem = {
 };
 
 type StoredClientConfig = {
-  appLocale: "en" | "vi";
+  appLocale: "en" | "vi" | "ar";
   preferences: Record<string, unknown>;
   registerEmail: string;
   serverUrl: string;
@@ -250,9 +252,15 @@ function isProtectedTransientMenu(menuId: string | undefined): boolean {
   return menuId !== undefined && PROTECTED_TRANSIENT_MENU_IDS.has(menuId);
 }
 
-function detectPreferredLocale(): "en" | "vi" {
+function detectPreferredLocale(): "en" | "vi" | "ar" {
   const deviceLocale = Intl.DateTimeFormat().resolvedOptions().locale?.toLowerCase?.() ?? "en";
-  return deviceLocale.startsWith("vi") ? "vi" : "en";
+  if (deviceLocale.startsWith("vi")) {
+    return "vi";
+  }
+  if (deviceLocale.startsWith("ar")) {
+    return "ar";
+  }
+  return "en";
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -405,7 +413,7 @@ export function PlayAuralApp() {
   const audio = useMemo(() => new MobileAudioManager(), []);
   const voice = useMemo(() => new MobileVoiceManager(), []);
 
-  const [appLocale, setAppLocale] = useState<"en" | "vi">(initialLocale);
+  const [appLocale, setAppLocale] = useState<"en" | "vi" | "ar">(initialLocale);
   const [mode, setMode] = useState<AppMode>("main");
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [menuState, setMenuState] = useState<MenuState>(defaultMenuState);
@@ -979,10 +987,19 @@ export function PlayAuralApp() {
   }, [connected, localization, password, prepareManualConnect, serverUrl, storageReady, username]);
 
   const applyLocale = (locale: string | undefined) => {
-    const resolvedLocale = locale === "vi" ? "vi" : "en";
+    const resolvedLocale = locale === "vi" ? "vi" : locale === "ar" ? "ar" : "en";
     localization.setLocale(resolvedLocale);
     tts.setLanguage(resolvedLocale);
     setAppLocale(resolvedLocale);
+
+    if (Platform.OS !== "web") {
+      const isRTL = resolvedLocale === "ar";
+      if (I18nManager.isRTL !== isRTL) {
+        I18nManager.allowRTL(isRTL);
+        I18nManager.forceRTL(isRTL);
+        // Note: Major layout changes like RTL often require an app restart to take full effect
+      }
+    }
   };
 
   const loadStoredClientState = async () => {
@@ -1007,7 +1024,11 @@ export function PlayAuralApp() {
           setForgotEmail(storedConfig.registerEmail);
           setResetEmail(storedConfig.registerEmail);
         }
-        if (storedConfig.appLocale === "en" || storedConfig.appLocale === "vi") {
+        if (
+          storedConfig.appLocale === "en" ||
+          storedConfig.appLocale === "vi" ||
+          storedConfig.appLocale === "ar"
+        ) {
           applyLocale(storedConfig.appLocale);
           appliedStoredLocale = true;
         }
@@ -2693,7 +2714,8 @@ export function PlayAuralApp() {
       return;
     }
     if (item.action === "toggle_locale") {
-      applyLocale(appLocale === "en" ? "vi" : "en");
+      const nextLocale = appLocale === "en" ? "vi" : appLocale === "vi" ? "ar" : "en";
+      applyLocale(nextLocale);
     }
   };
 
@@ -4815,7 +4837,8 @@ export function PlayAuralApp() {
           }}
           onPress={() => {
             void audio.handleUserInteraction();
-            applyLocale(appLocale === "en" ? "vi" : "en");
+            const nextLocale = appLocale === "en" ? "vi" : appLocale === "vi" ? "ar" : "en";
+            applyLocale(nextLocale);
           }}
           ref={registerAccessibilityNode("auth:locale")}
           style={[styles.buttonSecondary, isAuthFocused("locale") ? styles.authFocused : undefined]}

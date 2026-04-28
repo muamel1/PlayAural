@@ -1,0 +1,179 @@
+common-cancel = Cancel
+common-error = Error
+common-ok = OK
+
+main-menu-label = Menu
+main-edit-label = Edit
+main-chat-label = Chat
+main-history-label = History
+main-window-title = PlayAural { $version }
+main-ambience-volume = Ambience: { $value }%
+main-music-volume = Music: { $value }%
+main-ping-result = Ping: { $value }ms
+main-table-chat-muted = Table chat muted
+main-table-chat-unmuted = Table chat unmuted
+main-global-chat-muted = Global chat muted
+main-global-chat-unmuted = Global chat unmuted
+main-buffer-status = Buffer { $name } { $status }.
+main-buffer-info = { $name }{ $status }. { $count } items
+main-buffer-empty = Buffer empty.
+main-connecting = Connecting...
+main-connected = Connected!
+main-disconnected = Disconnected.
+main-voice-label = Voice Chat
+voice-chat-join = Join Voice Chat
+voice-chat-leave = Leave Voice Chat
+voice-chat-mic = Microphone
+voice-chat-turn-on-mic = Turn On Mic
+voice-chat-turn-off-mic = Turn Off Mic
+voice-chat-joining = Joining Voice Chat...
+voice-chat-listen-only = Joined Voice Chat. You are listening only.
+voice-chat-left = Left Voice Chat.
+voice-chat-mic-on = Microphone is on.
+voice-chat-mic-off = Microphone is off.
+voice-chat-not-connected = Voice Chat is not connected.
+voice-chat-unavailable = Voice Chat is not available right now.
+voice-chat-sdk-missing = Voice Chat support is not installed in this client.
+voice-chat-connect-failed = Temporarily unable to connect to Voice Chat.
+voice-chat-mic-denied = Microphone access failed. Check your microphone and permission settings.
+voice-not-at-table = You have not joined a table yet. Join a table before starting voice chat.
+voice-not-in-context = You are no longer at that table. Rejoin the table before starting voice chat.
+voice-invalid-context = The requested voice chat is no longer available.
+voice-unavailable = Voice Chat is not available right now.
+voice-rate-limited = Slow down. Voice Chat is changing too quickly right now.
+voice-muted-seconds = You are muted and cannot join Voice Chat. { $seconds } seconds remaining.
+voice-muted-minutes = You are muted and cannot join Voice Chat. { $minutes } minutes remaining.
+voice-muted-permanent = You are muted and cannot join Voice Chat.
+voice-status-connected = { $player } connected to the table's voice chat.
+voice-status-disconnected = { $player } disconnected from the voice chat.
+voice-status-connection-lost = { $player } lost connection and was removed from the voice chat.
+voice-status-left-table = { $player } left the table and left the voice chat.
+chat-global = { $player } says globally: { $message }
+chat-local = { $player } says: { $message }
+main-connecting-to = Connecting to { $url }...
+main-connecting-as = Connecting as { $username }...
+main-connected-version = Connected to server version { $version }
+main-connection-timeout = Connection timeout: Could not connect to server.
+main-connection-lost = Connection lost!
+main-reconnecting-in-3s = Server is restarting. Reconnecting in 3 seconds...
+main-reconnecting = Reconnecting...
+main-connection-failed = Failed to start connection to server.
+
+login-title = Play Aural Login
+login-account-label = User Account:
+login-login-btn = Login
+login-error-select-server = Please select a server
+login-error-select-account = Please select an account
+login-error-account-not-found = Account not found
+login-error-server-url = Could not determine server URL
+auth-error-wrong-password = Incorrect password.
+auth-error-user-not-found = User does not exist.
+auth-registration-success = Registration successful! You can now log in with your credentials.
+auth-username-taken = Username already taken. Please choose a different username.
+
+login-welcome-title = Welcome to PlayAural
+login-welcome-info = Please log in or register to continue.
+login-logged-in-as = Logged in as: { $username }
+login-btn-login-now = Login Now
+login-btn-auto-login = Login Automatically Next Time
+login-btn-remove-account = Remove Account
+login-btn-register-new = Register New Account
+login-btn-login-existing = Login with Existing Account
+login-info-verifying = Verifying credentials...
+login-info-success = Verification successful!
+login-info-failed = Verification failed!
+login-account-deleted = Account deleted successfully.
+login-manual-title = Login
+login-failed-title = Login Failed
+login-info-logging-in = Logging in...
+
+reg-dialog-title = Create Play Aural Account
+reg-title = Create New Account
+reg-info = Please create a username and password to start playing.
+reg-username-label = Username:
+reg-username-help = Letters, numbers, underscores, and dashes only
+reg-email-label = Email:
+reg-password-label = Password:
+reg-confirm-password-label = Confirm Password:
+reg-register-btn = Register
+reg-error-username = Please enter a username
+reg-error-email = Please enter an email address
+reg-error-password = Please enter a password
+
+login-btn-forgot-password = Forgot Password?
+forgot-password-prompt = Enter the email address associated with your account:
+reset-code-instructions = An email with a 6-digit reset code has been sent to your address.
+reset-code-prompt = 6-Digit Reset Code:
+new-password-prompt = New Password:
+reg-error-match = Passwords do not match
+reg-error-bio = Please enter a bio
+reg-success-title = Registration Successful
+reg-failed-title = Registration Failed
+reg-connection-error = Connection error: { $error }
+reg-timeout-error = Server did not respond in time
+reg-unexpected-error = Unexpected response from server
+
+main-status-muted = muted
+main-status-unmuted = unmuted
+main-status-muted-suffix = , muted
+
+options-music-volume-label = Music Volume (spin button):
+options-ambience-volume-label = Ambience Volume (spin button):
+
+slash-command-error = Error processing slash command { $command }.
+reg-error-exception = Error: { $error }
+main-connection-error-title = Connection Error
+main-options-error = Client options not available
+main-options-error-title = Error
+options-restart-required-title = Restart Required
+options-restart-required-message = The language change will take full effect after restarting the client.
+
+buffer-name-all = all
+buffer-name-misc = misc
+buffer-name-game = game
+buffer-name-system = system
+buffer-name-chat = Chat
+
+system-announcement = System Announcement
+common-app-closing = The game will now close.
+login-error-connection-refused = Connection refused: Server might be offline.
+login-error-connection-timeout = Connection timeout: Server did not respond.
+login-error-unknown = An unknown error occurred: { $error }
+main-attempting-reconnect = Connection lost. Attempting to reconnect...
+main-reconnect-failed = Reconnection failed. Please restart the application.
+logged-out = You have logged out.
+goodbye = Goodbye!
+
+update-available-title = Update Available
+update-available-message = A new version ({ $version }) is available. Do you want to update now?
+update-downloading = Downloading update: { $percent }%
+update-complete = Download complete. Restarting...
+update-error = Update failed: { $error }
+
+sounds-update-available-title = Sounds Update
+sounds-update-available-message = A sounds update is available. Do you want to download it now?
+sounds-update-downloading = Downloading sounds... { $percent }%
+sounds-update-extracting = Extracting sounds...
+sounds-update-cancelled = Sounds update cancelled.
+sounds-update-complete = Sounds updated successfully. Restarting application.
+sounds-update-error = Sounds update failed: { $error }
+sounds-update-file-lock = Cannot update sounds because files are in use. Please restart the game manually to apply changes.
+
+update-checking = Checking for updates...
+update-cancelled = Update cancelled. Game will close.
+
+main-restarting = Restarting...
+
+auth-error-username-length = Username must be between 3 and 30 characters.
+auth-error-password-weak = Password must be at least 8 characters long and contain both letters and numbers.
+reg-error-password-match = Passwords do not match.
+
+error-email-empty = Email is mandatory and cannot be empty.
+error-email-invalid = Please enter a valid email address.
+
+reg-error-email = Email is required to register.
+
+error-email-taken = This email is already in use by another account.
+
+auth-error-rate-limit = Too many failed login attempts. Please try again in 15 minutes.
+auth-auto-login-disabled = Auto-login has been disabled for this account. Please log in manually and update your credentials if needed.

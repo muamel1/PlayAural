@@ -787,9 +787,52 @@ input[type=range]::-moz-range-thumb {
     background-color: #4a4a4a;
 }
 
-.modal-actions {
-    margin-top: 0.5rem;
-    border-top: 1px solid var(--border-color);
-    padding-top: 1rem;
+/* --- RTL Support --- */
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .form-group label {
+    text-align: right;
+}
+
+[dir="rtl"] .checkbox-group label {
+    margin-right: 10px;
+    margin-left: 0;
+}
+
+[dir="rtl"] .header-actions {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+[dir="rtl"] .tabs {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .tab-btn {
+    border-radius: 4px 4px 0 0;
+}
+
+[dir="rtl"] .log-sender {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+[dir="rtl"] .voice-chat-buttons {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-content {
+    text-align: right;
+}
+
+[dir="rtl"] #chat-form {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] #btn-chat-send {
+    margin-left: 0;
+    margin-right: 10px;
 }
 
