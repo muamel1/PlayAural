@@ -1,59 +1,63 @@
-game-name-crazyeights = Crazy Eights
+game-name-crazyeights = الثمانيات المجنونة
 
-crazyeights-set-winning-score = Winning score: { $score }
-crazyeights-enter-winning-score = Enter winning score
-crazyeights-option-changed-winning-score = Winning score set to { $score }.
+# الخيارات
+crazyeights-set-winning-score = النتيجة المطلوبة للفوز: { $score }
+crazyeights-enter-winning-score = أدخل النتيجة المطلوبة للفوز
+crazyeights-option-changed-winning-score = تم ضبط النتيجة المطلوبة للفوز إلى { $score }.
 
-crazyeights-set-turn-timer = Turn timer: { $mode }
-crazyeights-select-turn-timer = Select turn timer
-crazyeights-option-changed-turn-timer = Turn timer set to { $mode }.
+crazyeights-set-turn-timer = مؤقت الدور: { $mode }
+crazyeights-select-turn-timer = اختر مؤقت الدور
+crazyeights-option-changed-turn-timer = تم ضبط مؤقت الدور إلى { $mode }.
 
-crazyeights-draw = Draw
-crazyeights-pass = Pass
-crazyeights-read-top = Read top card
-crazyeights-read-counts = Read card counts
-crazyeights-deck-count = deck { $count }
-crazyeights-game-blocked = The game is blocked! No one can play.
+# الإجراءات
+crazyeights-draw = سحب ورقة
+crazyeights-pass = تمرير
+crazyeights-read-top = قراءة الورقة العلوية
+crazyeights-read-counts = قراءة عدد الأوراق
+crazyeights-deck-count = مجموعة الأوراق { $count }
+crazyeights-game-blocked = اللعبة محظورة! لا يمكن لأحد اللعب.
 
-crazyeights-new-hand = Round { $round }.
-crazyeights-start-card = { $player } turns up { $card }.
-crazyeights-wild-played = { $player } played a Wild 8.
+# اللعب
+crazyeights-new-hand = الجولة { $round }.
+crazyeights-start-card = يكشف { $player } عن { $card }.
+crazyeights-wild-played = لعب { $player } "8 المجنونة".
 
-crazyeights-no-players = No players.
-crazyeights-no-top = No top card.
+crazyeights-no-players = لا يوجد لاعبون.
+crazyeights-no-top = لا توجد ورقة علوية.
 
-crazyeights-wild = Wild 8
-crazyeights-wild-suit = Wild 8, { $suit }
-crazyeights-reverse = Reverse of { $suit }
-crazyeights-skip = Skip of { $suit }
-crazyeights-draw-two = Draw Two of { $suit }
+crazyeights-wild = 8 المجنونة
+crazyeights-wild-suit = 8 المجنونة، { $suit }
+crazyeights-reverse = عكس الاتجاه { $suit }
+crazyeights-skip = تخطي { $suit }
+crazyeights-draw-two = سحب ورقتين { $suit }
 
-crazyeights-suit-chosen = Suit is now { $suit }.
+crazyeights-suit-chosen = النوع المطلوب الآن هو { $suit }.
 
-crazyeights-round-summary = { $player } wins. { $details }. { $player } gains { $total }.
-crazyeights-round-details-none = No points were taken from opponents.
-crazyeights-round-winner = { $player } wins { $points } points. { $detail }
-crazyeights-round-points-from = { $points } from { $player }
-crazyeights-dealt-cards = Everyone is dealt in with { $cards } cards.
+crazyeights-round-summary = فاز { $player }. { $details }. حصل { $player } على { $total } نقطة.
+crazyeights-round-details-none = لم يتم احتساب أي نقاط من الخصوم.
+crazyeights-round-winner = فاز { $player } بـ { $points } نقطة. { $detail }
+crazyeights-round-points-from = { $points } من { $player }
+crazyeights-dealt-cards = تم توزيع { $cards } ورقة لكل لاعب.
 
-crazyeights-game-winner = { $player } wins with { $score } points.
+crazyeights-game-winner = فاز { $player } بالمباراة بـ { $score } نقطة.
 
-crazyeights-player-plays = { $player } plays { $card }.
-crazyeights-player-draws-one = { $player } draws a card.
-crazyeights-player-draws-many = { $player } draws { $count } cards.
-crazyeights-player-passes = { $player } passes.
+crazyeights-player-plays = لعب { $player } { $card }.
+crazyeights-player-draws-one = سحب { $player } ورقة.
+crazyeights-player-draws-many = سحب { $player } { $count } أوراق.
+crazyeights-player-passes = مرر { $player }.
 
 crazyeights-line-format = { $rank }. { $player }: { $score }
 
-crazyeights-check-turn-timer = Check turn timer
-crazyeights-timer-5 = 5 seconds
-crazyeights-timer-10 = 10 seconds
-crazyeights-timer-15 = 15 seconds
-crazyeights-timer-20 = 20 seconds
-crazyeights-timer-30 = 30 seconds
-crazyeights-timer-45 = 45 seconds
-crazyeights-timer-60 = 60 seconds
-crazyeights-timer-90 = 90 seconds
-crazyeights-timer-unlimited = Unlimited
-crazyeights-timer-disabled = Turn timer is disabled.
-crazyeights-timer-remaining = { $seconds } seconds remaining.
+# المؤقت
+crazyeights-check-turn-timer = فحص مؤقت الدور
+crazyeights-timer-5 = 5 ثوانٍ
+crazyeights-timer-10 = 10 ثوانٍ
+crazyeights-timer-15 = 15 ثانية
+crazyeights-timer-20 = 20 ثانية
+crazyeights-timer-30 = 30 ثانية
+crazyeights-timer-45 = 45 ثانية
+crazyeights-timer-60 = 60 ثانية
+crazyeights-timer-90 = 90 ثانية
+crazyeights-timer-unlimited = غير محدود
+crazyeights-timer-disabled = مؤقت الدور معطل.
+crazyeights-timer-remaining = متبقي { $seconds } ثانية.

@@ -1,51 +1,56 @@
 game-name-midnight = 1-4-24
 
-midnight-roll = Roll the dice
-midnight-keep-die = Keep { $value }
-midnight-bank = Bank
+# الإجراءات
+midnight-roll = رمي النرد
+midnight-keep-die = الاحتفاظ بـ { $value }
+midnight-bank = تثبيت النقاط
 
-midnight-turn-start = { $player }'s turn.
-midnight-you-rolled = You rolled: { $dice }.
-midnight-player-rolled = { $player } rolled: { $dice }.
+# أحداث اللعب
+midnight-turn-start = دور { $player }.
+midnight-you-rolled = رميت: { $dice }.
+midnight-player-rolled = رمى { $player }: { $dice }.
 
-midnight-you-keep = You keep { $die }.
-midnight-player-keeps = { $player } keeps { $die }.
-midnight-you-unkeep = You unkeep { $die }.
-midnight-player-unkeeps = { $player } unkeeps { $die }.
+midnight-you-keep = احتفظت بـ { $die }.
+midnight-player-keeps = احتفظ { $player } بـ { $die }.
+midnight-you-unkeep = ألغيت الاحتفاظ بـ { $die }.
+midnight-player-unkeeps = ألغى { $player } الاحتفاظ بـ { $die }.
 
-midnight-you-have-kept = Kept dice: { $kept }. Remaining rolls: { $remaining }.
-midnight-player-has-kept = { $player } has kept: { $kept }. { $remaining } dice remaining.
+midnight-you-have-kept = النرد المحتفظ به: { $kept }. الرميات المتبقية: { $remaining }.
+midnight-player-has-kept = احتفظ { $player } بـ: { $kept }. متبقي { $remaining } نرد.
 
-midnight-you-scored = You scored { $score } points.
-midnight-scored = { $player } scored { $score } points.
-midnight-you-disqualified = You don't have both 1 and 4. Disqualified!
-midnight-player-disqualified = { $player } doesn't have both 1 and 4. Disqualified!
+midnight-you-scored = حصلت على { $score } نقطة.
+midnight-scored = حصل { $player } على { $score } نقطة.
+midnight-you-disqualified = لا تملك (1) و (4). تم استبعادك!
+midnight-player-disqualified = لا يملك { $player } (1) و (4). تم استبعاده!
 
-midnight-round-winner = { $player } wins the round!
-midnight-round-tie = Round tied between { $players }.
-midnight-all-disqualified = All players disqualified! No winner this round.
+midnight-round-winner = فاز { $player } بالجولة!
+midnight-round-tie = تعادل في الجولة بين { $players }.
+midnight-all-disqualified = تم استبعاد جميع اللاعبين! لا يوجد فائز في هذه الجولة.
 
-midnight-game-winner = { $player } wins the game with { $wins } round wins!
-midnight-game-tie = It's a tie! { $players } each won { $wins } rounds.
+midnight-game-winner = فاز { $player } باللعبة بـ { $wins } جولات فائزة!
+midnight-game-tie = تعادل! فاز كل من { $players } بـ { $wins } جولات.
 
-midnight-set-rounds = Rounds to play: { $rounds }
-midnight-enter-rounds = Enter number of rounds to play:
-midnight-option-changed-rounds = Rounds to play changed to { $rounds }
+# الإعدادات
+midnight-set-rounds = عدد الجولات: { $rounds }
+midnight-enter-rounds = أدخل عدد الجولات:
+midnight-option-changed-rounds = تم ضبط عدد الجولات إلى { $rounds }.
 
-midnight-need-to-roll = You need to roll the dice first.
-midnight-no-dice-to-keep = No available dice to keep.
-midnight-must-keep-one = You must keep at least one die per roll.
-midnight-must-roll-first = You must roll the dice first.
-midnight-must-roll-first = You must roll the dice first.
-midnight-keep-all-first = You must keep all dice before banking.
+# الأخطاء والرسائل
+midnight-need-to-roll = يجب عليك رمي النرد أولاً.
+midnight-no-dice-to-keep = لا يوجد نرد متاح للاحتفاظ به.
+midnight-must-keep-one = يجب عليك الاحتفاظ بنرد واحد على الأقل في كل رمية.
+midnight-must-roll-first = يجب عليك رمي النرد أولاً.
+midnight-keep-all-first = يجب عليك الاحتفاظ بجميع النرد قبل التثبيت.
 
-midnight-die-locked = { $value } (Locked)
-midnight-die-kept = { $value } (Kept)
+# حالة النرد
+midnight-die-locked = { $value } (مقفل)
+midnight-die-kept = { $value } (محتفظ به)
 midnight-die-value = { $value }
 
+# النتائج
 midnight-end-score = { $rank }. { $player }: { $wins } { $wins ->
-    [one] round win
-   *[other] round wins
-}
+    [one] جولة فائزة
+   *[other] جولات فائزة
+    }
 
-midnight-die-index = Die { $index }
+midnight-die-index = نرد { $index }

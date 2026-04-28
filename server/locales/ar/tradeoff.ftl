@@ -1,59 +1,74 @@
-game-name-tradeoff = Tradeoff
+game-name-tradeoff = المقايضة (Tradeoff)
 
-tradeoff-round-start = Round { $round }.
-tradeoff-iteration = Hand { $iteration } of 3.
+tradeoff-round-start = الجولة { $round }.
+tradeoff-iteration = التوزيع { $iteration } من أصل 3.
 
-tradeoff-you-rolled = You rolled: { $dice }.
+tradeoff-you-rolled = كانت رميتك: { $dice }.
 tradeoff-toggle-trade = { $value } ({ $status })
-tradeoff-trade-status-trading = trading
-tradeoff-trade-status-keeping = keeping
-tradeoff-confirm-trades = Confirm trades ({ $count } dice)
-tradeoff-keeping = Keeping { $value }.
-tradeoff-trading = Trading { $value }.
-tradeoff-player-traded = { $player } traded: { $dice }.
-tradeoff-player-traded-none = { $player } kept all dice.
+tradeoff-trade-status-trading = للمقايضة
+tradeoff-trade-status-keeping = للاحتفاظ
+tradeoff-confirm-trades = تأكيد المقايضة ({ $count } { $count ->
+    [one] نرد واحد
+    [two] نردين
+    [few] أحجار نرد
+    *[other] نرد
+    })
+tradeoff-keeping = الاحتفاظ بـ { $value }.
+tradeoff-trading = مقايضة { $value }.
+tradeoff-player-traded = قام { $player } بمقايضة: { $dice }.
+tradeoff-player-traded-none = احتفظ { $player } بجميع أحجار النرد.
 
-tradeoff-your-turn-take = Your turn to take a die from the pool.
-tradeoff-take-die = Take a { $value } ({ $remaining } left)
-tradeoff-you-take = You take a { $value }.
-tradeoff-player-takes = { $player } takes a { $value }.
+tradeoff-your-turn-take = دورك لسحب حجر نرد من المجمع.
+tradeoff-take-die = سحب { $value } (يتبقى { $remaining })
+tradeoff-you-take = سحبت { $value }.
+tradeoff-player-takes = سحب { $player } { $value }.
 
-tradeoff-player-scored = { $player } ({ $points } pts): { $sets }.
-tradeoff-no-sets = { $player }: no sets.
+tradeoff-player-scored = { $player } ({ $points } نقطة): { $sets }.
+tradeoff-no-sets = { $player }: لا توجد مجموعات.
 
-tradeoff-set-triple = triple of { $value }s
-tradeoff-set-group = group of { $value }s
-tradeoff-set-mini-straight = mini straight { $low }-{ $high }
-tradeoff-set-double-triple = double triple ({ $v1 }s and { $v2 }s)
-tradeoff-set-straight = straight { $low }-{ $high }
-tradeoff-set-double-group = double group ({ $v1 }s and { $v2 }s)
-tradeoff-set-all-groups = all groups
-tradeoff-set-all-triplets = all triplets
+tradeoff-set-triple = ثلاثية من { $value }
+tradeoff-set-group = مجموعة من { $value }
+tradeoff-set-mini-straight = متسلسلة مصغرة { $low }-{ $high }
+tradeoff-set-double-triple = ثلاثية مزدوجة ({ $v1 } و { $v2 })
+tradeoff-set-straight = متسلسلة { $low }-{ $high }
+tradeoff-set-double-group = مجموعة مزدوجة ({ $v1 } و { $v2 })
+tradeoff-set-all-groups = جميع المجموعات
+tradeoff-set-all-triplets = جميع الثلاثيات
 
-tradeoff-round-scores = Round { $round } scores:
-tradeoff-score-line = { $player }: +{ $round_points } (total: { $total })
-tradeoff-leader = { $player } leads with { $score }.
+tradeoff-round-scores = نتائج الجولة { $round }:
+tradeoff-score-line = { $player }: +{ $round_points } (الإجمالي: { $total })
+tradeoff-leader = { $player } يتصدر برصيد { $score }.
 
-tradeoff-winner = { $player } wins with { $score } points!
-tradeoff-winners-tie = It's a tie! { $players } tied with { $score } points!
+tradeoff-winner = الفائز هو { $player } برصيد { $score } نقطة!
+tradeoff-winners-tie = تعادل! حصل { $players } على { $score } نقطة!
 
-tradeoff-view-hand = View your hand
-tradeoff-view-pool = View the pool
-tradeoff-view-players = View players
-tradeoff-hand-empty = Your hand is empty.
-tradeoff-hand-display = Your hand ({ $count } dice): { $dice }
-tradeoff-pool-display = Pool ({ $count } dice): { $dice }
-tradeoff-pool-empty = The pool is empty.
-tradeoff-player-info = { $player }: { $hand }. Traded: { $traded }.
-tradeoff-player-info-no-trade = { $player }: { $hand }. Traded nothing.
+tradeoff-view-hand = عرض يدك
+tradeoff-view-pool = عرض مجمع النرد
+tradeoff-view-players = عرض اللاعبين
+tradeoff-hand-empty = يدك فارغة.
+tradeoff-hand-display = يدك ({ $count } { $count ->
+    [one] نرد
+    [two] نردين
+    [few] أحجار نرد
+    *[other] نرد
+    }): { $dice }
+tradeoff-pool-display = مجمع النرد ({ $count } { $count ->
+    [one] نرد
+    [two] نردين
+    [few] أحجار نرد
+    *[other] نرد
+    }): { $dice }
+tradeoff-pool-empty = مجمع النرد فارغ.
+tradeoff-player-info = { $player }: { $hand }. قايض: { $traded }.
+tradeoff-player-info-no-trade = { $player }: { $hand }. لم يقايض شيئاً.
 
-tradeoff-not-trading-phase = Not in the trading phase.
-tradeoff-not-taking-phase = Not in the taking phase.
-tradeoff-already-confirmed = Already confirmed.
-tradeoff-no-die = No die to toggle.
-tradeoff-no-more-takes = No more takes available.
-tradeoff-not-in-pool = That die is not in the pool.
+tradeoff-not-trading-phase = لست في مرحلة المقايضة.
+tradeoff-not-taking-phase = لست في مرحلة السحب.
+tradeoff-already-confirmed = تم التأكيد بالفعل.
+tradeoff-no-die = لا يوجد حجر نرد لتبديل حالته.
+tradeoff-no-more-takes = لا توجد عمليات سحب متاحة.
+tradeoff-not-in-pool = حجر النرد هذا غير موجود في المجمع.
 
-tradeoff-set-target = Target score: { $score }
-tradeoff-enter-target = Enter target score:
-tradeoff-option-changed-target = Target score set to { $score }.
+tradeoff-set-target = النتيجة المستهدفة: { $score }
+tradeoff-enter-target = أدخل النتيجة المستهدفة:
+tradeoff-option-changed-target = تم ضبط النتيجة المستهدفة على { $score }.

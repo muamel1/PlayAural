@@ -1,44 +1,44 @@
-game-name-chaosbear = Chaos Bear
+game-name-chaosbear = الدب الفوضوي
 
-chaosbear-roll-dice = Roll dice
-chaosbear-draw-card = Draw a card
-chaosbear-check-status = Check status
+chaosbear-roll-dice = رمي النرد
+chaosbear-draw-card = سحب بطاقة
+chaosbear-check-status = فحص الحالة
 
-chaosbear-intro-1 = Chaos Bear has begun! All players start 30 squares ahead of the bear.
-chaosbear-intro-2 = Roll dice to move forward, and draw cards on multiples of 5 for a 3-square surge plus a special effect.
-chaosbear-intro-3 = Don't let the bear catch you!
+chaosbear-intro-1 = بدأت لعبة الدب الفوضوي! يبدأ جميع اللاعبين على مسافة 30 مربعاً أمام الدب.
+chaosbear-intro-2 = ارمِ النرد للتقدم للأمام، واسحب بطاقة عند الوصول لمربعات من مضاعفات 5 للتقدم 3 مربعات إضافية وتفعيل تأثير خاص.
+chaosbear-intro-3 = لا تدع الدب يمسك بك!
 
-chaosbear-turn = { $player }'s turn; square { $position }.
+chaosbear-turn = دور { $player }؛ المربع رقم { $position }.
 
-chaosbear-roll = { $player } rolled { $roll }.
-chaosbear-position = { $player } is now at square { $position }.
+chaosbear-roll = رمى { $player } { $roll }.
+chaosbear-position = { $player } الآن في المربع رقم { $position }.
 
-chaosbear-draws-card = { $player } draws a card.
-chaosbear-card-impulsion = Impulsion! { $player } surges ahead to square { $position }!
-chaosbear-card-super-impulsion = Super impulsion! { $player } rockets ahead to square { $position }!
-chaosbear-card-tiredness = Tiredness! { $player } reaches square { $position }, and bear energy drops to { $energy }.
-chaosbear-card-hunger = Hunger! { $player } reaches square { $position }, but the bear rises to { $energy } energy.
-chaosbear-card-backward = Backward push! { $player } loses the surge and stays at square { $position }.
-chaosbear-card-random-gift = Random gift!
-chaosbear-gift-back = { $player } went back to square { $position }.
-chaosbear-gift-forward = { $player } went forward to square { $position }!
+chaosbear-draws-card = سحب { $player } بطاقة.
+chaosbear-card-impulsion = اندفاع! تقدم { $player } إلى المربع رقم { $position }!
+chaosbear-card-super-impulsion = اندفاع فائق! انطلق { $player } إلى المربع رقم { $position }!
+chaosbear-card-tiredness = تعب! وصل { $player } إلى المربع رقم { $position }، وانخفضت طاقة الدب إلى { $energy }.
+chaosbear-card-hunger = جوع! وصل { $player } إلى المربع رقم { $position }، لكن ارتفعت طاقة الدب إلى { $energy }.
+chaosbear-card-backward = دفع للخلف! فقد { $player } الاندفاع وبقي في المربع رقم { $position }.
+chaosbear-card-random-gift = هدية عشوائية!
+chaosbear-gift-back = تراجع { $player } إلى المربع رقم { $position }.
+chaosbear-gift-forward = تقدم { $player } إلى المربع رقم { $position }!
 
-chaosbear-bear-roll = The bear rolled { $roll } + its { $energy } energy = { $total }.
-chaosbear-bear-energy-up = The bear rolled a 3 and gained 1 energy!
-chaosbear-bear-position = The bear is now at square { $position }!
-chaosbear-player-caught = The bear caught { $player }! { $player } has been defeated!
-chaosbear-bear-feast = The bear loses 3 energy after feasting on their flesh!
+chaosbear-bear-roll = رمى الدب { $roll } + طاقته البالغة { $energy } = { $total }.
+chaosbear-bear-energy-up = رمى الدب 3 وحصل على 1 طاقة إضافية!
+chaosbear-bear-position = الدب الآن في المربع رقم { $position }!
+chaosbear-player-caught = أمسك الدب بـ { $player }! هُزم { $player }!
+chaosbear-bear-feast = فقد الدب 3 طاقة بعد افتراسه للاعب!
 
-chaosbear-status-player-alive = { $player }: square { $position }.
-chaosbear-status-player-caught = { $player }: caught at square { $position }.
-chaosbear-status-bear = The bear is at square { $position } with { $energy } energy.
+chaosbear-status-player-alive = { $player }: المربع { $position }.
+chaosbear-status-player-caught = { $player }: تم الإمساك به في المربع { $position }.
+chaosbear-status-bear = الدب في المربع { $position } بطاقة { $energy }.
 
-chaosbear-winner = { $player } wins! They reached square { $position }!
-chaosbear-tie = It's a tie at square { $position }!
+chaosbear-winner = فاز { $player }! لقد وصل إلى المربع رقم { $position }!
+chaosbear-tie = تعادل في المربع رقم { $position }!
 
-chaosbear-you-are-caught = You have been caught by the bear.
-chaosbear-not-on-multiple = You can only draw cards on multiples of 5.
+chaosbear-you-are-caught = لقد أمسك بك الدب.
+chaosbear-not-on-multiple = يمكنك سحب البطاقات فقط عند الوصول لمربعات من مضاعفات 5.
 
-chaosbear-line-format = { $rank }. { $player }: { $position } squares ({ $status })
-chaosbear-status-caught = caught
-chaosbear-status-survived = survived
+chaosbear-line-format = { $rank }. { $player }: المربع { $position } ({ $status })
+chaosbear-status-caught = تم الإمساك به
+chaosbear-status-survived = نجا

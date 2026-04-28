@@ -1,90 +1,99 @@
-game-name-scopa = Scopa
+game-name-scopa = سكوبا (Scopa)
 
-scopa-initial-table = Table cards: { $cards }
-scopa-no-initial-table = No cards on the table to start.
-scopa-you-collect = You collect { $cards } with { $card }
-scopa-player-collects = { $player } collects { $cards } with { $card }
-scopa-you-put-down = You put down { $card }.
-scopa-player-puts-down = { $player } puts down { $card }.
-scopa-scopa-suffix =  - SCOPA!
-scopa-clear-table-suffix = , clearing the table.
-scopa-remaining-cards = { $player } gets the remaining table cards.
-scopa-scoring-round = Scoring round...
-scopa-most-cards = { $player } scores 1 point for most cards ({ $count } cards).
-scopa-most-cards-tie = Most cards is a tie - no point awarded.
-scopa-most-diamonds = { $player } scores 1 point for most diamonds ({ $count } diamonds).
-scopa-most-diamonds-tie = Most diamonds is a tie - no point awarded.
-scopa-seven-diamonds = { $player } scores 1 point for the 7 of diamonds.
-scopa-seven-diamonds-multi = { $player } scores 1 point for most 7 of diamonds ({ $count } × 7 of diamonds).
-scopa-seven-diamonds-tie = 7 of diamonds is a tie - no point awarded.
-scopa-most-sevens = { $player } scores 1 point for most sevens ({ $count } sevens).
-scopa-most-sevens-tie = Most sevens is a tie - no point awarded.
-scopa-primiera = { $player } scores 1 point for primiera ({ $score } points).
-scopa-primiera-tie = Primiera is a tie - no point awarded.
-scopa-napola = { $player } scores { $points } points for napola.
+scopa-initial-table = بطاقات الطاولة: { $cards }
+scopa-no-initial-table = لا توجد بطاقات على الطاولة للبدء.
+scopa-you-collect = قمت بجمع { $cards } بواسطة { $card }
+scopa-player-collects = قام { $player } بجمع { $cards } بواسطة { $card }
+scopa-you-put-down = وضعت البطاقة { $card }.
+scopa-player-puts-down = قام { $player } بوضع { $card }.
+scopa-scopa-suffix =  - سكوبا! (SCOPA)
+scopa-clear-table-suffix = ، مع إفراغ الطاولة تماماً.
+scopa-remaining-cards = يحصل { $player } على بطاقات الطاولة المتبقية.
+scopa-scoring-round = جاري حساب نقاط الجولة...
+scopa-most-cards = سجل { $player } نقطة واحدة لجمعه أكبر عدد من البطاقات ({ $count } بطاقة).
+scopa-most-cards-tie = تعادل في عدد البطاقات - لم تمنح أي نقطة.
+scopa-most-diamonds = سجل { $player } نقطة واحدة لجمعه أكبر عدد من بطاقات "الجوهر" ({ $count } بطاقة جوهر).
+scopa-most-diamonds-tie = تعادل في عدد بطاقات الجوهر - لم تمنح أي نقطة.
+scopa-seven-diamonds = سجل { $player } نقطة واحدة للحصول على "7 الجوهر".
+scopa-seven-diamonds-multi = سجل { $player } نقطة واحدة لامتلاكه أكثر عدد من "7 الجوهر" ({ $count } × 7 الجوهر).
+scopa-seven-diamonds-tie = تعادل في بطاقات "7 الجوهر" - لم تمنح أي نقطة.
+scopa-most-sevens = سجل { $player } نقطة واحدة لجمعه أكبر عدد من بطاقات السبعة ({ $count } بطاقة).
+scopa-most-sevens-tie = تعادل في عدد بطاقات السبعة - لم تمنح أي نقطة.
+scopa-primiera = سجل { $player } نقطة واحدة للـ "بريميرا" (النقاط: { $score }).
+scopa-primiera-tie = تعادل في الـ "بريميرا" - لم تمنح أي نقطة.
+scopa-napola = سجل { $player } { $points } نقاط للـ "نابولا".
 
-scopa-manual-select-prompt = You must choose which cards to capture.
+scopa-manual-select-prompt = يجب عليك اختيار البطاقات التي تريد الاستحواذ عليها.
 
-scopa-capture-option = Capture { $cards }
+scopa-capture-option = الاستحواذ على { $cards }
 
-scopa-error-conflict-escoba-asso = Escoba and Asso Piglia Tutto cannot be enabled at the same time.
+scopa-error-conflict-escoba-asso = لا يمكن تفعيل خياري "إسكوبا" و "الآس يأخذ الكل" في وقت واحد.
 
-scopa-round-scores = Round scores:
-scopa-round-score-line = { $player }: +{ $round_score } (total: { $total_score })
-scopa-table-empty = There are no cards on the table.
-scopa-no-such-card = No card at that position.
-scopa-captured-count = You have captured { $count } cards
+scopa-round-scores = نتائج الجولة:
+scopa-round-score-line = { $player }: +{ $round_score } (الإجمالي: { $total_score })
+scopa-table-empty = لا توجد بطاقات على الطاولة.
+scopa-no-such-card = لا توجد بطاقة في هذا الموقع.
+scopa-captured-count = لقد استحوذت على { $count } { $count ->
+    [one] بطاقة واحدة
+    [two] بطاقتين
+    [few] بطاقات
+    *[other] بطاقة
+    }
 
-scopa-view-table = View table
-scopa-view-captured = View captured
-scopa-view-table-card = View table card { $index }
-scopa-pause-timer = Pause timer
+scopa-view-table = عرض الطاولة
+scopa-view-captured = عرض البطاقات المستحوذ عليها
+scopa-view-table-card = عرض بطاقة الطاولة { $index }
+scopa-pause-timer = إيقاف المؤقت مؤقتاً
 
 scopa-hint-match =  -> { $card }
-scopa-hint-multi =  -> { $count } cards
+scopa-hint-multi =  -> { $count } بطاقات
 
-scopa-enter-target-score = Enter target score (1-121)
-scopa-set-cards-per-deal = Cards per deal: { $cards }
-scopa-enter-cards-per-deal = Enter cards per deal (1-10)
-scopa-set-decks = Number of decks: { $decks }
-scopa-enter-decks = Enter number of decks (1-6)
-scopa-toggle-escoba = Escoba (sum to 15): { $enabled }
-scopa-toggle-hints = Show capture hints: { $enabled }
-scopa-set-mechanic = Scopa mechanic: { $mechanic }
-scopa-select-mechanic = Select scopa mechanic
-scopa-toggle-instant-win = Instant win on scopa: { $enabled }
-scopa-toggle-team-scoring = Pool team cards for scoring: { $enabled }
-scopa-toggle-inverse = Inverse mode (reach target = elimination): { $enabled }
-scopa-toggle-manual = Manual capture selection: { $enabled }
-scopa-toggle-asso = Asso piglia tutto (Ace takes all): { $enabled }
-scopa-toggle-primiera = Primiera scoring: { $enabled }
-scopa-toggle-napola = Napola (Diamond sequence): { $enabled }
+scopa-enter-target-score = أدخل نتيجة الفوز المستهدفة (1-121)
+scopa-set-cards-per-deal = عدد البطاقات في كل توزيع: { $cards }
+scopa-enter-cards-per-deal = أدخل عدد البطاقات في كل توزيع (1-10)
+scopa-set-decks = عدد مجموعات الأوراق: { $decks }
+scopa-enter-decks = أدخل عدد مجموعات الأوراق (1-6)
+scopa-toggle-escoba = إسكوبا (المجموع يساوي 15): { $enabled }
+scopa-toggle-hints = إظهار تلميحات الاستحواذ: { $enabled }
+scopa-set-mechanic = آلية السكوبا: { $mechanic }
+scopa-select-mechanic = اختر آلية السكوبا
+scopa-toggle-instant-win = فوز فوري عند تحقيق سكوبا: { $enabled }
+scopa-toggle-team-scoring = تجميع بطاقات الفريق لحساب النقاط: { $enabled }
+scopa-toggle-inverse = النمط العكسي (الوصول للهدف = إقصاء): { $enabled }
+scopa-toggle-manual = اختيار الاستحواذ يدوياً: { $enabled }
+scopa-toggle-asso = الآس يأخذ الكل (Asso Piglia Tutto): { $enabled }
+scopa-toggle-primiera = حساب نقاط البريميرا: { $enabled }
+scopa-toggle-napola = حساب نقاط النابولا (تسلسل الجوهر): { $enabled }
 
-scopa-option-changed-cards = Cards per deal set to { $cards }.
-scopa-option-changed-decks = Number of decks set to { $decks }.
-scopa-option-changed-escoba = Escoba { $enabled }.
-scopa-option-changed-hints = Capture hints { $enabled }.
-scopa-option-changed-mechanic = Scopa mechanic set to { $mechanic }.
-scopa-option-changed-instant = Instant win on scopa { $enabled }.
-scopa-option-changed-team-scoring = Team card scoring { $enabled }.
-scopa-option-changed-inverse = Inverse mode { $enabled }.
-scopa-option-changed-manual = Manual capture selection { $enabled }.
-scopa-option-changed-asso = Asso piglia tutto { $enabled }.
-scopa-option-changed-primiera = Primiera scoring { $enabled }.
-scopa-option-changed-napola = Napola { $enabled }.
+scopa-option-changed-cards = تم ضبط عدد البطاقات في كل توزيع على { $cards }.
+scopa-option-changed-decks = تم ضبط عدد مجموعات الأوراق على { $decks }.
+scopa-option-changed-escoba = خيار إسكوبا: { $enabled }.
+scopa-option-changed-hints = تلميحات الاستحواذ: { $enabled }.
+scopa-option-changed-mechanic = تم ضبط آلية السكوبا على { $mechanic }.
+scopa-option-changed-instant = الفوز الفوري عند السكوبا: { $enabled }.
+scopa-option-changed-team-scoring = حساب نقاط الفريق: { $enabled }.
+scopa-option-changed-inverse = النمط العكسي: { $enabled }.
+scopa-option-changed-manual = اختيار الاستحواذ يدوياً: { $enabled }.
+scopa-option-changed-asso = خيار الآس يأخذ الكل: { $enabled }.
+scopa-option-changed-primiera = حساب نقاط البريميرا: { $enabled }.
+scopa-option-changed-napola = حساب نقاط النابولا: { $enabled }.
 
-scopa-mechanic-normal = Normal
-scopa-mechanic-no_scopas = No Scopas
-scopa-mechanic-only_scopas = Scopas Only
+scopa-mechanic-normal = عادي
+scopa-mechanic-no_scopas = بدون سكوبا
+scopa-mechanic-only_scopas = سكوبا فقط
 
-scopa-timer-not-active = The round timer is not active.
+scopa-timer-not-active = مؤقت الجولة غير نشط.
 
-scopa-error-not-enough-cards = Not enough cards in { $decks } { $decks ->
-    [one] deck
-    *[other] decks
-} for { $players } { $players ->
-    [one] player
-    *[other] players
-} with { $cards_per_deal } cards each. (Need { $cards_per_deal } × { $players } = { $cards_needed } cards, but only have { $total_cards }.)
+scopa-error-not-enough-cards = لا توجد بطاقات كافية في { $decks } { $decks ->
+    [one] مجموعة
+    [two] مجموعتين
+    [few] مجموعات
+    *[other] مجموعة
+    } لـ { $players } { $players ->
+    [one] لاعب واحد
+    [two] لاعبين
+    [few] لاعبين
+    *[other] لاعب
+    } مع توزيع { $cards_per_deal } لكل منهم. (المطلوب { $cards_needed }، المتوفر { $total_cards } فقط).
 
 scopa-line-format = { $rank }. { $player }: { $points }

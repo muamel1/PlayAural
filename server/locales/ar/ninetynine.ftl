@@ -1,83 +1,89 @@
-game-name-ninetynine = Ninety Nine
-ninetynine-description = A card game where players try to avoid pushing the running total over 99. Last player standing wins!
+game-name-ninetynine = تسعة وتسعون
+ninetynine-description = لعبة بطاقات يحاول فيها اللاعبون تجنب تجاوز المجموع الكلي للرقم 99. آخر لاعب صامد هو الفائز!
 
-ninetynine-round = Round { $round }.
+ninetynine-round = الجولة { $round }.
 
-ninetynine-player-turn = { $player }'s turn.
+ninetynine-player-turn = دور { $player }.
 
-ninetynine-you-play = You play { $card }. The count is now { $count }.
-ninetynine-player-plays = { $player } plays { $card }. The count is now { $count }.
+ninetynine-you-play = لعبت { $card }. المجموع الآن { $count }.
+ninetynine-player-plays = يلعب { $player } { $card }. المجموع الآن { $count }.
 
-ninetynine-direction-reverses = The direction of play reverses!
+ninetynine-direction-reverses = انعكس اتجاه اللعب!
 
-ninetynine-player-skipped = { $player } is skipped.
+ninetynine-player-skipped = تم تخطي { $player }.
 
 n99-card-plus-10 = +10
 n99-card-minus-10 = -10
-n99-card-pass = Pass
-n99-card-reverse = Reverse
-n99-card-skip = Skip
-n99-card-ninety-nine = Ninety Nine
+n99-card-pass = تمرير
+n99-card-reverse = عكس الاتجاه
+n99-card-skip = تخطي
+n99-card-ninety-nine = تسعة وتسعون
 
-ninetynine-you-lose-tokens = You lose { $amount } { $amount ->
-    [one] token
-    *[other] tokens
-}.
-ninetynine-player-loses-tokens = { $player } loses { $amount } { $amount ->
-    [one] token
-    *[other] tokens
-}.
+ninetynine-you-lose-tokens = فقدت { $amount } { $amount ->
+    [one] رمزاً
+    [two] رمزين
+    [few] رموز
+    *[other] رمزاً
+    }.
+ninetynine-player-loses-tokens = يفقد { $player } { $amount } { $amount ->
+    [one] رمزاً
+    [two] رمزين
+    [few] رموز
+    *[other] رمزاً
+    }.
 
-ninetynine-player-eliminated = { $player } has been eliminated!
+ninetynine-player-eliminated = تم إقصاء { $player }!
 
-ninetynine-player-wins = { $player } wins the game!
+ninetynine-player-wins = { $player } يفوز باللعبة!
 ninetynine-end-score = { $rank }. { $player }: { $tokens } { $tokens ->
-    [one] token
-   *[other] tokens
-}
+    [one] رمز
+    [two] رمزان
+    [few] رموز
+    *[other] رمزاً
+    }
 
-ninetynine-you-deal = You deal out the cards.
-ninetynine-player-deals = { $player } deals out the cards.
+ninetynine-you-deal = أنت من يوزع البطاقات.
+ninetynine-player-deals = { $player } يوزع البطاقات.
 
-ninetynine-you-draw = You draw { $card }.
-ninetynine-player-draws = { $player } draws a card.
+ninetynine-you-draw = سحبت { $card }.
+ninetynine-player-draws = يسحب { $player } بطاقة.
 
-ninetynine-no-valid-cards = { $player } has no cards that won't go over 99!
+ninetynine-no-valid-cards = لا يملك { $player } أي بطاقات لا تتجاوز الـ 99!
 
-ninetynine-current-count = The count is { $count }.
+ninetynine-current-count = المجموع الحالي هو { $count }.
 
-ninetynine-ace-choice = Play Ace as +1 or +11?
-ninetynine-ace-add-eleven = Add 11
-ninetynine-ace-add-one = Add 1
+ninetynine-ace-choice = هل تلعب بطاقة "الآس" كـ +1 أم +11؟
+ninetynine-ace-add-eleven = إضافة 11
+ninetynine-ace-add-one = إضافة 1
 
-ninetynine-ten-choice = Play 10 as +10 or -10?
-ninetynine-ten-add = Add 10
-ninetynine-ten-subtract = Subtract 10
-ninetynine-select-card-choice = Choose how to play this card.
-ninetynine-choice-1 = Choice 1
-ninetynine-choice-2 = Choice 2
+ninetynine-ten-choice = هل تلعب بطاقة "10" كـ +10 أم -10؟
+ninetynine-ten-add = إضافة 10
+ninetynine-ten-subtract = طرح 10
+ninetynine-select-card-choice = اختر كيفية لعب هذه البطاقة.
+ninetynine-choice-1 = الخيار 1
+ninetynine-choice-2 = الخيار 2
 
-ninetynine-draw-card = Draw card
-ninetynine-draw-prompt = Please draw a card.
+ninetynine-draw-card = سحب بطاقة
+ninetynine-draw-prompt = يرجى سحب بطاقة.
 
-ninetynine-set-tokens = Starting tokens: { $tokens }
-ninetynine-enter-tokens = Enter number of starting tokens:
-ninetynine-option-changed-tokens = Starting tokens set to { $tokens }.
-ninetynine-set-rules = Rules variant: { $rules }
-ninetynine-select-rules = Select rules variant
-ninetynine-option-changed-rules = Rules variant set to { $rules }.
-ninetynine-set-hand-size = Hand size: { $size }
-ninetynine-enter-hand-size = Enter hand size:
-ninetynine-option-changed-hand-size = Hand size set to { $size }.
-ninetynine-set-autodraw = Automatic drawing: { $enabled }
-ninetynine-option-changed-autodraw = Automatic drawing set to { $enabled }.
+ninetynine-set-tokens = رموز البداية: { $tokens }
+ninetynine-enter-tokens = أدخل عدد رموز البداية:
+ninetynine-option-changed-tokens = تم ضبط رموز البداية على { $tokens }.
+ninetynine-set-rules = متغير القواعد: { $rules }
+ninetynine-select-rules = اختر متغير القواعد
+ninetynine-option-changed-rules = تم ضبط متغير القواعد على { $rules }.
+ninetynine-set-hand-size = حجم اليد: { $size }
+ninetynine-enter-hand-size = أدخل حجم اليد:
+ninetynine-option-changed-hand-size = تم ضبط حجم اليد على { $size }.
+ninetynine-set-autodraw = السحب التلقائي: { $enabled }
+ninetynine-option-changed-autodraw = تم ضبط السحب التلقائي على { $enabled }.
 
-ninetynine-rules-standard = Standard rules.
-ninetynine-rules-action-cards = Action cards rules.
+ninetynine-rules-standard = القواعد القياسية.
+ninetynine-rules-action-cards = قواعد بطاقات الأكشن.
 
-ninetynine-rules-variant-standard = Standard
-ninetynine-rules-variant-action-cards = Action Cards
+ninetynine-rules-variant-standard = قياسي
+ninetynine-rules-variant-action-cards = بطاقات الأكشن
 
-ninetynine-choose-first = You need to make a choice first.
-ninetynine-draw-first = You need to draw a card first.
-ninetynine-check-count = Check count
+ninetynine-choose-first = يجب عليك اتخاذ قرار أولاً.
+ninetynine-draw-first = يجب عليك سحب بطاقة أولاً.
+ninetynine-check-count = التحقق من المجموع

@@ -1,78 +1,80 @@
-game-name-deadmansdeck = Dead Man's Deck
+game-name-deadmansdeck = طاولة الرجل الميت
 
-deadmansdeck-call-liar = Call liar
-deadmansdeck-play-selected = Play selected cards
-deadmansdeck-clear-selection = Clear selection
-deadmansdeck-read-hand = Read hand
-deadmansdeck-read-table = Read table
-deadmansdeck-read-revolvers = Read revolvers
-deadmansdeck-read-card-counts = Read card counts
+# الإجراءات
+deadmansdeck-call-liar = اتهام بالكذب
+deadmansdeck-play-selected = لعب البطاقات المختارة
+deadmansdeck-clear-selection = مسح الاختيار
+deadmansdeck-read-hand = قراءة اليد
+deadmansdeck-read-table = قراءة الطاولة
+deadmansdeck-read-revolvers = قراءة المسدسات
+deadmansdeck-read-card-counts = قراءة عدد البطاقات
 
-deadmansdeck-rank-ace = Ace
-deadmansdeck-rank-ace-plural = Aces
-deadmansdeck-rank-king = King
-deadmansdeck-rank-king-plural = Kings
-deadmansdeck-rank-queen = Queen
-deadmansdeck-rank-queen-plural = Queens
-deadmansdeck-rank-joker = Joker
-deadmansdeck-rank-joker-plural = Jokers
+# الرتب
+deadmansdeck-rank-ace = آص
+deadmansdeck-rank-ace-plural = آصات
+deadmansdeck-rank-king = ملك
+deadmansdeck-rank-king-plural = ملوك
+deadmansdeck-rank-queen = ملكة
+deadmansdeck-rank-queen-plural = ملكات
+deadmansdeck-rank-joker = جوكر
+deadmansdeck-rank-joker-plural = جوكرات
 deadmansdeck-claim-text = { $count } { $rank }
 
 deadmansdeck-card-label = { $card }
-deadmansdeck-selected-card-label = Selected: { $card }
-deadmansdeck-card-selected = Selected { $card }.
-deadmansdeck-card-unselected = Unselected { $card }.
-deadmansdeck-selection-cleared = Selection cleared.
-deadmansdeck-card-not-found = That card is no longer available.
-deadmansdeck-too-many-selected = You can claim at most three cards.
-deadmansdeck-select-card-first = Select one to three cards first.
-deadmansdeck-no-claim-to-challenge = There is no claim to challenge.
-deadmansdeck-cannot-challenge-self = You cannot challenge your own claim.
-deadmansdeck-action-sequence-running = Wait for the current sequence to finish.
-deadmansdeck-action-eliminated = You have been eliminated.
+deadmansdeck-selected-card-label = مختار: { $card }
+deadmansdeck-card-selected = تم اختيار { $card }.
+deadmansdeck-card-unselected = تم إلغاء اختيار { $card }.
+deadmansdeck-selection-cleared = تم مسح الاختيار.
+deadmansdeck-card-not-found = هذه البطاقة لم تعد متاحة.
+deadmansdeck-too-many-selected = يمكنك اختيار 3 بطاقات كحد أقصى.
+deadmansdeck-select-card-first = اختر من 1 إلى 3 بطاقات أولاً.
+deadmansdeck-no-claim-to-challenge = لا يوجد ادعاء لتحديه.
+deadmansdeck-cannot-challenge-self = لا يمكنك تحدي ادعاءاتك الخاصة.
+deadmansdeck-action-sequence-running = يرجى الانتظار حتى ينتهي التسلسل الحالي.
+deadmansdeck-action-eliminated = تم إقصاؤك.
 
-deadmansdeck-prepare-revolver = { $player }'s revolver is being prepared.
-deadmansdeck-round-start = Round { $round }. The table card is { $target }.
-deadmansdeck-turn-order = Turn order this round: { $order }.
-deadmansdeck-your-hand = Your hand: { $cards }.
-deadmansdeck-hand-empty = Your hand is empty.
-deadmansdeck-no-cards = no cards
-deadmansdeck-player-skipped-no-cards = { $player } has no cards and is skipped.
-deadmansdeck-player-out-of-cards = { $player } has no cards left.
-deadmansdeck-forced-challenge = { $player } must challenge because the round cannot continue.
-deadmansdeck-player-claims = { $player } claims { $claim }.
-deadmansdeck-player-calls-liar = { $challenger } calls { $accused } a liar.
-deadmansdeck-forced-liar-call = { $challenger } is forced to call { $accused } a liar.
-deadmansdeck-revealed-cards = { $player } revealed: { $cards }.
-deadmansdeck-bluff-caught = The bluff was caught. { $accused } loses the challenge and must pull.
-deadmansdeck-truthful-claim = The claim was truthful. { $challenger } loses the challenge and must pull.
-deadmansdeck-roulette-start = { $player } faces the revolver.
-deadmansdeck-roulette-survived = Empty chamber. { $player } survives. Their next pull has 1 in { $remaining } risk.
-deadmansdeck-player-eliminated = The gun fires. { $player } has been eliminated.
-deadmansdeck-player-wins = { $player } is the last player standing and wins Dead Man's Deck.
-deadmansdeck-no-winner = No winner could be determined.
-deadmansdeck-you-are-eliminated = You have been eliminated from this game.
+# أحداث اللعب
+deadmansdeck-prepare-revolver = جاري تحضير مسدس { $player }.
+deadmansdeck-round-start = الجولة { $round }. بطاقة الطاولة هي { $target }.
+deadmansdeck-turn-order = ترتيب الدور في هذه الجولة: { $order }.
+deadmansdeck-your-hand = يدك: { $cards }.
+deadmansdeck-hand-empty = يدك فارغة.
+deadmansdeck-no-cards = لا توجد بطاقات
+deadmansdeck-player-skipped-no-cards = { $player } لا يملك بطاقات وتم تخطيه.
+deadmansdeck-player-out-of-cards = { $player } لم يعد لديه بطاقات.
+deadmansdeck-forced-challenge = يجب على { $player } التحدي لأن الجولة لا يمكن أن تستمر.
+deadmansdeck-player-claims = يدعي { $player } امتلاك { $claim }.
+deadmansdeck-player-calls-liar = يتهم { $challenger } اللاعب { $accused } بالكذب.
+deadmansdeck-forced-liar-call = { $challenger } مجبر على اتهام { $accused } بالكذب.
+deadmansdeck-revealed-cards = كشف { $player } عن: { $cards }.
+deadmansdeck-bluff-caught = تم كشف الخدعة. يخسر { $accused } التحدي ويجب عليه السحب.
+deadmansdeck-truthful-claim = كان الادعاء صادقاً. يخسر { $challenger } التحدي ويجب عليه السحب.
+deadmansdeck-roulette-start = يواجه { $player } المسدس.
+deadmansdeck-roulette-survived = غرفة فارغة. نجا { $player }. مخاطرة السحب القادم هي 1 من { $remaining }.
+deadmansdeck-player-eliminated = انطلقت الرصاصة. تم إقصاء { $player }.
+deadmansdeck-player-wins = { $player } هو الناجي الأخير وفاز في طاولة الرجل الميت.
+deadmansdeck-no-winner = تعذر تحديد فائز.
+deadmansdeck-you-are-eliminated = تم إقصاؤك من هذه اللعبة.
 
-deadmansdeck-table-round = Round { $round }. Target: { $target }.
-deadmansdeck-table-target-pending = not set yet
-deadmansdeck-table-current-turn = Current turn: { $player }.
-deadmansdeck-table-last-claim = Last claim: { $player } claimed { $claim }.
-deadmansdeck-table-no-claim = There is no active claim.
-deadmansdeck-table-alive = Still alive: { $players }.
-deadmansdeck-table-eliminated = Eliminated: { $players }.
+# حالة الطاولة
+deadmansdeck-table-round = الجولة { $round }. الهدف: { $target }.
+deadmansdeck-table-target-pending = لم يتم تحديده بعد
+deadmansdeck-table-current-turn = الدور الحالي: { $player }.
+deadmansdeck-table-last-claim = آخر ادعاء: ادعى { $player } امتلاك { $claim }.
+deadmansdeck-table-no-claim = لا يوجد ادعاء نشط.
+deadmansdeck-table-alive = لا يزالون على قيد الحياة: { $players }.
+deadmansdeck-table-eliminated = تم إقصاؤهم: { $players }.
 
-deadmansdeck-card-count-line = { $player }: { $count ->
-    [one] 1 card
-   *[other] { $count } cards
-} left.
-deadmansdeck-card-count-eliminated = { $player }: eliminated.
+# الإحصائيات والنتائج
+deadmansdeck-card-count-line = { $player }: { $count } بطاقة متبقية.
+deadmansdeck-card-count-eliminated = { $player }: تم إقصاؤه.
 
-deadmansdeck-revolvers-header = Revolver status
-deadmansdeck-revolver-status = { $player }: { $survived } empty chambers used; next pull is 1 in { $remaining }.
-deadmansdeck-revolver-eliminated = { $player }: eliminated.
+deadmansdeck-revolvers-header = حالة المسدسات
+deadmansdeck-revolver-status = { $player }: استخدم { $survived } غرف فارغة؛ مخاطرة السحب القادم 1 من { $remaining }.
+deadmansdeck-revolver-eliminated = { $player }: تم إقصاؤه.
 
-deadmansdeck-results-header = Dead Man's Deck results
-deadmansdeck-results-winner = Winner: { $player }.
-deadmansdeck-results-survived = survived
-deadmansdeck-results-eliminated = eliminated
-deadmansdeck-results-line = { $player }: { $status }, correct calls { $correct }, successful bluffs { $bluffs }, roulette survivals { $survivals }.
+deadmansdeck-results-header = نتائج طاولة الرجل الميت
+deadmansdeck-results-winner = الفائز: { $player }.
+deadmansdeck-results-survived = نجا
+deadmansdeck-results-eliminated = تم إقصاؤه
+deadmansdeck-results-line = { $player }: { $status }، تحديات صحيحة { $correct }، خدع ناجحة { $bluffs }، نجاة من الروليت { $survivals }.

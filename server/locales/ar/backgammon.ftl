@@ -1,75 +1,82 @@
-game-name-backgammon = Backgammon
+game-name-backgammon = الطاولة (Backgammon)
 
-backgammon-set-match-length = Match length: { $points }
-backgammon-enter-match-length = Enter the match length (1-25)
-backgammon-option-changed-match-length = Match length set to { $points }.
-backgammon-set-bot-strategy = Bot strategy: { $strategy }
-backgammon-select-bot-strategy = Select a bot strategy
-backgammon-option-changed-bot-strategy = Bot strategy set to { $strategy }.
-backgammon-bot-simple = Simple
-backgammon-bot-smart = Smart
-backgammon-bot-random = Random
+backgammon-set-match-length = طول المباراة: { $points }
+backgammon-enter-match-length = أدخل طول المباراة (1-25):
+backgammon-option-changed-match-length = تم ضبط طول المباراة على { $points }.
+backgammon-set-bot-strategy = استراتيجية البوت: { $strategy }
+backgammon-select-bot-strategy = اختر استراتيجية البوت:
+backgammon-option-changed-bot-strategy = تم ضبط استراتيجية البوت على { $strategy }.
+backgammon-bot-simple = بسيطة
+backgammon-bot-smart = ذكية
+backgammon-bot-random = عشوائية
 
-backgammon-roll-dice = Roll dice
-backgammon-offer-double = Offer double
-backgammon-accept-double = Accept double
-backgammon-drop-double = Drop double
-backgammon-undo-move = Undo last move
-backgammon-read-board = Read board
-backgammon-check-status = Check status
-backgammon-check-pip = Check pip count
-backgammon-check-cube = Check cube
-backgammon-check-dice = Check dice
+backgammon-roll-dice = رمي النرد
+backgammon-offer-double = طلب تضعيف
+backgammon-accept-double = قبول التضعيف
+backgammon-drop-double = رفض التضعيف
+backgammon-undo-move = التراجع عن الحركة
+backgammon-read-board = قراءة اللوحة
+backgammon-check-status = فحص الحالة
+backgammon-check-pip = فحص عدد النقاط المتبقية (Pip)
+backgammon-check-cube = فحص مكعب التضعيف
+backgammon-check-dice = فحص النرد
 
-backgammon-opening-roll = Opening roll: { $red } rolls { $red_die }, { $white } rolls { $white_die }.
-backgammon-opening-tie = Both players rolled { $die }. Rolling again.
-backgammon-opening-winner = { $player } goes first with { $die1 } and { $die2 }.
-backgammon-roll = { $player } rolls { $die1 } and { $die2 }.
-backgammon-no-moves = { $player } has no legal moves.
-backgammon-double-offered = { $player } offers a double to { $value }.
-backgammon-double-accepted = { $player } accepts. The cube is now { $value }.
-backgammon-double-dropped = { $player } drops the double.
-backgammon-game-won = { $player } wins this game for { $points } point{ $points ->
-    [one] {""}
-   *[other] s
-}.
-backgammon-new-game = Starting game { $number }.
-backgammon-crawford = Crawford game. The doubling cube is disabled this game.
-backgammon-match-winner = { $player } wins the match.
-backgammon-end-score = { $red } { $red_score }, { $white } { $white_score }. Match to { $match_length }.
+backgammon-opening-roll = رمية البداية: رمى { $red } { $red_die }، ورمى { $white } { $white_die }.
+backgammon-opening-tie = رمى كلا اللاعبين { $die }. إعادة الرمي.
+backgammon-opening-winner = يبدأ { $player } أولاً بالرقمين { $die1 } و { $die2 }.
+backgammon-roll = رمى { $player } { $die1 } و { $die2 }.
+backgammon-no-moves = لا توجد حركات قانونية لدى { $player }.
+backgammon-double-offered = عرض { $player } تضعيفاً إلى { $value }.
+backgammon-double-accepted = قبل { $player }. أصبح مكعب التضعيف الآن { $value }.
+backgammon-double-dropped = رفض { $player } التضعيف.
+backgammon-game-won = فاز { $player } بهذه الجولة وكسب { $points } { $points ->
+    [one] نقطة واحدة
+    [two] نقطتين
+    [few] نقاط
+   *[other] نقطة
+    }.
+backgammon-new-game = بدء الجولة رقم { $number }.
+backgammon-crawford = "قاعدة كروفورد" (Crawford Rule). مكعب التضعيف معطل في هذه الجولة.
+backgammon-match-winner = فاز { $player } بالمباراة.
+backgammon-end-score = { $red } { $red_score }، { $white } { $white_score }. المباراة حتى { $match_length }.
 
-backgammon-announcement-move = { $player } moves from { $source } to { $dest } using { $die }.
-backgammon-announcement-hit = { $player } moves from { $source } to hit on { $dest } using { $die }.
-backgammon-announcement-bear-off = { $player } bears off from { $source } using { $die }.
-backgammon-move-undone = Move undone.
+backgammon-announcement-move = حرك { $player } من { $source } إلى { $dest } باستخدام { $die }.
+backgammon-announcement-hit = أطاح { $player } بقطعة من { $source } إلى { $dest } باستخدام { $die }.
+backgammon-announcement-bear-off = أخرج { $player } قطعة من { $source } باستخدام { $die }.
+backgammon-move-undone = تم التراجع عن الحركة.
 
-backgammon-move-label = Move { $source } to { $dest } using { $die }
-backgammon-move-label-hit = Hit from { $source } to { $dest } using { $die }
-backgammon-move-label-bear-off = Bear off from { $source } using { $die }
+backgammon-move-label = تحريك { $source } إلى { $dest } باستخدام { $die }
+backgammon-move-label-hit = إطاحة من { $source } إلى { $dest } باستخدام { $die }
+backgammon-move-label-bear-off = إخراج من { $source } باستخدام { $die }
 
-backgammon-bar = bar
-backgammon-board-header = Backgammon board
-backgammon-board-point = Point { $point }: { $state }.
-backgammon-point-empty = empty
-backgammon-point-occupied = { $player } { $count }
+backgammon-bar = البار (Bar)
+backgammon-board-header = لوحة الطاولة
+backgammon-board-point = الخانة { $point }: { $state }.
+backgammon-point-empty = فارغة
+backgammon-point-occupied = { $player } لديه { $count } { $count ->
+    [one] قطعة واحدة
+    [two] قطعتان
+    [few] قطع
+   *[other] قطعة
+    }
 
-backgammon-status-line = { $red }: bar { $red_bar }, borne off { $red_off }. { $white }: bar { $white_bar }, borne off { $white_off }.
-backgammon-pip-line = Pip count. { $red }: { $red_pip }. { $white }: { $white_pip }.
-backgammon-cube-centered = centered
-backgammon-cube-yes = { $player } may offer a double now
-backgammon-cube-no = No double may be offered right now
-backgammon-cube-line = Cube at { $value }, owner: { $owner }. Doubling is { $can_double }.
-backgammon-dice-line = Remaining dice: { $dice }.
-backgammon-dice-none = No dice remain.
-backgammon-score-line = Score: { $red } { $red_score }, { $white } { $white_score }. Match to { $match_length }.
-backgammon-scores-header = Match score
+backgammon-status-line = { $red }: في البار { $red_bar }، تم إخراج { $red_off }. { $white }: في البار { $white_bar }، تم إخراج { $white_off }.
+backgammon-pip-line = عدد النقاط (Pip): { $red } { $red_pip }، { $white } { $white_pip }.
+backgammon-cube-centered = في المنتصف
+backgammon-cube-yes = يمكن لـ { $player } طلب التضعيف الآن
+backgammon-cube-no = لا يمكن طلب التضعيف حالياً
+backgammon-cube-line = المكعب عند { $value }، المالك: { $owner }. إمكانية التضعيف: { $can_double }.
+backgammon-dice-line = النرد المتبقي: { $dice }.
+backgammon-dice-none = لا يوجد نرد متبقي.
+backgammon-score-line = النتيجة: { $red } { $red_score }، { $white } { $white_score }. المباراة حتى { $match_length }.
+backgammon-scores-header = نتيجة المباراة
 backgammon-score-detail = { $player }: { $score }
-backgammon-score-target = Target: { $points }
-backgammon-turn-preroll = { $player } is up and has not rolled yet.
-backgammon-waiting-for-double-response = { $player } offered a double. Waiting for { $responder }.
+backgammon-score-target = الهدف: { $points }
+backgammon-turn-preroll = حان دور { $player } ولم يرمِ النرد بعد.
+backgammon-waiting-for-double-response = عرض { $player } التضعيف. في انتظار رد { $responder }.
 
-backgammon-cannot-roll = You cannot roll right now.
-backgammon-cannot-double = You cannot offer a double right now.
-backgammon-no-double-pending = There is no double to respond to.
-backgammon-no-move-to-undo = There is no move to undo.
-backgammon-illegal-move = That move is not legal.
+backgammon-cannot-roll = لا يمكنك الرمي الآن.
+backgammon-cannot-double = لا يمكنك طلب التضعيف الآن.
+backgammon-no-double-pending = لا يوجد تضعيف معلق للرد عليه.
+backgammon-no-move-to-undo = لا توجد حركة متاحة للتراجع عنها.
+backgammon-illegal-move = هذه الحركة غير قانونية.

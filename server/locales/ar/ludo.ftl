@@ -1,92 +1,96 @@
-game-name-ludo = Ludo
+game-name-ludo = لودو
 
-ludo-roll-die = Roll die
-ludo-move-token = Move token
-ludo-move-token-n = Move token { $token }
-ludo-check-board = View board status
-ludo-select-token = Select token to move:
+# الإجراءات
+ludo-roll-die = رمي النرد
+ludo-move-token = تحريك القطعة
+ludo-move-token-n = تحريك القطعة رقم { $token }
+ludo-check-board = عرض حالة الرقعة
+ludo-select-token = اختر قطعة للتحريك:
 
-ludo-roll = { $player } rolls a { $roll }.
-ludo-you-roll = You roll a { $roll }.
-ludo-no-moves = { $player } has no valid moves.
-ludo-you-no-moves = You have no valid moves.
-ludo-enter-board = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+# أحداث اللعب
+ludo-roll = رمى { $player } { $roll }.
+ludo-you-roll = رميت { $roll }.
+ludo-no-moves = لا توجد حركات قانونية لدى { $player }.
+ludo-you-no-moves = لا توجد حركات قانونية لديك.
+ludo-enter-board = أدخل { $player } (اللون { $color ->
+    [red] الأحمر
+    [blue] الأزرق
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $color }
-}) enters token { $token } onto the board.
-ludo-move-track = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+    }) القطعة رقم { $token } إلى الرقعة.
+ludo-move-track = حرك { $player } (اللون { $color ->
+    [red] الأحمر
+    [blue] الأرجواني
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $color }
-}) moves token { $token } to position { $position }.
-ludo-enter-home = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+    }) القطعة رقم { $token } إلى الموضع { $position }.
+ludo-enter-home = أدخل { $player } (اللون { $color ->
+    [red] الأحمر
+    [blue] الأزرق
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $color }
-}) moves token { $token } into the home column.
-ludo-home-finish = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+    }) القطعة رقم { $token } إلى مسار الوصول (البيت).
+ludo-home-finish = وصلت قطعة { $player } (اللون { $color ->
+    [red] الأحمر
+    [blue] الأزرق
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $color }
-}) token { $token } reaches home. ({ $finished }/4 finished)
-ludo-move-home = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+    }) رقم { $token } إلى القاعدة. ({ $finished }/4 مكتملة)
+ludo-move-home = حرك { $player } (اللون { $color ->
+    [red] الأحمر
+    [blue] الأزرق
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $color }
-}) moves token { $token } in home column ({ $position }/{ $total }).
-ludo-captures = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+    }) القطعة رقم { $token } في مسار الوصول ({ $position }/{ $total }).
+ludo-captures = أسر { $player } (اللون { $color ->
+    [red] الأحمر
+    [blue] الأزرق
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $color }
-}) captures { $count ->
-    [one] 1 token
-   *[other] { $count } tokens
-} of { $captured_player } ({ $captured_color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+    }) { $count ->
+    [one] قطعة واحدة
+   *[other] { $count } قطع
+    } من { $captured_player } (اللون { $captured_color ->
+    [red] الأحمر
+    [blue] الأزرق
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $captured_color }
-}). Sent back to yard.
-ludo-extra-turn = { $player } rolled a 6. Extra turn.
-ludo-you-extra-turn = You rolled a 6. Extra turn.
-ludo-too-many-sixes = { $player } rolled { $count } sixes in a row. Moves undone. Turn ends.
-ludo-winner = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+    }). تمت إعادتها إلى القاعدة.
+ludo-extra-turn = رمى { $player } 6. دور إضافي.
+ludo-you-extra-turn = رميت 6. دور إضافي.
+ludo-too-many-sixes = رمى { $player } { $count } ستات متتالية. تم التراجع عن الحركات. انتهى الدور.
+ludo-winner = فاز { $player } (اللون { $color ->
+    [red] الأحمر
+    [blue] الأزرق
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $color }
-}) wins! All 4 tokens are home.
+    })! وصلت جميع القطع الأربع إلى القاعدة.
 
-ludo-board-player = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+# حالة الرقعة
+ludo-board-player = { $player } (اللون { $color ->
+    [red] الأحمر
+    [blue] الأزرق
+    [green] الأخضر
+    [yellow] الأصفر
     *[other] { $color }
-}): { $finished }/4 finished
-ludo-token-yard = Token { $token } (yard)
-ludo-token-track = Token { $token } (position { $position })
-ludo-token-home = Token { $token } (home column { $position }/{ $total })
-ludo-token-finished = Token { $token } (finished)
-ludo-last-roll = Last roll: { $roll }
+    }): { $finished }/4 مكتملة
+ludo-token-yard = القطعة { $token } (في القاعدة)
+ludo-token-track = القطعة { $token } (الموضع { $position })
+ludo-token-home = القطعة { $token } (في مسار الوصول { $position }/{ $total })
+ludo-token-finished = القطعة { $token } (مكتملة)
+ludo-last-roll = آخر رمية: { $roll }
 
-ludo-set-max-sixes = Max consecutive sixes: { $max_consecutive_sixes }
-ludo-enter-max-sixes = Enter max consecutive sixes
-ludo-option-changed-max-sixes = Max consecutive sixes set to { $max_consecutive_sixes }.
-ludo-set-safe-start-squares = Safe start squares: { $enabled }
-ludo-option-changed-safe-start-squares = Safe start squares set to { $enabled }.
+# الإعدادات
+ludo-set-max-sixes = الحد الأقصى للستات المتتالية: { $max_consecutive_sixes }
+ludo-enter-max-sixes = أدخل الحد الأقصى للستات المتتالية
+ludo-option-changed-max-sixes = تم ضبط الحد الأقصى للستات المتتالية إلى { $max_consecutive_sixes }.
+ludo-set-safe-start-squares = مربعات الانطلاق الآمنة: { $enabled }
+ludo-option-changed-safe-start-squares = تم ضبط مربعات الانطلاق الآمنة إلى { $enabled }.

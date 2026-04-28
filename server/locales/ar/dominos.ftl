@@ -1,99 +1,100 @@
-game-name-dominos = Dominos
+game-name-dominos = الدومينو
 
-# Options
-dominos-set-target-score = Target score: { $score }
-dominos-enter-target-score = Enter target score
-dominos-option-changed-target-score = Target score set to { $score }.
+# الخيارات
+dominos-set-target-score = النتيجة المستهدفة: { $score }
+dominos-enter-target-score = أدخل النتيجة المستهدفة
+dominos-option-changed-target-score = تم ضبط النتيجة المستهدفة إلى { $score }.
 
-dominos-set-draw-mode = Mode: { $mode }
-dominos-select-draw-mode = Select mode
-dominos-option-changed-draw-mode = Mode set to { $mode }.
+dominos-set-draw-mode = النمط: { $mode }
+dominos-select-draw-mode = اختر النمط
+dominos-option-changed-draw-mode = تم ضبط النمط إلى { $mode }.
 
-dominos-set-domino-set = Domino set: { $domino_set }
-dominos-select-domino-set = Select domino set
-dominos-option-changed-domino-set = Domino set changed to { $domino_set }.
+dominos-set-domino-set = مجموعة الدومينو: { $domino_set }
+dominos-select-domino-set = اختر مجموعة الدومينو
+dominos-option-changed-domino-set = تم تغيير مجموعة الدومينو إلى { $domino_set }.
 
-dominos-set-spinner = Spinner: { $enabled }
-dominos-option-changed-spinner = Spinner set to { $enabled }.
+dominos-set-spinner = "السبينر" (الدوّارة): { $enabled }
+dominos-option-changed-spinner = تم ضبط السبينر إلى { $enabled }.
 
-dominos-set-opening-rule = Opening rule: { $opening_rule }
-dominos-select-opening-rule = Select opening rule
-dominos-option-changed-opening-rule = Opening rule set to { $opening_rule }.
+dominos-set-opening-rule = قاعدة البدء: { $opening_rule }
+dominos-select-opening-rule = اختر قاعدة البدء
+dominos-option-changed-opening-rule = تم ضبط قاعدة البدء إلى { $opening_rule }.
 
-# Option choice labels
-dominos-mode-draw = Draw
-dominos-mode-block = Block
+# تسميات الخيارات
+dominos-mode-draw = سحب
+dominos-mode-block = حظر
 
-dominos-set-double6 = Double-6
-dominos-set-double9 = Double-9
+dominos-set-double6 = دبل 6
+dominos-set-double9 = دبل 9
 
-dominos-opening-highest-double = Highest double
-dominos-opening-highest-tile = Highest tile
-dominos-opening-set-max-double = Highest set double
-dominos-opening-random-player = Random player
-dominos-opening-round-winner = Previous round winner
+dominos-opening-highest-double = أعلى دبل
+dominos-opening-highest-tile = أعلى قطعة
+dominos-opening-set-max-double = أعلى دبل في المجموعة
+dominos-opening-random-player = لاعب عشوائي
+dominos-opening-round-winner = فائز الجولة السابقة
 
-# Actions
-dominos-draw = Draw
-dominos-knock = Knock
-dominos-view-chain = View chain
-dominos-read-ends = Read ends
-dominos-read-hand = Read hand
-dominos-read-counts = Read counts
+# الإجراءات
+dominos-draw = سحب
+dominos-knock = إغلاق (Knock)
+dominos-view-chain = عرض السلسلة
+dominos-read-ends = قراءة الأطراف
+dominos-read-hand = قراءة اليد
+dominos-read-counts = قراءة العدد
 dominos-play-tile = { $tile }
-dominos-play-tile-at = Play { $tile } to { $side }
-dominos-play-tile-multi = Play { $tile } to { $sides }
-dominos-select-side = Select a side
+dominos-play-tile-at = لعب { $tile } في { $side }
+dominos-play-tile-multi = لعب { $tile } في { $sides }
+dominos-select-side = اختر جانباً
 
-# Board sides
-dominos-side-left = left
-dominos-side-right = right
-dominos-side-up = up
-dominos-side-down = down
+# جوانب اللوحة
+dominos-side-left = اليسار
+dominos-side-right = اليمين
+dominos-side-up = الأعلى
+dominos-side-down = الأسفل
 
-# Validation and disabled reasons
-dominos-draw-only-mode = Drawing is only available in Draw mode.
-dominos-must-play = You already have a playable tile.
-dominos-boneyard-empty = The boneyard is empty.
-dominos-must-draw = You must draw before knocking.
-dominos-illegal-side = That side is not legal for the selected tile.
-dominos-no-play-for-tile = { $tile } cannot be played right now.
-dominos-choose-side-keybind = Choose a side with the direction keybind. Legal sides: { $sides }.
+# التنبيهات والأخطاء
+dominos-draw-only-mode = السحب متاح فقط في نمط السحب.
+dominos-must-play = لديك بالفعل قطعة قابلة للعب.
+dominos-boneyard-empty = المتجر (المجموعة المتبقية) فارغ.
+dominos-must-draw = يجب عليك السحب قبل الإغلاق.
+dominos-illegal-side = هذا الجانب غير قانوني للقطعة المختارة.
+dominos-no-play-for-tile = لا يمكن لعب { $tile } حالياً.
+dominos-choose-side-keybind = اختر جانباً باستخدام مفاتيح الاتجاهات. الجوانب المتاحة: { $sides }.
 
-# Gameplay
-dominos-opening-play = { $player } opens with { $tile }.
-dominos-opening-spinner = { $player } opens a spinner with { $tile }.
-dominos-player-draws = { $player } draws { $count } { $count ->
-    [one] tile
-   *[other] tiles
-}.
-dominos-you-drew-single = You drew { $tile }.
-dominos-you-drew-many = You drew { $count } tiles.
-dominos-you-played = You played { $tile } to { $side }.
-dominos-you-played-drawn = You drew and played { $tile } to { $side }.
-dominos-player-played = { $player } played { $tile } to { $side }.
-dominos-player-knocks = { $player } knocks.
-dominos-round-won = { $player } wins the round and scores { $points } points.
-dominos-round-blocked-tie = The round is blocked. Lowest pip total is { $pips }, but it is tied. No points are scored.
-dominos-round-blocked-winner = The round is blocked. { $team } has the lowest pip total with { $pips } and scores { $points } points.
-dominos-match-tied-continue = Multiple teams reached { $score } points. The game continues until the tie is broken.
-dominos-match-winner = { $team } wins the game with { $score } points.
+# اللعب
+dominos-opening-play = يبدأ { $player } بـ { $tile }.
+dominos-opening-spinner = يفتح { $player } سبينر بـ { $tile }.
+dominos-player-draws = سحب { $player } { $count } { $count ->
+    [one] قطعة
+   *[other] قطعة
+    }.
+dominos-you-drew-single = سحبت { $tile }.
+dominos-you-drew-many = سحبت { $count } قطع.
+dominos-you-played = لعبت { $tile } في { $side }.
+dominos-you-played-drawn = سحبت ولعبت { $tile } في { $side }.
+dominos-player-played = لعب { $player } { $tile } في { $side }.
+dominos-player-knocks = أغلق { $player }.
+dominos-round-won = فاز { $player } بالجولة وسجل { $points } نقطة.
+dominos-round-blocked-tie = الجولة مغلقة (تعادل). إجمالي النقاط الأقل هو { $pips }، ولكنها تعادل. لا تُسجل نقاط.
+dominos-round-blocked-winner = الجولة مغلقة. الفريق { $team } لديه إجمالي النقاط الأقل وهو { $pips } ويسجل { $points } نقطة.
+dominos-match-tied-continue = وصلت فرق متعددة إلى { $score } نقطة. تستمر اللعبة حتى كسر التعادل.
+dominos-match-winner = فاز الفريق { $team } بالمباراة بـ { $score } نقطة.
 
-# Status boxes
-dominos-chain-header = Chain
-dominos-chain-empty = The chain is empty.
-dominos-chain-center = Center: { $tile }
-dominos-branch-empty = no tiles
-dominos-chain-branch = { $side }: { $tiles }. Open end { $open_end }.
-dominos-boneyard-count = Boneyard: { $count } tiles remaining.
+# حالة اللوحة
+dominos-chain-header = السلسلة
+dominos-chain-empty = السلسلة فارغة.
+dominos-chain-center = المركز: { $tile }
+dominos-branch-empty = لا توجد قطع
+dominos-chain-branch = { $side }: { $tiles }. الطرف المفتوح { $open_end }.
+dominos-boneyard-count = المتجر: تبقى { $count } قطعة.
 dominos-end-info = { $side } { $value }
 
-dominos-hand-header = Your hand
-dominos-hand-line = { $tile } worth { $points } points.
-dominos-hand-line-playable = { $tile } worth { $points } points. Playable on { $sides }.
-dominos-hand-total = Total pips in hand: { $pips }.
-dominos-player-count = { $player } has { $count } tiles
-dominos-no-other-players = No other players.
+# اليد
+dominos-hand-header = يدك
+dominos-hand-line = { $tile } بقيمة { $points } نقطة.
+dominos-hand-line-playable = { $tile } بقيمة { $points } نقطة. قابلة للعب على { $sides }.
+dominos-hand-total = إجمالي نقاط اليد: { $pips }.
+dominos-player-count = لدى { $player } { $count } قطعة
+dominos-no-other-players = لا يوجد لاعبون آخرون.
 
-# End screen
+# شاشة النهاية
 dominos-line-format = { $rank }. { $player }: { $points }

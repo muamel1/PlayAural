@@ -1,38 +1,58 @@
-game-name-threes = Threes
+game-name-threes = الثلاثات (Threes)
 
-threes-roll = Roll the dice
-threes-bank = Bank and end turn
-threes-check-hand = Check your dice
+threes-roll = رمي النرد
+threes-bank = تأمين النقاط وإنهاء الدور
+threes-check-hand = التحقق من أحجار النرد
 
-threes-you-rolled = You rolled: { $dice }
-threes-player-rolled = { $player } rolled: { $dice }
-threes-must-keep = You must keep at least one die before rolling again.
+threes-you-rolled = رميت: { $dice }
+threes-player-rolled = رمى { $player }: { $dice }
+threes-must-keep = يجب عليك الاحتفاظ بحجر نرد واحد على الأقل قبل الرمي مجدداً.
 
-threes-no-dice-yet = You haven't rolled yet.
-threes-your-dice = Your dice: { $dice }
-threes-dice-locked = locked
-threes-dice-kept = kept
+threes-no-dice-yet = لم تقم بالرمي بعد.
+threes-your-dice = أحجار النرد الخاصة بك: { $dice }
+threes-dice-locked = مقفل
+threes-dice-kept = محتفظ به
 threes-score-pair = { $player }: { $score }
 
-threes-you-scored = You scored { $score } points this turn.
-threes-scored = { $player } scored { $score } points this turn.
-threes-you-shot-moon = Shooting the moon! You scored -30 points!
-threes-shot-moon = { $player } shot the moon and scored -30 points!
+threes-you-scored = أحرزت { $score } { $score ->
+    [one] نقطة
+    [two] نقطتين
+    [few] نقاط
+    *[other] نقطة
+    } في هذا الدور.
+threes-scored = أحرز { $player } { $score } { $score ->
+    [one] نقطة
+    [two] نقطتين
+    [few] نقاط
+    *[other] نقطة
+    } في هذا الدور.
+threes-you-shot-moon = لقد بلغت القمر! سجلت -30 نقطة!
+threes-shot-moon = بلغ { $player } القمر وسجل -30 نقطة!
 
-threes-round-start = Round { $round } of { $total }.
-threes-round-scores = Round { $round } scores: { $scores }
+threes-round-start = الجولة { $round } من أصل { $total }.
+threes-round-scores = نتائج الجولة { $round }: { $scores }
 
-threes-winner = { $player } wins with { $score } points!
-threes-tie = { $players } tie with { $score } points!
+threes-winner = الفائز هو { $player } برصيد { $score } { $score ->
+    [one] نقطة
+    [two] نقطتين
+    [few] نقاط
+    *[other] نقطة
+    }!
+threes-tie = تعادل { $players } برصيد { $score } { $score ->
+    [one] نقطة
+    [two] نقطتين
+    [few] نقاط
+    *[other] نقطة
+    }!
 
-threes-set-rounds = Rounds: { $rounds }
-threes-enter-rounds = Enter number of rounds:
-threes-option-changed-rounds = Number of rounds set to { $rounds }.
+threes-set-rounds = عدد الجولات: { $rounds }
+threes-enter-rounds = أدخل عدد الجولات:
+threes-option-changed-rounds = تم ضبط عدد الجولات على { $rounds }.
 
-threes-must-bank = You must bank now.
-threes-roll-first = You need to roll first.
-threes-keep-all-first = Keep all dice first to bank.
-threes-last-die = This is your last die.
+threes-must-bank = يجب عليك تأمين نقاطك الآن.
+threes-roll-first = يجب عليك رمي النرد أولاً.
+threes-keep-all-first = يجب الاحتفاظ بجميع الأحجار أولاً لتأمين النقاط.
+threes-last-die = هذا هو حجر النرد الأخير.
 
 threes-line-format = { $rank }. { $player }: { $points }
 threes-dice-format-status = { $value } ({ $status })

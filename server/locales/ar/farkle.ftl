@@ -1,71 +1,71 @@
-game-name-farkle = Farkle
+game-name-farkle = فاركل (Farkle)
 
-farkle-roll = Roll { $count } { $count ->
-    [one] die
-   *[other] dice
-}
-farkle-bank = Bank { $points } points
+# الإجراءات
+farkle-roll = رمي النرد ({ $count })
+farkle-bank = تثبيت النقاط (Bank)
 
-farkle-take-single-one = Single 1 for { $points } points
-farkle-take-single-five = Single 5 for { $points } points
-farkle-take-three-kind = Three { $number }s for { $points } points
-farkle-take-four-kind = Four { $number }s for { $points } points
-farkle-take-five-kind = Five { $number }s for { $points } points
-farkle-take-six-kind = Six { $number }s for { $points } points
-farkle-take-small-straight = Small Straight for { $points } points
-farkle-take-large-straight = Large Straight for { $points } points
-farkle-take-three-pairs = Three pairs for { $points } points
-farkle-take-double-triplets = Double triplets for { $points } points
-farkle-take-full-house = Full house for { $points } points
+# المجموعات - صياغة رسمية
+farkle-take-single-one = رقم (1) منفرد بـ { $points } نقطة
+farkle-take-single-five = رقم (5) منفرد بـ { $points } نقطة
+farkle-take-three-kind = ثلاث قطع من رقم { $number } بـ { $points } نقطة
+farkle-take-four-kind = أربع قطع من رقم { $number } بـ { $points } نقطة
+farkle-take-five-kind = خمس قطع من رقم { $number } بـ { $points } نقطة
+farkle-take-six-kind = ست قطع من رقم { $number } بـ { $points } نقطة
+farkle-take-small-straight = متتالية صغيرة بـ { $points } نقطة
+farkle-take-large-straight = متتالية كبيرة بـ { $points } نقطة
+farkle-take-three-pairs = ثلاثة أزواج بـ { $points } نقطة
+farkle-take-double-triplets = مجموعتان ثلاثيتان بـ { $points } نقطة
+farkle-take-full-house = "فول هاوس" بـ { $points } نقطة
 
-farkle-rolls = { $player } rolls { $count } { $count ->
-    [one] die
-   *[other] dice
-}...
-farkle-roll-result = { $dice }
-farkle-farkle = FARKLE! { $player } loses { $points } points
-farkle-takes-combo = { $player } takes { $combo } for { $points } points
-farkle-you-take-combo = You take { $combo } for { $points } points
-farkle-hot-dice = Hot dice!
-farkle-banks = { $player } banks { $points } points for a total of { $total }
-farkle-winner = { $player } wins with { $score } points!
-farkle-winners-tie = We have a tie! Winners: { $players }
+# أحداث اللعب
+farkle-rolls = رمى { $player } { $count } نرد...
+farkle-roll-result = النرد: { $dice }
+farkle-farkle = "فاركل"! خسر { $player } { $points } نقطة.
+farkle-takes-combo = اختار { $player } { $combo } مقابل { $points } نقطة.
+farkle-you-take-combo = اخترت { $combo } مقابل { $points } نقطة.
+farkle-hot-dice = نرد ساخن!
+farkle-banks = ثبت { $player } { $points } نقطة ليصبح إجمالي رصيده { $total }.
+farkle-winner = فاز { $player } بـ { $score } نقطة!
+farkle-winners-tie = تعادل! الفائزون: { $players }.
 
-farkle-turn-score = { $player } has { $points } points this turn.
-farkle-no-turn = No one is currently taking a turn.
+farkle-turn-score = { $player } لديه { $points } نقطة في هذا الدور.
+farkle-no-turn = لا يوجد لاعب في دور حالياً.
 
-farkle-set-target-score = Target score: { $score }
-farkle-enter-target-score = Enter target score (500-5000):
-farkle-option-changed-target = Target score set to { $score }.
+# الخيارات
+farkle-set-target-score = النتيجة المستهدفة للفوز: { $score }
+farkle-enter-target-score = أدخل النتيجة المستهدفة للفوز (500-5000):
+farkle-option-changed-target = تم ضبط النتيجة المستهدفة إلى { $score }.
 
-farkle-set-entrance-score = Minimal entrance score: { $score }
-farkle-enter-entrance-score = Enter minimal entrance score (0-5000):
-farkle-option-changed-entrance = Minimal entrance score set to { $score }.
+farkle-set-entrance-score = الحد الأدنى لنقاط الدخول: { $score }
+farkle-enter-entrance-score = أدخل الحد الأدنى لنقاط الدخول (0-5000):
+farkle-option-changed-entrance = تم ضبط الحد الأدنى لنقاط الدخول إلى { $score }.
 
-farkle-set-bank-score = Minimal bank score: { $score }
-farkle-enter-bank-score = Enter minimal bank score (0-5000):
-farkle-option-changed-bank = Minimal bank score set to { $score }.
+farkle-set-bank-score = الحد الأدنى لتثبيت النقاط: { $score }
+farkle-enter-bank-score = أدخل الحد الأدنى لتثبيت النقاط (0-5000):
+farkle-option-changed-bank = تم ضبط الحد الأدنى لتثبيت النقاط إلى { $score }.
 
-farkle-must-take-combo = You must take a scoring combination first.
-farkle-cannot-bank = You cannot bank right now.
-farkle-must-reach-entrance-score = You must reach the minimal entrance score to bank your first points.
-farkle-must-reach-bank-score = You must reach the minimal bank score to bank your points.
+# الأخطاء
+farkle-must-take-combo = يجب عليك اختيار مجموعة مسجلة للنقاط أولاً.
+farkle-cannot-bank = لا يمكنك تثبيت النقاط الآن.
+farkle-must-reach-entrance-score = يجب أن تصل للحد الأدنى لنقاط الدخول لتثبيت نقاطك الأولى.
+farkle-must-reach-bank-score = يجب أن تصل للحد الأدنى لتثبيت النقاط لتثبيت نقاطك.
 
-farkle-combo-single-1 = Single 1
-farkle-combo-single-5 = Single 5
-farkle-combo-three-kind = Three { $number }s
-farkle-combo-four-kind = Four { $number }s
-farkle-combo-five-kind = Five { $number }s
-farkle-combo-six-kind = Six { $number }s
-farkle-combo-small-straight = Small Straight
-farkle-combo-large-straight = Large Straight
-farkle-combo-three-pairs = Three pairs
-farkle-combo-double-triplets = Double triplets
-farkle-combo-full-house = Full house
+# أسماء المجموعات للواجهة
+farkle-combo-single-1 = رقم (1) منفرد
+farkle-combo-single-5 = رقم (5) منفرد
+farkle-combo-three-kind = ثلاث قطع من { $number }
+farkle-combo-four-kind = أربع قطع من { $number }
+farkle-combo-five-kind = خمس قطع من { $number }
+farkle-combo-six-kind = ست قطع من { $number }
+farkle-combo-small-straight = متتالية صغيرة
+farkle-combo-large-straight = متتالية كبيرة
+farkle-combo-three-pairs = ثلاثة أزواج
+farkle-combo-double-triplets = مجموعتان ثلاثيتان
+farkle-combo-full-house = فول هاوس
 
 farkle-line-format = { $rank }. { $player }: { $points }
-farkle-combo-fallback = { $combo } for { $points } points
+farkle-combo-fallback = { $combo } مقابل { $points } نقطة
 
-farkle-check-turn-score = Check turn score
-farkle-roll-label = Roll dice
-farkle-bank-label = Bank points
+farkle-check-turn-score = فحص نقاط الدور
+farkle-roll-label = رمي النرد
+farkle-bank-label = تثبيت النقاط

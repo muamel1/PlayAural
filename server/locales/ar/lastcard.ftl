@@ -1,209 +1,209 @@
-game-name-lastcard = Last Card
+game-name-lastcard = البطاقة الأخيرة
 
-# Options
-lastcard-set-winning-score = Winning score: { $score }
-lastcard-enter-winning-score = Enter winning score
-lastcard-option-changed-winning-score = Winning score set to { $score }.
+# الخيارات
+lastcard-set-winning-score = النتيجة المستهدفة للفوز: { $score }
+lastcard-enter-winning-score = أدخل النتيجة المستهدفة للفوز
+lastcard-option-changed-winning-score = تم ضبط النتيجة المستهدفة للفوز إلى { $score }.
 
-lastcard-set-hand-size = Hand size: { $count }
-lastcard-enter-hand-size = Enter hand size
-lastcard-option-changed-hand-size = Hand size set to { $count }.
+lastcard-set-hand-size = حجم اليد: { $count }
+lastcard-enter-hand-size = أدخل حجم اليد
+lastcard-option-changed-hand-size = تم ضبط حجم اليد إلى { $count }.
 
-lastcard-set-turn-timer = Turn timer: { $mode }
-lastcard-select-turn-timer = Select turn timer
-lastcard-option-changed-turn-timer = Turn timer set to { $mode }.
+lastcard-set-turn-timer = مؤقت الدور: { $mode }
+lastcard-select-turn-timer = اختر مؤقت الدور
+lastcard-option-changed-turn-timer = تم ضبط مؤقت الدور إلى { $mode }.
 
-lastcard-set-draw-until-playable = Draw until playable: { $enabled }
-lastcard-option-changed-draw-until-playable = Draw until playable set to { $enabled }.
+lastcard-set-draw-until-playable = السحب حتى العثور على بطاقة قابلة للعب: { $enabled }
+lastcard-option-changed-draw-until-playable = تم ضبط السحب حتى العثور على بطاقة قابلة للعب إلى { $enabled }.
 
-lastcard-set-draw-limit = Draw limit: { $count }
-lastcard-enter-draw-limit = Enter draw limit (0 = unlimited)
-lastcard-option-changed-draw-limit = Draw limit set to { $count }.
+lastcard-set-draw-limit = حد السحب: { $count }
+lastcard-enter-draw-limit = أدخل حد السحب (0 = غير محدود)
+lastcard-option-changed-draw-limit = تم ضبط حد السحب إلى { $count }.
 
-lastcard-set-stacking = Stacking: { $mode }
-lastcard-select-stacking = Select stacking mode
-lastcard-option-changed-stacking = Stacking set to { $mode }.
+lastcard-set-stacking = التكديس (Stacking): { $mode }
+lastcard-select-stacking = اختر نمط التكديس
+lastcard-option-changed-stacking = تم ضبط التكديس إلى { $mode }.
 
-lastcard-set-skip-rule = Skip card: { $mode }
-lastcard-select-skip-rule = Select skip card behavior
-lastcard-option-changed-skip-rule = Skip card set to { $mode }.
+lastcard-set-skip-rule = بطاقة التخطي: { $mode }
+lastcard-select-skip-rule = اختر سلوك بطاقة التخطي
+lastcard-option-changed-skip-rule = تم ضبط سلوك بطاقة التخطي إلى { $mode }.
 
-lastcard-set-reverse-2p = Reverse in 2-player: { $mode }
-lastcard-select-reverse-2p = Select reverse behavior in 2-player
-lastcard-option-changed-reverse-2p = Reverse in 2-player set to { $mode }.
+lastcard-set-reverse-2p = عكس الاتجاه في نمط لاعبين: { $mode }
+lastcard-select-reverse-2p = اختر سلوك عكس الاتجاه في نمط لاعبين
+lastcard-option-changed-reverse-2p = تم ضبط عكس الاتجاه في نمط لاعبين إلى { $mode }.
 
-lastcard-set-zero-rule = Zero card rule: { $mode }
-lastcard-select-zero-rule = Select zero card rule
-lastcard-option-changed-zero-rule = Zero card rule set to { $mode }.
+lastcard-set-zero-rule = قاعدة بطاقة الصفر: { $mode }
+lastcard-select-zero-rule = اختر قاعدة بطاقة الصفر
+lastcard-option-changed-zero-rule = تم ضبط قاعدة بطاقة الصفر إلى { $mode }.
 
-lastcard-set-seven-rule = Seven card rule: { $mode }
-lastcard-select-seven-rule = Select seven card rule
-lastcard-option-changed-seven-rule = Seven card rule set to { $mode }.
+lastcard-set-seven-rule = قاعدة بطاقة السبعة: { $mode }
+lastcard-select-seven-rule = اختر قاعدة بطاقة السبعة
+lastcard-option-changed-seven-rule = تم ضبط قاعدة بطاقة السبعة إلى { $mode }.
 
-lastcard-set-jump-in = Jump-in: { $enabled }
-lastcard-option-changed-jump-in = Jump-in set to { $enabled }.
+lastcard-set-jump-in = القفز (Jump-in): { $enabled }
+lastcard-option-changed-jump-in = تم ضبط القفز إلى { $enabled }.
 
-lastcard-set-force-play = Force play: { $enabled }
-lastcard-option-changed-force-play = Force play set to { $enabled }.
+lastcard-set-force-play = اللعب الإجباري: { $enabled }
+lastcard-option-changed-force-play = تم ضبط اللعب الإجباري إلى { $enabled }.
 
-lastcard-set-callout = Last card callout: { $enabled }
-lastcard-option-changed-callout = Last card callout set to { $enabled }.
+lastcard-set-callout = نداء "البطاقة الأخيرة": { $enabled }
+lastcard-option-changed-callout = تم ضبط نداء البطاقة الأخيرة إلى { $enabled }.
 
-lastcard-set-challenge-wd4 = Challenge Wild Draw Four: { $enabled }
-lastcard-option-changed-challenge-wd4 = Challenge Wild Draw Four set to { $enabled }.
+lastcard-set-challenge-wd4 = تحدي بطاقة "اسحب أربع" (Wild Draw Four): { $enabled }
+lastcard-option-changed-challenge-wd4 = تم ضبط تحدي بطاقة اسحب أربع إلى { $enabled }.
 
-lastcard-set-multiple-play = Multiple card play: { $enabled }
-lastcard-option-changed-multiple-play = Multiple card play set to { $enabled }.
+lastcard-set-multiple-play = لعب بطاقات متعددة: { $enabled }
+lastcard-option-changed-multiple-play = تم ضبط لعب بطاقات متعددة إلى { $enabled }.
 
-lastcard-set-scoring = Scoring mode: { $mode }
-lastcard-select-scoring = Select scoring mode
-lastcard-option-changed-scoring = Scoring mode set to { $mode }.
+lastcard-set-scoring = نمط التسجيل: { $mode }
+lastcard-select-scoring = اختر نمط التسجيل
+lastcard-option-changed-scoring = تم ضبط نمط التسجيل إلى { $mode }.
 
-lastcard-set-buzzer = Buzzer: { $enabled }
-lastcard-option-changed-buzzer = Buzzer set to { $enabled }.
+lastcard-set-buzzer = الجرس (Buzzer): { $enabled }
+lastcard-option-changed-buzzer = تم ضبط الجرس إلى { $enabled }.
 
-lastcard-set-interrupt-timer = Reaction timer: { $seconds } seconds
-lastcard-enter-interrupt-timer = Enter reaction timer (seconds)
-lastcard-option-changed-interrupt-timer = Reaction timer set to { $seconds } seconds.
+lastcard-set-interrupt-timer = مؤقت التفاعل: { $seconds } ثانية
+lastcard-enter-interrupt-timer = أدخل مؤقت التفاعل (بالثواني)
+lastcard-option-changed-interrupt-timer = تم ضبط مؤقت التفاعل إلى { $seconds } ثانية.
 
-lastcard-set-max-hand = Max hand size: { $count }
-lastcard-enter-max-hand = Enter max hand size (0 = unlimited)
-lastcard-option-changed-max-hand = Max hand size set to { $count }.
+lastcard-set-max-hand = الحد الأقصى لحجم اليد: { $count }
+lastcard-enter-max-hand = أدخل الحد الأقصى لحجم اليد (0 = غير محدود)
+lastcard-option-changed-max-hand = تم ضبط الحد الأقصى لحجم اليد إلى { $count }.
 
-# Option choice labels
-lastcard-timer-5 = 5 seconds
-lastcard-timer-10 = 10 seconds
-lastcard-timer-15 = 15 seconds
-lastcard-timer-20 = 20 seconds
-lastcard-timer-30 = 30 seconds
-lastcard-timer-45 = 45 seconds
-lastcard-timer-60 = 60 seconds
-lastcard-timer-90 = 90 seconds
-lastcard-timer-unlimited = Unlimited
+# ملصقات الخيارات
+lastcard-timer-5 = 5 ثوانٍ
+lastcard-timer-10 = 10 ثوانٍ
+lastcard-timer-15 = 15 ثانية
+lastcard-timer-20 = 20 ثانية
+lastcard-timer-30 = 30 ثانية
+lastcard-timer-45 = 45 ثانية
+lastcard-timer-60 = 60 ثانية
+lastcard-timer-90 = 90 ثانية
+lastcard-timer-unlimited = غير محدود
 
-lastcard-stacking-off = Off
-lastcard-stacking-standard = Standard
-lastcard-stacking-progressive = Progressive
+lastcard-stacking-off = إيقاف
+lastcard-stacking-standard = قياسي
+lastcard-stacking-progressive = تصاعدي
 
-lastcard-skip-next = Skip next player
-lastcard-skip-all = Skip all, play again
+lastcard-skip-next = تخطي اللاعب التالي
+lastcard-skip-all = تخطي الجميع، واللعب مجدداً
 
-lastcard-reverse-2p-reverse = Reverse direction
-lastcard-reverse-2p-skip = Acts as skip
+lastcard-reverse-2p-reverse = عكس الاتجاه
+lastcard-reverse-2p-skip = تعمل كبطاقة تخطي
 
-lastcard-zero-none = None
-lastcard-zero-rotate = Rotate all hands
+lastcard-zero-none = لا شيء
+lastcard-zero-rotate = تدوير جميع الأيدي
 
-lastcard-seven-none = None
-lastcard-seven-swap = Swap hand with opponent
+lastcard-seven-none = لا شيء
+lastcard-seven-swap = تبادل اليد مع الخصم
 
-lastcard-scoring-classic = Classic (winner gains)
-lastcard-scoring-negative = Negative (losers gain)
+lastcard-scoring-classic = كلاسيكي (الفائز يربح)
+lastcard-scoring-negative = سلبي (الخاسرون يربحون)
 
-# Actions
-lastcard-draw = Draw
-lastcard-pass = Pass
-lastcard-buzzer = Buzzer
-lastcard-challenge = Challenge
-lastcard-accept-draw = Accept draw
-lastcard-jump-in = Jump in
-lastcard-read-hand = Read hand
-lastcard-read-top = Read top card
-lastcard-read-counts = Read card counts
-lastcard-check-turn-timer = Check turn timer
-lastcard-read-draw-penalty = Check draw penalty
+# الإجراءات
+lastcard-draw = سحب
+lastcard-pass = تمرير
+lastcard-buzzer = جرس
+lastcard-challenge = تحدي
+lastcard-accept-draw = قبول السحب
+lastcard-jump-in = قفز (Jump-in)
+lastcard-read-hand = قراءة اليد
+lastcard-read-top = قراءة الورقة العلوية
+lastcard-read-counts = قراءة عدد الأوراق
+lastcard-check-turn-timer = فحص مؤقت الدور
+lastcard-read-draw-penalty = فحص عقوبة السحب
 
-# Colors
-lastcard-color-red = Red
-lastcard-color-blue = Blue
-lastcard-color-green = Green
-lastcard-color-yellow = Yellow
+# الألوان
+lastcard-color-red = أحمر
+lastcard-color-blue = أزرق
+lastcard-color-green = أخضر
+lastcard-color-yellow = أصفر
 
-# Card names
-lastcard-card-wild = Wild
-lastcard-card-wild-draw-four = Wild Draw Four
-lastcard-card-skip = { $color } Skip
-lastcard-card-reverse = { $color } Reverse
-lastcard-card-draw-two = { $color } Draw Two
+# أسماء البطاقات
+lastcard-card-wild = جوكر
+lastcard-card-wild-draw-four = جوكر سحب 4
+lastcard-card-skip = { $color } تخطي
+lastcard-card-reverse = { $color } عكس
+lastcard-card-draw-two = { $color } سحب 2
 lastcard-card-number = { $color } { $number }
 
-# Gameplay messages
-lastcard-new-hand = Round { $round }.
-lastcard-start-card = Starting card: { $card }.
-lastcard-dealt-cards = Everyone is dealt { $cards } cards.
-lastcard-no-top = No top card.
-lastcard-no-players = No players.
-lastcard-deck-count = deck { $count }
+# أحداث اللعب
+lastcard-new-hand = الجولة { $round }.
+lastcard-start-card = الورقة البادئة: { $card }.
+lastcard-dealt-cards = تم توزيع { $cards } ورقة للجميع.
+lastcard-no-top = لا توجد ورقة علوية.
+lastcard-no-players = لا يوجد لاعبون.
+lastcard-deck-count = مجموعة { $count }
 
-lastcard-player-plays = { $player } plays { $card }.
-lastcard-player-draws-one = { $player } draws a card.
-lastcard-player-draws-many = { $player } draws { $count } cards.
-lastcard-player-passes = { $player } passes.
+lastcard-player-plays = لعب { $player } { $card }.
+lastcard-player-draws-one = سحب { $player } ورقة.
+lastcard-player-draws-many = سحب { $player } { $count } أوراق.
+lastcard-player-passes = مرر { $player }.
 
-lastcard-color-chosen = Color is now { $color }.
+lastcard-color-chosen = اللون المختار هو { $color }.
 
-lastcard-your-hand = { $count } cards: { $cards }
-lastcard-hand-empty = Your hand is empty.
+lastcard-your-hand = { $count } ورقة: { $cards }
+lastcard-hand-empty = يدك فارغة.
 
-lastcard-forced-draw = { $player } draws { $count } cards from the stack.
+lastcard-forced-draw = سحب { $player } { $count } أوراق من المجموعة.
 
-# Buzzer / Last Card callout
-lastcard-you-called = You called Last Card!
-lastcard-player-called = { $player } called Last Card!
-lastcard-already-called = They already called it.
-lastcard-caught = { $catcher } caught { $target }! { $target } draws 2 penalty cards.
+# نداء البطاقة الأخيرة
+lastcard-you-called = ناديت "البطاقة الأخيرة"!
+lastcard-player-called = نادى { $player } "البطاقة الأخيرة"!
+lastcard-already-called = تم النداء بالفعل.
+lastcard-caught = تم كشف { $target } بواسطة { $catcher }! سحب { $target } بطاقتي عقوبة.
 
-# Challenge
-lastcard-can-challenge = You can challenge or accept the draw.
-lastcard-challenges-wd4 = { $player } challenges the Wild Draw Four!
-lastcard-challenge-success = Challenge succeeds! { $player } drew illegally.
-lastcard-challenge-fail = Challenge fails! { $player } draws 6 cards.
-lastcard-no-matching-card = You don't have a matching card.
+# تحدي
+lastcard-can-challenge = يمكنك التحدي أو قبول السحب.
+lastcard-challenges-wd4 = يتحدى { $player } "جوكر سحب 4"!
+lastcard-challenge-success = نجح التحدي! سحب { $player } بطاقات بشكل غير قانوني.
+lastcard-challenge-fail = فشل التحدي! يسحب { $player } 6 بطاقات.
+lastcard-no-matching-card = لا تملك بطاقة مطابقة.
 
-# Jump-in
-lastcard-jumped-in = { $player } jumped in!
+# قفز
+lastcard-jumped-in = قفز { $player }!
 
-# Seven-O
-lastcard-swapped-hands = { $player1 } swaps hands with { $player2 }.
-lastcard-hands-rotated = All hands have been rotated!
+# التبديل
+lastcard-swapped-hands = تبادل { $player1 } و { $player2 } أيديهما.
+lastcard-hands-rotated = تم تدوير جميع الأيدي!
 
-# Scoring
-lastcard-round-winner = { $player } wins the round and gains { $points } points.
-lastcard-round-end-negative = Round over. Points added to each player.
-lastcard-round-deadlock = No one can play or draw. The round ends in a draw.
-lastcard-game-winner = { $player } wins with { $score } points!
+# التسجيل
+lastcard-round-winner = فاز { $player } بالجولة وحصل على { $points } نقطة.
+lastcard-round-end-negative = انتهت الجولة. تمت إضافة النقاط لكل لاعب.
+lastcard-round-deadlock = لا يمكن لأحد اللعب أو السحب. انتهت الجولة بالتعادل.
+lastcard-game-winner = فاز { $player } بالمباراة بـ { $score } نقطة!
 lastcard-line-format = { $rank }. { $player }: { $score }
 
-# Timer
-lastcard-timer-disabled = Turn timer is disabled.
-lastcard-timer-remaining = { $seconds } seconds remaining.
+# المؤقت
+lastcard-timer-disabled = مؤقت الدور معطل.
+lastcard-timer-remaining = متبقي { $seconds } ثانية.
 
-# Multi-card play
-lastcard-card-selected = { $card } (selected)
-lastcard-play-none = Select cards to play.
-lastcard-play-one = Play { $card }
-lastcard-play-multi = Play { $count } cards
-lastcard-play-invalid = Invalid selection.
-lastcard-multi-no-cards = No cards selected.
-lastcard-multi-same-rank = All selected cards must have the same value.
-lastcard-multi-no-wilds = Wild cards must be played one at a time.
-lastcard-multi-not-playable = Those cards cannot be played right now.
-lastcard-player-plays-multi = { $player } plays { $count } cards: { $cards }.
+# لعب بطاقات متعددة
+lastcard-card-selected = { $card } (مختار)
+lastcard-play-none = اختر بطاقات للعب.
+lastcard-play-one = لعب { $card }
+lastcard-play-multi = لعب { $count } بطاقات
+lastcard-play-invalid = اختيار غير صالح.
+lastcard-multi-no-cards = لم يتم اختيار أي بطاقات.
+lastcard-multi-same-rank = يجب أن تكون جميع البطاقات المختارة ذات قيمة متساوية.
+lastcard-multi-no-wilds = يجب لعب البطاقات الجوكر واحدة تلو الأخرى.
+lastcard-multi-not-playable = لا يمكن لعب هذه البطاقات الآن.
+lastcard-player-plays-multi = لعب { $player } { $count } بطاقات: { $cards }.
 
-# Hand sorting
-lastcard-cycle-sort = Cycle hand sort
-lastcard-sort-by-color = By color
-lastcard-sort-by-rank = By rank
-lastcard-sort-none = Unsorted
-lastcard-sort-changed = Hand sort: { $mode }.
+# ترتيب اليد
+lastcard-cycle-sort = تدوير ترتيب اليد
+lastcard-sort-by-color = حسب اللون
+lastcard-sort-by-rank = حسب الرتبة
+lastcard-sort-none = بدون ترتيب
+lastcard-sort-changed = ترتيب اليد: { $mode }.
 
-# Draw penalty
-lastcard-draw-penalty-active = Current draw penalty: { $count } cards.
-lastcard-draw-penalty-none = No draw penalty active.
+# عقوبة السحب
+lastcard-draw-penalty-active = عقوبة السحب الحالية: { $count } بطاقات.
+lastcard-draw-penalty-none = لا توجد عقوبة سحب نشطة.
 
-# Validation errors
-lastcard-error-draw-until-playable-conflicts-force-play = Draw Until Playable cannot be combined with Force Play.
-lastcard-error-draw-limit-requires-draw-until-playable = Draw Limit only works when Draw Until Playable is enabled.
-lastcard-error-buzzer-requires-last-card-callout = Buzzer only works when Last Card Callout is enabled.
-lastcard-error-too-many-cards = Too many cards needed: { $players } players × { $hand_size } cards exceeds the 108-card deck.
-lastcard-error-hand-exceeds-max = Hand size ({ $hand_size }) cannot exceed the maximum hand size ({ $max_hand }).
+# أخطاء التحقق
+lastcard-error-draw-until-playable-conflicts-force-play = لا يمكن الجمع بين السحب حتى العثور على بطاقة قابلة للعب واللعب الإجباري.
+lastcard-error-draw-limit-requires-draw-until-playable = يعمل حد السحب فقط عند تفعيل السحب حتى العثور على بطاقة قابلة للعب.
+lastcard-error-buzzer-requires-last-card-callout = يعمل الجرس فقط عند تفعيل نداء البطاقة الأخيرة.
+lastcard-error-too-many-cards = الحاجة لعدد كبير من البطاقات: { $players } لاعبين × { $hand_size } بطاقة يتجاوز سعة مجموعة البطاقات (108 بطاقة).
+lastcard-error-hand-exceeds-max = حجم اليد ({ $hand_size }) لا يمكن أن يتجاوز الحد الأقصى لحجم اليد ({ $max_hand }).

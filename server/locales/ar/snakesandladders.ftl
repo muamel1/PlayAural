@@ -1,18 +1,18 @@
-game-name-snakesandladders = Snakes and Ladders
-game-snakesandladders-desc = The classic race to 100! Climb ladders and avoid snakes.
+game-name-snakesandladders = السلم والثعبان
+game-snakesandladders-desc = السباق الكلاسيكي نحو المربع 100! تسلق السلالم واحذر من الثعابين.
 
-snakes-roll = Roll Dice
+snakes-roll = رمي النرد
 
-snakes-turn = { $player }'s turn. Square { $position }.
-snakes-roll-result = { $player } rolled a { $roll }.
-snakes-move = { $player } moved to square { $position }.
-snakes-ladder = { $player } climbed a ladder! Moved from { $start } to { $end }.
-snakes-snake = Oh no! { $player } was bitten by a snake! Slid down from { $start } to { $end }.
-snakes-bounce = { $player } passed 100 and bounced back to { $position }.
-snakes-win = { $player } wins!
+snakes-turn = دور { $player }. المربع { $position }.
+snakes-roll-result = حصل { $player } على { $roll } في رمية النرد.
+snakes-move = انتقل { $player } إلى المربع { $position }.
+snakes-ladder = تسلق { $player } السلم! انتقل من { $start } إلى { $end }.
+snakes-snake = يا للأسف! لدغ الثعبان { $player }! انزلق من { $start } إلى { $end }.
+snakes-bounce = تجاوز { $player } المربع 100 وارتد عائداً إلى { $position }.
+snakes-win = { $player } يفوز بالسباق!
 
-check-positions = Check positions
-snakes-positions-header = Current Positions:
+check-positions = التحقق من المواقع
+snakes-positions-header = المواقع الحالية:
 
 
-snakes-end-score = { $rank }. { $player }: Square { $position }
+snakes-end-score = { $rank }. { $player }: المربع { $position }

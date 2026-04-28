@@ -1,72 +1,82 @@
-game-name-pusoydos = Pusoy Dos
+game-name-pusoydos = بوسوي دوس (الاثنان الكبيران)
 
-pusoydos-set-min-entry = Minimum Entry Coins: { $count }
-pusoydos-enter-min-entry = Enter minimum entry coins (min: 100, max: 100000):
-pusoydos-option-changed-min-entry = Minimum entry coins set to { $count }.
+pusoydos-set-min-entry = الحد الأدنى لعملات الدخول: { $count }
+pusoydos-enter-min-entry = أدخل الحد الأدنى لعملات الدخول (الأدنى: 100، الأقصى: 100000):
+pusoydos-option-changed-min-entry = تم ضبط الحد الأدنى لعملات الدخول على { $count }.
 
-pusoydos-set-turn-timer = Turn Timer: { $choice }
-pusoydos-select-turn-timer = Select turn timer duration:
-pusoydos-option-changed-turn-timer = Turn timer set to { $choice }.
+pusoydos-set-turn-timer = مؤقت الدور: { $choice }
+pusoydos-select-turn-timer = اختر مدة مؤقت الدور:
+pusoydos-option-changed-turn-timer = تم ضبط مؤقت الدور على { $choice }.
 
-pusoydos-timer-10 = 10 Seconds
-pusoydos-timer-15 = 15 Seconds
-pusoydos-timer-20 = 20 Seconds
-pusoydos-timer-30 = 30 Seconds
-pusoydos-timer-45 = 45 Seconds
-pusoydos-timer-60 = 60 Seconds
-pusoydos-timer-90 = 90 Seconds
-pusoydos-timer-unlimited = Unlimited
+pusoydos-timer-10 = 10 ثوانٍ
+pusoydos-timer-15 = 15 ثانية
+pusoydos-timer-20 = 20 ثانية
+pusoydos-timer-30 = 30 ثانية
+pusoydos-timer-45 = 45 ثانية
+pusoydos-timer-60 = 60 ثانية
+pusoydos-timer-90 = 90 ثانية
+pusoydos-timer-unlimited = غير محدود
 
-pusoydos-set-penalty = Penalty Multiplier: { $count }
-pusoydos-enter-penalty = Enter penalty multiplier (min: 1, max: 500):
-pusoydos-option-changed-penalty = Penalty multiplier set to { $count }.
+pusoydos-set-penalty = مضاعف العقوبة: { $count }
+pusoydos-enter-penalty = أدخل مضاعف العقوبة (الأدنى: 1، الأقصى: 500):
+pusoydos-option-changed-penalty = تم ضبط مضاعف العقوبة على { $count }.
 
-pusoydos-game-start = Starting Pusoy Dos!
-pusoydos-new-hand = Round { $round }
-pusoydos-dealt = Dealt 13 cards: { $cards }.
+pusoydos-game-start = تبدأ الآن مباراة "بوسوي دوس"!
+pusoydos-new-hand = الجولة { $round }
+pusoydos-dealt = تم توزيع 13 بطاقة: { $cards }.
 
 pusoydos-card-unselected = { $card }
-pusoydos-card-selected = { $card } (selected)
+pusoydos-card-selected = { $card } (مختارة)
 
-pusoydos-play-none = Select cards to play.
-pusoydos-play-invalid = Invalid combination.
-pusoydos-play-combo = Play { $combo }
+pusoydos-play-none = اختر البطاقات المراد لعبها.
+pusoydos-play-invalid = المجموعة المختارة غير صالحة.
+pusoydos-play-combo = لعب مجموعة { $combo }
 
-pusoydos-pass = Pass
-pusoydos-check-trick = Check trick
-pusoydos-read-hand = Read hand
-pusoydos-check-turn-timer = Check turn timer
-pusoydos-timer-disabled = The turn timer is disabled.
-pusoydos-timer-remaining = { $seconds } seconds remaining.
+pusoydos-pass = تمرير
+pusoydos-check-trick = التحقق من الخدعة الحالية
+pusoydos-read-hand = قراءة اليد
+pusoydos-check-turn-timer = التحقق من مؤقت الدور
+pusoydos-timer-disabled = مؤقت الدور معطل.
+pusoydos-timer-remaining = يتبقى { $seconds } ثانية.
 
-pusoydos-error-no-cards = You have not selected any cards.
-pusoydos-error-invalid-combo = The selected cards do not form a valid combination.
-pusoydos-error-first-turn-3c = You must include the 3 of Clubs in the first play.
-pusoydos-error-wrong-length = You must play exactly { $count } cards to beat the current trick.
-pusoydos-error-lower-combo = Your combination is lower than the current trick.
-pusoydos-error-must-play = You cannot pass when starting a new trick.
+pusoydos-error-no-cards = لم تختر أي بطاقات بعد.
+pusoydos-error-invalid-combo = البطاقات المختارة لا تشكل مجموعة صالحة.
+pusoydos-error-first-turn-3c = يجب أن تتضمن اللعبة الأولى بطاقة "3 الأصبي" (3 of Clubs).
+pusoydos-error-wrong-length = يجب لعب { $count } { $count ->
+    [one] بطاقة واحدة
+    [two] بطاقتين
+    [few] بطاقات
+    *[other] بطاقة
+    } بالضبط للتغلب على المجموعة الحالية.
+pusoydos-error-lower-combo = مجموعتك أضعف من المجموعة الحالية في الطاولة.
+pusoydos-error-must-play = لا يمكنك التمرير عند بدء مجموعة جديدة.
 
-pusoydos-player-plays-single = { $player } plays { $card }.
-pusoydos-player-plays-combo = { $player } plays a { $combo } of { $cards }.
-pusoydos-player-passes = { $player } passes.
-pusoydos-trick-won = { $player } won the trick.
+pusoydos-player-plays-single = يلعب { $player } بطاقة منفردة: { $card }.
+pusoydos-player-plays-combo = يلعب { $player } مجموعة { $combo } من بطاقات { $cards }.
+pusoydos-player-passes = يمرر { $player } دوره.
+pusoydos-trick-won = فاز { $player } بهذه المجموعة.
 
-pusoydos-trick-empty = The trick is empty.
-pusoydos-trick-status = { $player } played a { $combo } of { $cards }.
-pusoydos-your-hand = Your hand: { $cards }.
-pusoydos-read-card-counts = Read card counts
-pusoydos-card-count-line = { $player } has { $count } cards
+pusoydos-trick-empty = الطاولة خالية حالياً.
+pusoydos-trick-status = لعب { $player } مجموعة { $combo } من بطاقات { $cards }.
+pusoydos-your-hand = يدك: { $cards }.
+pusoydos-read-card-counts = قراءة عدد بطاقات اللاعبين
+pusoydos-card-count-line = { $player } يملك { $count } { $count ->
+    [one] بطاقة واحدة
+    [two] بطاقتين
+    [few] بطاقات
+    *[other] بطاقة
+    }
 
-pusoydos-combo-single = Single
-pusoydos-combo-pair = Pair
-pusoydos-combo-three_of_a_kind = Three of a Kind
-pusoydos-combo-straight = Straight
-pusoydos-combo-flush = Flush
-pusoydos-combo-full_house = Full House
-pusoydos-combo-four_of_a_kind = Four of a Kind
-pusoydos-combo-straight_flush = Straight Flush
+pusoydos-combo-single = منفردة
+pusoydos-combo-pair = زوج
+pusoydos-combo-three_of_a_kind = ثلاثية
+pusoydos-combo-straight = متسلسلة (ستريت)
+pusoydos-combo-flush = لون موحد (فلاش)
+pusoydos-combo-full_house = فول هاوس
+pusoydos-combo-four_of_a_kind = رباعية
+pusoydos-combo-straight_flush = متسلسلة ملونة (ستريت فلاش)
 
-pusoydos-hand-winner = { $player } won the round and earned { $amount } coins!
-pusoydos-hand-loser = { $player } lost { $amount } coins.
-pusoydos-game-over = The game is over! { $player } is the ultimate winner!
-pusoydos-line-format = { $rank }. { $player }: { $score } coins
+pusoydos-hand-winner = فاز { $player } بالجولة وكسب { $amount } عملة!
+pusoydos-hand-loser = خسر { $player } { $amount } عملة.
+pusoydos-game-over = انتهت المباراة! { $player } هو الفائز النهائي!
+pusoydos-line-format = { $rank }. { $player }: { $score } عملة

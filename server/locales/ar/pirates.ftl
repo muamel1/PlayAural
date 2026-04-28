@@ -1,311 +1,315 @@
-game-name-pirates = Pirates of the Lost Seas
+game-name-pirates = قراصنة البحار المفقودة
 
-pirates-welcome = Welcome to Pirates of the Lost Seas! Sail the seas, collect gems, and battle other pirates!
+pirates-welcome = مرحبًا بك في قراصنة البحار المفقودة! أبحر عبر المحيطات، واجمع الجواهر، وقاتل القراصنة الآخرين!
 
-pirates-oceans = Your voyage will take you through: { $oceans }
+pirates-oceans = ستأخذك رحلتك عبر: { $oceans }
 
-pirates-gems-placed = { $total } gems have been scattered across the seas. Find them all!
+pirates-gems-placed = تم نثر { $total } جوهرة في أعماق البحار. اعثر عليها كلها!
 
-pirates-golden-moon = The Golden Moon rises! All XP gains are tripled this round!
+pirates-golden-moon = يسطع القمر الذهبي! تتضاعف جميع نقاط الخبرة (XP) المكتسبة ثلاث مرات في هذه الجولة!
 
-pirates-turn = { $player }'s turn. Position { $position }
+pirates-turn = دور { $player }. الموقع { $position }
 
-pirates-status-line = { $player }: Level { $level }, { $xp } XP, { $points }, { $gems }
+pirates-status-line = { $player }: المستوى { $level }، { $xp } نقطة خبرة، { $points }، { $gems }
 
-pirates-end-score-line = { $rank }. { $player }: { $points }, level { $level }
+pirates-end-score-line = { $rank }. { $player }: { $points }، المستوى { $level }
 
-pirates-move-left = Sail left
+pirates-move-left = إبحار لليسار
 
-pirates-move-right = Sail right
+pirates-move-right = إبحار لليمين
 
-pirates-move-2-left = Sail 2 tiles left
+pirates-move-2-left = إبحار مربعين لليسار
 
-pirates-move-2-right = Sail 2 tiles right
+pirates-move-2-right = إبحار مربعين لليمين
 
-pirates-move-3-left = Sail 3 tiles left
+pirates-move-3-left = إبحار 3 مربعات لليسار
 
-pirates-move-3-right = Sail 3 tiles right
+pirates-move-3-right = إبحار 3 مربعات لليمين
 
-pirates-move-you = You sail { $direction } to position { $position }.
+pirates-move-you = أبحرت { $direction } إلى الموقع { $position }.
 
-pirates-move-you-tiles = You sail { $tiles } tiles { $direction } to position { $position }.
+pirates-move-you-tiles = أبحرت { $tiles } مربعات { $direction } إلى الموقع { $position }.
 
-pirates-move = { $player } sails { $direction } to position { $position }.
+pirates-move = أبحر { $player } { $direction } إلى الموقع { $position }.
 
-pirates-map-edge = You cannot sail further. You are at position { $position }.
+pirates-map-edge = لا يمكنك الإبحار أبعد من ذلك. أنت في الموقع { $position }.
 
-pirates-check-status = Check status
+pirates-check-status = التحقق من الحالة
 
-pirates-check-position = Check position
+pirates-check-position = التحقق من الموقع
 
-pirates-check-moon = Check moon brightness
+pirates-check-moon = التحقق من سطوع القمر
 
-pirates-your-position = Your position: { $position } in { $ocean }
+pirates-your-position = موقعك: { $position } في { $ocean }
 
-pirates-moon-brightness = The Golden Moon is { $brightness }% bright. ({ $collected } of { $total } gems have been collected).
+pirates-moon-brightness = سطوع القمر الذهبي { $brightness }%. (تم جمع { $collected } من أصل { $total } جوهرة).
 
-pirates-no-golden-moon = The Golden Moon can not be seen up in the sky right now.
+pirates-no-golden-moon = لا يمكن رؤية القمر الذهبي في السماء في الوقت الحالي.
 
-pirates-gem-found-you = You found a { $gem }! Worth { $value } points.
+pirates-gem-found-you = عثرت على { $gem }! تبلغ قيمتها { $value } من النقاط.
 
-pirates-gem-found = { $player } found a { $gem }! Worth { $value } points.
+pirates-gem-found = عثر { $player } على { $gem }! تبلغ قيمتها { $value } من النقاط.
 
-pirates-all-gems-collected = All gems have been collected!
+pirates-all-gems-collected = تم جمع كل الجواهر!
 
-pirates-winner = { $player } wins with { $score } points!
+pirates-winner = انتصر { $player } برصيد { $score } من النقاط!
 
-pirates-use-skill = Use skill
+pirates-use-skill = استخدام مهارة
 
-pirates-select-skill = Select a skill to use
+pirates-select-skill = اختر مهارة لاستخدامها
 
-pirates-cannonball = Fire cannonball
+pirates-cannonball = إطلاق قذيفة مدفع
 
-pirates-no-targets = No targets within { $range } tiles.
+pirates-no-targets = لا توجد أهداف ضمن مسافة { $range } مربعات.
 
-pirates-attack-you-fire = You fire a cannonball at { $target }!
+pirates-attack-you-fire = أطلقت قذيفة مدفع على { $target }!
 
-pirates-attack-incoming = { $attacker } fires a cannonball at you!
+pirates-attack-incoming = أطلق { $attacker } قذيفة مدفع نحوك!
 
-pirates-attack-fired = { $attacker } fires a cannonball at { $defender }!
+pirates-attack-fired = أطلق { $attacker } قذيفة مدفع على { $defender }!
 
-pirates-attack-roll = Attack roll: { $roll }
+pirates-attack-roll = لفة الهجوم: { $roll }
 
-pirates-attack-bonus = Attack bonus: +{ $bonus }
+pirates-attack-bonus = مكافأة الهجوم: +{ $bonus }
 
-pirates-defense-roll = Defense roll: { $roll }
+pirates-defense-roll = لفة الدفاع: { $roll }
 
-pirates-defense-roll-others = { $player } rolls { $roll } for defense.
+pirates-defense-roll-others = { $player } يحصل على { $roll } في لفة الدفاع.
 
-pirates-defense-bonus = Defense bonus: +{ $bonus }
+pirates-defense-bonus = مكافأة الدفاع: +{ $bonus }
 
-pirates-attack-hit-you = Direct hit! You struck { $target }!
+pirates-attack-hit-you = إصابة مباشرة! ضربت { $target }!
 
-pirates-attack-hit-them = You've been hit by { $attacker }!
+pirates-attack-hit-them = تعرضت لضربة من { $attacker }!
 
-pirates-attack-hit = { $attacker } hits { $defender }!
+pirates-attack-hit = { $attacker } أصاب { $defender }!
 
-pirates-attack-miss-you = Your cannonball missed { $target }.
+pirates-attack-miss-you = أخطأت قذيفتك { $target }.
 
-pirates-attack-miss-them = The cannonball missed you!
+pirates-attack-miss-them = أخطأتك القذيفة!
 
-pirates-attack-miss = { $attacker }'s cannonball misses { $defender }.
+pirates-attack-miss = قذيفة { $attacker } أخطأت { $defender }.
 
-pirates-push-you = You push { $target } { $direction } to position { $position }!
+pirates-push-you = قمت بدفع { $target } { $direction } إلى الموقع { $position }!
 
-pirates-push-them = { $attacker } pushes you { $direction } to position { $position }!
+pirates-push-them = دفعك { $attacker } { $direction } إلى الموقع { $position }!
 
-pirates-push = { $attacker } pushes { $defender } { $direction } from { $old_pos } to { $new_pos }.
+pirates-push = دفع { $attacker } { $defender } { $direction } من { $old_pos } إلى { $new_pos }.
 
-pirates-steal-attempt = { $attacker } attempts to steal a gem!
+pirates-steal-attempt = يحاول { $attacker } سرقة جوهرة!
 
-pirates-steal-rolls = Steal roll: { $steal } vs defense: { $defend }
+pirates-steal-rolls = لفة السرقة: { $steal } ضد الدفاع: { $defend }
 
-pirates-steal-success-you = You stole a { $gem } from { $target }!
+pirates-steal-success-you = لقد سرقت { $gem } من { $target }!
 
-pirates-steal-success-them = { $attacker } stole your { $gem }!
+pirates-steal-success-them = سرق { $attacker } الـ { $gem } الخاصة بك!
 
-pirates-steal-success = { $attacker } steals a { $gem } from { $defender }!
+pirates-steal-success = سرق { $attacker } { $gem } من { $defender }!
 
-pirates-steal-failed = The steal attempt failed!
+pirates-steal-failed = باءت محاولة السرقة بالفشل!
 
-pirates-xp-gained = +{ $xp } XP
+pirates-xp-gained = +{ $xp } نقطة خبرة
 
-pirates-level-up = { $player } reached level { $level }!
+pirates-level-up = بلغ { $player } المستوى { $level }!
 
-pirates-level-up-you = You reached level { $level }!
+pirates-level-up-you = بلغت المستوى { $level }!
 
-pirates-level-up-multiple = { $player } gained { $levels } levels! Now level { $level }!
+pirates-level-up-multiple = اكتسب { $player } { $levels } مستويات! الآن في المستوى { $level }!
 
-pirates-level-up-multiple-you = You gained { $levels } levels! Now level { $level }!
+pirates-level-up-multiple-you = اكتسبت { $levels } مستويات! الآن في المستوى { $level }!
 
-pirates-skills-unlocked = { $player } unlocked new skills: { $skills }.
+pirates-skills-unlocked = فتح { $player } مهارات جديدة: { $skills }.
 
-pirates-skills-unlocked-you = You unlocked new skills: { $skills }.
+pirates-skills-unlocked-you = فتحت مهارات جديدة: { $skills }.
 
-pirates-skill-activated = { $player } activates { $skill }!
+pirates-skill-activated = فعّل { $player } مهارة { $skill }!
 
-pirates-buff-expired = { $player }'s { $skill } buff has worn off.
+pirates-buff-expired = تلاشى تأثير تعزيز مهارة { $skill } الخاص بـ { $player }.
 
-pirates-sword-fighter-activated = Sword Fighter activated! +4 attack bonus for { $turns } turns.
+pirates-sword-fighter-activated = تم تفعيل مهارة المبارز! مكافأة هجوم +4 لمدة { $turns } أدوار.
 
-pirates-push-activated = Push activated! +3 defense bonus for { $turns } turns.
+pirates-push-activated = تم تفعيل مهارة الدفع! مكافأة دفاع +3 لمدة { $turns } أدوار.
 
-pirates-skilled-captain-activated = Skilled Captain activated! +2 attack and +2 defense for { $turns } turns.
+pirates-skilled-captain-activated = تم تفعيل مهارة القبطان الماهر! مكافأة هجوم +2 ودفاع +2 لمدة { $turns } أدوار.
 
-pirates-double-devastation-activated = Double Devastation activated! Attack range increased to 10 tiles for { $turns } turns.
+pirates-double-devastation-activated = تم تفعيل الدمار المزدوج! زاد مدى الهجوم إلى 10 مربعات لمدة { $turns } أدوار.
 
-pirates-battleship-activated = Battleship activated! You can fire two shots this turn!
+pirates-battleship-activated = تم تفعيل البارجة الحربية! يمكنك إطلاق قذيفتين في هذا الدور!
 
-pirates-battleship-no-targets = No targets for shot { $shot }.
+pirates-battleship-no-targets = لا توجد أهداف للقذيفة { $shot }.
 
-pirates-battleship-shot = Firing shot { $shot }...
+pirates-battleship-shot = جاري إطلاق القذيفة { $shot }...
 
-pirates-portal-no-ships = No other ships in sight to portal to.
+pirates-portal-no-ships = لا توجد سفن أخرى في الأفق للانتقال إليها.
 
-pirates-portal-fizzle = { $player }'s portal fizzles out with no destination.
+pirates-portal-fizzle = تلاشت بوابة { $player } دون وجهة.
 
-pirates-portal-success = { $player } portals to { $ocean } at position { $position }!
+pirates-portal-success = انتقل { $player } عبر البوابة إلى { $ocean } في الموقع { $position }!
 
-pirates-gem-seeker-reveal = The seas whisper of a { $gem } at position { $position }. ({ $uses } uses remaining)
+pirates-gem-seeker-reveal = تهمس البحار عن وجود { $gem } في الموقع { $position }. (تبقى { $uses } استخدامات)
 
-pirates-requires-level-15 = Requires level 15
+pirates-requires-level-15 = تتطلب المستوى 15
 
-pirates-requires-level-150 = Requires level 150
+pirates-requires-level-150 = تتطلب المستوى 150
 
-pirates-set-combat-xp-multiplier = combat xp multiplier: { $combat_multiplier }
+pirates-set-combat-xp-multiplier = مضاعف خبرة القتال: { $combat_multiplier }
 
-pirates-enter-combat-xp-multiplier = experience for combat
+pirates-enter-combat-xp-multiplier = الخبرة المكتسبة من القتال
 
-pirates-set-find-gem-xp-multiplier = find gem xp multiplier: { $find_gem_multiplier }
+pirates-set-find-gem-xp-multiplier = مضاعف خبرة العثور على الجواهر: { $find_gem_multiplier }
 
-pirates-enter-find-gem-xp-multiplier = experience for finding a gem
+pirates-enter-find-gem-xp-multiplier = الخبرة المكتسبة من العثور على جوهرة
 
-pirates-set-gem-stealing = Gem stealing: { $mode }
+pirates-set-gem-stealing = سرقة الجواهر: { $mode }
 
-pirates-select-gem-stealing = Select gem stealing mode
+pirates-select-gem-stealing = اختر وضع سرقة الجواهر
 
-pirates-option-changed-stealing = Gem stealing set to { $mode }.
+pirates-option-changed-stealing = تم ضبط سرقة الجواهر على وضع { $mode }.
 
-pirates-stealing-with-bonus = With roll bonus
+pirates-stealing-with-bonus = مع مكافأة اللفة
 
-pirates-stealing-no-bonus = No roll bonus
+pirates-stealing-no-bonus = بدون مكافأة اللفة
 
-pirates-stealing-disabled = Disabled
+pirates-stealing-disabled = معطل
 
-pirates-dir-left = left
+pirates-dir-left = لليسار
 
-pirates-dir-right = right
+pirates-dir-right = لليمين
 
-pirates-ocean-rory = Rory's Ocean
+pirates-ocean-rory = محيط روري
 
-pirates-ocean-dev = Developer's Deep
+pirates-ocean-dev = أعماق المطور
 
-pirates-ocean-par = Programmer's Paradise Sea
+pirates-ocean-par = بحر فردوس المبرمجين
 
-pirates-ocean-pal = The Palace Waters
+pirates-ocean-pal = مياه القصر
 
-pirates-ocean-sil = Silva's Strait
+pirates-ocean-sil = مضيق سيلفا
 
-pirates-ocean-kai = Kai's Current
+pirates-ocean-kai = تيار كاي
 
-pirates-ocean-gam = Gamer's Gulf
+pirates-ocean-gam = خليج اللاعبين
 
-pirates-ocean-ser = Server Room Sea
+pirates-ocean-ser = بحر غرفة الخوادم
 
-pirates-ocean-bat = Battle Bay
+pirates-ocean-bat = خليج المعارك
 
-pirates-ocean-cod = Code Compilation Channel
+pirates-ocean-cod = قناة تجميع الكود
 
-pirates-gem-0 = opal
+pirates-gem-0 = أوبال
 
-pirates-gem-1 = ruby
+pirates-gem-1 = ياقوت
 
-pirates-gem-2 = garnet
+pirates-gem-2 = عقيق
 
-pirates-gem-3 = diamond
+pirates-gem-3 = ألماس
 
-pirates-gem-4 = sapphire
+pirates-gem-4 = زفير
 
-pirates-gem-5 = emerald
+pirates-gem-5 = زمرد
 
-pirates-gem-6 = gem of the palace
+pirates-gem-6 = جوهرة القصر
 
-pirates-gem-7 = large plastic gem
+pirates-gem-7 = جوهرة بلاستيكية كبيرة
 
-pirates-gem-8 = awesome blue bastardstone
+pirates-gem-8 = حجر أزرق رهيب
 
-pirates-gem-9 = amethyst
+pirates-gem-9 = جمشت
 
-pirates-gem-10 = golden ring
+pirates-gem-10 = خاتم ذهبي
 
-pirates-gem-11 = awesome red ppulpstone
+pirates-gem-11 = حجر أحمر رهيب
 
-pirates-gem-12 = awesome red gorestone
+pirates-gem-12 = حجر الدم الأحمر
 
-pirates-gem-13 = moonstone
+pirates-gem-13 = حجر القمر
 
-pirates-gem-14 = lapis lazuli
+pirates-gem-14 = لازورد
 
-pirates-gem-15 = amber
+pirates-gem-15 = كهرمان
 
-pirates-gem-16 = citrine
+pirates-gem-16 = سيترين
 
-pirates-gem-17 = definitely not cursed black pearl (tm)
+pirates-gem-17 = لؤلؤة سوداء غير ملعونة على الإطلاق
 
-pirates-gem-unknown = unknown gem
+pirates-gem-unknown = جوهرة مجهولة
 
-pirates-gem-none = no gems
+pirates-gem-none = لا توجد جواهر
 
-pirates-skill-cannon-name = Cannonball Shot
+pirates-skill-cannon-name = طلقة مدفع
 
-pirates-skill-cannon-desc = Fire a cannonball at a player within 5 tiles.
+pirates-skill-cannon-desc = أطلق قذيفة مدفع على لاعب ضمن مسافة 5 مربعات.
 
-pirates-skill-instinct-name = Sailor's Instinct
+pirates-skill-instinct-name = غريزة البحّار
 
-pirates-skill-instinct-desc = Shows uncollected gems and other players per map sector.
+pirates-skill-instinct-desc = تعرض الجواهر غير المجمعة واللاعبين الآخرين في كل قطاع من الخريطة.
 
-pirates-skill-portal-name = Portal
+pirates-skill-portal-name = بوابة الانتقال
 
-pirates-skill-portal-desc = Teleport to a random position in an ocean occupied by another player.
+pirates-skill-portal-desc = تنقلك فورياً إلى موقع عشوائي في محيط يتواجد فيه لاعب آخر.
 
-pirates-skill-seeker-name = Gem Seeker
+pirates-skill-seeker-name = باحث الجواهر
 
-pirates-skill-seeker-desc = Reveals the location of one uncollected gem.
+pirates-skill-seeker-desc = يكشف عن موقع جوهرة واحدة غير مجمعة.
 
-pirates-skill-sword-name = Sword Fighter
+pirates-skill-sword-name = المبارز
 
-pirates-skill-sword-desc = Grants +4 attack bonus for 3 turns.
+pirates-skill-sword-desc = تمنح مكافأة هجوم +4 لمدة 3 أدوار.
 
-pirates-skill-push-name = Push
+pirates-skill-push-name = الدفع
 
-pirates-skill-push-desc = Grants +3 defense bonus for 4 turns.
+pirates-skill-push-desc = تمنح مكافأة دفاع +3 لمدة 4 أدوار.
 
-pirates-skill-captain-name = Skilled Captain
+pirates-skill-captain-name = القبطان الماهر
 
-pirates-skill-captain-desc = Grants +2 attack and +2 defense for 4 turns.
+pirates-skill-captain-desc = تمنح مكافأة هجوم +2 ودفاع +2 لمدة 4 أدوار.
 
-pirates-skill-battleship-name = Battleship
+pirates-skill-battleship-name = البارجة الحربية
 
-pirates-skill-battleship-desc = Fire two cannonballs in one turn.
+pirates-skill-battleship-desc = تتيح لك إطلاق قذيفتي مدفع في دور واحد.
 
-pirates-skill-devastation-name = Double Devastation
+pirates-skill-devastation-name = الدمار المزدوج
 
-pirates-skill-devastation-desc = Increases cannon range to 10 tiles for 3 turns.
+pirates-skill-devastation-desc = تزيد من مدى المدفع إلى 10 مربعات لمدة 3 أدوار.
 
-pirates-skill-cooldown = { $name } is on cooldown ({ $turns } turns).
+pirates-skill-cooldown = مهارة { $name } قيد التجهيز (يتبقى { $turns } أدوار).
 
-pirates-skill-active = { $name } is already active ({ $turns } turns remaining).
+pirates-skill-active = مهارة { $name } نشطة بالفعل (يتبقى { $turns } أدوار).
 
-pirates-skill-no-uses = No uses remaining.
+pirates-skill-no-uses = لا توجد استخدامات متبقية.
 
-pirates-skill-not-turn = Not your turn.
+pirates-skill-not-turn = ليس دورك.
 
-pirates-skill-no-targets = No targets in range.
+pirates-skill-no-targets = لا توجد أهداف في النطاق.
 
-pirates-skill-incompatible = Cannot use { $skill } while { $active } is active.
+pirates-skill-incompatible = لا يمكن استخدام { $skill } بينما مهارة { $active } نشطة.
 
-pirates-instinct-sector = Sector { $sector } (Tiles { $start }-{ $end }): { $gems } { $gems ->
-    [one] gem
-   *[other] gems
-}, { $players } { $players ->
-    [one] player
-   *[other] players
-}.
+pirates-instinct-sector = القطاع { $sector } (المربعات { $start }-{ $end }): { $gems } { $gems ->
+    [one] جوهرة
+    [two] جوهرتان
+    [few] جواهر
+   *[other] جوهرة
+    }، { $players } { $players ->
+    [one] لاعب
+    [two] لاعبان
+    [few] لاعبين
+   *[other] لاعب
+    }.
 
-pirates-req-level = Requires level { $level }
+pirates-req-level = تتطلب المستوى { $level }
 
-pirates-menu-active = { $name } (active: { $turns } turns)
+pirates-menu-active = { $name } (نشطة: { $turns } أدوار)
 
-pirates-menu-cooldown = { $name } (cooldown: { $turns } turns)
+pirates-menu-cooldown = { $name } (قيد التجهيز: { $turns } أدوار)
 
-pirates-menu-activate = { $name } (activate)
+pirates-menu-activate = { $name } (تفعيل)
 
-pirates-menu-back = Back
+pirates-menu-back = رجوع
 
-pirates-instinct-header = Map Sectors:
+pirates-instinct-header = قطاعات الخريطة:
 
-pirates-menu-gem-seeker = { $name } ({ $uses } uses left)
+pirates-menu-gem-seeker = { $name } (تبقى { $uses } استخدامات)
 
-pirates-ocean-unknown = Unknown Ocean
+pirates-ocean-unknown = محيط مجهول
 
-pirates-check-status-detailed = Detailed status
+pirates-check-status-detailed = حالة مفصلة

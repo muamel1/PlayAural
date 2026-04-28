@@ -1,46 +1,51 @@
-game-name-leftrightcenter = Left Right Center
+game-name-leftrightcenter = يسار، يمين، وسط
 
-lrc-roll = Roll { $count } { $count ->
-    [one] die
-   *[other] dice
-}
+# الإجراءات
+lrc-roll = رمي { $count } { $count ->
+    [one] نرد
+   *[other] نرد
+    }
 
-lrc-face-left = Left
-lrc-face-right = Right
-lrc-face-center = Center
-lrc-face-dot = Dot
+# وجوه النرد
+lrc-face-left = يسار
+lrc-face-right = يمين
+lrc-face-center = وسط
+lrc-face-dot = نقطة
 
-lrc-roll-results = { $player } rolls { $results }.
-lrc-pass-left = { $player } passes { $count } { $count ->
-    [one] chip
-   *[other] chips
-} to { $target }.
-lrc-pass-right = { $player } passes { $count } { $count ->
-    [one] chip
-   *[other] chips
-} to { $target }.
-lrc-pass-center = { $player } puts { $count } { $count ->
-    [one] chip
-   *[other] chips
-} in the center.
-lrc-no-chips = { $player } has no chips to roll.
-lrc-center-pot = { $count } { $count ->
-    [one] chip
-   *[other] chips
-} in the center.
-lrc-player-chips = { $player } now has { $count } { $count ->
-    [one] chip
-   *[other] chips
-}.
-lrc-winner = { $player } wins with { $count } { $count ->
-    [one] chip
-   *[other] chips
-}!
+# أحداث اللعب
+lrc-roll-results = رمى { $player } { $results }.
+lrc-pass-left = يمرر { $player } { $count } { $count ->
+    [one] قطعة
+   *[other] قطعة
+    } إلى اليسار ({ $target }).
+lrc-pass-right = يمرر { $player } { $count } { $count ->
+    [one] قطعة
+   *[other] قطعة
+    } إلى اليمين ({ $target }).
+lrc-pass-center = يضع { $player } { $count } { $count ->
+    [one] قطعة
+   *[other] قطعة
+    } في المركز.
+lrc-no-chips = لا يملك { $player } قطع لرمي النرد.
+lrc-center-pot = يوجد { $count } { $count ->
+    [one] قطعة
+   *[other] قطعة
+    } في المركز.
+lrc-player-chips = أصبح لدى { $player } { $count } { $count ->
+    [one] قطعة
+   *[other] قطعة
+    }.
+lrc-winner = فاز { $player } بـ { $count } { $count ->
+    [one] قطعة
+   *[other] قطعة
+    }!
 
-lrc-set-starting-chips = Starting chips: { $count }
-lrc-enter-starting-chips = Enter starting chips:
-lrc-option-changed-starting-chips = Starting chips set to { $count }.
+# الخيارات
+lrc-set-starting-chips = الرصيد البدائي: { $count }
+lrc-enter-starting-chips = أدخل الرصيد البدائي:
+lrc-option-changed-starting-chips = تم ضبط الرصيد البدائي إلى { $count }.
 
+# واجهة المستخدم
 lrc-line-format = { $player }: { $chips }
-lrc-check-center = Check center pot
-lrc-roll-label = Roll dice
+lrc-check-center = فحص رصيد المركز
+lrc-roll-label = رمي النرد

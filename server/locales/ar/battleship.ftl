@@ -1,118 +1,143 @@
-game-name-battleship = Battleship
+game-name-battleship = البوارج (Battleship)
 
-# Options
-battleship-set-grid-size = Combat zone: { $size }
-battleship-select-grid-size = Select combat zone size
-battleship-option-changed-grid-size = Combat zone set to { $size }.
+# الخيارات
+battleship-set-grid-size = حجم شبكة القتال: { $size }
+battleship-select-grid-size = اختر حجم شبكة القتال:
+battleship-option-changed-grid-size = تم ضبط حجم شبكة القتال على { $size }.
 
-battleship-set-placement-mode = Deployment: { $mode }
-battleship-select-placement-mode = Select deployment mode
-battleship-option-changed-placement-mode = Deployment mode set to { $mode }.
+battleship-set-placement-mode = نمط نشر الأسطول: { $mode }
+battleship-select-placement-mode = اختر نمط نشر الأسطول:
+battleship-option-changed-placement-mode = تم ضبط نمط النشر على { $mode }.
 
-battleship-set-replay-on-hit = Extra salvo on hit: { $enabled }
-battleship-option-changed-replay-on-hit = Extra salvo on hit set to { $enabled }.
+battleship-set-replay-on-hit = رمية إضافية عند الإصابة: { $enabled }
+battleship-option-changed-replay-on-hit = تم ضبط خيار الرمية الإضافية على { $enabled }.
 
-battleship-set-turn-timer = Turn timer: { $seconds }
-battleship-select-turn-timer = Select turn timer
-battleship-option-changed-turn-timer = Turn timer set to { $seconds }.
+battleship-set-turn-timer = مؤقت الدور: { $seconds }
+battleship-select-turn-timer = اختر مدة مؤقت الدور:
+battleship-option-changed-turn-timer = تم ضبط مؤقت الدور على { $seconds }.
 
-# Option choice labels
-battleship-grid-6x6 = 6 by 6
-battleship-grid-8x8 = 8 by 8
-battleship-grid-10x10 = 10 by 10
-battleship-grid-12x12 = 12 by 12
+# تسميات الخيارات
+battleship-grid-6x6 = 6 في 6
+battleship-grid-8x8 = 8 في 8
+battleship-grid-10x10 = 10 في 10
+battleship-grid-12x12 = 12 في 12
 
-battleship-placement-auto = Automatic
-battleship-placement-manual = Manual
+battleship-placement-auto = تلقائي
+battleship-placement-manual = يدوي
 
-battleship-timer-off = Off
-battleship-timer-30 = 30 seconds
-battleship-timer-45 = 45 seconds
-battleship-timer-60 = 60 seconds
+battleship-timer-off = معطل
+battleship-timer-30 = 30 ثانية
+battleship-timer-45 = 45 ثانية
+battleship-timer-60 = 60 ثانية
 
-# Ship names
-battleship-ship-carrier = Carrier
-battleship-ship-battleship = Battleship
-battleship-ship-destroyer = Destroyer
-battleship-ship-submarine = Submarine
-battleship-ship-patrol = Patrol Boat
-battleship-ship-unknown = Vessel
+# أسماء السفن
+battleship-ship-carrier = حاملة الطائرات
+battleship-ship-battleship = البارجة
+battleship-ship-destroyer = المدمرة
+battleship-ship-submarine = الغواصة
+battleship-ship-patrol = زورق الدورية
+battleship-ship-unknown = قطعة بحرية
 
-# Orientations
-battleship-horizontal = Horizontal
-battleship-vertical = Vertical
+# الاتجاهات
+battleship-horizontal = أفقي
+battleship-vertical = عمودي
 
-# Actions
-battleship-orient-horizontal = Deploy Horizontal
-battleship-orient-vertical = Deploy Vertical
-battleship-toggle-view = Switch Grid
-battleship-read-fleet = Fleet Status
-battleship-read-enemy-fleet = Enemy Fleet Intel
+# الإجراءات
+battleship-orient-horizontal = وضع أفقي
+battleship-orient-vertical = وضع عمودي
+battleship-toggle-view = تبديل الشبكة
+battleship-read-fleet = حالة أسطولك
+battleship-read-enemy-fleet = استخبارات أسطول العدو
 
-# Deployment phase
-battleship-deploy-start = Deployment phase. Position your { $ship }, { $size } sectors long. Select a coordinate, then choose bearing.
-battleship-choose-orientation = Deploying { $ship } at { $coord }, { $size } sectors. Select bearing.
-battleship-ship-placed = { $ship } deployed at { $coord }, bearing { $orientation }.
-battleship-cannot-place = Cannot deploy { $ship } at { $coord } { $orientation }. Vessel does not fit or overlaps another ship.
-battleship-place-next-ship = Next vessel: { $ship }, { $size } sectors.
-battleship-deploy-done = Fleet deployed. Standing by for the enemy.
-battleship-deploy-complete = Deployment complete.
-battleship-select-cell-first = Select a coordinate on the grid first.
-battleship-deploy-in-progress = Deployment still in progress.
+# مرحلة النشر
+battleship-deploy-start = مرحلة النشر. قم بوضع { $ship } (الحجم: { $size } { $size ->
+    [one] مربع
+    [two] مربعين
+    [few] مربعات
+   *[other] مربعاً
+    }). اختر إحداثيات البداية، ثم حدد الاتجاه.
+battleship-choose-orientation = جاري نشر { $ship } عند الإحداثيات { $coord } (الحجم: { $size }). اختر الاتجاه الآن.
+battleship-ship-placed = تم نشر { $ship } عند الإحداثيات { $coord }، بالاتجاه الـ { $orientation }.
+battleship-cannot-place = تعذر نشر { $ship } عند الإحداثيات { $coord } ({ $orientation }). المساحة غير كافية أو تتداخل مع سفينة أخرى.
+battleship-place-next-ship = السفينة التالية: { $ship } (الحجم: { $size } { $size ->
+    [one] مربع
+    [two] مربعين
+    [few] مربعات
+   *[other] مربعاً
+    }).
+battleship-deploy-done = اكتمل نشر الأسطول. في انتظار العدو للانتهاء.
+battleship-deploy-complete = اكتملت مرحلة النشر بنجاح.
+battleship-select-cell-first = يرجى اختيار إحداثيات على الشبكة أولاً.
+battleship-deploy-in-progress = مرحلة النشر لا تزال جارية.
 
-# Battle phase
-battleship-battle-start = All ships in position. Commence firing!
+# مرحلة القتال
+battleship-battle-start = اتخذت جميع السفن مواقعها. ابدأ القصف!
 
-# Hit — first-person (shooter), second-person (target), third-person (spectator)
-battleship-hit-self = Firing on { $coord }. Direct hit!
-battleship-hit-target = { $player } fires on your { $coord }. Direct hit!
-battleship-hit-spectator = { $player } fires on { $target }'s { $coord }. Direct hit!
+# الإصابة
+battleship-hit-self = قصف عند الإحداثيات { $coord }. ضربة مباشرة!
+battleship-hit-target = قصف { $player } الإحداثيات { $coord }. ضربة مباشرة!
+battleship-hit-spectator = قصف { $player } الإحداثيات { $coord } في مياه { $target }. ضربة مباشرة!
 
-# Miss — first/second/third
-battleship-miss-self = Firing on { $coord }. Missed.
-battleship-miss-target = { $player } fires on your { $coord }. Missed.
-battleship-miss-spectator = { $player } fires on { $target }'s { $coord }. Missed.
+# الإخفاق
+battleship-miss-self = قصف عند الإحداثيات { $coord }. أخطأت الهدف!
+battleship-miss-target = قصف { $player } الإحداثيات { $coord }. أخطأ الهدف!
+battleship-miss-spectator = قصف { $player } الإحداثيات { $coord } في مياه { $target }. أخطأ الهدف!
 
-# Sunk — first/second/third
-battleship-sunk-self = Enemy { $ship } destroyed!
-battleship-sunk-target = { $player } sank your { $ship }!
-battleship-sunk-spectator = { $player } sank { $target }'s { $ship }!
+# الغرق
+battleship-sunk-self = تم إغراق { $ship } الخاصة بالعدو!
+battleship-sunk-target = أغرق { $player } { $ship } الخاصة بك!
+battleship-sunk-spectator = أغرق { $player } { $ship } الخاصة بـ { $target }!
 
-# Victory — first/second/third
-battleship-victory-self = Victory! All enemy vessels have been sunk.
-battleship-victory-target = { $player } wins! All your vessels have been sunk.
-battleship-victory-spectator = { $player } wins! All of { $target }'s vessels have been sunk.
+# النصر
+battleship-victory-self = انتصار ساحق! تم إغراق جميع سفن العدو.
+battleship-victory-target = فاز { $player }! لقد تم إغراق جميع سفنك.
+battleship-victory-spectator = فاز { $player }! تم إغراق جميع سفن { $target }.
 
-battleship-already-shot = Already fired on this coordinate.
-battleship-switch-to-shots = Viewing your own waters. Press V to switch to the target grid.
-battleship-timeout-fire = Time's up! Auto-firing on { $coord }.
+battleship-already-shot = لقد قمت بقصف هذه الإحداثيات مسبقاً.
+battleship-switch-to-shots = أنت تعرض مياهك الخاصة حالياً. اضغط V للتبديل إلى شبكة استهداف العدو.
+battleship-timeout-fire = انتهى الوقت! تم إطلاق قذيفة عشوائية عند الإحداثيات { $coord }.
 
-# View toggle
-battleship-view-own = Viewing your waters.
-battleship-view-shots = Viewing target grid.
+# تبديل العرض
+battleship-view-own = عرض مياهك الخاصة.
+battleship-view-shots = عرض شبكة استهداف العدو.
 
-# Cell labels
-battleship-cell-empty = { $coord }, open water.
-battleship-cell-ship-placed = { $coord }, { $ship }.
-battleship-cell-unknown = { $coord }, uncharted.
-battleship-cell-hit = { $coord }, hit.
-battleship-cell-sunk = { $coord }, { $ship }, sunk.
-battleship-cell-miss = { $coord }, miss.
-battleship-cell-own-ship = { $coord }, your { $ship }.
-battleship-cell-own-hit = { $coord }, your { $ship }, hit.
-battleship-cell-own-sunk = { $coord }, your { $ship }, sunk.
-battleship-cell-own-miss = { $coord }, incoming miss.
+# تسميات الخلايا
+battleship-cell-empty = { $coord }: مياه مفتوحة.
+battleship-cell-ship-placed = { $coord }: { $ship }.
+battleship-cell-unknown = { $coord }: مياه غير مستكشفة.
+battleship-cell-hit = { $coord }: إصابة مؤكدة.
+battleship-cell-sunk = { $coord }: { $ship } (مغرقة).
+battleship-cell-miss = { $coord }: أخطأت الهدف.
+battleship-cell-own-ship = { $coord }: { $ship } (سفينتك).
+battleship-cell-own-hit = { $coord }: { $ship } (سفينتك، متضررة).
+battleship-cell-own-sunk = { $coord }: { $ship } (سفينتك، مغرقة).
+battleship-cell-own-miss = { $coord }: قذيفة طائشة من العدو.
 
-# Fleet status
-battleship-fleet-header = Your Fleet
-battleship-status-intact = Battle-ready
-battleship-status-damaged = Damaged ({ $hits } of { $size } hit)
-battleship-status-sunk = Sunk
+# حالة الأسطول
+battleship-fleet-header = حالة أسطولك
+battleship-status-intact = جاهزة للقتال
+battleship-status-damaged = متضررة ({ $hits } من أصل { $size } إصابات)
+battleship-status-sunk = مغرقة بالكامل
 
-battleship-enemy-fleet-header = Enemy Fleet
-battleship-enemy-fleet-summary = { $sunk } of { $total } enemy vessels sunk.
-battleship-enemy-ship-sunk = { $ship } (size { $size }): Sunk
+battleship-enemy-fleet-header = استخبارات أسطول العدو
+battleship-enemy-fleet-summary = تم إغراق { $sunk } من أصل { $total } { $total ->
+    [one] سفينة
+    [two] سفينتين
+    [few] سفن
+   *[other] سفينة
+    } للعدو.
+battleship-enemy-ship-sunk = { $ship } (الحجم: { $size }): مغرقة بالكامل
 
-# End screen
-battleship-winner-line = { $player } wins!
-battleship-stats-line = { $player }: { $shots } shots fired, { $hits } hits, { $accuracy }% accuracy
+# شاشة النهاية
+battleship-winner-line = الفائز هو { $player }!
+battleship-stats-line = { $player }: أطلق { $shots } { $shots ->
+    [one] قذيفة
+    [two] قذيفتين
+    [few] قذائف
+   *[other] قذيفة
+    }، حقق { $hits } { $hits ->
+    [one] إصابة
+    [two] إصابتين
+    [few] إصابات
+   *[other] إصابة
+    }، بدقة { $accuracy }%

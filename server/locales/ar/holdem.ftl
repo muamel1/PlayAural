@@ -1,38 +1,41 @@
-game-name-holdem = Poker Texas Hold'em
+game-name-holdem = تكساس هولدم (Texas Hold'em)
 
-holdem-set-starting-chips = Starting chips: { $count }
-holdem-enter-starting-chips = Enter starting chips
-holdem-option-changed-starting-chips = Starting chips set to { $count }.
+# الإعدادات
+holdem-set-starting-chips = الرصيد البدائي: { $count }
+holdem-enter-starting-chips = أدخل الرصيد البدائي
+holdem-option-changed-starting-chips = تم ضبط الرصيد البدائي إلى { $count }.
 
-holdem-set-big-blind = Big blind: { $count }
-holdem-enter-big-blind = Enter big blind
-holdem-option-changed-big-blind = Big blind set to { $count }.
+holdem-set-big-blind = الرهان الأعمى الكبير (Big Blind): { $count }
+holdem-enter-big-blind = أدخل الرهان الأعمى الكبير
+holdem-option-changed-big-blind = تم ضبط الرهان الأعمى الكبير إلى { $count }.
 
-holdem-set-ante = Ante: { $count }
-holdem-enter-ante = Enter ante
-holdem-option-changed-ante = Ante set to { $count }.
+holdem-set-ante = الرهان الابتدائي (Ante): { $count }
+holdem-enter-ante = أدخل مبلغ الرهان الابتدائي
+holdem-option-changed-ante = تم ضبط الرهان الابتدائي إلى { $count }.
 
-holdem-set-ante-start = Ante starts at level: { $count }
-holdem-enter-ante-start = Enter blind level to enable ante
-holdem-option-changed-ante-start = Ante start level set to { $count }.
+holdem-set-ante-start = بدء الرهان الابتدائي عند المستوى: { $count }
+holdem-enter-ante-start = أدخل مستوى الرهان الأعمى لتفعيل الرهان الابتدائي
+holdem-option-changed-ante-start = تم ضبط مستوى بدء الرهان الابتدائي إلى { $count }.
 
-holdem-set-turn-timer = Turn timer: { $mode }
-holdem-select-turn-timer = Select turn timer
-holdem-option-changed-turn-timer = Turn timer set to { $mode }.
+holdem-set-turn-timer = مؤقت الدور: { $mode }
+holdem-select-turn-timer = اختر مؤقت الدور
+holdem-option-changed-turn-timer = تم ضبط مؤقت الدور إلى { $mode }.
 
-holdem-set-blind-timer = Blind timer: { $mode }
-holdem-select-blind-timer = Select blind timer
-holdem-option-changed-blind-timer = Blind timer set to { $mode }.
+holdem-set-blind-timer = مؤقت الرهانات العمياء: { $mode }
+holdem-select-blind-timer = اختر مؤقت الرهانات العمياء
+holdem-option-changed-blind-timer = تم ضبط مؤقت الرهانات العمياء إلى { $mode }.
 
-holdem-set-raise-mode = Raise mode: { $mode }
-holdem-select-raise-mode = Select raise mode
-holdem-option-changed-raise-mode = Raise mode set to { $mode }.
+holdem-set-raise-mode = نمط الرفع (Raise): { $mode }
+holdem-select-raise-mode = اختر نمط الرفع
+holdem-option-changed-raise-mode = تم ضبط نمط الرفع إلى { $mode }.
 
-holdem-set-max-raises = Max raises: { $count }
-holdem-enter-max-raises = Enter max raises (0 for unlimited)
-holdem-option-changed-max-raises = Max raises set to { $count }.
+holdem-set-max-raises = الحد الأقصى للرفع: { $count }
+holdem-enter-max-raises = أدخل الحد الأقصى لعدد مرات الرفع (0 غير محدود)
+holdem-option-changed-max-raises = تم ضبط الحد الأقصى للرفع إلى { $count }.
 
-holdem-antes-posted = Antes posted: { $amount }.
-holdem-blinds-posted = Blinds posted: { $sb } / { $bb }.
+# اللعب
+holdem-antes-posted = تم وضع الرهان الابتدائي: { $amount }.
+holdem-blinds-posted = تم وضع الرهانات العمياء (Small/Big Blind): { $sb } / { $bb }.
 
-holdem-winner-chips = { $rank }. { $player }: { $chips } chips
+# النتائج
+holdem-winner-chips = { $rank }. { $player }: { $chips } عملة
