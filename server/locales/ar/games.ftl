@@ -1,63 +1,63 @@
-game-round-start = Round { $round }.
-game-round-end = Round { $round } complete.
-game-turn-start = { $player }'s turn.
-game-no-turn = No one's turn right now.
+game-round-start = الجولة { $round }.
+game-round-end = اكتملت الجولة { $round }.
+game-turn-start = دور { $player }.
+game-no-turn = لا يوجد دور لأحد حالياً.
 
-game-score-line = { $player }: { $score } points
-game-score-line-target = { $player }: { $score }/{ $target } points
+game-score-line = { $player }: { $score } نقطة
+game-score-line-target = { $player }: { $score }/{ $target } نقطة
 game-points = { $count } { $count ->
-    [one] point
-   *[other] points
+    [one] نقطة
+   *[other] نقاط
 }
-game-final-scores-header = Final Scores:
+game-final-scores-header = النتائج النهائية:
 
-game-winner = { $player } wins!
-game-winner-score = { $player } wins with { $score } points!
-game-tiebreaker = It's a tie! Tiebreaker round!
-game-tiebreaker-players = It's a tie between { $players }! Tiebreaker round!
-game-eliminated = { $player } has been eliminated with { $score } points.
+game-winner = فاز { $player }!
+game-winner-score = فاز { $player } بـ { $score } نقطة!
+game-tiebreaker = تعادل! جولة كسر التعادل!
+game-tiebreaker-players = تعادل بين { $players }! جولة كسر التعادل!
+game-eliminated = تم استبعاد { $player } بـ { $score } نقطة.
 
-game-set-target-score = Target score: { $score }
-game-enter-target-score = Enter target score:
-game-option-changed-target = Target score set to { $score }.
+game-set-target-score = الهدف: { $score }
+game-enter-target-score = أدخل النقاط المستهدفة:
+game-option-changed-target = تم ضبط الهدف إلى { $score } نقطة.
 
-game-set-team-mode = Team mode: { $mode }
-game-select-team-mode = Select team mode
-game-option-changed-team = Team mode set to { $mode }.
-game-team-mode-individual = Individual
-game-team-mode-x-teams-of-y = { $num_teams } teams of { $team_size }
-game-team-name = Team { $index }
+game-set-team-mode = وضع الفريق: { $mode }
+game-select-team-mode = اختر وضع الفريق
+game-option-changed-team = تم ضبط وضع الفريق إلى { $mode }.
+game-team-mode-individual = فردي
+game-team-mode-x-teams-of-y = { $num_teams } فرق من { $team_size } لاعبين
+game-team-name = فريق { $index }
 
-option-on = on
-option-off = off
+option-on = تشغيل
+option-off = إيقاف
 
-status-box-closed = Status information closed.
+status-box-closed = تم إغلاق معلومات الحالة.
 
-game-leave = Leave game
+game-leave = مغادرة اللعبة
 
-round-timer-paused = { $player } has paused the game (press p to start the next round).
-round-timer-resumed = Round timer resumed.
-round-timer-countdown = Next round in { $seconds }...
+round-timer-paused = قام { $player } بإيقاف اللعبة مؤقتاً (اضغط p لبدء الجولة التالية).
+round-timer-resumed = استؤنف مؤقت الجولة.
+round-timer-countdown = الجولة التالية خلال { $seconds }...
 
-dice-keeping = Keeping { $value }.
-dice-rerolling = Rerolling { $value }.
-dice-locked = That die is locked and cannot be changed.
-dice-status-label-locked = { $value } (locked)
-dice-status-label-kept = { $value } (kept)
+dice-keeping = الاحتفاظ بـ { $value }.
+dice-rerolling = إعادة رمي { $value }.
+dice-locked = هذا النرد مقفل ولا يمكن تغييره.
+dice-status-label-locked = { $value } (مقفل)
+dice-status-label-kept = { $value } (محتفظ به)
 
-game-deal-counter = Deal { $current }/{ $total }.
-game-you-deal = You deal out the cards.
-game-player-deals = { $player } deals out the cards.
+game-deal-counter = توزيع { $current }/{ $total }.
+game-you-deal = أنت توزع الأوراق.
+game-player-deals = { $player } يوزع الأوراق.
 
-card-name = { $rank } of { $suit }
-no-cards = No cards
+card-name = { $rank } الـ { $suit }
+no-cards = لا توجد أوراق
 
-suit-diamonds = diamonds
-suit-clubs = clubs
-suit-hearts = hearts
-suit-spades = spades
+suit-diamonds = ديناري (السمبوكسة)
+suit-clubs = سبيت (الأسود)
+suit-hearts = هاص (القلب)
+suit-spades = كبة (الشجرة)
 
-rank-ace = ace
+rank-ace = أص (واحد)
 rank-two = 2
 rank-three = 3
 rank-four = 4
@@ -67,66 +67,66 @@ rank-seven = 7
 rank-eight = 8
 rank-nine = 9
 rank-ten = 10
-rank-jack = jack
-rank-queen = queen
-rank-king = king
+rank-jack = ولد
+rank-queen = بنت
+rank-king = شايب
 
-rank-ace-plural = aces
-rank-two-plural = twos
-rank-three-plural = threes
-rank-four-plural = fours
-rank-five-plural = fives
-rank-six-plural = sixes
-rank-seven-plural = sevens
-rank-eight-plural = eights
-rank-nine-plural = nines
-rank-ten-plural = tens
-rank-jack-plural = jacks
-rank-queen-plural = queens
-rank-king-plural = kings
+rank-ace-plural = آصات
+rank-two-plural = اثنينات
+rank-three-plural = ثلاثات
+rank-four-plural = أربعات
+rank-five-plural = خمسات
+rank-six-plural = ستات
+rank-seven-plural = سبعات
+rank-eight-plural = ثمانيات
+rank-nine-plural = تسعات
+rank-ten-plural = عشرات
+rank-jack-plural = أولاد
+rank-queen-plural = بنات
+rank-king-plural = شيبان
 
 
-poker-high-card-with = { $high } high, with { $rest }
-poker-high-card = { $high } high
-poker-pair-with = Pair of { $pair }, with { $rest }
-poker-pair = Pair of { $pair }
-poker-two-pair-with = Two Pair, { $high } and { $low }, with { $kicker }
-poker-two-pair = Two Pair, { $high } and { $low }
-poker-trips-with = Three of a Kind, { $trips }, with { $rest }
-poker-trips = Three of a Kind, { $trips }
-poker-straight-high = { $high } high Straight
-poker-flush-high-with = { $high } high Flush, with { $rest }
-poker-full-house = Full House, { $trips } over { $pair }
-poker-quads-with = Four of a Kind, { $quads }, with { $kicker }
-poker-quads = Four of a Kind, { $quads }
-poker-straight-flush-high = { $high } high Straight Flush
-poker-unknown-hand = Unknown hand
+poker-high-card-with = أعلى ورقة { $high }، مع { $rest }
+poker-high-card = أعلى ورقة { $high }
+poker-pair-with = زوج من { $pair }، مع { $rest }
+poker-pair = زوج من { $pair }
+poker-two-pair-with = زوجين، { $high } و { $low }، مع { $kicker }
+poker-two-pair = زوجين، { $high } و { $low }
+poker-trips-with = ثلاثة من نوع واحد { $trips }، مع { $rest }
+poker-trips = ثلاثة من نوع واحد { $trips }
+poker-straight-high = متتالية (Sraight) أعلاها { $high }
+poker-flush-high-with = فلاش (Flush) أعلاه { $high }، مع { $rest }
+poker-full-house = فول هاوس (Full House)، { $trips } على { $pair }
+poker-quads-with = أربعة من نوع واحد { $quads }، مع { $kicker }
+poker-quads = أربعة من نوع واحد { $quads }
+poker-straight-flush-high = ستريت فلاش (Straight Flush) أعلاه { $high }
+poker-unknown-hand = يد غير معروفة
 
-game-error-invalid-team-mode = The selected team mode is not valid for the current number of players.
+game-error-invalid-team-mode = وضع الفريق المختار غير صالح لعدد اللاعبين الحالي.
 
-documentation-menu = Documentation
-introduction = Introduction
-community-rules = Community Rules
-global-keys = Global Controls
-game-rules = Game Rules
-changelog = Changelog
-donation = Donation
-contact = Contact
-document-not-found = Document not found.
-help = Help
+documentation-menu = الوثائق
+introduction = مقدمة
+community-rules = قوانين المجتمع
+global-keys = ضوابط التحكم العامة
+game-rules = قوانين الألعاب
+changelog = سجل التغييرات
+donation = التبرع
+contact = اتصل بنا
+document-not-found = الوثيقة غير موجودة.
+help = مساعدة
 
 # Game Info (Ctrl+I)
-game-info = Game Info
-game-info-header = Current Game Information
-game-info-name = Game: {$game}
-game-info-players = Players: {$count}
-game-info-host = Host: {$host}
-game-info-status = Status: {$status}
-game-info-status-waiting = Waiting in lobby
-game-info-status-playing = In progress
-game-info-options-header = Settings:
-game-info-no-options = This game has no custom configuration options.
+game-info = معلومات اللعبة
+game-info-header = معلومات اللعبة الحالية
+game-info-name = اللعبة: {$game}
+game-info-players = اللاعبون: {$count}
+game-info-host = المضيف: {$host}
+game-info-status = الحالة: {$status}
+game-info-status-waiting = بانتظار اللاعبين في الردهة
+game-info-status-playing = قيد اللعب
+game-info-options-header = الإعدادات:
+game-info-no-options = لا توجد خيارات تخصيص لهذه اللعبة.
 
 # How to Play (Ctrl+F1)
-how-to-play = How to Play
-game-rules-not-available = Rules for {$game} are not available yet.
+how-to-play = كيف تلعب
+game-rules-not-available = قوانين لعبة {$game} غير متوفرة بعد.
