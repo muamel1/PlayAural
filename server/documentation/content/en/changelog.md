@@ -1,5 +1,13 @@
 Changelog
 
+Wednesday 28 April 2026
+
+Server Updates:
+
+Added a new game: Dead Man's Deck, featuring complete gameplay rules and detailed documentation for beginners.
+
+The game is fully localized in both English and Vietnamese.
+
 Sunday 26 April 2026
 
 Server Updates:

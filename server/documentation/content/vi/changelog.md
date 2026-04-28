@@ -1,5 +1,13 @@
 Nhật ký thay đổi
 
+Thứ Ba 28 Tháng Tư 2026
+
+Cập nhật máy chủ:
+
+Đã thêm trò chơi mới mang tên Bộ Bài Tử Thần với đầy đủ tài liệu hướng dẫn chi tiết dành cho người mới bắt đầu.
+
+Trò chơi này đã được hỗ trợ hoàn chỉnh bằng cả tiếng Việt và tiếng Anh.
+
 Chủ Nhật 26 Tháng Tư 2026
 
 Cập nhật máy chủ:
