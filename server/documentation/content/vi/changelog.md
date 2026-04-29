@@ -1,5 +1,19 @@
 Nhật ký thay đổi
 
+Thứ Tư 29 Tháng Tư 2026
+
+Cập nhật máy chủ:
+
+Khi sử dụng tính năng Tên bot tùy chỉnh trong phần Tùy chỉnh, bạn sẽ không thể đặt tên bot trùng với tên của những người đang ngồi trong bàn hoặc trùng với bất kỳ tên tài khoản nào đã đăng ký. Điều này giúp ngăn chặn việc ai đó sử dụng bot để giả mạo người chơi.
+
+Đã thay đổi cơ chế bot thay thế: Trước đây, khi một người chơi mất kết nối hoặc rời bàn, bot vào thay thế sẽ sử dụng luôn tên của người chơi đó. Bây giờ, một bot khác sẽ vào chơi thay, giúp phân biệt rõ ràng giữa người chơi và máy.
+
+Người chơi vừa rời đi hoặc mất kết nối có thể quay lại và lấy lại chính xác ghế của mình nếu ván đấu đó vẫn đang diễn ra. Tuy nhiên, khi ván đấu kết thúc và chuyển sang ván mới, ghế ngồi sẽ không thể lấy lại được nữa.
+
+Xử lý người chơi ở sảnh chờ: Nếu chủ phòng bắt đầu ván đấu trong lúc có một người chơi đang bị mất kết nối, hệ thống sẽ tự động chuyển vị trí của người đó thành bot để ván chơi có thể bắt đầu. Các khán giả mất kết nối cũng sẽ được tự động xóa khỏi bàn khi ván đấu bắt đầu.
+
+Đã cập nhật hệ thống âm thanh và thông báo: Hệ thống sẽ phát âm thanh rời bàn tiêu chuẩn khi một ghế của người chơi được chuyển cho bot thay thế, và phát âm thanh tham gia bàn khi người chơi kết nối lại để lấy lại ghế. Các thông báo bằng giọng nói cũng sẽ đọc rõ cả tên người chơi ban đầu và tên bot thay thế để mọi người dễ nhận biết.
+
 Thứ Ba 28 Tháng Tư 2026
 
 Cập nhật máy chủ:

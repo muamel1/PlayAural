@@ -1,5 +1,19 @@
 Changelog
 
+Wednesday 29 April 2026
+
+Server Updates:
+
+When using the Custom bot names feature in the Options, you can no longer add a bot with the name of anyone currently at the table or the name of a registered player. This prevents anyone from using bots to impersonate real players.
+
+Changed the bot replacement behavior: Previously, when a player disconnected or left, the replacement bot would use that player's exact name. Now, a different bot will take over the seat, making it clear who is a bot and who is a human.
+
+Disconnected players can reclaim their exact seat as long as the current match is still ongoing. However, once the match ends and the table moves to a new game, the seat can no longer be reclaimed.
+
+Lobby handling: If the host starts a match while a seated player is disconnected, the system will convert that player into a reclaimable replacement bot before the game starts. Disconnected spectators are also automatically removed before the game begins.
+
+Updated sounds and announcements: The standard leave sound will play whenever a human seat is handed to a replacement bot, and the standard join sound will play when a player reclaims a bot-held seat. Voice announcements will also clearly identify both the original human name and the replacement bot name.
+
 Wednesday 28 April 2026
 
 Server Updates:
