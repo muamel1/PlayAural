@@ -6,6 +6,7 @@ scoring, and elimination (for inverse game modes).
 """
 
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 
 from mashumaro.mixins.json import DataClassJSONMixin
@@ -86,6 +87,111 @@ class TeamManager(DataClassJSONMixin):
             return []
         parts = mode.lower().split("v")
         return [int(p) for p in parts if p.isdigit()]
+
+    def rebuild_player_index(self) -> None:
+        """Rebuild the player-to-team lookup from the current team members."""
+        self._player_to_team = {}
+        for team in self.teams:
+            for member in team.members:
+                self._player_to_team[member] = team.index
+
+    def expected_team_sizes(self, player_count: int | None = None) -> list[int]:
+        """Return the expected team sizes for the current team mode."""
+        if self.team_mode == "individual":
+            count = player_count if player_count is not None else len(self.teams)
+            return [1 for _ in range(count)]
+        return self._parse_team_mode(self.team_mode)
+
+    def has_same_members(self, player_names: list[str]) -> bool:
+        """Return whether the current teams contain exactly these player names."""
+        current = [member for team in self.teams for member in team.members]
+        return Counter(current) == Counter(player_names)
+
+    def validate_assignments(self, player_names: list[str]) -> bool:
+        """Validate current teams against the team mode and active player names."""
+        if not self.has_same_members(player_names):
+            return False
+
+        expected_sizes = self.expected_team_sizes(len(player_names))
+        if len(self.teams) != len(expected_sizes):
+            return False
+
+        for team, expected_size in zip(self.teams, expected_sizes, strict=True):
+            if len(team.members) != expected_size:
+                return False
+            if team.index < 0 or team.index >= len(self.teams):
+                return False
+
+        return True
+
+    def swap_members(self, first_player: str, second_player: str) -> bool:
+        """Swap two players between their current teams."""
+        first_team = self.get_team(first_player)
+        second_team = self.get_team(second_player)
+        if not first_team or not second_team:
+            return False
+        if first_player == second_player:
+            return False
+
+        first_index = first_team.members.index(first_player)
+        second_index = second_team.members.index(second_player)
+        first_team.members[first_index] = second_player
+        second_team.members[second_index] = first_player
+        self.rebuild_player_index()
+        return True
+
+    def rename_member(self, old_name: str, new_name: str) -> bool:
+        """Rename a team member while preserving their team placement."""
+        if not old_name or not new_name or old_name == new_name:
+            return False
+
+        changed = False
+        for team in self.teams:
+            updated_members = []
+            team_changed = False
+            for member in team.members:
+                if member == old_name:
+                    updated_members.append(new_name)
+                    team_changed = True
+                else:
+                    updated_members.append(member)
+            if team_changed:
+                team.members = updated_members
+                changed = True
+        if changed:
+            self.rebuild_player_index()
+        return changed
+
+    def balanced_turn_order(self, player_names: list[str]) -> list[str]:
+        """Return players interleaved by team while preserving seat priority."""
+        if not self.teams or self.team_mode == "individual":
+            return list(player_names)
+
+        active_names = set(player_names)
+        ordered_teams = sorted(self.teams, key=lambda team: team.index)
+        team_members = [
+            [member for member in team.members if member in active_names]
+            for team in ordered_teams
+        ]
+        if not any(team_members):
+            return list(player_names)
+
+        ordered: list[str] = []
+        max_members = max(len(members) for members in team_members)
+        for member_index in range(max_members):
+            for members in team_members:
+                if member_index < len(members):
+                    ordered.append(members[member_index])
+
+        seen = set(ordered)
+        ordered.extend(name for name in player_names if name not in seen)
+
+        first_seated_player = next((name for name in player_names if name in seen), "")
+        if first_seated_player and first_seated_player in ordered:
+            start_index = ordered.index(first_seated_player)
+            ordered = ordered[start_index:] + ordered[:start_index]
+
+        return ordered
 
     def get_team(self, player_name: str) -> Team | None:
         """Get the team a player belongs to."""

@@ -223,6 +223,18 @@ Rules:
 - detailed score checks use a status box with one line per player/team unless the game has a stronger custom detail view
 - score units are display text only; leaderboards, ratings, personal statistics, and `GameResult.custom_data` continue to store numeric values in their established schema
 
+#### Team Management and Arrangement
+Team-based games use `TeamManager` and the shared lobby team arrangement flow.
+
+Rules:
+- games with `TeamModeOption` validate `self.options.team_mode` in `prestart_validate()` with `_validate_team_mode(...)`
+- team setup should call `_setup_team_manager_for_start(self.options.team_mode, active_players)` so confirmed host arrangements are preserved and direct `on_start()` calls still auto-assign teams
+- team games whose turn sequence depends on team seating should pass `_get_team_turn_players(active_players)` to `set_turn_players(...)` so manual swaps keep the same round-robin balance as automatic assignment
+- non-`individual` team modes enter host-controlled team arrangement by default before `on_start()`; override `allows_team_arrangement()` only for games whose rules require fixed or automatic teams
+- individual games should not implement their own team-selection menus; shared lobby actions handle reading teams, selecting a member, swapping across teams, cancelling, and confirming
+- team arrangement remains a lobby-only state; do not set `status = "playing"` until the host confirms teams and the game actually starts
+- roster and option changes during arrangement must be blocked, cancelled, or deliberately refreshed through the shared helpers rather than silently changing teams
+
 #### Server-Side Navigation Stack
 Server menus use the breadcrumb stack in `_user_states[username]["_stack"]`.
 

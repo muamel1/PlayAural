@@ -205,6 +205,10 @@ class ActionExecutionMixin:
                 if meta and isinstance(meta, MenuOption):
                     menu_option_meta = meta
 
+            option_label_method = None
+            if isinstance(req, MenuInput) and req.option_label:
+                option_label_method = getattr(self, req.option_label, None)
+
             # Build menu items with localized labels if available
             items = []
             for opt in options:
@@ -212,6 +216,8 @@ class ActionExecutionMixin:
                     display_text = menu_option_meta.get_localized_choice(
                         opt, user.locale
                     )
+                elif option_label_method:
+                    display_text = option_label_method(player, opt)
                 else:
                     display_text = opt
                 items.append(MenuItem(text=display_text, id=opt))

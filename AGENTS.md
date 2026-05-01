@@ -374,6 +374,7 @@ Option types: `IntOption`, `FloatOption`, `MenuOption`, `BoolOption`, `TeamModeO
 - **Every option MUST have a `change_msg` key** defined in both EN and VI `.ftl` files. The system broadcasts changes automatically.
 - **`MenuOption` must have `choice_labels`** mapping internal values to localization keys so users see localized text, not raw strings.
 - **`TeamModeOption`** uses `TeamManager.get_all_team_modes(min, max)` for dynamic choices.
+- Team-based games should use the shared team arrangement flow unless their rules explicitly forbid manual team assignment.
 
 ### 5.3 Pre-start Validation
 
@@ -596,6 +597,20 @@ Rules:
 - Detailed score checks should use `status_box(player, lines)` with one line per player/team unless the game has a stronger established detail view.
 - Any code that formats `game-score-line` or `game-score-line-target` directly must pass the localized `unit` variable. Prefer `TeamManager.format_scores_detailed(...)` or a small game helper over open-coded formatting.
 - Score display units are presentation only. Leaderboards, ratings, personal statistics, and `GameResult.custom_data` must continue to store numeric values in their existing schema.
+
+### 8.4 Team Management
+
+Team-based games use the shared `TeamManager` and the base lobby team arrangement flow.
+
+Rules:
+
+- Games with a `TeamModeOption` must validate `self.options.team_mode` in `prestart_validate()` with `_validate_team_mode(...)`.
+- Team games should call `_setup_team_manager_for_start(self.options.team_mode, active_players)` during `on_start()` or their team setup helper. This preserves host-arranged teams when the lobby arrangement phase is active and falls back to automatic assignment for direct tests, saved games, and non-arranged starts.
+- Team games whose turn order depends on team seating must call `_get_team_turn_players(active_players)` before `set_turn_players(...)`. This preserves the old round-robin balance after manual team swaps instead of letting teammates act back-to-back accidentally.
+- The host-controlled team arrangement phase is enabled by default for non-`individual` team modes. Override `allows_team_arrangement()` and return `False` only when a game's rules require fixed or automatic teams.
+- Do not duplicate team-selection UI inside individual games. The shared lobby actions handle reading teams, selecting a member, swapping with another team, cancelling, and confirming the game start.
+- Team arrangement must remain a lobby-only flow. Games should not switch `status` to `"playing"` until arranged teams are confirmed and `on_start()` is called.
+- Roster-changing actions such as joining, leaving, adding bots, removing bots, spectator toggles, or option changes must not silently mutate an active team arrangement. Use the shared helpers and visibility rules so arrangement is cancelled, blocked, or rebuilt deliberately.
 
 ---
 

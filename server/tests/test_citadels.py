@@ -214,7 +214,7 @@ def test_replaced_player_bot_auto_selects_character_during_selection() -> None:
     replaced = game.current_player
     assert replaced is not None
 
-    game._replace_with_bot(replaced)
+    assert game._replace_with_bot(replaced) is True
 
     assert replaced.is_bot is True
     assert advance_until(
@@ -222,6 +222,18 @@ def test_replaced_player_bot_auto_selects_character_during_selection() -> None:
         lambda: isinstance(replaced.selected_character_rank, int) and game.selection_index >= 1,
         max_ticks=200,
     )
+
+
+def test_replaced_player_can_be_converted_before_citadels_start() -> None:
+    game = make_game(start=False)
+    replaced = game.players[1]
+
+    assert game._replace_with_bot(replaced) is False
+    assert game._replace_with_bot(replaced, allow_waiting=True) is True
+
+    assert replaced.is_bot is True
+    assert replaced.replaced_human_name == "Player2"
+    assert replaced.name != "Player2"
 
 
 def test_assassin_target_skips_the_rank_with_sequence_sound() -> None:

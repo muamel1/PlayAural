@@ -616,12 +616,10 @@ class ScopaGame(Game):
 
         # Setup teams
         active_players = self.get_active_players()
-        player_names = [p.name for p in active_players]
-        self._team_manager.team_mode = self.options.team_mode
-        self._team_manager.setup_teams(player_names)
+        self._setup_team_manager_for_start(self.options.team_mode, active_players)
 
         # Initialize turn order
-        self.set_turn_players(active_players)
+        self.set_turn_players(self._get_team_turn_players(active_players))
 
         # Reset player state
         for player in active_players:
@@ -699,7 +697,8 @@ class ScopaGame(Game):
         self.broadcast_l("game-round-start", buffer="game", round=self.current_round)
 
         # Rotate dealer (rightmost/last player, moves left/decreases)
-        active_players = self.get_active_players()
+        active_players = self._get_team_turn_players()
+        self.set_turn_players(active_players)
         self.dealer_index = (
             (self.dealer_index - 1) % len(active_players) if active_players else 0
         )
@@ -754,7 +753,7 @@ class ScopaGame(Game):
 
     def _deal_cards(self) -> None:
         """Deal cards to all active players."""
-        active_players = self.get_active_players()
+        active_players = self.turn_players
         if not active_players or self.deck.is_empty():
             return
 

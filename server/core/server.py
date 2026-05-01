@@ -4140,7 +4140,9 @@ PlayAural Server
 
     def _find_reclaimable_bot_player(self, game: Any, user: NetworkUser) -> Any | None:
         """Find the bot-held seat that belongs to this user's UUID, if any."""
-        if game.status != "playing":
+        if game.status != "playing" and not getattr(
+            game, "team_arrangement_active", False
+        ):
             return None
         for player in game.players:
             if (
@@ -4216,6 +4218,8 @@ PlayAural Server
             bot=bot_name,
         )
         game.broadcast_sound(sound_name)
+        if hasattr(game, "_on_replacement_slot_reclaimed"):
+            game._on_replacement_slot_reclaimed(bot_name, human_name)
         game.rebuild_all_menus()
 
     def _leave_current_table_for_transfer(

@@ -9,6 +9,7 @@ from ..users.base import MenuItem, EscapeBehavior
 from ..users.bot import Bot
 from ..messages.localization import Localization
 from .player import Player
+from .teams import TeamManager
 from .bot_names import (
     generate_unique_bot_name,
     get_valid_bot_name_pool,
@@ -40,6 +41,10 @@ class LobbyActionsMixin:
 
     def _action_start_game(self, player: "Player", action_id: str) -> None:
         """Start the game."""
+        if self.team_arrangement_active:
+            self._action_confirm_team_arrangement(player, action_id)
+            return
+
         # Validate configuration before starting
         errors = self.prestart_validate()
         if errors:
@@ -54,21 +59,28 @@ class LobbyActionsMixin:
 
         self._prepare_disconnected_lobby_members_for_start()
 
-        # Announce game is starting
-        self.broadcast_l("game-starting", buffer="system")
+        if self._should_begin_team_arrangement():
+            self._begin_team_arrangement()
+            return
 
-        # Start the game (subclasses implement this)
+        self._start_game_from_lobby()
+
+    def _start_game_from_lobby(self) -> None:
+        """Start gameplay after all lobby-only preparation has completed."""
+        self.broadcast_l("game-starting", buffer="system")
         self.on_start()
+        self._clear_team_arrangement_state()
         self._sync_table_status()
 
-    def _prepare_disconnected_lobby_members_for_start(self) -> None:
+    def _prepare_disconnected_lobby_members_for_start(self) -> bool:
         """Convert offline lobby players to bots before game-specific setup."""
         table = self._table
         server = getattr(table, "_server", None) if table else None
         online_users = getattr(server, "_users", {}) if server else {}
         if not table or not server:
-            return
+            return False
 
+        changed = False
         for member in list(table.members):
             user = table._users.get(member.username)
             if member.username in online_users:
@@ -85,6 +97,7 @@ class LobbyActionsMixin:
                     member.username,
                     voice_reason="voice-status-connection-lost",
                 )
+                changed = True
                 continue
 
             player = self.get_player_by_id(user.uuid) if user else None
@@ -104,6 +117,397 @@ class LobbyActionsMixin:
                 and self._replace_with_bot(player, allow_waiting=True)
             ):
                 self.broadcast_sound("leave.ogg")
+                changed = True
+
+        return changed
+
+    # Team arrangement
+
+    def allows_team_arrangement(self) -> bool:
+        """Return whether this game allows host-controlled team arrangement."""
+        return True
+
+    def _configured_team_mode(self) -> str:
+        """Return the currently selected team mode, if this game has one."""
+        options = getattr(self, "options", None)
+        return getattr(options, "team_mode", "individual")
+
+    def _should_begin_team_arrangement(self) -> bool:
+        """Return whether start should enter team arrangement instead of play."""
+        team_mode = self._configured_team_mode()
+        if team_mode == "individual":
+            return False
+        if not self.allows_team_arrangement():
+            return False
+        return TeamManager.is_valid_team_mode(team_mode, self.get_active_player_count())
+
+    def _begin_team_arrangement(self) -> None:
+        """Pre-assign teams and let the host confirm or swap members."""
+        active_players = self.get_active_players()
+        self.team_arrangement_active = True
+        self.team_arrangement_selected_player_id = ""
+        self.team_arrangement_team_mode = self._configured_team_mode()
+        self._team_manager.team_mode = self.team_arrangement_team_mode
+        self._team_manager.setup_teams([player.name for player in active_players])
+        self._apply_team_indexes_from_manager()
+
+        self.broadcast_l("team-arrangement-started", buffer="system")
+        self._broadcast_team_arrangement()
+        self.rebuild_all_menus()
+
+    def _clear_team_arrangement_state(self) -> None:
+        """Clear transient team-arrangement UI state."""
+        self.team_arrangement_active = False
+        self.team_arrangement_selected_player_id = ""
+        self.team_arrangement_team_mode = ""
+
+    def _cancel_team_arrangement(self, message_key: str | None = None) -> None:
+        """Cancel an active team-arrangement phase."""
+        if not self.team_arrangement_active:
+            return
+        self._clear_team_arrangement_state()
+        self._team_manager.teams = []
+        self._team_manager._player_to_team = {}
+        if message_key:
+            self.broadcast_l(message_key, buffer="system")
+        self.rebuild_all_menus()
+
+    def _cancel_team_arrangement_for_roster_change(self) -> None:
+        """Cancel arrangement when active players change before confirmation."""
+        self._cancel_team_arrangement("team-arrangement-cancelled-roster")
+
+    def _active_player_names(self) -> list[str]:
+        """Return current active player names in table order."""
+        return [player.name for player in self.get_active_players()]
+
+    def _team_arrangement_is_valid(self) -> bool:
+        """Return whether the arranged teams still match the active roster."""
+        if not self.team_arrangement_active:
+            return False
+        if self._configured_team_mode() != self.team_arrangement_team_mode:
+            return False
+        if self._team_manager.team_mode != self.team_arrangement_team_mode:
+            return False
+        return self._team_manager.validate_assignments(self._active_player_names())
+
+    def _setup_team_manager_for_start(
+        self,
+        team_mode: str,
+        active_players: list["Player"] | None = None,
+    ) -> None:
+        """Set up or reuse TeamManager assignments for game start."""
+        active_players = (
+            active_players if active_players is not None else self.get_active_players()
+        )
+        player_names = [player.name for player in active_players]
+        self._team_manager.team_mode = team_mode
+
+        if (
+            self.team_arrangement_active
+            and self.team_arrangement_team_mode == team_mode
+            and self._team_manager.validate_assignments(player_names)
+        ):
+            self._team_manager.rebuild_player_index()
+        else:
+            self._team_manager.setup_teams(player_names)
+
+        self._apply_team_indexes_from_manager(active_players)
+
+    def _apply_team_indexes_from_manager(
+        self,
+        active_players: list["Player"] | None = None,
+    ) -> None:
+        """Mirror TeamManager assignment onto players with a team_index field."""
+        active_players = (
+            active_players if active_players is not None else self.get_active_players()
+        )
+        for current_player in active_players:
+            team = self._team_manager.get_team(current_player.name)
+            if team and hasattr(current_player, "team_index"):
+                current_player.team_index = team.index
+
+    def _rename_team_member(self, old_name: str, new_name: str) -> None:
+        """Keep team assignments aligned with a player display-name change."""
+        if self._team_manager.rename_member(old_name, new_name):
+            self._apply_team_indexes_from_manager()
+
+    def _sync_replacement_team_members(self) -> bool:
+        """Repair team member names for seats currently held by replacement bots."""
+        if not self._team_manager.teams:
+            return False
+
+        changed = False
+        for current_player in self.get_active_players():
+            replaced_human_name = getattr(current_player, "replaced_human_name", "")
+            if (
+                not replaced_human_name
+                or replaced_human_name == current_player.name
+                or self._team_manager.get_team(current_player.name)
+            ):
+                continue
+            if self._team_manager.rename_member(
+                replaced_human_name,
+                current_player.name,
+            ):
+                changed = True
+
+        if changed:
+            self._apply_team_indexes_from_manager()
+        return changed
+
+    def _on_replacement_slot_reclaimed(self, bot_name: str, human_name: str) -> None:
+        """Update team state after a human reclaims a bot-held seat."""
+        self._rename_team_member(bot_name, human_name)
+        if self.team_arrangement_active:
+            self._broadcast_team_arrangement()
+
+    def _get_team_turn_players(
+        self,
+        active_players: list["Player"] | None = None,
+    ) -> list["Player"]:
+        """Return active players in a team-balanced turn order."""
+        active_players = (
+            active_players if active_players is not None else self.get_active_players()
+        )
+        players_by_name = {
+            current_player.name: current_player for current_player in active_players
+        }
+        ordered_names = self._team_manager.balanced_turn_order(
+            [current_player.name for current_player in active_players]
+        )
+        ordered_players = [
+            players_by_name[name] for name in ordered_names if name in players_by_name
+        ]
+        return ordered_players or active_players
+
+    def _team_arrangement_lines(self, locale: str) -> list[str]:
+        """Format the current team arrangement as localized lines."""
+        lines: list[str] = []
+        for team in sorted(self._team_manager.teams, key=lambda item: item.index):
+            team_name = self._team_manager.get_team_name(team, locale)
+            members = Localization.format_list_and(locale, team.members)
+            lines.append(
+                Localization.get(
+                    locale,
+                    "team-arrangement-line",
+                    team=team_name,
+                    members=members,
+                )
+            )
+        turn_order = [player.name for player in self._get_team_turn_players()]
+        if turn_order:
+            lines.append(
+                Localization.get(
+                    locale,
+                    "team-arrangement-turn-order",
+                    players=Localization.format_list_and(locale, turn_order),
+                )
+            )
+        return lines
+
+    def _broadcast_team_arrangement(self) -> None:
+        """Broadcast current team assignments line by line."""
+        for current_player in self.players:
+            user = self.get_user(current_player)
+            if not user:
+                continue
+            for line in self._team_arrangement_lines(user.locale):
+                user.speak(line, buffer="system")
+
+    def _find_team_arrangement_player(self, player_id: str) -> "Player | None":
+        """Find an active player by id for team arrangement."""
+        for current_player in self.get_active_players():
+            if current_player.id == player_id:
+                return current_player
+        return None
+
+    def _team_arrangement_member_options(self, player: "Player") -> list[str]:
+        """Return active player ids for the team-arrangement selection menu."""
+        return [current_player.id for current_player in self.get_active_players()]
+
+    def _team_arrangement_swap_options(self, player: "Player") -> list[str]:
+        """Return candidate player ids for swapping with the selected member."""
+        selected_id = self.team_arrangement_selected_player_id
+        selected = self._find_team_arrangement_player(selected_id)
+        selected_team = self._team_manager.get_team(selected.name) if selected else None
+        options: list[str] = []
+        for current_player in self.get_active_players():
+            if current_player.id == selected_id:
+                continue
+            candidate_team = self._team_manager.get_team(current_player.name)
+            if (
+                selected_team
+                and candidate_team
+                and candidate_team.index == selected_team.index
+            ):
+                continue
+            options.append(current_player.id)
+        return options
+
+    def _team_arrangement_member_label(self, player: "Player", target_id: str) -> str:
+        """Return a localized label for a selectable team member."""
+        user = self.get_user(player)
+        locale = user.locale if user else "en"
+        target = self._find_team_arrangement_player(target_id)
+        if not target:
+            return target_id
+        team = self._team_manager.get_team(target.name)
+        team_name = (
+            self._team_manager.get_team_name(team, locale)
+            if team
+            else Localization.get(locale, "game-team-name", index=0)
+        )
+        selected_key = (
+            "team-arrangement-selected"
+            if target.id == self.team_arrangement_selected_player_id
+            else "team-arrangement-not-selected"
+        )
+        return Localization.get(
+            locale,
+            "team-arrangement-member-option",
+            player=target.name,
+            team=team_name,
+            selected=Localization.get(locale, selected_key),
+        )
+
+    def _team_arrangement_swap_label(self, player: "Player", target_id: str) -> str:
+        """Return a localized label for a swap target."""
+        return self._team_arrangement_member_label(player, target_id)
+
+    def _get_swap_team_member_label(self, player: "Player", action_id: str) -> str:
+        """Return the swap action label, including selected player when present."""
+        user = self.get_user(player)
+        locale = user.locale if user else "en"
+        selected = self._find_team_arrangement_player(
+            self.team_arrangement_selected_player_id
+        )
+        if not selected:
+            return Localization.get(locale, "team-arrangement-swap-member")
+        return Localization.get(
+            locale,
+            "team-arrangement-swap-member-selected",
+            player=selected.name,
+        )
+
+    def _action_confirm_team_arrangement(
+        self, player: "Player", action_id: str
+    ) -> None:
+        """Confirm arranged teams and start the game."""
+        if player.name != self.host or not self.team_arrangement_active:
+            return
+
+        errors = self.prestart_validate()
+        if errors:
+            for error in errors:
+                if isinstance(error, tuple):
+                    error_key, kwargs = error
+                    self.broadcast_l(error_key, buffer="game", **kwargs)
+                else:
+                    self.broadcast_l(error, buffer="game")
+            return
+
+        roster_changed = self._prepare_disconnected_lobby_members_for_start()
+        if not self._should_begin_team_arrangement():
+            self._start_game_from_lobby()
+            return
+
+        if roster_changed or not self._team_arrangement_is_valid():
+            self.broadcast_l("team-arrangement-refreshed", buffer="system")
+            self._begin_team_arrangement()
+            return
+
+        self._start_game_from_lobby()
+
+    def _action_cancel_team_arrangement(
+        self, player: "Player", action_id: str
+    ) -> None:
+        """Cancel arranged teams and return to normal lobby setup."""
+        if player.name != self.host:
+            return
+        self._cancel_team_arrangement("team-arrangement-cancelled")
+
+    def _action_read_team_arrangement(self, player: "Player", action_id: str) -> None:
+        """Read the current team arrangement to one player."""
+        user = self.get_user(player)
+        if not user:
+            return
+        if not self.team_arrangement_active:
+            user.speak_l("team-arrangement-not-active", buffer="system")
+            return
+        for line in self._team_arrangement_lines(user.locale):
+            user.speak(line, buffer="system")
+
+    def _action_select_team_member(
+        self, player: "Player", selected_id: str, action_id: str
+    ) -> None:
+        """Select a team member before choosing a swap target."""
+        if player.name != self.host:
+            return
+        selected = self._find_team_arrangement_player(selected_id)
+        user = self.get_user(player)
+        if not selected:
+            if user:
+                user.speak_l("team-arrangement-player-missing", buffer="system")
+            return
+
+        self.team_arrangement_selected_player_id = selected.id
+        team = self._team_manager.get_team(selected.name)
+        locale = user.locale if user else "en"
+        team_name = (
+            self._team_manager.get_team_name(team, locale)
+            if team
+            else Localization.get(locale, "game-team-name", index=0)
+        )
+        if user:
+            user.speak_l(
+                "team-arrangement-member-selected",
+                buffer="system",
+                player=selected.name,
+                team=team_name,
+            )
+        self.rebuild_all_menus()
+
+    def _action_swap_team_member(
+        self, player: "Player", target_id: str, action_id: str
+    ) -> None:
+        """Swap the selected team member with another active player."""
+        if player.name != self.host:
+            return
+
+        user = self.get_user(player)
+        selected = self._find_team_arrangement_player(
+            self.team_arrangement_selected_player_id
+        )
+        target = self._find_team_arrangement_player(target_id)
+        if not selected or not target:
+            if user:
+                user.speak_l("team-arrangement-player-missing", buffer="system")
+            self.team_arrangement_selected_player_id = ""
+            self.rebuild_all_menus()
+            return
+
+        selected_team = self._team_manager.get_team(selected.name)
+        target_team = self._team_manager.get_team(target.name)
+        if selected_team and target_team and selected_team.index == target_team.index:
+            if user:
+                user.speak_l("team-arrangement-same-team", buffer="system")
+            return
+
+        if not self._team_manager.swap_members(selected.name, target.name):
+            if user:
+                user.speak_l("team-arrangement-swap-failed", buffer="system")
+            return
+
+        self._apply_team_indexes_from_manager()
+        self.team_arrangement_selected_player_id = ""
+        self.broadcast_l(
+            "team-arrangement-swapped",
+            buffer="system",
+            first=selected.name,
+            second=target.name,
+        )
+        self._broadcast_team_arrangement()
+        self.rebuild_all_menus()
 
     def _bot_input_add_bot(self, player: "Player") -> str | None:
         """Get bot name for add_bot action."""
@@ -172,6 +576,9 @@ class LobbyActionsMixin:
 
     def _action_add_bot(self, player: "Player", bot_name: str, action_id: str) -> None:
         """Add a bot with the selected name."""
+        if self.team_arrangement_active:
+            return
+
         bot_name = self._resolve_add_bot_name(player, bot_name)
         if bot_name is None:
             return
@@ -188,6 +595,9 @@ class LobbyActionsMixin:
 
     def _action_remove_bot(self, player: "Player", action_id: str) -> None:
         """Remove the last bot from the game."""
+        if self.team_arrangement_active:
+            return
+
         for i in range(len(self.players) - 1, -1, -1):
             if self.players[i].is_bot:
                 bot = self.players.pop(i)
@@ -203,6 +613,8 @@ class LobbyActionsMixin:
         """Toggle spectator mode for a player."""
         if self.status != "waiting":
             return  # Can only toggle before game starts
+        if self.team_arrangement_active:
+            return
 
         # If currently a spectator trying to become a player, check capacity
         if player.is_spectator:
@@ -391,6 +803,8 @@ class LobbyActionsMixin:
         self.attach_user(player.id, user)
         # Set up action sets for the new player
         self.setup_player_actions(player)
+        if self.team_arrangement_active and not player.is_spectator:
+            self._cancel_team_arrangement_for_roster_change()
         return player
 
     def add_spectator(self, name: str, user: "User") -> "Player":

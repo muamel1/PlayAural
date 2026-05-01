@@ -340,11 +340,10 @@ class PigGame(Game):
 
         # Set up teams based on active players
         active_players = self.get_active_players()
-        self._team_manager.team_mode = self.options.team_mode
-        self._team_manager.setup_teams([p.name for p in active_players])
+        self._setup_team_manager_for_start(self.options.team_mode, active_players)
 
         # Initialize turn order
-        self.set_turn_players(active_players)
+        self.set_turn_players(self._get_team_turn_players(active_players))
 
         # Reset player round scores (total scores are in TeamManager)
         for player in active_players:
@@ -362,7 +361,7 @@ class PigGame(Game):
 
         # Refresh turn order with current active players (handles tiebreakers)
         # and reset to first player for the new round
-        self.set_turn_players(self.get_active_players())
+        self.set_turn_players(self._get_team_turn_players())
 
         self.play_sound("game_pig/roundstart.ogg")
         self.broadcast_l("game-round-start", buffer="game", round=self.round)

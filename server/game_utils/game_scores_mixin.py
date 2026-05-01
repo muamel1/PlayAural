@@ -40,6 +40,12 @@ class GameScoresMixin:
         """Return whether the shared score actions have score lines to report."""
         return bool(self.team_manager.teams)
 
+    def _sync_score_display_names(self) -> None:
+        """Align score display names with active replacement-bot seat names."""
+        sync = getattr(self, "_sync_replacement_team_members", None)
+        if callable(sync):
+            sync()
+
     def _action_whose_turn(self, player: "Player", action_id: str) -> None:
         """Announce whose turn it is."""
         user = self.get_user(player)
@@ -123,6 +129,7 @@ class GameScoresMixin:
         if not user:
             return
 
+        self._sync_score_display_names()
         if self.supports_score_actions():
             lines = self.team_manager.format_scores_detailed(
                 user.locale,
@@ -140,6 +147,7 @@ class GameScoresMixin:
         if not user:
             return
 
+        self._sync_score_display_names()
         if self.supports_score_actions():
             lines = self.team_manager.format_scores_detailed(
                 user.locale,

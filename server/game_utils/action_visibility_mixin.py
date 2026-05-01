@@ -46,6 +46,10 @@ class ActionVisibilityMixin:
         """Check if start_game action is enabled."""
         if self.status != "waiting":
             return "action-game-in-progress"
+        if self.team_arrangement_active:
+            if player.name != self.host:
+                return "action-not-host"
+            return None
         if player.name != self.host:
             return "action-not-host"
         active_count = self.get_active_player_count()
@@ -55,14 +59,111 @@ class ActionVisibilityMixin:
 
     def _is_start_game_hidden(self, player: "Player") -> Visibility:
         """Check if start_game action is hidden."""
-        if self.status != "waiting":
+        if self.status != "waiting" or self.team_arrangement_active:
             return Visibility.HIDDEN
         return Visibility.VISIBLE
+
+    def _is_confirm_team_arrangement_enabled(self, player: "Player") -> str | None:
+        """Check if team arrangement can be confirmed."""
+        if self.status != "waiting":
+            return "action-not-available"
+        if not self.team_arrangement_active:
+            return "action-not-available"
+        if player.name != self.host:
+            return "action-not-host"
+        return None
+
+    def _is_confirm_team_arrangement_hidden(self, player: "Player") -> Visibility:
+        """Show confirm only during team arrangement."""
+        if self.status == "waiting" and self.team_arrangement_active:
+            return Visibility.VISIBLE
+        return Visibility.HIDDEN
+
+    def _is_read_team_arrangement_enabled(self, player: "Player") -> str | None:
+        """Check if current arranged teams can be read."""
+        if not self.team_arrangement_active:
+            return "team-arrangement-not-active"
+        return None
+
+    def _is_read_team_arrangement_hidden(self, player: "Player") -> Visibility:
+        """Show read-teams only during team arrangement."""
+        if self.status == "waiting" and self.team_arrangement_active:
+            return Visibility.VISIBLE
+        return Visibility.HIDDEN
+
+    def _is_select_team_member_enabled(self, player: "Player") -> str | None:
+        """Check if the host can select a team member to move."""
+        if self.status != "waiting":
+            return "action-game-in-progress"
+        if not self.team_arrangement_active:
+            return "team-arrangement-not-active"
+        if player.name != self.host:
+            return "action-not-host"
+        if self.get_active_player_count() < 2:
+            return "action-need-more-players"
+        if not self._team_arrangement_is_valid():
+            return "game-error-invalid-team-mode"
+        return None
+
+    def _is_select_team_member_hidden(self, player: "Player") -> Visibility:
+        """Show member selection only to the host during arrangement."""
+        if (
+            self.status == "waiting"
+            and self.team_arrangement_active
+            and player.name == self.host
+        ):
+            return Visibility.VISIBLE
+        return Visibility.HIDDEN
+
+    def _is_swap_team_member_enabled(self, player: "Player") -> str | None:
+        """Check if the selected member can be swapped."""
+        if self.status != "waiting":
+            return "action-game-in-progress"
+        if not self.team_arrangement_active:
+            return "team-arrangement-not-active"
+        if player.name != self.host:
+            return "action-not-host"
+        if not self.team_arrangement_selected_player_id:
+            return "team-arrangement-select-first"
+        if not self._team_arrangement_is_valid():
+            return "game-error-invalid-team-mode"
+        if not self._team_arrangement_swap_options(player):
+            return "no-options-available"
+        return None
+
+    def _is_swap_team_member_hidden(self, player: "Player") -> Visibility:
+        """Show swap action only after the host selects a member."""
+        if (
+            self.status == "waiting"
+            and self.team_arrangement_active
+            and self.team_arrangement_selected_player_id
+            and player.name == self.host
+        ):
+            return Visibility.VISIBLE
+        return Visibility.HIDDEN
+
+    def _is_cancel_team_arrangement_enabled(self, player: "Player") -> str | None:
+        """Check if team arrangement can be cancelled."""
+        if self.status != "waiting":
+            return "action-game-in-progress"
+        if not self.team_arrangement_active:
+            return "team-arrangement-not-active"
+        if player.name != self.host:
+            return "action-not-host"
+        return None
+
+    def _is_cancel_team_arrangement_hidden(self, player: "Player") -> Visibility:
+        """Show cancel only during team arrangement."""
+        if self.status == "waiting" and self.team_arrangement_active:
+            return Visibility.VISIBLE
+        return Visibility.HIDDEN
 
     def _is_add_bot_enabled(self, player: "Player") -> str | None:
         """Check if add_bot action is enabled."""
         if self.status != "waiting":
             return "action-game-in-progress"
+        if self.team_arrangement_active:
+            return "team-arrangement-in-progress"
         if player.name != self.host:
             return "action-not-host"
         if self.get_active_player_count() >= self.get_max_players():
@@ -77,6 +178,8 @@ class ActionVisibilityMixin:
         """Check if remove_bot action is enabled."""
         if self.status != "waiting":
             return "action-game-in-progress"
+        if self.team_arrangement_active:
+            return "team-arrangement-in-progress"
         if player.name != self.host:
             return "action-not-host"
         if not any(p.is_bot for p in self.players):
@@ -91,6 +194,8 @@ class ActionVisibilityMixin:
         """Check if toggle_spectator action is enabled."""
         if self.status != "waiting":
             return "action-game-in-progress"
+        if self.team_arrangement_active:
+            return "team-arrangement-in-progress"
         if player.is_bot:
             return "action-bots-cannot"
         return None
@@ -131,13 +236,15 @@ class ActionVisibilityMixin:
         """Check if option actions are enabled (waiting state, host only)."""
         if self.status != "waiting":
             return "action-game-in-progress"
+        if self.team_arrangement_active:
+            return "team-arrangement-in-progress"
         if player.name != self.host:
             return "action-not-host"
         return None
 
     def _is_option_hidden(self, player: "Player") -> Visibility:
         """Options are visible in waiting state only."""
-        if self.status != "waiting":
+        if self.status != "waiting" or self.team_arrangement_active:
             return Visibility.HIDDEN
         return Visibility.VISIBLE
 

@@ -613,6 +613,55 @@ class TestTableInviteReclaim:
             player=guest.username,
         ) not in host.get_spoken_messages()
 
+    def test_lobby_replacement_bot_can_be_reclaimed_during_team_arrangement(self):
+        host = self._create_online_user("Host")
+        guest = self._create_online_user("Guest")
+        third = self._create_online_user("Third")
+        fourth = self._create_online_user("Fourth")
+        table = self.server._tables.create_table("pig", host.username, host)
+        game = PigGame(options=PigOptions(target_score=25, team_mode="2v2"))
+        table.game = game
+        game._table = table
+        game.initialize_lobby(host.username, host)
+        for user in (guest, third, fourth):
+            table.add_member(user.username, user, as_spectator=False)
+            game.add_player(user.username, user)
+
+        table._member_offline_since[guest.username] = 0.0
+        self.server._users.pop(guest.username, None)
+        host_player = game.get_player_by_id(host.uuid)
+        assert host_player is not None
+
+        game.execute_action(host_player, "start_game")
+
+        replacement = game.get_player_by_id(guest.uuid)
+        assert replacement is not None
+        bot_name = replacement.name
+        assert game.status == "waiting"
+        assert game.team_arrangement_active is True
+        assert replacement.is_bot is True
+        assert game.team_manager.get_team(bot_name) is not None
+
+        self.server._users[guest.username] = guest
+        host.clear_messages()
+        guest.clear_messages()
+
+        self.server._auto_join_table(guest, table, table.game_type)
+
+        reclaimed = game.get_player_by_id(guest.uuid)
+        assert reclaimed is not None
+        assert reclaimed.is_bot is False
+        assert reclaimed.name == guest.username
+        assert game.team_arrangement_active is True
+        assert game.team_manager.get_team(guest.username) is not None
+        assert game.team_manager.get_team(bot_name) is None
+        assert Localization.get(
+            host.locale,
+            "player-reclaimed-from-bot",
+            player=guest.username,
+            bot=bot_name,
+        ) in host.get_spoken_messages()
+
     def test_lobby_disconnected_spectator_is_removed_before_start(self):
         host = self._create_online_user("Host")
         guest = self._create_online_user("Guest")

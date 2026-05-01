@@ -114,6 +114,9 @@ class Game(
     player_action_sets: dict[str, list[ActionSet]] = field(default_factory=dict)
     # Team manager (serialized for persistence)
     _team_manager: TeamManager = field(default_factory=TeamManager)
+    team_arrangement_active: bool = False
+    team_arrangement_selected_player_id: str = ""
+    team_arrangement_team_mode: str = ""
 
     def __post_init__(self):
         """Initialize non-serialized state."""
@@ -269,6 +272,7 @@ class Game(
 
         Subclasses should call super().on_tick() to ensure base functionality runs.
         """
+        self._sync_replacement_team_members()
         for player in self.players:
             if getattr(player, "reconnect_grace_ticks", 0) > 0:
                 player.reconnect_grace_ticks -= 1
@@ -364,6 +368,9 @@ class Game(
         if not player:
             return
 
+        if self.team_arrangement_active and not player.is_spectator:
+            self._cancel_team_arrangement_for_roster_change()
+
         # Remove from players list
         self.players = [p for p in self.players if p.id != player_id]
         
@@ -398,6 +405,7 @@ class Game(
         player.replaced_human_name = human_name
         player.replacement_bot_name = bot_name
         player.name = bot_name
+        self._rename_team_member(human_name, bot_name)
         self._users.pop(player.id, None)
 
         # Use same UUID so user can reclaim it

@@ -529,14 +529,13 @@ class DominosGame(Game):
         self.game_active = True
         self.round = 0
         self._setup_teams()
-        self.set_turn_players(self.get_active_players())
+        self.set_turn_players(self._get_team_turn_players())
         self.play_music(SOUND_MUSIC)
         self._start_round()
 
     def _setup_teams(self) -> None:
         active_players = self.get_active_players()
-        self._team_manager.team_mode = self.options.team_mode
-        self._team_manager.setup_teams([player.name for player in active_players])
+        self._setup_team_manager_for_start(self.options.team_mode, active_players)
         self.team_manager.reset_all_scores()
 
     def _start_round(self) -> None:
@@ -555,7 +554,8 @@ class DominosGame(Game):
         self.boneyard = build_domino_set(max_pip)
 
         active_players = self.get_active_players()
-        self.set_turn_players(active_players)
+        turn_players = self._get_team_turn_players(active_players)
+        self.set_turn_players(turn_players)
         for player in active_players:
             player.hand.clear()
 
@@ -572,8 +572,8 @@ class DominosGame(Game):
         self._place_opening_tile(opening_tile)
         self._broadcast_opening_play(opener, opening_tile)
 
-        opener_index = active_players.index(opener)
-        self.turn_index = (opener_index + 1) % len(active_players)
+        opener_index = turn_players.index(opener)
+        self.turn_index = (opener_index + 1) % len(turn_players)
         self._update_all_turn_actions()
         self.announce_turn()
         self.rebuild_all_menus()

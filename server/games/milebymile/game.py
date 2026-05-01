@@ -117,16 +117,7 @@ class MileByMileGame(Game):
     def _setup_teams(self) -> None:
         """Set up teams using TeamManager."""
         active_players = self.get_active_players()
-        player_names = [p.name for p in active_players]
-
-        self._team_manager.team_mode = self.options.team_mode
-        self._team_manager.setup_teams(player_names)
-
-        # Set player team indices
-        for player in active_players:
-            team = self._team_manager.get_team(player.name)
-            if team:
-                player.team_index = team.index
+        self._setup_team_manager_for_start(self.options.team_mode, active_players)
 
         # Initialize race states for each team
         self.race_states = [RaceState() for _ in self._team_manager.teams]
@@ -1661,7 +1652,7 @@ class MileByMileGame(Game):
 
         # Initialize turn order
         active_players = self.get_active_players()
-        self.set_turn_players(active_players)
+        self.set_turn_players(self._get_team_turn_players(active_players))
 
         # Play music and ambience
         self.play_music("game_milebymile/music.ogg")

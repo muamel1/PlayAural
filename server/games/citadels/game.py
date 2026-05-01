@@ -847,18 +847,28 @@ class CitadelsGame(Game):
         if self.status == "playing" and self.current_player and self.current_player.is_bot:
             BotHelper.on_tick(self)
 
-    def _replace_with_bot(self, player: Player) -> None:
+    def _replace_with_bot(
+        self,
+        player: Player,
+        *,
+        allow_waiting: bool = False,
+    ) -> bool:
         was_current = self.current_player == player
-        was_selection_picker = self.phase == PHASE_SELECTION and self._selection_player() == player
-        super()._replace_with_bot(player)
+        was_selection_picker = (
+            self.phase == PHASE_SELECTION and self._selection_player() == player
+        )
+        replaced = super()._replace_with_bot(player, allow_waiting=allow_waiting)
+        if not replaced:
+            return False
         if self.status != "playing" or not player.is_bot:
-            return
+            return True
         player.bot_pending_action = None
         if was_selection_picker:
             self.set_turn_players([player])
         if was_current or was_selection_picker or self.current_player == player:
             self.rebuild_all_menus()
             self._schedule_bot_turn(player)
+        return True
 
     def _start_selection_phase(self) -> None:
         self.phase = PHASE_SELECTION

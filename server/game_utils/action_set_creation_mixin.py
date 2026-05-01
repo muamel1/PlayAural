@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .player import Player
 
-from .actions import Action, ActionSet, EditboxInput
+from .actions import Action, ActionSet, EditboxInput, MenuInput
 from ..messages.localization import Localization
 from ..ui.keybinds import Keybind, KeybindState
 
@@ -34,6 +34,69 @@ class ActionSetCreationMixin:
                 handler="_action_start_game",
                 is_enabled="_is_start_game_enabled",
                 is_hidden="_is_start_game_hidden",
+                include_spectators=True,
+            )
+        )
+        action_set.add(
+            Action(
+                id="confirm_team_arrangement",
+                label=Localization.get(locale, "team-arrangement-confirm"),
+                handler="_action_confirm_team_arrangement",
+                is_enabled="_is_confirm_team_arrangement_enabled",
+                is_hidden="_is_confirm_team_arrangement_hidden",
+                include_spectators=True,
+            )
+        )
+        action_set.add(
+            Action(
+                id="read_team_arrangement",
+                label=Localization.get(locale, "team-arrangement-read"),
+                handler="_action_read_team_arrangement",
+                is_enabled="_is_read_team_arrangement_enabled",
+                is_hidden="_is_read_team_arrangement_hidden",
+                include_spectators=True,
+            )
+        )
+        action_set.add(
+            Action(
+                id="select_team_member",
+                label=Localization.get(
+                    locale, "team-arrangement-select-member-action"
+                ),
+                handler="_action_select_team_member",
+                is_enabled="_is_select_team_member_enabled",
+                is_hidden="_is_select_team_member_hidden",
+                input_request=MenuInput(
+                    prompt="team-arrangement-select-member",
+                    options="_team_arrangement_member_options",
+                    option_label="_team_arrangement_member_label",
+                ),
+                include_spectators=True,
+            )
+        )
+        action_set.add(
+            Action(
+                id="swap_team_member",
+                label=Localization.get(locale, "team-arrangement-swap-member"),
+                handler="_action_swap_team_member",
+                is_enabled="_is_swap_team_member_enabled",
+                is_hidden="_is_swap_team_member_hidden",
+                get_label="_get_swap_team_member_label",
+                input_request=MenuInput(
+                    prompt="team-arrangement-select-swap-target",
+                    options="_team_arrangement_swap_options",
+                    option_label="_team_arrangement_swap_label",
+                ),
+                include_spectators=True,
+            )
+        )
+        action_set.add(
+            Action(
+                id="cancel_team_arrangement",
+                label=Localization.get(locale, "team-arrangement-cancel"),
+                handler="_action_cancel_team_arrangement",
+                is_enabled="_is_cancel_team_arrangement_enabled",
+                is_hidden="_is_cancel_team_arrangement_hidden",
                 include_spectators=True,
             )
         )
@@ -214,7 +277,11 @@ class ActionSetCreationMixin:
         """Define all keybinds for the game."""
         # Lobby keybinds
         self.define_keybind(
-            "enter", "Start game", ["start_game"], state=KeybindState.IDLE
+            "enter",
+            "Start game",
+            ["start_game"],
+            state=KeybindState.IDLE,
+            include_spectators=True,
         )
         self.define_keybind("b", "Add bot", ["add_bot"], state=KeybindState.IDLE)
         self.define_keybind(
