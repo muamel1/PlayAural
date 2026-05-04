@@ -119,6 +119,7 @@ main-status-muted-suffix = , muted
 
 options-music-volume-label = Music Volume (spin button):
 options-ambience-volume-label = Ambience Volume (spin button):
+options-voice-volume-label = Voice Chat Volume:
 
 slash-command-error = Error processing slash command { $command }.
 reg-error-exception = Error: { $error }

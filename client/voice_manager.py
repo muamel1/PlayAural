@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import struct
 import threading
 import traceback
 from typing import Any, Callable
@@ -76,6 +77,30 @@ def resolve_audio_input_device(device_id: str) -> tuple[int | None, str, str, bo
     return None, "", "", False
 
 
+def _apply_pcm_gain(data: bytearray, gain: float) -> None:
+    """Apply gain multiplier to int16 PCM samples in a bytearray.
+
+    Pure Python implementation — no numpy required.
+    Works in-place on the bytearray to avoid memory allocations.
+    """
+    if gain == 1.0:
+        return
+    n = len(data) // 2  # number of int16 samples
+    # Process in chunks of 512 samples to avoid excessive struct overhead
+    CHUNK = 512
+    for chunk_start in range(0, n, CHUNK):
+        chunk_end = min(chunk_start + CHUNK, n)
+        for i in range(chunk_start, chunk_end):
+            sample = struct.unpack_from("<h", data, i * 2)[0]
+            scaled = int(sample * gain)
+            # Clamp to int16 range
+            if scaled > 32767:
+                scaled = 32767
+            elif scaled < -32768:
+                scaled = -32768
+            struct.pack_into("<h", data, i * 2, scaled)
+
+
 class VoiceManager:
     """Runs LiveKit voice chat on a dedicated asyncio loop."""
 
@@ -107,6 +132,9 @@ class VoiceManager:
         self._local_disconnect_requested = False
         self._intent_lock = threading.Lock()
         self._intent = 0
+        # Voice volume: 0.1–1.0, read by audio thread and main thread
+        self._voice_volume: float = 0.8
+        self._volume_lock = threading.Lock()
         self._start_loop()
 
     @property
@@ -151,6 +179,20 @@ class VoiceManager:
     ) -> None:
         self._submit(self._set_microphone_enabled(enabled, input_device=input_device))
 
+    def set_voice_volume(self, volume: float) -> None:
+        """Set remote voice playback gain (0.1–1.0).
+
+        Changes apply immediately to all active and future audio.
+        Thread-safe for concurrent calls.
+        """
+        clamped = max(0.1, min(1.0, float(volume)))
+        with self._volume_lock:
+            self._voice_volume = clamped
+
+    def _get_voice_volume(self) -> float:
+        with self._volume_lock:
+            return self._voice_volume
+
     def shutdown(self) -> None:
         if self.loop and self.loop.is_running():
             self._next_intent()
@@ -184,6 +226,10 @@ class VoiceManager:
         try:
             self.media_devices = rtc.MediaDevices(loop=self.loop)
             self.output_player = self.media_devices.open_output()
+
+            # Wrap the output player to intercept and apply volume to PCM frames
+            self._wrap_output_player_for_volume()
+
             await self.output_player.start()
             self.room = rtc.Room(loop=self.loop)
             self._bind_room_events(self.room)
@@ -207,6 +253,30 @@ class VoiceManager:
                 self.on_status("voice-chat-connect-failed", True)
                 self.on_state("disconnected")
 
+    def _wrap_output_player_for_volume(self) -> None:
+        """Wrap output_player.start() so it pipes PCM through volume before writing to buffer.
+
+        The LiveKit OutputPlayer writes raw int16 PCM to an internal bytearray buffer.
+        The PortAudio callback reads from this buffer. We intercept the write by
+        patching the player's start() to use a version that applies gain to each frame.
+        """
+        player = self.output_player
+        if not player:
+            return
+
+        original_start = player.start
+
+        async def volume_aware_start() -> None:
+            await original_start()
+            # After start(), the _play_task is running and reading from _mixer.
+            # We need to intercept the PCM bytes as they flow into _buffer.
+            # The cleanest way is to wrap the player's internal buffer attribute
+            # so writes go through our gain function.
+            wrapped_buffer = _VolumeAwareBuffer(player, lambda: self._get_voice_volume())
+            player._buffer = wrapped_buffer
+
+        player.start = volume_aware_start
+
     def _bind_room_events(self, room: Any) -> None:
         @room.on("track_subscribed")
         def on_track_subscribed(track: Any, publication: Any, participant: Any) -> None:
@@ -227,7 +297,7 @@ class VoiceManager:
                 self.on_state("disconnected")
                 if not self._local_disconnect_requested:
                     self.on_disconnect("connection_lost")
-                    self.on_status("voice-chat-left", False)
+                self.on_status("voice-chat-left", False)
 
     async def _attach_existing_tracks(self) -> None:
         if not self.room:
@@ -343,3 +413,43 @@ class VoiceManager:
         self.on_state("disconnected")
         if notify and was_connected:
             self.on_status("voice-chat-left", True)
+
+
+class _VolumeAwareBuffer:
+    """A bytearray wrapper that applies voice volume gain on every extend() call.
+
+    The LiveKit OutputPlayer appends raw PCM bytes to its internal `_buffer` via
+    `bytearray.extend()`. We replace the buffer with this wrapper so every chunk
+    of audio gets its volume adjusted before being stored.
+
+    This intercepts audio at the exact point where frames enter the buffer —
+    before the PortAudio callback reads them — making it the most efficient
+    and reliable way to apply software gain without modifying the SDK.
+    """
+
+    def __init__(self, player: Any, get_volume: callable) -> None:
+        self._inner = bytearray()
+        self._get_volume = get_volume
+
+    def extend(self, data: bytes) -> None:
+        """Append PCM data with current voice volume applied."""
+        gain = self._get_volume()
+        if gain == 1.0:
+            self._inner.extend(data)
+        else:
+            # Work on a mutable copy so we can modify in-place
+            chunk = bytearray(data)
+            _apply_pcm_gain(chunk, gain)
+            self._inner.extend(chunk)
+
+    def __len__(self) -> int:
+        return len(self._inner)
+
+    def __getitem__(self, key: Any) -> Any:
+        return self._inner[key]
+
+    def __delitem__(self, key: Any) -> None:
+        del self._inner[key]
+
+    def clear(self) -> None:
+        self._inner.clear()

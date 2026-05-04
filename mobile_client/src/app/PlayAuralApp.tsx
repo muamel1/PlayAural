@@ -1263,6 +1263,9 @@ export function PlayAuralApp() {
     if (typeof merged.ambience_volume === "number") {
       audio.setAmbienceVolume(merged.ambience_volume / 100);
     }
+    if (typeof merged.voice_volume === "number") {
+      voice.setVoiceVolume(merged.voice_volume / 100);
+    }
     if (merged.mobile_tts_rate !== undefined) {
       tts.setRate(serverSpeechRateToExpoRate(merged.mobile_tts_rate));
     }

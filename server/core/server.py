@@ -89,7 +89,7 @@ class Server:
         "unmute_menu", "manage_motd_menu", "view_motd_menu", "logout_confirm_menu",
         "documentation_menu", "doc_games_menu", "doc_viewer", "email_input",
         "bio_input", "send_friend_request_input", "send_pm_input", "music_volume_input",
-        "ambience_volume_input", "speech_rate_input", "mobile_tts_rate_input", "waiting_for_approval",
+        "ambience_volume_input", "voice_volume_input", "speech_rate_input", "mobile_tts_rate_input", "waiting_for_approval",
         "smtp_settings_menu", "smtp_encryption_menu", "smtp_setting_input",
         "admin_broadcast_input", "admin_motd_version_input", "admin_motd_input",
         "ban_custom_reason_input", "mute_custom_reason_input",
@@ -1691,6 +1691,14 @@ PlayAural Server
                 ),
                 id="ambience_volume",
             ),
+            MenuItem(
+                text=Localization.get(
+                    user.locale,
+                    "voice-volume-option",
+                    value=prefs.voice_volume,
+                ),
+                id="voice_volume",
+            ),
         ])
 
         if not is_web_client_type(user.client_type) and not is_mobile_client_type(user.client_type):
@@ -2225,6 +2233,14 @@ PlayAural Server
                 "invalid-volume",
                 self._show_options_menu,
             ),
+            "voice_volume_input": (
+                "voice_volume",
+                "audio/voice_volume",
+                10,
+                100,
+                "invalid-volume",
+                self._show_options_menu,
+            ),
             "speech_rate_input": (
                 "speech_rate",
                 "speech_rate",
@@ -2302,6 +2318,15 @@ PlayAural Server
                 prefs.ambience_volume = int(value)
             except (ValueError, TypeError):
                 return
+        elif key == "audio/voice_volume":
+            try:
+                parsed_voice_volume = int(value)
+            except (ValueError, TypeError):
+                return
+            if not 10 <= parsed_voice_volume <= 100:
+                return
+            prefs.voice_volume = parsed_voice_volume
+            value = parsed_voice_volume
         elif key == "audio/input_device_id":
             prefs.desktop_audio_input_device_id = str(value or "").strip()
         elif key == "audio/input_device_name":
@@ -3870,6 +3895,14 @@ PlayAural Server
                 default_value=str(prefs.ambience_volume),
             )
             self._enter_input_state(user, "ambience_volume_input")
+            return
+        elif selection_id == "voice_volume":
+            user.show_editbox(
+                "voice_volume_input",
+                Localization.get(user.locale, "enter-voice-volume"),
+                default_value=str(prefs.voice_volume),
+            )
+            self._enter_input_state(user, "voice_volume_input")
             return
         elif selection_id == "turn_sound":
             prefs.play_turn_sound = not prefs.play_turn_sound
