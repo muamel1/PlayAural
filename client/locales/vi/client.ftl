@@ -119,6 +119,7 @@ main-status-muted-suffix = , đã tắt tiếng
 
 options-music-volume-label = Âm lượng nhạc nền:
 options-ambience-volume-label = Âm lượng môi trường:
+options-voice-volume-label = Âm lượng trò chuyện thoại:
 
 slash-command-error = Lỗi khi xử lý lệnh gạch chéo { $command }.
 reg-error-exception = Lỗi: { $error }

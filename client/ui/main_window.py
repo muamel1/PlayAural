@@ -86,6 +86,7 @@ class MainWindow(wx.Frame):
         self.voice_mic_enabled = False
         self.voice_mic_toggle_pending = None
         self.voice_presence_registered = False
+        self._pending_voice_volume: float | None = None
         self.voice_manager = VoiceManager(
             on_status=lambda key, speak: wx.CallAfter(self.on_voice_status, key, speak),
             on_state=lambda state: wx.CallAfter(self.on_voice_state_change, state),
@@ -657,6 +658,10 @@ class MainWindow(wx.Frame):
             "context_id": packet.get("context_id", ""),
         }
         self.voice_manager.join(packet)
+        # Apply any pending voice volume that arrived before voice connected
+        if self._pending_voice_volume is not None:
+            self.voice_manager.set_voice_volume(self._pending_voice_volume)
+            self._pending_voice_volume = None
 
     def on_voice_join_error(self, packet):
         """Handle a rejected Voice Chat join request."""
@@ -1831,6 +1836,12 @@ class MainWindow(wx.Frame):
         elif key == "audio/ambience_volume":
              if self.sound_manager:
                  self.sound_manager.set_ambience_volume(value / 100.0)
+        elif key == "audio/voice_volume":
+             if self.voice_manager:
+                 # Clamp to 10-100 as server enforces, default 80
+                 vol = max(10, min(100, int(value) if isinstance(value, (int, float)) else 80))
+                 self.voice_manager.set_voice_volume(vol / 100.0)
+                 self._pending_voice_volume = vol / 100.0
         elif key == "audio/input_device_id" and not value:
              self.config_manager.set_client_option("audio/input_device_name", "", create_mode=True)
 
@@ -1978,6 +1989,10 @@ class MainWindow(wx.Frame):
                 self.config_manager.set_client_option("audio/ambience_volume", vol, create_mode=True)
                 if self.sound_manager:
                     self.sound_manager.set_ambience_volume(vol / 100.0)
+            if "voice_volume" in preferences:
+                vol = max(10, min(100, preferences["voice_volume"]))
+                self.config_manager.set_client_option("audio/voice_volume", vol, create_mode=True)
+                self._pending_voice_volume = vol / 100.0
             if "desktop_audio_input_device_id" in preferences:
                 self.config_manager.set_client_option(
                     "audio/input_device_id",
@@ -2453,6 +2468,7 @@ class MainWindow(wx.Frame):
             self.lang_codes,
             self.sound_manager,
             self.client_options,
+            self.voice_manager,
         )
 
         result = dlg.ShowModal()

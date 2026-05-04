@@ -205,6 +205,7 @@ action-no-scores = No scores available yet.
 
 music-volume-option = Music Volume: { $value }%
 ambience-volume-option = Ambience Volume: { $value }%
+voice-volume-option = Voice Chat Volume: { $value }%
 audio-input-device-option = Audio Input Device: { $device }
 audio-input-device-default = System Default Input Device
 mute-global-chat-option = Mute Global Chat: { $status }
@@ -213,6 +214,7 @@ invert-multiline-enter-option = Invert Enter Key Behavior: { $status }
 play-typing-sounds-option = Play Typing Sounds: { $status }
 enter-music-volume = Enter music volume (0-100)
 enter-ambience-volume = Enter ambience volume (0-100)
+enter-voice-volume = Enter voice chat volume (10-100)
 invalid-volume = Invalid volume. Please enter a number between 0 and 100.
 
 dice-not-rolled = You haven't rolled yet.

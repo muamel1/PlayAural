@@ -44,6 +44,8 @@ export class MobileVoiceManager {
   private nativeAudioSessionStarted = false;
   private remoteAudioElements = new Map<string, HTMLAudioElement>();
   private webAudioContainer: HTMLDivElement | null = null;
+  // Voice volume: 0.1–1.0, applied to all remote audio elements
+  private _voiceVolume = 0.8;
 
   setCallbacks(callbacks: VoiceCallbacks): void {
     this.callbacks = callbacks;
@@ -89,6 +91,16 @@ export class MobileVoiceManager {
   shutdown(): void {
     this.nextIntent();
     void this.leaveInternal(false);
+  }
+
+  setVoiceVolume(volume: number): void {
+    // Clamp to 0.1–1.0 range
+    const clamped = Math.max(0.1, Math.min(1.0, volume));
+    this._voiceVolume = clamped;
+    // Apply to all currently playing remote audio elements
+    this.remoteAudioElements.forEach((element) => {
+      element.volume = clamped;
+    });
   }
 
   private nextIntent(): number {
@@ -279,6 +291,7 @@ export class MobileVoiceManager {
     element.controls = false;
     element.hidden = true;
     element.setAttribute("aria-hidden", "true");
+    element.volume = this._voiceVolume;
     this.ensureWebAudioContainer().appendChild(element);
     const playResult = element.play();
     if (playResult && typeof playResult.catch === "function") {
@@ -406,7 +419,12 @@ export class MobileVoiceManager {
     return {
       android: {
         preferredOutputList,
-        audioTypeOptions: liveKitNative.AndroidAudioTypePresets.communication,
+        // Use media type so voice routes through STREAM_MUSIC (media volume)
+        // instead of STREAM_VOICE_CALL (call volume). This gives full volume
+        // control (0–100%) and prevents incoming calls from interrupting spatial audio.
+        // WebRTC software AEC (in @livekit/react-native-webrtc) provides echo
+        // cancellation regardless of stream type — same approach used by Discord/Telegram.
+        audioTypeOptions: liveKitNative.AndroidAudioTypePresets.media,
       },
       ios: {
         defaultOutput,

@@ -710,6 +710,7 @@ class GameClient {
         this.voicePresenceRegistered = false;
         this.voiceExpectedDisconnect = false;
         this.voiceRemoteAudio = new Map();
+        this.voiceVolume = 0.8;
 
         // Audio Settings
         this.musicVolume = 0.2; // Default 20%
@@ -1231,6 +1232,7 @@ class GameClient {
         element.controls = false;
         element.dataset.voiceTrack = key;
         element.setAttribute("aria-hidden", "true");
+        element.volume = this.voiceVolume;
         this.voiceRemoteAudio.set(key, element);
         if (this.voiceAudioContainer) this.voiceAudioContainer.appendChild(element);
         const playResult = element.play();
@@ -1875,6 +1877,9 @@ class GameClient {
         }
         if (updates.ambience_volume !== undefined) {
             this.setAmbienceVolume(updates.ambience_volume / 100.0);
+        }
+        if (updates.voice_volume !== undefined) {
+            this.setVoiceVolume(updates.voice_volume / 100.0);
         }
 
         // Handle Speech Preferences
@@ -2930,6 +2935,14 @@ class GameClient {
     setAmbienceVolume(vol) {
         this.ambienceVolume = vol;
         this.soundManager.setVolume('ambience', vol);
+        this.saveConfig();
+    }
+
+    setVoiceVolume(vol) {
+        this.voiceVolume = Math.max(0.1, Math.min(1.0, vol));
+        this.voiceRemoteAudio.forEach((element) => {
+            element.volume = this.voiceVolume;
+        });
         this.saveConfig();
     }
 
