@@ -1,5 +1,29 @@
 Nhật ký thay đổi
 
+Thứ Ba 5 Tháng Năm 2026
+
+Cập nhật máy chủ:
+
+Đã thêm trò chơi mới mang tên Poker Tử Thần với đầy đủ tài liệu hướng dẫn dành cho người mới bắt đầu. Trò chơi đã được hỗ trợ hoàn chỉnh bằng cả tiếng Việt và tiếng Anh.
+
+Đã phân loại và tổ chức lại menu Tùy chỉnh thành các nhóm riêng biệt để bạn dễ dàng tìm kiếm thiết lập hơn, thay vì nhét chung vào một danh sách dài.
+
+Đã thêm thiết lập Âm lượng trò chuyện thoại trong phần Tùy chỉnh, cho phép bạn điều chỉnh to nhỏ tùy ý.
+
+Đã tối ưu hóa và tinh chỉnh lại chuỗi âm thanh giới thiệu của trò chơi Bộ Bài Tử Thần, giúp tiếng nạp đạn và nhạc nền lúc bắt đầu ván đấu phát ra mượt mà và kịch tính hơn.
+
+Cập nhật phần mềm trên máy tính:
+
+Đã tích hợp thanh điều chỉnh Âm lượng trò chuyện thoại trực tiếp vào cửa sổ Tùy chỉnh của phần mềm.
+
+Cập nhật ứng dụng di động:
+
+Hệ thống trò chuyện thoại giờ đây sẽ phát qua luồng âm thanh đa phương tiện bình thường thay vì luồng âm thanh cuộc gọi. Điều này khắc phục tình trạng giảm chất lượng âm thanh, giúp bạn vừa trò chuyện mà vẫn nghe trọn vẹn hiệu ứng âm thanh nổi sống động của trò chơi.
+
+Cập nhật phiên bản web:
+
+Đã áp dụng các cải tiến về luồng âm thanh và điều khiển âm lượng trò chuyện thoại tương tự như trên ứng dụng di động để đồng bộ trải nghiệm.
+
 Thứ Bảy 2 Tháng Năm 2026
 
 Cập nhật máy chủ:

@@ -1,5 +1,29 @@
 Changelog
 
+Tuesday 5 May 2026
+
+Server Updates:
+
+Added a new game called Dead Man's Poker, complete with full documentation for beginners. The game is fully localized in both English and Vietnamese.
+
+Reorganized the Options menu into categorized submenus, making it much easier to find specific settings instead of scrolling through one massive list.
+
+Added a Voice Chat Volume setting in the Options menu, allowing you to adjust how loud other players are.
+
+Optimized and refined the intro audio sequence for Dead Man's Deck, perfectly timing the revolver loading sounds and background music for a smoother, more cinematic start.
+
+Desktop Client Updates:
+
+Integrated the new Voice Chat Volume control directly into the desktop client's audio Options dialog.
+
+Mobile Client Updates:
+
+Voice chat audio is no longer routed through the device's phone call volume. It now uses the standard media volume stream, ensuring that the game's stereo sound effects continue playing in high quality while you are chatting.
+
+Web Client Updates:
+
+Applied the exact same voice chat audio routing and volume control improvements as the mobile app for a consistent experience.
+
 Saturday 2 May 2026
 
 Server Updates:
