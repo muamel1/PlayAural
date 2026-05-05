@@ -905,9 +905,14 @@ class MainWindow(wx.Frame):
     })
     # Options-family menus.
     _OPTIONS_MENU_IDS = frozenset({
-        "options_menu", "language_menu", "speech_settings_menu",
-        "voice_selection_menu", "audio_input_device_menu", "dice_keeping_style_menu",
-        "music_volume_input", "ambience_volume_input",
+        "options_menu", "options_audio_submenu", "options_accessibility_submenu",
+        "options_notifications_submenu", "options_game_submenu",
+        "language_menu", "speech_settings_menu", "voice_selection_menu",
+        "audio_input_device_menu", "dice_keeping_style_menu",
+        "mobile_speech_settings_menu", "mobile_tts_engine_menu",
+        "mobile_voice_selection_menu",
+        "music_volume_input", "ambience_volume_input", "voice_volume_input",
+        "speech_rate_input", "mobile_tts_rate_input",
     })
 
     def on_open_friends_hub(self, event):

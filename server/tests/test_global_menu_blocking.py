@@ -37,6 +37,89 @@ def _make_playing_game_server() -> tuple[Server, MockUser, MockUser, object, obj
 
 
 @pytest.mark.asyncio
+async def test_options_submenu_selection_while_playing_routes_to_server() -> None:
+    server, host, _guest, _table, _game, _host_player = _make_playing_game_server()
+    server._sync_pref_to_client = lambda *args, **kwargs: None
+    try:
+        original_turn_sound = host.preferences.play_turn_sound
+
+        await server._handle_open_options(SimpleNamespace(username=host.username))
+        await server._handle_menu(
+            SimpleNamespace(username=host.username),
+            {
+                "type": "menu",
+                "menu_id": "options_menu",
+                "selection_id": "options_audio",
+            },
+        )
+        assert server._user_states[host.username]["menu"] == "options_audio_submenu"
+
+        await server._handle_menu(
+            SimpleNamespace(username=host.username),
+            {
+                "type": "menu",
+                "menu_id": "options_audio_submenu",
+                "selection_id": "turn_sound",
+            },
+        )
+
+        assert host.preferences.play_turn_sound is not original_turn_sound
+        assert server._user_states[host.username]["menu"] == "options_audio_submenu"
+        assert "options_audio_submenu" in host.menus
+    finally:
+        server._db.close()
+
+
+@pytest.mark.asyncio
+async def test_options_submenu_blocks_game_menu_rebuild_while_playing() -> None:
+    server, host, _guest, _table, game, host_player = _make_playing_game_server()
+    try:
+        await server._handle_open_options(SimpleNamespace(username=host.username))
+        await server._handle_menu(
+            SimpleNamespace(username=host.username),
+            {
+                "type": "menu",
+                "menu_id": "options_menu",
+                "selection_id": "options_game",
+            },
+        )
+        assert server._user_states[host.username]["menu"] == "options_game_submenu"
+
+        host.clear_messages()
+        game.rebuild_player_menu(host_player)
+
+        assert not any(
+            message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
+            for message in host.messages
+        )
+        assert server._user_states[host.username]["menu"] == "options_game_submenu"
+    finally:
+        server._db.close()
+
+
+@pytest.mark.asyncio
+async def test_open_options_is_idempotent_inside_options_flow() -> None:
+    server, host, _guest, _table, _game, _host_player = _make_playing_game_server()
+    try:
+        await server._handle_open_options(SimpleNamespace(username=host.username))
+        await server._handle_menu(
+            SimpleNamespace(username=host.username),
+            {
+                "type": "menu",
+                "menu_id": "options_menu",
+                "selection_id": "options_audio",
+            },
+        )
+        state_before = dict(server._user_states[host.username])
+
+        await server._handle_open_options(SimpleNamespace(username=host.username))
+
+        assert server._user_states[host.username] == state_before
+    finally:
+        server._db.close()
+
+
+@pytest.mark.asyncio
 async def test_open_options_blocked_while_status_box_open() -> None:
     server, host, _guest, _table, game, host_player = _make_playing_game_server()
     try:

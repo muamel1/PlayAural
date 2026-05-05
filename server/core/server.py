@@ -53,6 +53,28 @@ VOICE_CHAT_LEAVE_SOUND = "voice_leave.ogg"
 VOICE_JOIN_AUTHORIZATION_WINDOW_SECONDS = 120
 HOST_RESTART_CONFIRM_MENU = "host_restart_confirm_menu"
 FRIEND_REMOVE_CONFIRM_MENU = "friend_remove_confirm_menu"
+OPTIONS_MENU_IDS = frozenset(
+    {
+        "options_menu",
+        "options_audio_submenu",
+        "options_accessibility_submenu",
+        "options_notifications_submenu",
+        "options_game_submenu",
+        "language_menu",
+        "speech_settings_menu",
+        "voice_selection_menu",
+        "audio_input_device_menu",
+        "dice_keeping_style_menu",
+        "mobile_speech_settings_menu",
+        "mobile_tts_engine_menu",
+        "mobile_voice_selection_menu",
+        "music_volume_input",
+        "ambience_volume_input",
+        "voice_volume_input",
+        "speech_rate_input",
+        "mobile_tts_rate_input",
+    }
+)
 
 # Default paths based on module location
 _MODULE_DIR = Path(__file__).parent.parent
@@ -71,10 +93,8 @@ class Server:
     GLOBAL_SYSTEM_MENUS = {
         "main_menu", "personal_options_menu", "games_menu", "tables_menu",
         "active_tables_menu", "active_tables_filter_menu", "join_menu",
-        "options_menu", "language_menu", "speech_settings_menu", "voice_selection_menu",
-        "audio_input_device_menu",
-        "mobile_speech_settings_menu", "mobile_tts_engine_menu", "mobile_voice_selection_menu",
-        "dice_keeping_style_menu", "saved_tables_menu", "saved_table_actions_menu",
+        *OPTIONS_MENU_IDS,
+        "saved_tables_menu", "saved_table_actions_menu",
         "leaderboards_menu", "leaderboard_types_menu", "game_leaderboard",
         "my_stats_menu", "my_game_stats", "profile_menu", "gender_menu",
         "bio_actions_menu", "email_confirm_menu", "friends_hub_menu",
@@ -7290,6 +7310,8 @@ PlayAural Server
             return
         user = self._users.get(username)
         if not user:
+            return
+        if self._user_states.get(username, {}).get("menu") in OPTIONS_MENU_IDS:
             return
         self._nav_push(user, self._show_options_menu)
 
