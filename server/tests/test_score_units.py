@@ -1,7 +1,9 @@
+import inspect
 from pathlib import Path
 
 import pytest
 
+from ..game_utils.game_result import GameResult
 from ..game_utils.teams import TeamManager
 from ..games.blackjack.game import BlackjackGame
 from ..games.fivecarddraw.game import FiveCardDrawGame
@@ -89,6 +91,106 @@ def test_team_manager_uses_target_score_for_target_unit_pluralization() -> None:
 )
 def test_games_with_non_point_scores_declare_score_unit(game_cls, unit_key) -> None:
     assert game_cls().get_score_unit_key() == unit_key
+
+
+@pytest.mark.parametrize(
+    ("game_cls", "custom_data", "expected_en", "expected_vi"),
+    [
+        (
+            BlackjackGame,
+            {"final_chips": {"Alice": 1, "Bob": 2}},
+            ["1. Bob: 2 chips", "2. Alice: 1 chip"],
+            ["1. Bob: 2 xu", "2. Alice: 1 xu"],
+        ),
+        (
+            FiveCardDrawGame,
+            {"final_chips": {"Alice": 1, "Bob": 2}},
+            ["1. Bob: 2 chips", "2. Alice: 1 chip"],
+            ["1. Bob: 2 chip", "2. Alice: 1 chip"],
+        ),
+        (
+            HoldemGame,
+            {"final_chips": {"Alice": 1, "Bob": 2}},
+            ["1. Bob: 2 chips", "2. Alice: 1 chip"],
+            ["1. Bob: 2 chip", "2. Alice: 1 chip"],
+        ),
+        (
+            LeftRightCenterGame,
+            {"final_chips": {"Alice": 1, "Bob": 2}, "center_pot": 3},
+            ["Alice: 1 chip", "Bob: 2 chips", "3 chips in the center."],
+            ["Alice: 1 chip", "Bob: 2 chip", "3 chip ở giữa."],
+        ),
+        (
+            LudoGame,
+            {"final_scores": {"Alice": 1, "Bob": 2}},
+            ["1. Bob: 2 tokens home", "2. Alice: 1 token home"],
+            ["1. Bob: 2 quân về đích", "2. Alice: 1 quân về đích"],
+        ),
+        (
+            NinetyNineGame,
+            {"final_tokens": {"Bob": 2, "Alice": 1}},
+            ["1. Bob: 2 tokens", "2. Alice: 1 token"],
+            ["1. Bob: 2 thẻ", "2. Alice: 1 thẻ"],
+        ),
+        (
+            PusoyDosGame,
+            {"final_scores": {"Alice": 1, "Bob": 2}},
+            ["1. Bob: 2 coins", "2. Alice: 1 coin"],
+            ["1. Bob: 2 xu", "2. Alice: 1 xu"],
+        ),
+        (
+            SorryGame,
+            {"final_scores": {"Alice": 1, "Bob": 2}},
+            ["1. Bob: 2 pawns home", "2. Alice: 1 pawn home"],
+            ["1. Bob: 2 quân đã về nhà", "2. Alice: 1 quân đã về nhà"],
+        ),
+        (
+            TienLenGame,
+            {"final_scores": {"Alice": 1, "Bob": 2}},
+            ["1. Bob: 2 hand wins", "2. Alice: 1 hand win"],
+            ["1. Bob: 2 ván thắng", "2. Alice: 1 ván thắng"],
+        ),
+    ],
+)
+def test_custom_score_unit_end_screens_use_game_terms(
+    game_cls, custom_data, expected_en, expected_vi
+) -> None:
+    game = game_cls()
+    result = GameResult.create(
+        game_type=game.get_type(),
+        duration_ticks=0,
+        players=[],
+        custom_data=custom_data,
+    )
+
+    en_body = game.format_end_screen(result, "en")[1:]
+    vi_body = game.format_end_screen(result, "vi")[1:]
+
+    for expected in expected_en:
+        assert expected in en_body
+    for expected in expected_vi:
+        assert expected in vi_body
+
+    assert "point" not in " ".join(en_body).lower()
+    assert "điểm" not in " ".join(vi_body).lower()
+
+
+@pytest.mark.parametrize(
+    "game_cls",
+    [
+        BlackjackGame,
+        FiveCardDrawGame,
+        HoldemGame,
+        LeftRightCenterGame,
+        LudoGame,
+        NinetyNineGame,
+        PusoyDosGame,
+        SorryGame,
+        TienLenGame,
+    ],
+)
+def test_custom_score_unit_end_screens_do_not_use_generic_points(game_cls) -> None:
+    assert "game-points" not in inspect.getsource(game_cls.format_end_screen)
 
 
 def test_check_scores_uses_game_score_unit() -> None:

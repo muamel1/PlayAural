@@ -41,6 +41,9 @@ lrc-set-starting-chips = Starting chips: { $count }
 lrc-enter-starting-chips = Enter starting chips:
 lrc-option-changed-starting-chips = Starting chips set to { $count }.
 
-lrc-line-format = { $player }: { $chips }
+lrc-line-format = { $player }: { $chips } { $chips ->
+    [one] chip
+   *[other] chips
+}
 lrc-check-center = Check center pot
 lrc-roll-label = Roll dice

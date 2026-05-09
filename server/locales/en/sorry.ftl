@@ -103,4 +103,7 @@ sorry-phase-choose-move = choose move
 sorry-phase-choose-split = split seven
 sorry-phase-resolving = resolving move
 
-sorry-end-score-line = { $index }. { $player }: { $count } pawns home
+sorry-end-score-line = { $index }. { $player }: { $count ->
+    [one] 1 pawn home
+   *[other] { $count } pawns home
+}

@@ -55,4 +55,7 @@ draw-player-discard-limit = { $player } may discard up to { $count } cards.
 
 draw-card-key = Card key { $index }
 
-draw-winner-chips = { $rank }. { $player }: { $chips } chips
+draw-winner-chips = { $rank }. { $player }: { $chips } { $chips ->
+    [one] chip
+   *[other] chips
+}

@@ -78,5 +78,8 @@ tienlen-combo-consecutive_pairs = consecutive pairs
 
 tienlen-hand-winner = { $player } wins the hand. They now have { $wins } of { $target } hand wins.
 tienlen-game-over = The match is over. { $player } wins Tien Len.
-tienlen-line-format = { $rank }. { $player }: { $score } hand wins
+tienlen-line-format = { $rank }. { $player }: { $score ->
+    [one] 1 hand win
+   *[other] { $score } hand wins
+}
 

@@ -35,4 +35,7 @@ holdem-option-changed-max-raises = Max raises set to { $count }.
 holdem-antes-posted = Antes posted: { $amount }.
 holdem-blinds-posted = Blinds posted: { $sb } / { $bb }.
 
-holdem-winner-chips = { $rank }. { $player }: { $chips } chips
+holdem-winner-chips = { $rank }. { $player }: { $chips } { $chips ->
+    [one] chip
+   *[other] chips
+}

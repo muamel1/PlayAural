@@ -946,11 +946,18 @@ class LudoGame(Game):
 
     def format_end_screen(self, result: GameResult, locale: str) -> list[str]:
         lines = [Localization.get(locale, "game-final-scores")]
-        sorted_teams = self._team_manager.get_sorted_teams(by_score=True, descending=True)
-        for index, team in enumerate(sorted_teams, 1):
-            name = self._team_manager.get_team_name(team, locale)
-            points = Localization.get(locale, "game-points", count=team.total_score)
-            lines.append(f"{index}. {name}: {points}")
+        final_scores = result.custom_data.get("final_scores", {})
+        sorted_scores = sorted(final_scores.items(), key=lambda item: item[1], reverse=True)
+        for index, (name, score) in enumerate(sorted_scores, 1):
+            lines.append(
+                Localization.get(
+                    locale,
+                    "ludo-end-score-line",
+                    index=index,
+                    player=name,
+                    count=score,
+                )
+            )
         return lines
 
     def build_game_result(self) -> GameResult:

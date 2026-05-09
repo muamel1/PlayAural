@@ -54,6 +54,31 @@ class TestLudoUnit:
         assert game.options.max_consecutive_sixes == 5
         assert game.options.safe_start_squares is False
 
+    def test_end_screen_uses_tokens_home_unit_from_result(self):
+        game = LudoGame()
+        alice = game.add_player("Alice", MockUser("Alice"))
+        bob = game.add_player("Bob", MockUser("Bob"))
+        game.on_start()
+
+        alice.finished_count = 2
+        bob.finished_count = 1
+        game._sync_team_scores()
+        result = game.build_game_result()
+
+        # End screens can be rendered after cleanup/restore; use the result payload,
+        # not the live team manager, as the source of truth.
+        game._team_manager.reset_all_scores()
+
+        en_lines = game.format_end_screen(result, "en")
+        assert "1. Alice: 2 tokens home" in en_lines
+        assert "2. Bob: 1 token home" in en_lines
+        assert "points" not in " ".join(en_lines)
+
+        vi_lines = game.format_end_screen(result, "vi")
+        assert "1. Alice: 2 quân về đích" in vi_lines
+        assert "2. Bob: 1 quân về đích" in vi_lines
+        assert "điểm" not in " ".join(vi_lines)
+
     def test_color_assignment(self):
         game = LudoGame()
         users = [MockUser(f"P{i}") for i in range(4)]

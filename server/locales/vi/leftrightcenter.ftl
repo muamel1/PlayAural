@@ -41,6 +41,6 @@ lrc-set-starting-chips = Số chip ban đầu: { $count }
 lrc-enter-starting-chips = Nhập số chip ban đầu:
 lrc-option-changed-starting-chips = Số chip ban đầu đã được đặt là { $count }.
 
-lrc-line-format = { $player }: { $chips }
+lrc-line-format = { $player }: { $chips } chip
 lrc-check-center = Kiểm tra hũ giữa
 lrc-roll-label = Gieo xúc xắc

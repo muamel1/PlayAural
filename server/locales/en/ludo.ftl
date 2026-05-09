@@ -71,6 +71,10 @@ ludo-winner = { $player } ({ $color ->
     [yellow] Yellow
     *[other] { $color }
 }) wins! All 4 tokens are home.
+ludo-end-score-line = { $index }. { $player }: { $count ->
+    [one] 1 token home
+   *[other] { $count } tokens home
+}
 
 ludo-board-player = { $player } ({ $color ->
     [red] Red

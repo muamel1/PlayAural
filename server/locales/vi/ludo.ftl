@@ -71,6 +71,7 @@ ludo-winner = { $player } ({ $color ->
     [yellow] Vàng
     *[other] { $color }
 }) thắng! Cả 4 quân đã về đích.
+ludo-end-score-line = { $index }. { $player }: { $count } quân về đích
 
 ludo-board-player = { $player } ({ $color ->
     [red] Đỏ

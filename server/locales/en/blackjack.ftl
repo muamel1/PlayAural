@@ -204,5 +204,8 @@ blackjack-status-dealer-up = Dealer: showing { $card }
 blackjack-no-active-players = No active players.
 blackjack-waiting-for-bets = Waiting for bets from { $players }.
 blackjack-bet-previous-label = Bet { $amount }
-blackjack-end-screen-line = { $rank }. { $player }: { $chips } chips
+blackjack-end-screen-line = { $rank }. { $player }: { $chips } { $chips ->
+    [one] chip
+   *[other] chips
+}
 blackjack-change-bet = Change bet

@@ -69,4 +69,7 @@ pusoydos-combo-straight_flush = Straight Flush
 pusoydos-hand-winner = { $player } won the round and earned { $amount } coins!
 pusoydos-hand-loser = { $player } lost { $amount } coins.
 pusoydos-game-over = The game is over! { $player } is the ultimate winner!
-pusoydos-line-format = { $rank }. { $player }: { $score } coins
+pusoydos-line-format = { $rank }. { $player }: { $score } { $score ->
+    [one] coin
+   *[other] coins
+}
