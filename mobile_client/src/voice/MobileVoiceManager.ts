@@ -216,7 +216,18 @@ export class MobileVoiceManager {
 
     this.micBusy = true;
     try {
-      await this.room.localParticipant.setMicrophoneEnabled(enabled);
+      await this.room.localParticipant.setMicrophoneEnabled(
+        enabled,
+        {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+        {
+          audioBitrate: 96000, // High-quality 96kbps voice chat
+          dtx: true,
+        }
+      );
       this.setMicState(enabled);
       this.callbacks.onStatus?.(enabled ? "voice-chat-mic-on" : "voice-chat-mic-off", true);
     } catch {

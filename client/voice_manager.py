@@ -352,6 +352,8 @@ class VoiceManager:
                 )
                 options = rtc.TrackPublishOptions()
                 options.source = rtc.TrackSource.SOURCE_MICROPHONE
+                options.audio_bitrate = 96000  # High-quality 96kbps voice chat
+                options.dtx = True
                 self.local_publication = await self.room.local_participant.publish_track(
                     self.local_track, options
                 )
