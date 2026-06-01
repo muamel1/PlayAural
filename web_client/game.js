@@ -1316,7 +1316,15 @@ class GameClient {
         }
         this.voiceMicTogglePending = enable;
         try {
-            await this.voiceRoom.localParticipant.setMicrophoneEnabled(enable);
+            await this.voiceRoom.localParticipant.setMicrophoneEnabled(enable, {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+                channelCount: 2
+            }, {
+                audioBitrate: 128000, // High-quality 128kbps stereo voice chat
+                dtx: true
+            });
             this.voiceMicEnabled = enable;
             this.play_sound(enable ? "voice_mic_on.ogg" : "voice_mic_off.ogg");
             this.voiceMicTogglePending = null;
