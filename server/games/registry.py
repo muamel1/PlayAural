@@ -30,6 +30,20 @@ class GameRegistry:
         return list(cls._games.values())
 
     @classmethod
+    def get_games_for_preference(cls, pref_name: str) -> list[str]:
+        """Return game type strings that declare a preference as relevant.
+
+        Results are sorted alphabetically for stable menu ordering.
+        """
+        result = [
+            game_type
+            for game_type, game_cls in cls._games.items()
+            if pref_name in getattr(game_cls, "relevant_preferences", [])
+        ]
+        result.sort()
+        return result
+
+    @classmethod
     def get_by_category(cls) -> dict[str, list[Type["Game"]]]:
         """Get games organized by category."""
         categories: dict[str, list[Type["Game"]]] = {}

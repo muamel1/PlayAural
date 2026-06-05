@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 
 class DiceKeepingStyle(Enum):
@@ -58,12 +59,18 @@ class UserPreferences:
 
     # Gameplay preferences
     allow_custom_bot_names: bool = False
+    confirm_destructive_actions: bool = True  # Confirm risky/irreversible actions
 
     # Dice game preferences
     clear_kept_on_roll: bool = False  # Clear kept dice after rolling
     dice_keeping_style: DiceKeepingStyle = field(
         default_factory=lambda: DiceKeepingStyle.INDEX_BASED
     )
+
+    # Per-game overrides: {game_type: {field_name: value}}. A game may override
+    # any preference declared in its relevant_preferences; get_effective() reads
+    # the override when present, otherwise the global value.
+    game_overrides: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         """Convert to dictionary for storage."""
@@ -90,8 +97,10 @@ class UserPreferences:
             "active_tables_filter": self.active_tables_filter,
             "game_category_filter": self.game_category_filter,
             "allow_custom_bot_names": self.allow_custom_bot_names,
+            "confirm_destructive_actions": self.confirm_destructive_actions,
             "clear_kept_on_roll": self.clear_kept_on_roll,
             "dice_keeping_style": self.dice_keeping_style.value,
+            "game_overrides": self.game_overrides,
         }
 
     @classmethod
@@ -122,8 +131,55 @@ class UserPreferences:
             active_tables_filter=data.get("active_tables_filter", "all"),
             game_category_filter=data.get("game_category_filter", "all"),
             allow_custom_bot_names=data.get("allow_custom_bot_names", False),
+            confirm_destructive_actions=data.get("confirm_destructive_actions", True),
             clear_kept_on_roll=data.get("clear_kept_on_roll", False),
             dice_keeping_style=DiceKeepingStyle.from_str(
                 data.get("dice_keeping_style", "index_based")
             ),
+            game_overrides=data.get("game_overrides", {}) or {},
         )
+
+    # ------------------------------------------------------------------
+    # Per-game overrides
+    # ------------------------------------------------------------------
+
+    def get_effective(self, field_name: str, game_type: str | None = None) -> Any:
+        """Return a preference's effective value, honoring per-game overrides.
+
+        If ``game_type`` has an override for ``field_name``, that wins; otherwise
+        the global value is returned. Enum-typed preferences stored as raw
+        strings are converted back to their enum.
+        """
+        if game_type and game_type in self.game_overrides:
+            overrides = self.game_overrides[game_type]
+            if field_name in overrides:
+                raw = overrides[field_name]
+                current = getattr(self, field_name, None)
+                if isinstance(current, Enum) and not isinstance(raw, Enum):
+                    try:
+                        return type(current)(raw)
+                    except (ValueError, KeyError):
+                        return current
+                return raw
+        return getattr(self, field_name)
+
+    def set_game_override(self, field_name: str, game_type: str, value: Any) -> None:
+        """Set a per-game override (enums are stored as their value)."""
+        if isinstance(value, Enum):
+            value = value.value
+        self.game_overrides.setdefault(game_type, {})[field_name] = value
+
+    def clear_game_override(self, field_name: str, game_type: str) -> None:
+        """Remove a per-game override, reverting to the global value."""
+        if game_type in self.game_overrides:
+            self.game_overrides[game_type].pop(field_name, None)
+            if not self.game_overrides[game_type]:
+                del self.game_overrides[game_type]
+
+    def get_game_override(self, field_name: str, game_type: str) -> Any | None:
+        """Return the raw per-game override, or None if unset."""
+        return self.game_overrides.get(game_type, {}).get(field_name)
+
+    def has_game_override(self, field_name: str, game_type: str) -> bool:
+        """Whether a per-game override exists for this field."""
+        return field_name in self.game_overrides.get(game_type, {})

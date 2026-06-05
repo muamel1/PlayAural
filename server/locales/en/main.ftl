@@ -149,6 +149,7 @@ option-off = Off
 turn-sound-option = Turn sound: { $status }
 
 custom-bot-names-option = Custom bot names: { $status }
+confirm-destructive-option = Confirm risky actions: { $status }
 clear-kept-option = Clear kept dice when rolling: { $status }
 option-notify-table-created-on = Notify when table created: On
 option-notify-table-created-off = Notify when table created: Off

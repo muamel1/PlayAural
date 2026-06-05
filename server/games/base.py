@@ -1,7 +1,7 @@
 """Base game class and player dataclass."""
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 from abc import ABC, abstractmethod
 
 from mashumaro.mixins.json import DataClassJSONMixin
@@ -85,6 +85,9 @@ class Game(
     class Config(BaseConfig):
         # Serialize all fields (don't omit defaults - breaks state restoration)
         serialize_by_alias = True
+
+    #: User preference names this game is relevant to (for per-game overrides).
+    relevant_preferences: ClassVar[list[str]] = []
 
     # Game state
     players: list[Player] = field(default_factory=list)

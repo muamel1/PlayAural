@@ -1964,6 +1964,17 @@ PlayAural Server
             MenuItem(
                 text=Localization.get(
                     user.locale,
+                    "confirm-destructive-option",
+                    status=Localization.get(
+                        user.locale,
+                        "option-on" if prefs.confirm_destructive_actions else "option-off",
+                    ),
+                ),
+                id="confirm_destructive_actions",
+            ),
+            MenuItem(
+                text=Localization.get(
+                    user.locale,
                     "dice-keeping-style-option",
                     style=Localization.get(
                         user.locale,
@@ -2489,6 +2500,8 @@ PlayAural Server
                 return
         elif key == "gameplay/allow_custom_bot_names":
             prefs.allow_custom_bot_names = bool(value)
+        elif key == "gameplay/confirm_destructive_actions":
+            prefs.confirm_destructive_actions = bool(value)
         elif key == "mobile/tts_engine":
             prefs.mobile_tts_engine = "system"
             value = "system"
@@ -4135,6 +4148,15 @@ PlayAural Server
                 user,
                 "gameplay/allow_custom_bot_names",
                 prefs.allow_custom_bot_names,
+            )
+            self._nav_refresh(user, self._show_game_submenu)
+        elif selection_id == "confirm_destructive_actions":
+            prefs.confirm_destructive_actions = not prefs.confirm_destructive_actions
+            self._save_user_preferences(user)
+            self._sync_pref_to_client(
+                user,
+                "gameplay/confirm_destructive_actions",
+                prefs.confirm_destructive_actions,
             )
             self._nav_refresh(user, self._show_game_submenu)
         elif selection_id == "dice_keeping_style":

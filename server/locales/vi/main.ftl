@@ -149,6 +149,7 @@ option-off = Tắt
 turn-sound-option = Âm thanh báo lượt: { $status }
 
 custom-bot-names-option = Tên bot tùy chỉnh: { $status }
+confirm-destructive-option = Xác nhận hành động rủi ro: { $status }
 clear-kept-option = Xóa xúc xắc đã giữ khi gieo: { $status }
 option-notify-table-created-on = Thông báo khi có bàn mới: Bật
 option-notify-table-created-off = Thông báo khi có bàn mới: Tắt
