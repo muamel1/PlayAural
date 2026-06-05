@@ -1,3 +1,4 @@
+game-name-twentyone = 21 (Luật Sinh Tồn)
 twentyone-play-change-card = Đánh lá Biến
 twentyone-select-change-card = Chọn lá Biến
 twentyone-check-status = Kiểm tra trạng thái 21

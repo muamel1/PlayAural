@@ -1,5 +1,7 @@
 # Humanity Cards - English localization
 
+game-name-humanitycards = Cards Against Humanity
+
 # Options
 hc-set-winning-score = Winning score: { $score }
 hc-desc-winning-score = Points needed to win

@@ -1,5 +1,7 @@
 # Bản địa hóa Humanity Cards (Bài Phản Nhân Loại)
 
+game-name-humanitycards = Cards Against Humanity
+
 # Tùy chọn
 hc-set-winning-score = Điểm để thắng: { $score }
 hc-desc-winning-score = Số điểm cần để giành chiến thắng

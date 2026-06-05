@@ -1,3 +1,4 @@
+game-name-twentyone = 21 (Survival Rules)
 twentyone-play-change-card = Play Change Card
 twentyone-select-change-card = Select change card
 twentyone-check-status = Check 21 status
