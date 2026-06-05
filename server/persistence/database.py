@@ -913,6 +913,10 @@ class Database:
         """Mute a user."""
         issued_at = datetime.now().isoformat()
         cursor = self._conn.cursor()
+        # Replace any existing mute so a user has at most one active mute and a
+        # re-mute always supersedes the previous one (deterministic regardless of
+        # timestamp ties).
+        cursor.execute("DELETE FROM mutes WHERE username = ?", (username,))
         cursor.execute(
             "INSERT INTO mutes (username, admin_username, reason, issued_at, expires_at) VALUES (?, ?, ?, ?, ?)",
             (username, admin_username, reason, issued_at, expires_at),
