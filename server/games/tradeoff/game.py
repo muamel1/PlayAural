@@ -86,6 +86,8 @@ class TradeoffGame(Game):
     First to reach the target score wins.
     """
 
+    relevant_preferences = ["dice_keeping_style"]
+
     players: list[TradeoffPlayer] = field(default_factory=list)
     options: TradeoffOptions = field(default_factory=TradeoffOptions)
 
@@ -538,7 +540,9 @@ class TradeoffGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        style = user.preferences.dice_keeping_style
+        style = user.preferences.get_effective(
+            "dice_keeping_style", game_type=self.get_type()
+        )
         if style == DiceKeepingStyle.INDEX_BASED:
             if key_num <= 5:
                 self._toggle_trade(player, key_num - 1)
@@ -554,7 +558,10 @@ class TradeoffGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        if user.preferences.dice_keeping_style == DiceKeepingStyle.VALUE_BASED:
+        effective_style = user.preferences.get_effective(
+            "dice_keeping_style", game_type=self.get_type()
+        )
+        if effective_style == DiceKeepingStyle.VALUE_BASED:
             self._trade_by_value(player, value)
 
     def _keep_by_value(self, player: Player, value: int) -> None:
