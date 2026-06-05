@@ -23,7 +23,7 @@ from ..auth.voice_rate_limit import VoiceRateLimiter
 from ..tables.manager import TableManager
 from ..users.network_user import NetworkUser
 from ..users.base import MenuItem, EscapeBehavior
-from ..users.preferences import UserPreferences, DiceKeepingStyle
+from ..users.preferences import UserPreferences, DiceKeepingStyle, PREF_CATEGORIES
 from ..games.registry import GameRegistry, get_game_class
 from ..games.categories import (
     CATEGORY_FILTER_ALL,
@@ -65,12 +65,14 @@ OPTIONS_MENU_IDS = frozenset(
         "options_audio_submenu",
         "options_accessibility_submenu",
         "options_notifications_submenu",
-        "options_game_submenu",
+        "game_options_menu",
+        "pref_category_menu",
+        "pref_detail_menu",
+        "pref_choices_menu",
         "language_menu",
         "speech_settings_menu",
         "voice_selection_menu",
         "audio_input_device_menu",
-        "dice_keeping_style_menu",
         "mobile_speech_settings_menu",
         "mobile_tts_engine_menu",
         "mobile_voice_selection_menu",
@@ -1771,10 +1773,6 @@ PlayAural Server
                 text=Localization.get(user.locale, "options-category-notifications"),
                 id="options_notifications",
             ),
-            MenuItem(
-                text=Localization.get(user.locale, "options-category-game"),
-                id="options_game",
-            ),
             MenuItem(text=Localization.get(user.locale, "back"), id="back"),
         ]
 
@@ -1812,18 +1810,6 @@ PlayAural Server
                 MenuItem(
                     text=Localization.get(user.locale, "audio-input-device-option", device=audio_input_device_name),
                     id="audio_input_device",
-                )
-            )
-            items.append(
-                MenuItem(
-                    text=Localization.get(
-                        user.locale,
-                        "turn-sound-option",
-                        status=Localization.get(
-                            user.locale, "option-on" if prefs.play_turn_sound else "option-off"
-                        ),
-                    ),
-                    id="turn_sound",
                 )
             )
         if not uses_self_voicing_settings_type(user.client_type):
@@ -1946,64 +1932,205 @@ PlayAural Server
         )
         self._user_states[user.username] = {"menu": "options_notifications_submenu"}
 
-    def _show_game_submenu(self, user: NetworkUser) -> None:
-        """Game submenu."""
+    # ==================================================================
+    # Game Options (declarative preferences with per-game overrides)
+    # ==================================================================
+
+    def _show_game_options_menu(self, user: NetworkUser) -> None:
+        """Top-level Game Options menu: declarative preference categories."""
+        items = []
+        for cat_key, cat_fluent in PREF_CATEGORIES:
+            items.append(
+                MenuItem(text=Localization.get(user.locale, cat_fluent), id=f"cat_{cat_key}")
+            )
+        items.append(
+            MenuItem(text=Localization.get(user.locale, "pref-reset-all"), id="reset_all")
+        )
+        items.append(MenuItem(text=Localization.get(user.locale, "back"), id="back"))
+        user.show_menu(
+            "game_options_menu",
+            items,
+            multiletter=True,
+            escape_behavior=EscapeBehavior.SELECT_LAST,
+        )
+        self._user_states[user.username] = {"menu": "game_options_menu"}
+
+    def _get_pref_label(self, locale: str, prefs: UserPreferences, name: str, meta) -> str:
+        """Localized label for a declarative preference, including its value."""
+        value = getattr(prefs, name)
+        if meta.kind == "bool":
+            status = Localization.get(locale, "option-on" if value else "option-off")
+            return Localization.get(locale, meta.label, status=status)
+        if meta.kind == "menu" and meta.choices:
+            raw = value.value if hasattr(value, "value") else value
+            for choice_val, fluent_key in meta.choices:
+                if choice_val == raw:
+                    return Localization.get(
+                        locale, meta.label, choice=Localization.get(locale, fluent_key)
+                    )
+            return Localization.get(locale, meta.label, choice=str(raw))
+        return str(value)
+
+    def _format_pref_value(self, locale: str, meta, raw) -> str:
+        """Format a raw preference value (global or per-game) for display."""
+        if meta.kind == "bool":
+            return Localization.get(locale, "option-on" if raw else "option-off")
+        if meta.kind == "menu" and meta.choices:
+            val_str = raw.value if hasattr(raw, "value") else str(raw)
+            for choice_val, fluent_key in meta.choices:
+                if choice_val == val_str:
+                    return Localization.get(locale, fluent_key)
+            return str(raw)
+        return str(raw)
+
+    def _show_pref_category_menu(self, user: NetworkUser, category: str) -> None:
+        """List the declarative preferences in a category."""
+        prefs = user.preferences
+        items = []
+        for name, meta in UserPreferences.get_fields_for_category(category):
+            items.append(
+                MenuItem(
+                    text=self._get_pref_label(user.locale, prefs, name, meta),
+                    id=f"pref_{name}",
+                )
+            )
+        cat_name = ""
+        for cat_key, cat_fluent in PREF_CATEGORIES:
+            if cat_key == category:
+                cat_name = Localization.get(user.locale, cat_fluent)
+                break
+        items.append(
+            MenuItem(
+                text=Localization.get(user.locale, "pref-reset-category", category=cat_name),
+                id="reset_category",
+            )
+        )
+        items.append(MenuItem(text=Localization.get(user.locale, "back"), id="back"))
+        user.show_menu(
+            "pref_category_menu",
+            items,
+            multiletter=True,
+            escape_behavior=EscapeBehavior.SELECT_LAST,
+        )
+        self._user_states[user.username] = {
+            "menu": "pref_category_menu",
+            "pref_category": category,
+        }
+
+    def _show_pref_detail_menu(self, user: NetworkUser, field_name: str) -> None:
+        """Detail menu for a preference: global value plus per-game overrides."""
+        meta = UserPreferences.get_pref_meta(field_name)
+        if not meta:
+            return
         prefs = user.preferences
         items = [
             MenuItem(
                 text=Localization.get(
                     user.locale,
-                    "custom-bot-names-option",
-                    status=Localization.get(
-                        user.locale,
-                        "option-on" if prefs.allow_custom_bot_names else "option-off",
+                    "pref-per-game-for",
+                    game=Localization.get(user.locale, "pref-default"),
+                    value=self._format_pref_value(
+                        user.locale, meta, getattr(prefs, field_name)
                     ),
                 ),
-                id="custom_bot_names",
-            ),
-            MenuItem(
-                text=Localization.get(
-                    user.locale,
-                    "confirm-destructive-option",
-                    status=Localization.get(
-                        user.locale,
-                        "option-on" if prefs.confirm_destructive_actions else "option-off",
-                    ),
-                ),
-                id="confirm_destructive_actions",
-            ),
-            MenuItem(
-                text=Localization.get(
-                    user.locale,
-                    "dice-keeping-style-option",
-                    style=Localization.get(
-                        user.locale,
-                        self.DICE_KEEPING_STYLES.get(
-                            prefs.dice_keeping_style, "dice-keeping-style-indexes"
-                        ),
-                    ),
-                ),
-                id="dice_keeping_style",
-            ),
-            MenuItem(
-                text=Localization.get(
-                    user.locale,
-                    "clear-kept-option",
-                    status=Localization.get(
-                        user.locale, "option-on" if prefs.clear_kept_on_roll else "option-off"
-                    ),
-                ),
-                id="clear_kept",
-            ),
-            MenuItem(text=Localization.get(user.locale, "back"), id="back"),
+                id="detail_global",
+            )
         ]
+        for game_type in GameRegistry.get_games_for_preference(field_name):
+            game_cls = GameRegistry.get(game_type)
+            if not game_cls:
+                continue
+            if prefs.has_game_override(field_name, game_type):
+                value_text = self._format_pref_value(
+                    user.locale, meta, prefs.get_game_override(field_name, game_type)
+                )
+            else:
+                value_text = Localization.get(user.locale, "pref-default")
+            items.append(
+                MenuItem(
+                    text=Localization.get(
+                        user.locale,
+                        "pref-per-game-for",
+                        game=Localization.get(user.locale, game_cls.get_name_key()),
+                        value=value_text,
+                    ),
+                    id=f"detail_game_{game_type}",
+                )
+            )
+        items.append(MenuItem(text=Localization.get(user.locale, "back"), id="back"))
         user.show_menu(
-            "options_game_submenu",
+            "pref_detail_menu",
             items,
             multiletter=True,
             escape_behavior=EscapeBehavior.SELECT_LAST,
         )
-        self._user_states[user.username] = {"menu": "options_game_submenu"}
+        self._user_states[user.username] = {
+            "menu": "pref_detail_menu",
+            "pref_field": field_name,
+            "pref_category": meta.category,
+        }
+
+    def _show_pref_menu_choices(
+        self, user: NetworkUser, field_name: str, game_type: str | None = None
+    ) -> None:
+        """Choice list for a menu-type preference (global, or per-game with Default)."""
+        prefs = user.preferences
+        meta = UserPreferences.get_pref_meta(field_name)
+        if not meta or not meta.choices:
+            return
+        items = []
+        position = 1
+        if game_type:
+            current = prefs.get_game_override(field_name, game_type)
+            is_default = current is None
+            items.append(
+                MenuItem(
+                    text=("* " if is_default else "")
+                    + Localization.get(user.locale, "pref-default"),
+                    id="choice_default",
+                )
+            )
+            for index, (value, fluent_key) in enumerate(meta.choices, start=2):
+                selected = str(current) == value
+                items.append(
+                    MenuItem(
+                        text=("* " if selected else "")
+                        + Localization.get(user.locale, fluent_key),
+                        id=f"choice_{value}",
+                    )
+                )
+                if selected:
+                    position = index
+        else:
+            current_value = getattr(prefs, field_name)
+            current_value = (
+                current_value.value if hasattr(current_value, "value") else current_value
+            )
+            for index, (value, fluent_key) in enumerate(meta.choices, start=1):
+                selected = value == current_value
+                items.append(
+                    MenuItem(
+                        text=("* " if selected else "")
+                        + Localization.get(user.locale, fluent_key),
+                        id=f"choice_{value}",
+                    )
+                )
+                if selected:
+                    position = index
+        items.append(MenuItem(text=Localization.get(user.locale, "back"), id="back"))
+        user.show_menu(
+            "pref_choices_menu",
+            items,
+            multiletter=True,
+            escape_behavior=EscapeBehavior.SELECT_LAST,
+            position=position,
+        )
+        self._user_states[user.username] = {
+            "menu": "pref_choices_menu",
+            "pref_field": field_name,
+            "pref_category": meta.category,
+            "pref_game_type": game_type,
+        }
 
     def _show_audio_input_device_menu(self, user: NetworkUser) -> None:
         """Show the desktop audio input device selection menu."""
@@ -3070,8 +3197,14 @@ PlayAural Server
             await self._handle_accessibility_submenu_selection(user, selection_id)
         elif current_menu == "options_notifications_submenu":
             await self._handle_notifications_submenu_selection(user, selection_id)
-        elif current_menu == "options_game_submenu":
-            await self._handle_game_submenu_selection(user, selection_id)
+        elif current_menu == "game_options_menu":
+            await self._handle_game_options_selection(user, selection_id)
+        elif current_menu == "pref_category_menu":
+            await self._handle_pref_category_selection(user, selection_id)
+        elif current_menu == "pref_detail_menu":
+            await self._handle_pref_detail_selection(user, selection_id)
+        elif current_menu == "pref_choices_menu":
+            await self._handle_pref_choices_selection(user, selection_id)
         elif current_menu == "language_menu":
             await self._handle_language_selection(user, selection_id)
         elif current_menu == "speech_settings_menu":
@@ -3086,8 +3219,6 @@ PlayAural Server
             await self._handle_mobile_tts_engine_selection(user, selection_id)
         elif current_menu == "mobile_voice_selection_menu":
             await self._handle_mobile_voice_selection(user, selection_id)
-        elif current_menu == "dice_keeping_style_menu":
-            await self._handle_dice_keeping_style_selection(user, selection_id)
         elif current_menu == "saved_tables_menu":
             await self._handle_saved_tables_selection(user, selection_id, state)
         elif current_menu == "saved_table_actions_menu":
@@ -3216,7 +3347,8 @@ PlayAural Server
             MenuItem(text=Localization.get(user.locale, "profile"), id="profile"),
             MenuItem(text=Localization.get(user.locale, "friends"), id="friends"),
             MenuItem(text=Localization.get(user.locale, "my-stats"), id="my_stats"),
-            MenuItem(text=Localization.get(user.locale, "options"), id="options"),
+            MenuItem(text=Localization.get(user.locale, "general-options"), id="options"),
+            MenuItem(text=Localization.get(user.locale, "game-options"), id="game_options"),
             MenuItem(text=Localization.get(user.locale, "back"), id="back")
         ]
         user.show_menu(
@@ -3237,6 +3369,8 @@ PlayAural Server
             self._nav_push(user, self._show_my_stats_menu)
         elif selection_id == "options":
             self._nav_push(user, self._show_options_menu)
+        elif selection_id == "game_options":
+            self._nav_push(user, self._show_game_options_menu)
         elif selection_id == "back":
             self._nav_back(user)
 
@@ -4038,8 +4172,6 @@ PlayAural Server
             self._nav_push(user, self._show_accessibility_submenu)
         elif selection_id == "options_notifications":
             self._nav_push(user, self._show_notifications_submenu)
-        elif selection_id == "options_game":
-            self._nav_push(user, self._show_game_submenu)
         elif selection_id == "back":
             self._nav_back(user)
 
@@ -4071,11 +4203,6 @@ PlayAural Server
                 default_value=str(prefs.voice_volume),
             )
             self._enter_input_state(user, "voice_volume_input")
-        elif selection_id == "turn_sound":
-            prefs.play_turn_sound = not prefs.play_turn_sound
-            self._save_user_preferences(user)
-            self._sync_pref_to_client(user, "gameplay/play_turn_sound", prefs.play_turn_sound)
-            self._nav_refresh(user, self._show_audio_submenu)
         elif selection_id == "play_typing_sounds":
             prefs.play_typing_sounds = not prefs.play_typing_sounds
             self._save_user_preferences(user)
@@ -4134,38 +4261,143 @@ PlayAural Server
             self._sync_pref_to_client(user, "notifications/notify_table_created", prefs.notify_table_created)
             self._nav_refresh(user, self._show_notifications_submenu)
 
-    async def _handle_game_submenu_selection(
-        self, user: NetworkUser, selection_id: str
-    ) -> None:
-        """Handle game submenu selection."""
-        prefs = user.preferences
+    def _apply_pref_global(self, user: NetworkUser, field_name: str, meta, value) -> None:
+        """Set a global declarative pref value, persist, and sync to the client."""
+        setattr(user.preferences, field_name, value)
+        self._save_user_preferences(user)
+        if meta.sync_key:
+            raw = value.value if hasattr(value, "value") else value
+            self._sync_pref_to_client(user, meta.sync_key, raw)
+
+    def _sync_all_game_prefs_to_client(self, user: NetworkUser) -> None:
+        """Re-sync every declarative game pref to the client (after a reset)."""
+        for name, meta in UserPreferences.get_pref_fields():
+            if meta.sync_key:
+                value = getattr(user.preferences, name)
+                raw = value.value if hasattr(value, "value") else value
+                self._sync_pref_to_client(user, meta.sync_key, raw)
+
+    def _speak_pref_description(self, user: NetworkUser, menu_item_id: str) -> bool:
+        """Speak a preference's description when space is pressed in a pref menu."""
+        if menu_item_id.startswith("pref_") and not menu_item_id.startswith("pref_reset"):
+            field_name = menu_item_id[5:]
+        else:
+            field_name = self._user_states.get(user.username, {}).get("pref_field")
+        if not field_name:
+            return False
+        meta = UserPreferences.get_pref_meta(field_name)
+        if not meta or not meta.description:
+            return False
+        user.speak_l(meta.description, buffer="system")
+        return True
+
+    async def _handle_game_options_selection(self, user: NetworkUser, selection_id: str) -> None:
+        """Handle the top-level Game Options menu (category list)."""
         if selection_id == "back":
             self._nav_back(user)
-        elif selection_id == "custom_bot_names":
-            prefs.allow_custom_bot_names = not prefs.allow_custom_bot_names
+        elif selection_id == "reset_all":
+            user.preferences.reset_all_game_prefs()
             self._save_user_preferences(user)
-            self._sync_pref_to_client(
-                user,
-                "gameplay/allow_custom_bot_names",
-                prefs.allow_custom_bot_names,
+            self._sync_all_game_prefs_to_client(user)
+            user.speak_l("pref-reset-done", buffer="system")
+            self._nav_refresh(user, self._show_game_options_menu)
+        elif selection_id.startswith("cat_"):
+            self._nav_push(user, self._show_pref_category_menu, selection_id[4:])
+
+    async def _handle_pref_category_selection(self, user: NetworkUser, selection_id: str) -> None:
+        """Handle selections within a preference category menu."""
+        state = self._user_states.get(user.username, {})
+        category = state.get("pref_category", "")
+        if selection_id == "back":
+            self._nav_back(user)
+        elif selection_id == "reset_category":
+            user.preferences.reset_category(category)
+            self._save_user_preferences(user)
+            self._sync_all_game_prefs_to_client(user)
+            user.speak_l("pref-reset-done", buffer="system")
+            self._nav_refresh(user, self._show_pref_category_menu, category)
+        elif selection_id.startswith("pref_"):
+            field_name = selection_id[5:]
+            meta = UserPreferences.get_pref_meta(field_name)
+            if not meta:
+                return
+            if GameRegistry.get_games_for_preference(field_name):
+                self._nav_push(user, self._show_pref_detail_menu, field_name)
+            elif meta.kind == "bool":
+                self._apply_pref_global(
+                    user, field_name, meta, not getattr(user.preferences, field_name)
+                )
+                self._nav_refresh(user, self._show_pref_category_menu, category)
+            elif meta.kind == "menu":
+                self._nav_push(user, self._show_pref_menu_choices, field_name)
+
+    async def _handle_pref_detail_selection(self, user: NetworkUser, selection_id: str) -> None:
+        """Handle the per-pref detail menu (global value + per-game overrides)."""
+        state = self._user_states.get(user.username, {})
+        field_name = state.get("pref_field", "")
+        meta = UserPreferences.get_pref_meta(field_name)
+        if not meta:
+            return
+        if selection_id == "back":
+            self._nav_back(user)
+        elif selection_id == "detail_global":
+            if meta.kind == "bool":
+                self._apply_pref_global(
+                    user, field_name, meta, not getattr(user.preferences, field_name)
+                )
+                self._nav_refresh(user, self._show_pref_detail_menu, field_name)
+            elif meta.kind == "menu":
+                self._nav_push(user, self._show_pref_menu_choices, field_name)
+        elif selection_id.startswith("detail_game_"):
+            game_type = selection_id[len("detail_game_"):]
+            if meta.kind == "bool":
+                prefs = user.preferences
+                current = prefs.get_game_override(field_name, game_type)
+                if current is None:
+                    prefs.set_game_override(field_name, game_type, True)
+                elif current is True:
+                    prefs.set_game_override(field_name, game_type, False)
+                else:
+                    prefs.clear_game_override(field_name, game_type)
+                self._save_user_preferences(user)
+                self._nav_refresh(user, self._show_pref_detail_menu, field_name)
+            elif meta.kind == "menu":
+                self._nav_push(user, self._show_pref_menu_choices, field_name, game_type)
+
+    async def _handle_pref_choices_selection(self, user: NetworkUser, selection_id: str) -> None:
+        """Handle a menu-type preference choice (global or per-game)."""
+        state = self._user_states.get(user.username, {})
+        field_name = state.get("pref_field", "")
+        game_type = state.get("pref_game_type")
+        meta = UserPreferences.get_pref_meta(field_name)
+        if selection_id == "back" or not meta:
+            self._nav_back(user)
+            return
+        if not selection_id.startswith("choice_"):
+            return
+        value_str = selection_id[len("choice_"):]
+        if game_type:
+            if value_str == "default":
+                user.preferences.clear_game_override(field_name, game_type)
+            else:
+                user.preferences.set_game_override(field_name, game_type, value_str)
+            self._save_user_preferences(user)
+            self._nav_back(user)
+        else:
+            if meta.enum_class:
+                try:
+                    new_val = meta.enum_class(value_str)
+                except (ValueError, KeyError):
+                    new_val = meta.default
+            else:
+                new_val = value_str
+            self._apply_pref_global(user, field_name, meta, new_val)
+            user.speak_l(
+                meta.change_msg,
+                buffer="system",
+                choice=self._format_pref_value(user.locale, meta, new_val),
             )
-            self._nav_refresh(user, self._show_game_submenu)
-        elif selection_id == "confirm_destructive_actions":
-            prefs.confirm_destructive_actions = not prefs.confirm_destructive_actions
-            self._save_user_preferences(user)
-            self._sync_pref_to_client(
-                user,
-                "gameplay/confirm_destructive_actions",
-                prefs.confirm_destructive_actions,
-            )
-            self._nav_refresh(user, self._show_game_submenu)
-        elif selection_id == "dice_keeping_style":
-            self._nav_push(user, self._show_dice_keeping_style_menu)
-        elif selection_id == "clear_kept":
-            prefs.clear_kept_on_roll = not prefs.clear_kept_on_roll
-            self._save_user_preferences(user)
-            self._sync_pref_to_client(user, "dice/clear_kept_on_roll", prefs.clear_kept_on_roll)
-            self._nav_refresh(user, self._show_game_submenu)
+            self._nav_back(user)
 
     async def _handle_audio_input_device_selection(
         self, user: NetworkUser, selection_id: str
@@ -4188,41 +4420,6 @@ PlayAural Server
                 self._nav_back(user)
                 return
         self._nav_refresh(user, self._show_audio_input_device_menu)
-
-    def _show_dice_keeping_style_menu(self, user: NetworkUser) -> None:
-        """Show dice keeping style selection menu."""
-        items = []
-        current_style = user.preferences.dice_keeping_style
-        for style, name_key in self.DICE_KEEPING_STYLES.items():
-            prefix = "* " if style == current_style else ""
-            name = Localization.get(user.locale, name_key)
-            items.append(MenuItem(text=f"{prefix}{name}", id=f"style_{style.value}"))
-        items.append(MenuItem(text=Localization.get(user.locale, "back"), id="back"))
-        user.show_menu(
-            "dice_keeping_style_menu",
-            items,
-            multiletter=True,
-            escape_behavior=EscapeBehavior.SELECT_LAST,
-        )
-        self._user_states[user.username] = {"menu": "dice_keeping_style_menu"}
-
-    async def _handle_dice_keeping_style_selection(
-        self, user: NetworkUser, selection_id: str
-    ) -> None:
-        """Handle dice keeping style selection."""
-        if selection_id.startswith("style_"):
-            style_value = selection_id[6:]  # Remove "style_" prefix
-            style = DiceKeepingStyle.from_str(style_value)
-            user.preferences.dice_keeping_style = style
-            self._save_user_preferences(user)
-            style_key = self.DICE_KEEPING_STYLES.get(style, "dice-keeping-style-indexes")
-            style_name = Localization.get(user.locale, style_key)
-            user.speak_l("dice-keeping-style-changed", buffer="system", style=style_name)
-            self._sync_pref_to_client(user, "dice/dice_keeping_style", style.value)
-            self._nav_back(user)
-            return
-        # Back or invalid
-        self._nav_back(user)
 
     def _save_user_preferences(self, user: NetworkUser) -> None:
         """Save user preferences to database."""
@@ -6304,6 +6501,16 @@ PlayAural Server
         state = self._user_states.get(username, {})
         current_menu = state.get("menu")
 
+        # In a Game Options preference menu, space speaks the focused pref's
+        # description (an accessibility aid); it is otherwise inert there.
+        if user and current_menu in ("pref_category_menu", "pref_detail_menu"):
+            key = (packet.get("key") or "").lower()
+            menu_item_id = packet.get("menu_item_id")
+            if key == "space" and menu_item_id and self._speak_pref_description(
+                user, menu_item_id
+            ):
+                return
+
         if current_menu not in self.GLOBAL_SYSTEM_MENUS:
             table = self._tables.find_user_table(username)
             if table and table.game and user:
@@ -7211,16 +7418,22 @@ PlayAural Server
             self._show_mobile_tts_engine_menu(user)
         elif menu == "mobile_voice_selection_menu":
             self._show_mobile_voice_selection_menu(user)
-        elif menu == "dice_keeping_style_menu":
-            self._show_dice_keeping_style_menu(user)
         elif menu == "options_audio_submenu":
             self._show_audio_submenu(user)
         elif menu == "options_accessibility_submenu":
             self._show_accessibility_submenu(user)
         elif menu == "options_notifications_submenu":
             self._show_notifications_submenu(user)
-        elif menu == "options_game_submenu":
-            self._show_game_submenu(user)
+        elif menu == "game_options_menu":
+            self._show_game_options_menu(user)
+        elif menu == "pref_category_menu":
+            self._show_pref_category_menu(user, frame.get("pref_category", ""))
+        elif menu == "pref_detail_menu":
+            self._show_pref_detail_menu(user, frame.get("pref_field", ""))
+        elif menu == "pref_choices_menu":
+            self._show_pref_menu_choices(
+                user, frame.get("pref_field", ""), frame.get("pref_game_type")
+            )
         elif menu == "friends_hub_menu":
             self._show_friends_hub_menu(user)
         elif menu == "friends_list_menu":

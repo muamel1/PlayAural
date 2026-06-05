@@ -162,6 +162,35 @@ dice-keeping-style-changed = Kiểu giữ xúc xắc đã đặt thành { $style
 dice-keeping-style-indexes = Theo vị trí
 dice-keeping-style-values = Theo giá trị
 
+# Tách tùy chỉnh cá nhân: chung và trò chơi
+general-options = Tùy chỉnh chung
+game-options = Tùy chỉnh trò chơi
+
+# Tùy chỉnh trò chơi (khai báo, có ghi đè theo từng trò chơi)
+pref-category-sounds = Âm thanh
+pref-category-gameplay = Lối chơi
+pref-category-dice = Xúc xắc
+pref-default = Mặc định
+pref-per-game-for = { $game }: { $value }
+pref-reset-all = Đặt lại tất cả tùy chỉnh trò chơi
+pref-reset-category = Đặt lại tùy chỉnh { $category }
+pref-reset-done = Đã đặt lại tùy chỉnh trò chơi.
+pref-set-play-turn-sound = Âm thanh báo lượt: { $status }
+pref-set-confirm-destructive-actions = Xác nhận hành động rủi ro: { $status }
+pref-set-allow-custom-bot-names = Tên bot tùy chỉnh: { $status }
+pref-set-clear-kept-on-roll = Xóa xúc xắc đã giữ khi gieo: { $status }
+pref-set-dice-keeping-style = Kiểu giữ xúc xắc: { $choice }
+pref-changed-play-turn-sound = Âm thanh báo lượt { $status }.
+pref-changed-confirm-destructive-actions = Xác nhận hành động rủi ro { $status }.
+pref-changed-allow-custom-bot-names = Tên bot tùy chỉnh { $status }.
+pref-changed-clear-kept-on-roll = Xóa xúc xắc đã giữ khi gieo { $status }.
+pref-changed-dice-keeping-style = Đã đặt kiểu giữ xúc xắc thành { $choice }.
+pref-desc-play-turn-sound = Phát âm thanh khi đến lượt của bạn.
+pref-desc-confirm-destructive-actions = Hỏi xác nhận trước các hành động rủi ro hoặc không thể hoàn tác, chẳng hạn như bỏ lượt trong Pusoy Dos.
+pref-desc-allow-custom-bot-names = Cho phép bạn đặt tên tùy chỉnh cho các bot bạn thêm vào bàn.
+pref-desc-clear-kept-on-roll = Tự động thả các xúc xắc đã giữ mỗi khi bạn gieo.
+pref-desc-dice-keeping-style = Chọn giữ xúc xắc theo vị trí (1-5) hay theo giá trị mặt (1-6).
+
 cancel = Hủy
 no-bot-names-available = Không có tên bot nào.
 enter-bot-name = Nhập tên bot

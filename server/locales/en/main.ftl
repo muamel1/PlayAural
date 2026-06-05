@@ -162,6 +162,35 @@ dice-keeping-style-changed = Dice keeping style set to { $style }.
 dice-keeping-style-indexes = Dice indexes
 dice-keeping-style-values = Dice values
 
+# Personal options split: general vs game options
+general-options = General options
+game-options = Game options
+
+# Game Options (declarative preferences with per-game overrides)
+pref-category-sounds = Sounds
+pref-category-gameplay = Gameplay
+pref-category-dice = Dice
+pref-default = Default
+pref-per-game-for = { $game }: { $value }
+pref-reset-all = Reset all game options
+pref-reset-category = Reset { $category } options
+pref-reset-done = Game options reset.
+pref-set-play-turn-sound = Turn sound: { $status }
+pref-set-confirm-destructive-actions = Confirm risky actions: { $status }
+pref-set-allow-custom-bot-names = Custom bot names: { $status }
+pref-set-clear-kept-on-roll = Clear kept dice when rolling: { $status }
+pref-set-dice-keeping-style = Dice keeping style: { $choice }
+pref-changed-play-turn-sound = Turn sound { $status }.
+pref-changed-confirm-destructive-actions = Confirm risky actions { $status }.
+pref-changed-allow-custom-bot-names = Custom bot names { $status }.
+pref-changed-clear-kept-on-roll = Clear kept dice when rolling { $status }.
+pref-changed-dice-keeping-style = Dice keeping style set to { $choice }.
+pref-desc-play-turn-sound = Play a sound when it becomes your turn.
+pref-desc-confirm-destructive-actions = Ask for confirmation before risky or irreversible actions, such as passing in Pusoy Dos.
+pref-desc-allow-custom-bot-names = Let you set custom names for bots you add to a table.
+pref-desc-clear-kept-on-roll = Release your kept dice automatically each time you roll.
+pref-desc-dice-keeping-style = Choose whether dice are kept by position (1-5) or by face value (1-6).
+
 cancel = Cancel
 no-bot-names-available = No bot names available.
 enter-bot-name = Enter bot name
