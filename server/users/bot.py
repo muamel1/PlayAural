@@ -67,6 +67,7 @@ class Bot(User):
         multiletter: bool = True,
         escape_behavior: EscapeBehavior = EscapeBehavior.KEYBIND,
         position: int | None = None,
+        selection_id: str | None = None,
         grid_enabled: bool = False,
         grid_height: int = 0,
         grid_width: int = 1,

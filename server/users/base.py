@@ -153,6 +153,7 @@ class User(ABC):
         multiletter: bool = True,
         escape_behavior: EscapeBehavior = EscapeBehavior.KEYBIND,
         position: int | None = None,
+        selection_id: str | None = None,
         grid_enabled: bool = False,
         grid_height: int = 0,
         grid_width: int = 1,
@@ -166,6 +167,7 @@ class User(ABC):
             multiletter: Enable type-to-search navigation.
             escape_behavior: How escape key behaves (see EscapeBehavior enum).
             position: 1-based position to select (None for first item).
+            selection_id: Optional item ID to focus on (overrides position).
             grid_enabled: Enable grid navigation mode.
             grid_height: Number of rows in grid mode.
             grid_width: Number of columns in grid mode.

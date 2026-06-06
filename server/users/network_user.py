@@ -96,10 +96,38 @@ class NetworkUser(User):
         self._message_queue.append(packet)
 
     def get_queued_messages(self) -> list[dict[str, Any]]:
-        """Get and clear the message queue."""
+        """Get and clear the message queue.
+
+        Coalesces redundant menu repaints: when more than one ``menu`` packet for
+        the same ``menu_id`` is queued in a single flush — e.g. an action handler
+        rebuilds the menu and the event framework rebuilds it again on the same
+        tick — only the last one survives. This collapses double-sends (double
+        screen-reader announcements and double focus churn) without games having
+        to police their own rebuild calls. All non-menu packets, and menus with
+        distinct ids, pass through untouched and in order.
+        """
         messages = self._message_queue
         self._message_queue = []
-        return messages
+
+        # Index of the final repaint queued for each menu_id this flush.
+        last_menu_index: dict[str, int] = {}
+        for i, packet in enumerate(messages):
+            if packet.get("type") == "menu":
+                menu_id = packet.get("menu_id")
+                if menu_id is not None:
+                    last_menu_index[menu_id] = i
+
+        if not last_menu_index:
+            return messages
+
+        coalesced = []
+        for i, packet in enumerate(messages):
+            if packet.get("type") == "menu":
+                menu_id = packet.get("menu_id")
+                if menu_id is not None and last_menu_index.get(menu_id) != i:
+                    continue  # superseded by a later repaint of the same menu
+            coalesced.append(packet)
+        return coalesced
 
     def speak(self, text: str, buffer: str = "misc") -> None:
         packet = {"type": "speak", "text": text, "buffer": buffer}
@@ -182,6 +210,7 @@ class NetworkUser(User):
         multiletter: bool = True,
         escape_behavior: EscapeBehavior = EscapeBehavior.KEYBIND,
         position: int | None = None,
+        selection_id: str | None = None,
         grid_enabled: bool = False,
         grid_height: int = 0,
         grid_width: int = 1,
@@ -213,6 +242,8 @@ class NetworkUser(User):
         if position is not None:
             # Convert 1-based to 0-based for client
             packet["position"] = position - 1
+        if selection_id is not None:
+            packet["selection_id"] = selection_id
         self._queue_packet(packet)
 
     def update_menu(

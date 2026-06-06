@@ -24,8 +24,13 @@ class MenuManagementMixin:
         - self.get_all_visible_actions(player) -> list[ResolvedAction]
     """
 
-    def rebuild_player_menu(self, player: "Player") -> None:
-        """Rebuild the turn menu for a player."""
+    def rebuild_player_menu(self, player: "Player", focus: str | None = None) -> None:
+        """Rebuild the turn menu for a player.
+
+        Pass ``focus`` (an item id) to land the cursor on a specific item — e.g.
+        a freshly drawn card. With ``focus`` omitted, clients preserve the
+        player's current focus by item identity across the refresh.
+        """
         if self._destroyed:
             return  # Don't rebuild menus after game is destroyed
             
@@ -102,15 +107,27 @@ class MenuManagementMixin:
             items,
             multiletter=False,
             escape_behavior=EscapeBehavior.KEYBIND,
+            selection_id=focus,
             **grid_kwargs,
         )
 
-    def rebuild_all_menus(self) -> None:
-        """Rebuild menus for all players."""
+    def rebuild_all_menus(self, focus: str | None = None) -> None:
+        """Rebuild menus for all players.
+
+        ``focus`` (an item id) applies to every player that has such an item;
+        clients ignore it for players whose menu lacks the id. For per-player
+        targeting prefer ``rebuild_player_menu`` / ``update_player_menu``.
+        """
         if self._destroyed:
             return  # Don't rebuild menus after game is destroyed
         for player in self.players:
-            self.rebuild_player_menu(player)
+            # Only forward focus when set: many games override
+            # rebuild_player_menu with a (self, player) signature, so an
+            # unconditional focus= kwarg would break them.
+            if focus is None:
+                self.rebuild_player_menu(player)
+            else:
+                self.rebuild_player_menu(player, focus=focus)
 
     def update_player_menu(
         self, player: "Player", selection_id: str | None = None
