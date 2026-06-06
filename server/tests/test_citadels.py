@@ -837,14 +837,22 @@ def test_touch_standard_actions_follow_the_shared_touch_order() -> None:
 def test_info_actions_remain_visible_while_gameplay_sequences_lock_the_turn() -> None:
     game = make_game(start=True, touch_first=True)
     player = game.players[0]
+    player.city = [make_card(660, "Smithy", 5, DISTRICT_UNIQUE, "smithy")]
+    player.gold = 2
+    game.district_deck = [
+        make_card(661, "Temple", 1, DISTRICT_RELIGIOUS),
+        make_card(662, "Market", 2, DISTRICT_TRADE),
+        make_card(663, "Manor", 3, DISTRICT_NOBLE),
+    ]
     begin_turn(game, player, CHARACTER_MERCHANT)
+    game.turn_resource_taken = True
 
-    game.execute_action(player, "draw_cards")
+    game.execute_action(player, "use_smithy")
     assert game.has_active_sequence() is True
 
     visible_ids = [entry.action.id for entry in game.get_all_visible_actions(player)]
+    assert "use_smithy" not in visible_ids
     assert "take_gold" not in visible_ids
-    assert "draw_cards" not in visible_ids
     for action_id in (
         "read_status",
         "read_status_detailed",

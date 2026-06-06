@@ -1468,15 +1468,41 @@ class CitadelsGame(Game):
 
     def _action_draw_cards(self, player: Player, action_id: str) -> None:
         _ = action_id
-        shuffle = random.choice(SHUFFLE_SOUNDS)
-        beats = [
-            SequenceBeat(
-                ops=[SequenceOperation.sound_op(shuffle)],
-                delay_after_ticks=self._paced_delay_ticks(shuffle),
-            ),
-            SequenceBeat(ops=[SequenceOperation.callback_op("apply_resource_draw", {"player_id": player.id})]),
-        ]
-        self._start_resolution_sequence("citadels_draw_cards", beats, tag="citadels_turn_action")
+        cit_player = self._as_citadels_player(player)
+        if not cit_player:
+            return
+        # The shuffle plays under an already-visible menu rather than gating it:
+        # the keep-choice sub-menu opens immediately, like every other citadels
+        # sub-selection, instead of waiting out the sound's cinematic pacing.
+        self.play_sound(random.choice(SHUFFLE_SOUNDS))
+        drawn = self._draw_cards(2)
+        self.turn_resource_taken = True
+        if self._has_city_effect(cit_player, "library"):
+            cit_player.hand.extend(drawn)
+            self.broadcast_l(
+                "citadels-library-draw",
+                buffer="game",
+                player=cit_player.name,
+                count=len(drawn),
+            )
+            self._after_turn_state_change(cit_player)
+            return
+        if drawn:
+            self.pending_draw_choices = drawn
+            self.turn_subphase = SUBPHASE_DRAW_KEEP
+            self.broadcast_l(
+                "citadels-player-drew-options",
+                buffer="game",
+                player=cit_player.name,
+                count=len(drawn),
+            )
+            self._refresh_menus_for_focus(
+                cit_player,
+                selection_id=self._preferred_focus_action_id(cit_player),
+            )
+            self._schedule_bot_turn(cit_player)
+            return
+        self._after_turn_state_change(cit_player)
 
     def _action_keep_draw_card(self, player: Player, action_id: str) -> None:
         cit_player = self._as_citadels_player(player)
@@ -2175,9 +2201,6 @@ class CitadelsGame(Game):
         if callback_id == "apply_resource_gold":
             self._apply_take_gold_callback(payload)
             return
-        if callback_id == "apply_resource_draw":
-            self._apply_draw_cards_callback(payload)
-            return
         if callback_id == "collect_income":
             self._apply_collect_income_callback(payload)
             return
@@ -2247,29 +2270,6 @@ class CitadelsGame(Game):
         player.gold += 2
         self.turn_resource_taken = True
         self.broadcast_l("citadels-player-took-gold", buffer="game", player=player.name, amount=2)
-        self._after_turn_state_change(player)
-
-    def _apply_draw_cards_callback(self, payload: dict) -> None:
-        player = self.get_player_by_id(payload.get("player_id", ""))
-        if not isinstance(player, CitadelsPlayer):
-            return
-        drawn = self._draw_cards(2)
-        self.turn_resource_taken = True
-        if self._has_city_effect(player, "library"):
-            player.hand.extend(drawn)
-            self.broadcast_l("citadels-library-draw", buffer="game", player=player.name, count=len(drawn))
-            self._after_turn_state_change(player)
-            return
-        if drawn:
-            self.pending_draw_choices = drawn
-            self.turn_subphase = SUBPHASE_DRAW_KEEP
-            self.broadcast_l("citadels-player-drew-options", buffer="game", player=player.name, count=len(drawn))
-            self._refresh_menus_for_focus(
-                player,
-                selection_id=self._preferred_focus_action_id(player),
-            )
-            self._schedule_bot_turn(player)
-            return
         self._after_turn_state_change(player)
 
     def _apply_collect_income_callback(self, payload: dict) -> None:
