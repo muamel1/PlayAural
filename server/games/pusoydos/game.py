@@ -1601,48 +1601,87 @@ class PusoyDosGame(Game, TurnTimerMixin):
         user = self.get_user(player)
         if not user:
             return
-        parts = []
+        players = self._playing_players()
         if self.options.game_mode == "elimination":
-            for p in self._playing_players():
-                parts.append(f"{p.name}: {p.round_wins} wins")
-            user.speak("; ".join(parts) if parts else "No scores yet.", buffer="game")
+            for p in players:
+                user.speak_l(
+                    "pusoydos-score-wins",
+                    buffer="game",
+                    player=p.name,
+                    count=p.round_wins,
+                )
         elif self.options.game_mode == "losses":
-            for p in self._playing_players():
-                parts.append(f"{p.name}: {p.round_losses} losses")
-            user.speak("; ".join(parts) if parts else "No scores yet.", buffer="game")
+            for p in players:
+                user.speak_l(
+                    "pusoydos-score-losses",
+                    buffer="game",
+                    player=p.name,
+                    count=p.round_losses,
+                )
         elif self.options.game_mode == "points_elimination":
-            players = sorted(self._playing_players(), key=lambda p: p.score)
-            for p in players:
-                parts.append(f"{p.name}: {p.score}")
-            user.speak(". ".join(parts) + "." if parts else "No scores yet.", buffer="game")
+            for p in sorted(players, key=lambda p: p.score):
+                user.speak_l(
+                    "pusoydos-score-points",
+                    buffer="game",
+                    player=p.name,
+                    score=p.score,
+                )
         else:
-            players = sorted(self._playing_players(), key=lambda p: -p.score)
-            for p in players:
-                parts.append(f"{p.name}: {p.score}")
-            user.speak(". ".join(parts) + "." if parts else "No scores yet.", buffer="game")
+            for p in sorted(players, key=lambda p: -p.score):
+                user.speak_l(
+                    "pusoydos-score-points",
+                    buffer="game",
+                    player=p.name,
+                    score=p.score,
+                )
+
+        if not players:
+            user.speak_l("pusoydos-score-no-scores", buffer="game")
 
     def _action_check_scores_detailed(self, player: "Player", action_id: str) -> None:
         user = self.get_user(player)
         if not user:
             return
+        locale = user.locale
         lines = []
         if self.options.game_mode == "elimination":
             for p in self._playing_players():
-                wins = p.round_wins
-                label = "win" if wins == 1 else "wins"
-                lines.append(f"{p.name}: {wins} {label}")
+                lines.append(
+                    Localization.get(
+                        locale,
+                        "pusoydos-score-wins",
+                        player=p.name,
+                        count=p.round_wins,
+                    )
+                )
         elif self.options.game_mode == "losses":
             for p in self._playing_players():
-                losses = p.round_losses
-                label = "loss" if losses == 1 else "losses"
-                lines.append(f"{p.name}: {losses} {label}")
+                lines.append(
+                    Localization.get(
+                        locale,
+                        "pusoydos-score-losses",
+                        player=p.name,
+                        count=p.round_losses,
+                    )
+                )
         elif self.options.game_mode == "points_elimination":
             for p in sorted(self._playing_players(), key=lambda p: p.score):
-                lines.append(f"{p.name}: {p.score} points")
+                lines.append(
+                    Localization.get(
+                        locale, "pusoydos-score-points", player=p.name, score=p.score
+                    )
+                )
         else:
             for p in sorted(self._playing_players(), key=lambda p: -p.score):
-                lines.append(f"{p.name}: {p.score} points")
-        self.status_box(player, lines if lines else ["No scores yet."])
+                lines.append(
+                    Localization.get(
+                        locale, "pusoydos-score-points", player=p.name, score=p.score
+                    )
+                )
+        self.status_box(
+            player,
+            lines if lines else [Localization.get(locale, "pusoydos-score-no-scores")],
+        )
 
     def _sync_team_scores(self) -> None:
         for team in self._team_manager.teams:

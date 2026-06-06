@@ -11,6 +11,8 @@ rb-take = Rút { $count } { $count ->
 }
 rb-reshuffle-action = Xóc lại ống (còn { $remaining } lần)
 rb-view-pipe-action = Xem trộm ống (còn { $remaining } lần)
+rb-key-reshuffle-pipe = Xóc lại ống
+rb-key-view-pipe = Xem ống
 
 # Sự kiện rút bóng
 rb-you-take = Bạn đã rút { $count } { $count ->
@@ -23,7 +25,7 @@ rb-player-takes = { $player } đã rút { $count } { $count ->
 }!
 rb-ball-plus = Bóng số { $num }: { $description }! Được cộng { $value } điểm!
 rb-ball-minus = Bóng số { $num }: { $description }! Bị trừ { $value } điểm!
-rb-ball-zero = Bóng số { $num }: { $description }! Không mất điểm!
+rb-ball-zero = Bóng số { $num }: { $description }! Không đổi điểm!
 rb-new-score = Điểm của { $player }: { $score } điểm.
 
 # Sự kiện xóc lại ống
@@ -139,7 +141,7 @@ rb-ball-royal-palace-invite = Nhận thiệp mời vào Cung điện Hoàng gia
 rb-ball-world-tour-ticket = Vé đi vòng quanh thế giới
 
 rb-pack-vietnam = Cuộc phiêu lưu ở Việt Nam
-rb-ball-stolen-motorbike = Bị đua mất xe máy
+rb-ball-stolen-motorbike = Bị trộm mất xe máy
 rb-ball-flooded-street-saigon = Bơi giữa đường Sài Gòn mùa mưa
 rb-ball-food-poisoning-bun-mam = Đau bụng vì ăn bún mắm
 rb-ball-fake-taxi-scam = Đi nhầm taxi dù

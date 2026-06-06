@@ -125,6 +125,7 @@ twentyone-round-loss-zero-bet = { $player } loses the round but takes no damage 
 twentyone-player-avoids-damage-with-effect = { $player } uses { $effect } and avoids damage.
 twentyone-player-takes-damage = { $player } takes { $damage } damage and now has { $hp } HP.
 twentyone-game-win = { $player } wins the game with { $hp } HP remaining.
+twentyone-final-hp-line = { $rank }. { $player }: { $hp } HP
 twentyone-game-no-winner = Game ends with no winner.
 twentyone-cannot-draw-cards = { $player } cannot draw cards right now.
 twentyone-deck-empty-stay = Deck is empty; no card is drawn.

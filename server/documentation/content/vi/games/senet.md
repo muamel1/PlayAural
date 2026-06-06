@@ -1,8 +1,8 @@
 \*\*Senet\*\*
 
-Senet là một trò chơi cờ bàn của Ai Cập cổ đại, rất có thể là trò chơi cờ bàn lâu đời nhất vẫn còn được chơi đến ngày nay, với nguồn gốc kéo dài hơn năm nghìn năm. Người ta đã tìm thấy những bàn cờ Senet trong các lăng mộ khắp Ai Cập, và pharaoh Tutankhamun được chôn cất cùng nhiều bàn cờ của riêng ông. Hai người chơi đua mỗi bên năm quân dọc theo một đường đi hình chữ S gồm ba mươi ô, tung que thay vì xúc xắc và tìm cách đưa hết quân ra khỏi bàn trước đối thủ.
+Senet là trò chơi cờ bàn của Ai Cập cổ đại, có thể là một trong những trò chơi cờ lâu đời nhất vẫn còn được chơi đến nay. Người ta đã tìm thấy các bàn Senet trong nhiều lăng mộ Ai Cập, kể cả lăng mộ của pharaoh Tutankhamun. Hai người chơi, mỗi người có năm quân, di chuyển dọc theo đường đi hình chữ S gồm ba mươi ô, tung que thay vì xúc xắc và tìm cách đưa hết quân ra khỏi bàn trước đối thủ.
 
-Senet được chơi bởi \*\*đúng hai người\*\*.
+Senet chỉ hỗ trợ \*\*đúng hai người\*\*.
 
 \*\*Vị trí ban đầu\*\*
 
@@ -55,23 +55,23 @@ Một dãy ba quân đối thủ liên tiếp trở lên tạo thành một bứ
 
 Năm ô mang ý nghĩa đặc biệt:
 
-\* \*\*Ô 15 — Ngôi nhà Tái Sinh:\*\* ô mà những quân bị đẩy về từ Ngôi nhà Nước sẽ quay lại. Ngoài ra không có tác dụng nào khác.
-\* \*\*Ô 26 — Ngôi nhà Hạnh Phúc:\*\* mọi quân \*\*đều phải\*\* dừng tại đây trên đường về đích. Bạn không thể vượt qua ô 26, nên một kết quả đưa quân qua khỏi nó mà không dừng lại không phải là nước đi hợp lệ. Khi một quân đã dừng trên ô 26, nó di chuyển bình thường ở lượt sau.
-\* \*\*Ô 27 — Ngôi nhà Nước:\*\* dừng tại đây là điều không may. Quân bị đẩy thẳng về Ngôi nhà Tái Sinh (ô 15). Nếu ô 15 đã có quân, quân sẽ về ô trống gần nhất trước nó. Ngay cả một quân đến bằng cách đổi chỗ lên ô nước cũng bị đẩy về theo cách này.
-\* \*\*Ô 28 — Ngôi nhà Ba Sự Thật:\*\* một quân đến đây sẽ bị khóa an toàn tại chỗ và chỉ có thể rời đi bằng cách ra ngoài với kết quả chính xác là \*\*3\*\*.
-\* \*\*Ô 29 — Ngôi nhà Re-Atum:\*\* giống ô 28, nhưng quân chỉ ra ngoài với kết quả chính xác là \*\*2\*\*.
+\* \*\*Ô 15 — Nhà Tái Sinh:\*\* nơi các quân bị đẩy về từ Nhà Nước quay lại. Ngoài ra ô này không có tác dụng đặc biệt.
+\* \*\*Ô 26 — Nhà Hạnh Phúc:\*\* mọi quân \*\*đều phải\*\* dừng tại đây trên đường về đích. Bạn không thể vượt qua ô 26, nên kết quả đưa quân đi quá ô này mà không dừng lại sẽ không hợp lệ. Sau khi đã dừng ở ô 26, quân di chuyển bình thường ở lượt sau.
+\* \*\*Ô 27 — Nhà Nước:\*\* dừng tại đây là bất lợi. Quân bị đẩy về Nhà Tái Sinh ở ô 15. Nếu ô 15 đã có quân, quân sẽ về ô trống gần nhất trước nó. Ngay cả quân đến ô này bằng cách đổi chỗ cũng bị đẩy về.
+\* \*\*Ô 28 — Nhà Ba Sự Thật:\*\* quân đứng ở đây được an toàn và chỉ có thể ra khỏi bàn với kết quả chính xác là \*\*3\*\*.
+\* \*\*Ô 29 — Nhà Re-Atum:\*\* giống ô 28, nhưng quân chỉ có thể ra khỏi bàn với kết quả chính xác là \*\*2\*\*.
 
-Ô 30 hoạt động tương tự: một quân tại đó được an toàn và chỉ ra ngoài với kết quả chính xác là \*\*1\*\*. Các quân đang đứng trên ô 28, 29 và 30 đều miễn nhiễm với việc bị bắt.
+Ô 30 hoạt động tương tự: quân đứng tại đó được an toàn và chỉ ra khỏi bàn với kết quả chính xác là \*\*1\*\*. Các quân ở ô 28, 29 và 30 đều không thể bị bắt.
 
-\*\*Đưa quân ra ngoài\*\*
+\*\*Đưa quân ra khỏi bàn\*\*
 
-Quân chỉ rời bàn cờ từ ba ô cuối cùng, và mỗi ô đòi hỏi đúng kết quả của nó:
+Quân chỉ có thể rời bàn từ ba ô cuối cùng, và mỗi ô đòi hỏi đúng kết quả của nó:
 
 \* Từ ô 28: chính xác là 3.
 \* Từ ô 29: chính xác là 2.
 \* Từ ô 30: chính xác là 1.
 
-Không quân nào được ra ngoài từ bất kỳ ô nào khác. Quân phải đến được các ô cuối này và chờ ở đó để có kết quả đúng.
+Không quân nào được ra khỏi bàn từ các ô khác. Quân phải đến được những ô cuối này và chờ kết quả đúng.
 
 \*\*Chiến thắng\*\*
 
@@ -93,8 +93,8 @@ Người đầu tiên đưa cả năm quân của mình ra ngoài sẽ thắng v
 
 \*\*Mẹo chiến thuật\*\*
 
-\* \*\*Qua Ngôi nhà Hạnh Phúc sớm.\*\* Mọi quân đều phải dừng trên ô 26, nên nó là một nút thắt cổ chai. Đưa quân qua nó sớm hơn cho bạn nhiều tự do hơn về sau.
-\* \*\*Tránh xa ô nước.\*\* Ô 27 ném một quân quay trở lại tận ô 15. Hãy tính toán để né nó, nhất là với những quân đã đi được xa.
+\* \*\*Qua Nhà Hạnh Phúc sớm.\*\* Mọi quân đều phải dừng trên ô 26, nên nó là một nút thắt cổ chai. Đưa quân qua nó sớm hơn cho bạn nhiều tự do hơn về sau.
+\* \*\*Tránh xa ô nước.\*\* Ô 27 đẩy một quân quay lại tận ô 15. Hãy tính toán để né nó, nhất là với những quân đã đi được xa.
 \* \*\*Tiến lên theo cặp.\*\* Hai quân liền kề che chắn cho nhau khỏi bị bắt. Di chuyển các quân cùng nhau, thay vì dàn trải, là an toàn nhất ở nơi đối thủ rình rập gần đó.
 \* \*\*Dùng lượt tung thưởng khôn ngoan.\*\* Các kết quả 1, 4 và 5 cho lượt tung thêm, và một chuỗi dài có thể mang tính quyết định. Trong một chuỗi, hãy cân nhắc quân nào được lợi nhiều nhất từ mỗi kết quả.
 \* \*\*Dựng một bức tường.\*\* Ba quân trở lên thành hàng là không thể vượt qua. Một chốt chặn đặt đúng chỗ có thể giam đối thủ trong vài lượt.

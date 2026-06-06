@@ -2476,6 +2476,7 @@ class GameClient {
                 }
 
                 if (id) {
+                    btn.setAttribute('aria-disabled', 'false');
                     btn.dataset.id = id;
                     btn.onclick = (e) => {
                         if (e && e.shiftKey) return;
@@ -2489,10 +2490,9 @@ class GameClient {
                     };
                     this.enableLongPress(btn, id);
                 } else {
-                    btn.removeAttribute('dataset-id');
-                    btn.onclick = () => {
-                        this.sendMenuSelection(this.currentMenuId, i + 1);
-                    };
+                    btn.removeAttribute('data-id');
+                    btn.setAttribute('aria-disabled', 'true');
+                    btn.onclick = null;
                     btn.oncontextmenu = null;
                     this.disableLongPress(btn);
                 }
@@ -2563,6 +2563,7 @@ class GameClient {
         btn.tabIndex = 0; // Always make focusable so screen readers can navigate read-only items
 
         if (id) {
+            btn.setAttribute('aria-disabled', 'false');
             btn.dataset.id = id;
 
             // Simulate button click behavior for div
@@ -2594,7 +2595,10 @@ class GameClient {
 
             this.enableLongPress(btn, id);
         } else {
+            btn.removeAttribute('data-id');
             btn.setAttribute('aria-disabled', 'true');
+            btn.onclick = null;
+            btn.oncontextmenu = null;
         }
 
         this.menuArea.appendChild(btn);

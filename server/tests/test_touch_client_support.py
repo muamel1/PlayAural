@@ -2,15 +2,22 @@
 
 from pathlib import Path
 
+import pytest
+
 from ..game_utils.actions import Visibility
 from ..game_utils.client_types import (
     is_touch_client_type,
     uses_self_voicing_settings_type,
 )
+from ..games.ageofheroes.game import AgeOfHeroesGame
 from ..games.battleship.game import BattleshipGame, BattleshipOptions
 from ..games.chess.game import ChessGame, ChessOptions
+from ..games.humanitycards.game import HumanityCardsGame
 from ..games.ludo.game import LudoGame
 from ..games.milebymile.game import MileByMileGame
+from ..games.nine.game import NineGame
+from ..games.senet.game import SenetGame
+from ..games.twentyone.game import TwentyOneGame
 from ..messages.localization import Localization
 from ..users.test_user import MockUser
 
@@ -91,6 +98,103 @@ def test_milebymile_touch_info_stays_before_status_actions() -> None:
     assert visible_ids.index("info") < visible_ids.index("check_status")
     assert visible_ids.index("check_status") < visible_ids.index("whose_turn")
     assert visible_ids.index("whose_turn") < visible_ids.index("whos_at_table")
+
+
+def _new_game_with_players(game_cls, player_count: int, client_type: str = "mobile"):
+    game = game_cls()
+    game.setup_keybinds()
+    players = []
+    for index in range(player_count):
+        name = f"Player{index + 1}"
+        user = MockUser(name, uuid=f"new-game-{game.get_type()}-{index + 1}")
+        if index == 0:
+            user.client_type = client_type
+        players.append(game.add_player(name, user))
+    game.host = "Player1"
+    return game, players[0]
+
+
+@pytest.mark.parametrize(
+    ("game_cls", "player_count", "expected_order"),
+    [
+        (
+            AgeOfHeroesGame,
+            2,
+            ["check_hand", "check_status", "check_status_detailed", "whose_turn", "whos_at_table"],
+        ),
+        (
+            HumanityCardsGame,
+            3,
+            ["view_black_card", "whose_judge", "check_scores", "whose_turn", "whos_at_table"],
+        ),
+        (
+            NineGame,
+            2,
+            ["check_sequences_status", "check_hand_counts_status", "whose_turn", "whos_at_table"],
+        ),
+        (
+            SenetGame,
+            2,
+            ["check_status", "check_sticks", "check_score", "whose_turn", "whos_at_table"],
+        ),
+        (
+            TwentyOneGame,
+            2,
+            [
+                "modifier_guide",
+                "check_21_status",
+                "read_21_opponent_face_up",
+                "read_21_hand",
+                "read_21_bets",
+                "read_21_active_effects",
+                "check_scores",
+                "whose_turn",
+                "whos_at_table",
+            ],
+        ),
+    ],
+)
+def test_new_games_touch_standard_actions_follow_touch_order(
+    game_cls, player_count: int, expected_order: list[str]
+) -> None:
+    game, player = _new_game_with_players(game_cls, player_count)
+    action_set = game.create_standard_action_set(player)
+    order = action_set._order
+
+    positions = [order.index(action_id) for action_id in expected_order]
+    assert positions == sorted(positions)
+
+
+@pytest.mark.parametrize(
+    ("game_cls", "player_count", "custom_actions"),
+    [
+        (AgeOfHeroesGame, 2, ["check_hand", "check_status", "check_status_detailed"]),
+        (HumanityCardsGame, 3, ["view_black_card", "whose_judge"]),
+        (NineGame, 2, ["check_sequences_status", "check_hand_counts_status"]),
+        (SenetGame, 2, ["check_status", "check_sticks", "check_score"]),
+        (
+            TwentyOneGame,
+            2,
+            [
+                "modifier_guide",
+                "check_21_status",
+                "read_21_opponent_face_up",
+                "read_21_hand",
+                "read_21_bets",
+                "read_21_active_effects",
+            ],
+        ),
+    ],
+)
+def test_new_games_desktop_standard_actions_keep_base_order(
+    game_cls, player_count: int, custom_actions: list[str]
+) -> None:
+    game, player = _new_game_with_players(game_cls, player_count, client_type="python")
+    action_set = game.create_standard_action_set(player)
+    order = action_set._order
+    base_tail = max(order.index("whose_turn"), order.index("whos_at_table"))
+
+    assert all(order.index(action_id) > base_tail for action_id in custom_actions)
 
 
 def test_chess_mobile_standard_actions_are_visible_once() -> None:

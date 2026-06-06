@@ -231,7 +231,7 @@ class BackgammonGame(Game):
         action_set.add(
             Action(
                 id="navigate_next",
-                label="Next",
+                label=Localization.get(locale, "backgammon-label-next"),
                 handler="_action_navigate_next",
                 is_enabled="_is_navigate_enabled",
                 is_hidden="_is_always_hidden",
@@ -241,7 +241,7 @@ class BackgammonGame(Game):
         action_set.add(
             Action(
                 id="navigate_prev",
-                label="Previous",
+                label=Localization.get(locale, "backgammon-label-previous"),
                 handler="_action_navigate_prev",
                 is_enabled="_is_navigate_enabled",
                 is_hidden="_is_always_hidden",
@@ -251,7 +251,7 @@ class BackgammonGame(Game):
         action_set.add(
             Action(
                 id="deselect",
-                label="Deselect",
+                label=Localization.get(locale, "backgammon-label-deselect"),
                 handler="_action_deselect",
                 is_enabled="_is_deselect_enabled",
                 is_hidden="_is_always_hidden",
@@ -325,38 +325,92 @@ class BackgammonGame(Game):
             self._keybinds["shift+s"] = []
 
         # Rolling is done by pressing enter on any grid point (no dedicated key)
-        self.define_keybind("shift+d", "Double", ["offer_double"], state=KeybindState.ACTIVE)
-        self.define_keybind("y", "Accept double", ["accept_double"], state=KeybindState.ACTIVE)
-        self.define_keybind("n", "Drop double", ["drop_double"], state=KeybindState.ACTIVE)
         self.define_keybind(
-            "e", "Status", ["check_status"], state=KeybindState.ACTIVE, include_spectators=True
+            "shift+d",
+            Localization.get("en", "backgammon-label-double"),
+            ["offer_double"],
+            state=KeybindState.ACTIVE,
         )
         self.define_keybind(
-            "d", "Cube", ["check_cube"], state=KeybindState.ACTIVE, include_spectators=True
+            "y",
+            Localization.get("en", "backgammon-accept"),
+            ["accept_double"],
+            state=KeybindState.ACTIVE,
         )
         self.define_keybind(
-            "p", "Pip count", ["check_pip"], state=KeybindState.ACTIVE, include_spectators=True
-        )
-        self.define_keybind("u", "Undo", ["undo_move"], state=KeybindState.ACTIVE)
-        self.define_keybind(
-            "s", "Score", ["check_score"], state=KeybindState.ACTIVE, include_spectators=True
-        )
-        self.define_keybind(
-            "c", "Dice", ["check_dice"], state=KeybindState.ACTIVE, include_spectators=True
+            "n",
+            Localization.get("en", "backgammon-drop"),
+            ["drop_double"],
+            state=KeybindState.ACTIVE,
         )
         self.define_keybind(
-            "ctrl+down", "Next destination", ["navigate_next"], state=KeybindState.ACTIVE
+            "e",
+            Localization.get("en", "backgammon-check-status"),
+            ["check_status"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
         )
         self.define_keybind(
-            "ctrl+right", "Next destination", ["navigate_next"], state=KeybindState.ACTIVE
+            "d",
+            Localization.get("en", "backgammon-check-cube"),
+            ["check_cube"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
         )
         self.define_keybind(
-            "ctrl+up", "Previous destination", ["navigate_prev"], state=KeybindState.ACTIVE
+            "p",
+            Localization.get("en", "backgammon-check-pip"),
+            ["check_pip"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
         )
         self.define_keybind(
-            "ctrl+left", "Previous destination", ["navigate_prev"], state=KeybindState.ACTIVE
+            "u", Localization.get("en", "backgammon-label-undo"), ["undo_move"], state=KeybindState.ACTIVE
         )
-        self.define_keybind("ctrl+backspace", "Deselect", ["deselect"], state=KeybindState.ACTIVE)
+        self.define_keybind(
+            "s",
+            Localization.get("en", "backgammon-check-score"),
+            ["check_score"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
+        )
+        self.define_keybind(
+            "c",
+            Localization.get("en", "backgammon-check-dice"),
+            ["check_dice"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
+        )
+        self.define_keybind(
+            "ctrl+down",
+            Localization.get("en", "backgammon-label-next-destination"),
+            ["navigate_next"],
+            state=KeybindState.ACTIVE,
+        )
+        self.define_keybind(
+            "ctrl+right",
+            Localization.get("en", "backgammon-label-next-destination"),
+            ["navigate_next"],
+            state=KeybindState.ACTIVE,
+        )
+        self.define_keybind(
+            "ctrl+up",
+            Localization.get("en", "backgammon-label-previous-destination"),
+            ["navigate_prev"],
+            state=KeybindState.ACTIVE,
+        )
+        self.define_keybind(
+            "ctrl+left",
+            Localization.get("en", "backgammon-label-previous-destination"),
+            ["navigate_prev"],
+            state=KeybindState.ACTIVE,
+        )
+        self.define_keybind(
+            "ctrl+backspace",
+            Localization.get("en", "backgammon-label-deselect"),
+            ["deselect"],
+            state=KeybindState.ACTIVE,
+        )
 
     # ==========================================================================
     # Grid helpers

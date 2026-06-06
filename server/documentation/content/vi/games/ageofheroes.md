@@ -1,139 +1,91 @@
-\*\*Thời Đại Anh Hùng (Age of Heroes)\*\*
+\*\*Kỷ Nguyên Anh Hùng (Age of Heroes)\*\*
 
-
-
-Thời Đại Anh Hùng là trò chơi xây dựng nền văn minh bằng bài cho 2 đến 6 người chơi. Mỗi người dẫn dắt một trong sáu bộ lạc cổ đại — Ai Cập, La Mã, Hy Lạp, Babylon, Celt hoặc Trung Quốc — tranh giành quyền bá chủ qua quản lý tài nguyên, xây dựng, giao thương và chiến đấu bằng xúc xắc.
-
-
+Kỷ Nguyên Anh Hùng là trò chơi bài xây dựng nền văn minh dành cho 2 đến 6 người. Mỗi người dẫn dắt một bộ tộc cổ đại như Ai Cập, La Mã, Hy Lạp, Babylon, Celt hoặc Trung Hoa, rồi cạnh tranh bằng tài nguyên, công trình, giao thương và chiến tranh.
 
 \*\*Cách chơi\*\*
 
+Ván chơi diễn ra theo từng ngày. Mỗi ngày có ba giai đoạn chính: Chuẩn bị, Chợ phiên và Hành động. Trước ngày đầu tiên còn có giai đoạn Thiết lập để chia bộ tộc và xác định thứ tự lượt.
 
+Trong giai đoạn Thiết lập, mỗi người được gán một bộ tộc ngẫu nhiên, biết tài nguyên đặc biệt dùng để xây kỳ quan của mình, rồi gieo 2 xúc xắc để xác định ai đi trước. Nếu nhiều người bằng điểm cao nhất, họ gieo lại. Mỗi người bắt đầu với 5 lá bài.
 
-Một ván Thời Đại Anh Hùng được chia thành các ngày lặp đi lặp lại, mỗi ngày gồm ba giai đoạn: Chuẩn Bị, Chợ và Hành Động. Trước ngày đầu tiên, có một giai đoạn Thiết Lập để xác định thứ tự lượt chơi.
+\*\*Giai đoạn Chuẩn bị\*\*
 
+Đầu mỗi ngày, các lá sự kiện bắt buộc trên tay được xử lý trước. \*\*Gia tăng dân số\*\* cho bạn thêm một thành phố miễn phí. Các thảm họa như \*\*Động đất\*\*, \*\*Núi lửa phun trào\*\*, \*\*Nạn đói\*\* và \*\*Man tộc xâm lược\*\* không gây hại trong ngày 1, nhưng từ ngày 2 trở đi chúng có hiệu lực thật.
 
+Từ ngày 2, Động đất và Núi lửa phun trào cũng có thể được đánh chủ động để nhắm vào người khác. Lá \*\*Vận may\*\* có thể chặn một số thảm họa; \*\*Thế vận hội Olympic\*\* có thể chặn chiến tranh hoặc một số thảm họa tùy ngữ cảnh.
 
-Trong Thiết Lập, mỗi người chơi được phân ngẫu nhiên một bộ lạc và tung hai xúc xắc (2d6) để xác định ai đi trước. Nếu có nhiều người tung điểm bằng nhau, họ tung lại để phân định. Mỗi người được chia 5 lá bài ban đầu.
+\*\*Giai đoạn Chợ phiên\*\*
 
+Mỗi người rút bài dựa trên mạng lưới đường của mình: tối thiểu 1 lá, cộng thêm bài nhờ các bộ tộc được nối đường. Sau đó chợ phiên mở ra để mọi người đề nghị trao đổi tài nguyên.
 
+Khi hai lời đề nghị khớp nhau, giao dịch tự thực hiện. Bạn không thể đem tài nguyên kỳ quan riêng của mình ra đổi, và tài nguyên đặc biệt chỉ có ích với đúng bộ tộc cần nó. Khi giao dịch xong, bạn chủ động rời chợ; giai đoạn Chợ phiên kết thúc khi tất cả đã rời.
 
-\*\*Giai đoạn Chuẩn Bị\*\*
+\*\*Giai đoạn Hành động\*\*
 
+Người chơi lần lượt hành động. Trong lượt của mình, bạn rút một lá bài từ bộ bài, rồi chọn một hành động:
 
+\* \*\*Thu thuế:\*\* Rút bài theo số thành phố của bạn. Nếu không còn thành phố nào, bạn có thể bỏ một lá để rút lá mới.
 
-Đầu mỗi ngày, các thẻ sự kiện bắt buộc trong tay người chơi được xử lý tự động. Tăng Trưởng Dân Số ngay lập tức cấp một thành phố miễn phí. Động Đất, Phun Trào, Nạn Đói và Cướp Bóc vô hại và bị loại bỏ vào Ngày 1; từ Ngày 2 trở đi chúng gây sát thương thực sự. Từ Ngày 2, Động Đất và Phun Trào cũng có thể được chủ động đánh vào lượt của bạn để nhắm mục tiêu người khác. Thẻ May Mắn có thể chặn Nạn Đói, Cướp Bóc, Động Đất và Phun Trào khi nạn nhân đang giữ nó; thẻ Thế Vận Hội cũng có thể chặn Cướp Bóc và Phun Trào.
+\* \*\*Xây dựng:\*\* Dùng tài nguyên để xây quân đội, thành phố, pháo đài, tướng lĩnh hoặc đường bộ. Vàng có thể thay cho bất kỳ tài nguyên cơ bản nào.
 
+\* \*\*Chiến tranh:\*\* Tuyên chiến với một người khác, chọn mục tiêu chiến tranh, rồi cam kết quân đội, tướng lĩnh và anh hùng. Mỗi hiệp hai bên gieo xúc xắc, cộng thưởng, và bên cao hơn tiêu diệt một quân của đối phương.
 
+\* \*\*Không làm gì:\*\* Bỏ qua hành động chính của lượt.
 
-\*\*Giai đoạn Chợ\*\*
+Cuối lượt, nếu tay bài vượt giới hạn, bạn phải bỏ bớt. Tài nguyên kỳ quan riêng của bộ tộc bạn sẽ tự được đưa vào tiến độ kỳ quan.
 
+\*\*Công trình và chi phí\*\*
 
+\* \*\*Quân đội:\*\* 1 Sắt, 2 Ngũ cốc.
 
-Sau chuẩn bị, mỗi người chơi rút bài dựa trên mạng lưới đường của họ — tối thiểu 1 lá, cộng thêm 1 lá cho mỗi bộ lạc được kết nối qua đường. Phiên đấu giá giao thương sau đó mở ra: người chơi đề xuất trao đổi lá bài và nêu rõ muốn nhận lại gì. Khi hai đề xuất khớp nhau, giao dịch thực hiện tự động. Bạn không thể đề xuất tài nguyên đặc biệt của chính bộ lạc mình, và tài nguyên đặc biệt chỉ có thể được nhận bởi bộ lạc cần nó. Khi xong việc, bạn phải chủ động rời chợ; Giai đoạn Chợ kết thúc khi tất cả người chơi đã rời đi.
+\* \*\*Thành phố:\*\* 2 Gỗ, 1 Đá.
 
+\* \*\*Pháo đài:\*\* 1 Sắt, 1 Gỗ, 1 Đá.
 
+\* \*\*Tướng lĩnh:\*\* 1 Sắt, 1 Vàng.
 
-\*\*Giai đoạn Hành Động\*\*
+\* \*\*Đường bộ:\*\* 2 Đá, và cần hàng xóm chấp thuận.
 
+Đường bộ nối bạn với người ngồi cạnh trong vòng bàn. Đường giúp rút thêm bài ở Chợ phiên và có thể giúp quân trở về nhanh hơn sau chiến tranh.
 
+\*\*Mục tiêu chiến tranh\*\*
 
-Người chơi lần lượt hành động. Trong mỗi lượt bạn:
+\* \*\*Chinh phục:\*\* Cướp thành phố của đối thủ. Chỉ có từ ngày 3 trở đi.
 
-\* Rút một lá bài từ bộ bài (Nạn Đói và Cướp Bóc kích hoạt ngay lập tức nếu rút trong giai đoạn Hành Động).
+\* \*\*Cướp bóc:\*\* Lấy bài từ tay đối thủ.
 
-\* Chọn một hành động:
+\* \*\*Phá hủy:\*\* Làm giảm tiến độ kỳ quan của đối thủ.
 
-&nbsp;   \* \*\*Thu Thuế:\*\* Rút số lá bài bằng số thành phố của bạn. Nếu không có thành phố, đổi một lá từ tay để rút một lá mới thay thế.
+Tướng lĩnh cộng thưởng khi gieo. Pháo đài cộng thưởng cho bên phòng thủ. Quân tấn công sống sót thường phải chờ trở về ở lượt sau, trừ khi hai bên có đường nối.
 
-&nbsp;   \* \*\*Xây Dựng:\*\* Dùng lá tài nguyên để xây công trình theo bất kỳ kết hợp nào bạn đủ khả năng. Thẻ Vàng hoạt động như lá bài đa năng thay thế bất kỳ tài nguyên nào. Bạn có thể tiếp tục xây cho đến khi hết tài nguyên hoặc chọn dừng.
+\*\*Điều kiện thắng\*\*
 
-&nbsp;   \* \*\*Chiến Tranh:\*\* Tuyên chiến với người chơi khác, chọn mục tiêu chiến tranh và cam kết quân đội, tướng quân cùng thẻ Anh Hùng. Chiến đấu được giải quyết theo hiệp: cả hai bên tung 1d6, cộng điểm thưởng, và bên tung cao hơn sẽ tiêu diệt một quân của đối phương. Hòa thì không bên nào mất quân.
+\* \*\*Đế chế Thành Phố:\*\* Đạt đủ số thành phố yêu cầu.
 
-&nbsp;   \* \*\*Không Làm Gì:\*\* Bỏ qua hành động của bạn.
+\* \*\*Người Truyền Bá Văn Hóa Vĩ Đại:\*\* Hoàn thành kỳ quan bằng tài nguyên đặc biệt của bộ tộc.
 
-Sau hành động, hãy loại bài xuống còn 5 lá nếu tay vượt quá giới hạn. Tài nguyên đặc biệt của bộ lạc bạn trong tay sẽ được tự động thu vào tượng đài.
-
-
-
-\*\*Công Trình và Chi Phí\*\*
-
-
-
-\* \*\*Quân Đội\*\* — 1 Sắt, 2 Lương Thực
-
-\* \*\*Thành Phố\*\* — 2 Gỗ, 1 Đá
-
-\* \*\*Pháo Đài\*\* — 1 Sắt, 1 Gỗ, 1 Đá
-
-\* \*\*Tướng Quân\*\* — 1 Sắt, 1 Vàng
-
-\* \*\*Con Đường\*\* — 2 Đá (cần sự đồng ý của người hàng xóm)
-
-Các công trình được lấy từ nguồn cung chung. Con đường kết nối bạn với các người chơi kề bên theo chiều vòng tròn; chúng mang lại thêm lá bài trong giai đoạn Chợ và cho phép quân của bạn trở về ngay lập tức sau khi chiến tranh với hàng xóm được kết nối đường.
-
-
-
-\*\*Mục Tiêu Chiến Tranh\*\*
-
-
-
-\* \*\*Chinh Phục\*\* (chỉ có từ Ngày 3 trở đi): Chiếm thành phố từ kẻ thù. Thắng với 3 hoặc nhiều hơn quân sống sót để lấy 2 thành phố; từ 1 quân trở lên để lấy 1 thành phố.
-
-\* \*\*Cướp Bóc:\*\* Lấy lá bài từ tay kẻ thù — 2 lá cho mỗi quân còn sống.
-
-\* \*\*Phá Hủy:\*\* Làm hỏng tiến độ xây tượng đài của kẻ thù. Thắng với 3 quân trở lên để phá 2 tiến độ; từ 1 quân trở lên để phá 1.
-
-Điểm thưởng chiến đấu: có ít nhất một tướng quân cho +2 vào điểm tung xúc xắc; phòng thủ cộng thêm số pháo đài vào điểm tung. Quân của kẻ tấn công còn sống sẽ trở về vào đầu lượt tiếp theo, trừ khi có con đường nối giữa hai bên thì trở về ngay lập tức.
-
-
-
-\*\*Điều Kiện Chiến Thắng\*\*
-
-
-
-\* \*\*Đế Chế Năm Thành Phố:\*\* Người đầu tiên tích lũy đủ 5 thành phố (có thể điều chỉnh).
-
-\* \*\*Người Truyền Bá Văn Hóa Vĩ Đại:\*\* Thu thập đủ 5 thẻ tài nguyên đặc biệt của bộ lạc mình để hoàn thành tượng đài.
-
-\* \*\*Kẻ Kiên Cường Nhất:\*\* Là bộ lạc cuối cùng còn lại. Người chơi bị loại khi có 0 thành phố và 0 lá bài.
-
-
+\* \*\*Kẻ Kiên Cường Nhất:\*\* Là bộ tộc cuối cùng còn trụ lại. Người chơi bị loại khi không còn thành phố và không còn bài.
 
 \*\*Tùy chỉnh tại bàn chơi\*\*
 
+\* \*\*Số thành phố để thắng:\*\* Số thành phố cần để thắng theo điều kiện đế chế.
 
+\* \*\*Chỉ làm đường tới hàng xóm:\*\* Khi bật, đường chỉ được xây tới người ngồi ngay bên trái hoặc bên phải.
 
-Chủ bàn có thể điều chỉnh các thiết lập sau trước khi trò chơi bắt đầu:
+\* \*\*Số bài tối đa trên tay:\*\* Giới hạn bài cuối lượt.
 
-\* \*\*Số Thành Phố Chiến Thắng:\*\* Số thành phố cần để chiến thắng theo con đường Đế Chế (mặc định là 5, có thể điều chỉnh từ 3 đến 7).
+\*\*Ví dụ một lượt\*\*
 
-\* \*\*Chỉ Xây Đường Đến Hàng Xóm:\*\* Khi bật (mặc định), đường chỉ có thể xây đến hàng xóm trái và phải ngay kề bên trong sơ đồ chỗ ngồi.
+Đang là ngày 3 và đến lượt Trung với bộ tộc La Mã. Trung có 2 thành phố, 2 quân đội, 1 pháo đài và kỳ quan đã đạt 2/5. Trung rút được lá Sắt.
 
+Tay bài của Trung là Sắt, Sắt, Gỗ, Đá và Ngũ cốc. Chưa đủ tài nguyên để xây Thành phố, nên Trung chọn Thu thuế. Với 2 thành phố, Trung rút thêm 2 lá: Vàng và Đá.
 
+Trung đang có 7 lá, vượt giới hạn 5 lá, nên phải bỏ 2 lá trước khi kết thúc lượt. Trung bỏ hai lá Sắt và giữ Gỗ, Đá, Ngũ cốc, Vàng, Đá. Lượt sau, Trung có thể dùng Vàng thay cho Gỗ thứ hai để xây Thành phố.
 
-\*\*Ví dụ một lượt chơi\*\*
+\*\*Phím tắt\*\*
 
+\* \*\*V:\*\* Xem trạng thái của tất cả người chơi.
 
+\* \*\*Shift+V:\*\* Xem trạng thái chi tiết.
 
-Đang là Ngày 3 và đến lượt của Trung với tộc La Mã. Trung có 2 thành phố, 2 quân đội, 1 pháo đài, và tượng đài đạt 2 trên 5. Trung rút được lá Sắt.
-
-
-
-Tay bài của Trung là Sắt, Sắt, Gỗ, Đá, Lương Thực. Chưa đủ nguyên liệu để xây gì, nên Trung chọn Thu Thuế. Với 2 thành phố, Trung rút thêm 2 lá: Vàng và Đá. Tay bài lúc này là 7 lá — vượt giới hạn 5 lá nên phải loại 2 lá trước khi kết thúc lượt.
-
-
-
-Trung loại hai lá Sắt và kết thúc lượt với Gỗ, Đá, Lương Thực, Vàng, Đá. Lượt sau Trung có thể xây Thành Phố (2 Gỗ, 1 Đá) bằng cách dùng Vàng thay thế cho lá Gỗ thứ hai.
-
-
-
-\*\*Phím tắt bàn phím\*\*
-
-
-
-\* \*\*S:\*\* Kiểm tra trạng thái của tất cả người chơi (bộ lạc, thành phố, quân đội, tiến độ tượng đài).
-
-\* \*\*Shift+S:\*\* Trạng thái chi tiết (bao gồm tướng quân, pháo đài, đường xá, quân đang phục hồi hoặc đang trên đường về).
-
-\* \*\*H:\*\* Kiểm tra các lá bài đang có trong tay.
+\* \*\*H:\*\* Xem bài trên tay.

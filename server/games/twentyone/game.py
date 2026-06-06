@@ -258,6 +258,8 @@ class TwentyOnePlayer(Player):
 class TwentyOneGame(ActionGuardMixin, Game):
     """Survival 21 ruleset with tactical modifier cards."""
 
+    score_unit_key = "game-score-unit-health"
+
     players: list[TwentyOnePlayer] = field(default_factory=list)
     options: TwentyOneOptions = field(default_factory=TwentyOneOptions)
     deck: Deck | None = None
@@ -337,10 +339,39 @@ class TwentyOneGame(ActionGuardMixin, Game):
     def _is_check_hidden(self, player: Player) -> Visibility:
         if self.status != "playing" or player.is_spectator:
             return Visibility.HIDDEN
-        return Visibility.VISIBLE
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            return Visibility.VISIBLE
+        return Visibility.HIDDEN
+
+    def _is_touch_private_info_hidden(self, player: Player) -> Visibility:
+        if self.status != "playing" or player.is_spectator:
+            return Visibility.HIDDEN
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            return Visibility.VISIBLE
+        return Visibility.HIDDEN
 
     def _is_always_hidden(self, player: Player) -> Visibility:
         return Visibility.HIDDEN
+
+    def _is_whose_turn_hidden(self, player: Player) -> Visibility:
+        user = self.get_user(player)
+        if self.status == "playing" and self.is_touch_client(user):
+            return Visibility.VISIBLE
+        return super()._is_whose_turn_hidden(player)
+
+    def _is_whos_at_table_hidden(self, player: Player) -> Visibility:
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            return Visibility.VISIBLE
+        return super()._is_whos_at_table_hidden(player)
+
+    def _is_check_scores_hidden(self, player: Player) -> Visibility:
+        user = self.get_user(player)
+        if self.status == "playing" and self.is_touch_client(user):
+            return Visibility.VISIBLE
+        return super()._is_check_scores_hidden(player)
 
     def create_turn_action_set(self, player: TwentyOnePlayer) -> ActionSet:
         user = self.get_user(player)
@@ -354,6 +385,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
                 handler="_action_hit",
                 is_enabled="_is_turn_action_enabled",
                 is_hidden="_is_turn_action_hidden",
+                show_in_actions_menu=False,
             )
         )
         action_set.add(
@@ -363,6 +395,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
                 handler="_action_stand",
                 is_enabled="_is_turn_action_enabled",
                 is_hidden="_is_turn_action_hidden",
+                show_in_actions_menu=False,
             )
         )
         action_set.add(
@@ -377,6 +410,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
                     options="_options_for_play_modifier",
                     bot_select="_bot_select_play_modifier",
                 ),
+                show_in_actions_menu=False,
             )
         )
         return action_set
@@ -409,7 +443,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
                 label=Localization.get(locale, "twentyone-read-opponent-face-up"),
                 handler="_action_read_opponent_face_up",
                 is_enabled="_is_check_enabled",
-                is_hidden="_is_always_hidden",
+                is_hidden="_is_touch_private_info_hidden",
             )
         )
         action_set.add(
@@ -418,7 +452,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
                 label=Localization.get(locale, "twentyone-read-current-hand"),
                 handler="_action_read_current_hand",
                 is_enabled="_is_check_enabled",
-                is_hidden="_is_always_hidden",
+                is_hidden="_is_touch_private_info_hidden",
             )
         )
         action_set.add(
@@ -427,7 +461,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
                 label=Localization.get(locale, "twentyone-read-current-bets"),
                 handler="_action_read_current_bets",
                 is_enabled="_is_check_enabled",
-                is_hidden="_is_always_hidden",
+                is_hidden="_is_touch_private_info_hidden",
             )
         )
         action_set.add(
@@ -436,9 +470,24 @@ class TwentyOneGame(ActionGuardMixin, Game):
                 label=Localization.get(locale, "twentyone-read-active-effects"),
                 handler="_action_read_active_effects",
                 is_enabled="_is_check_enabled",
-                is_hidden="_is_always_hidden",
+                is_hidden="_is_touch_private_info_hidden",
             )
         )
+        if self.is_touch_client(user):
+            self._order_touch_standard_actions(
+                action_set,
+                [
+                    "modifier_guide",
+                    "check_21_status",
+                    "read_21_opponent_face_up",
+                    "read_21_hand",
+                    "read_21_bets",
+                    "read_21_active_effects",
+                    "check_scores",
+                    "whose_turn",
+                    "whos_at_table",
+                ],
+            )
         return action_set
 
     def setup_keybinds(self) -> None:
@@ -480,7 +529,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
             state=KeybindState.ACTIVE,
         )
         self.define_keybind(
-            "b",
+            "w",
             Localization.get("en", "twentyone-read-current-bets"),
             ["read_21_bets"],
             state=KeybindState.ACTIVE,
@@ -2484,5 +2533,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
         final_hp = result.custom_data.get("final_hp", {})
         sorted_hp = sorted(final_hp.items(), key=lambda item: item[1], reverse=True)
         for index, (name, hp) in enumerate(sorted_hp, 1):
-            lines.append(f"{index}. {name}: {hp} HP")
+            lines.append(
+                Localization.get(locale, "twentyone-final-hp-line", rank=index, player=name, hp=hp)
+            )
         return lines

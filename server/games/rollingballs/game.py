@@ -335,15 +335,22 @@ class RollingBallsGame(Game):
         super().setup_keybinds()
 
         for n in range(1, 6):
-            label = f"Take {n} ball{'s' if n != 1 else ''}"
+            label = Localization.get("en", "rb-take", count=n)
             self.define_keybind(
                 str(n), label, [f"take_{n}"], state=KeybindState.ACTIVE
             )
         self.define_keybind(
-            "d", "Reshuffle pipe", ["reshuffle"], state=KeybindState.ACTIVE
+            "d",
+            Localization.get("en", "rb-key-reshuffle-pipe"),
+            ["reshuffle"],
+            state=KeybindState.ACTIVE,
         )
         self.define_keybind(
-            "p", "View pipe", ["view_pipe"], state=KeybindState.ACTIVE, include_spectators=False
+            "p",
+            Localization.get("en", "rb-key-view-pipe"),
+            ["view_pipe"],
+            state=KeybindState.ACTIVE,
+            include_spectators=False,
         )
 
     # ==========================================================================

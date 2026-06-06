@@ -150,6 +150,7 @@ ageofheroes-select-request = You are offering { $card }. What do you want in ret
 ageofheroes-cancel = Cancel
 ageofheroes-left-auction = { $player } departs.
 ageofheroes-left-auction-you = You depart from the marketplace.
+ageofheroes-already-left-auction = You have already left the marketplace.
 ageofheroes-any-card = Any card
 ageofheroes-cannot-trade-own-special = You cannot trade your own special monument resource.
 ageofheroes-resource-not-in-game = This special resource is not being used in this game.
@@ -216,6 +217,10 @@ ageofheroes-war-prepare-defense = { $attacker } is attacking you; Select your de
 ageofheroes-war-select-armies = Select armies: { $count }
 ageofheroes-war-select-generals = Select generals: { $count }
 ageofheroes-war-select-heroes = Select heroes: { $count }
+ageofheroes-war-armies-count = Armies: { $count }
+ageofheroes-war-generals-count = Generals: { $count }
+ageofheroes-war-hero-armies-count = Hero armies: { $count }
+ageofheroes-war-hero-generals-count = Hero generals: { $count }
 ageofheroes-war-attack = Attack...
 ageofheroes-war-defend = Defend...
 ageofheroes-war-prepared = Your forces: { $armies } { $armies ->
@@ -352,26 +357,35 @@ ageofheroes-discard-more = Discard { $count } more { $count ->
 }.
 
 # Victory
-ageofheroes-victory-cities = { $player } has built 5 cities! Empire of Five Cities.
-ageofheroes-victory-cities-you = You have built 5 cities! Empire of Five Cities.
+ageofheroes-victory-cities = { $player } has built { $cities } cities! Empire of Cities.
+ageofheroes-victory-cities-you = You have built { $cities } cities! Empire of Cities.
 ageofheroes-victory-monument = { $player } has completed their monument! Carriers of Great Culture.
 ageofheroes-victory-monument-you = You have completed your monument! Carriers of Great Culture.
 ageofheroes-victory-last-standing = { $player } is the last tribe standing! The Most Persistent.
 ageofheroes-victory-last-standing-you = You are the last tribe standing! The Most Persistent.
 ageofheroes-game-over = Game Over.
+ageofheroes-final-winner = Winner: { $player }
+ageofheroes-final-days = Days played: { $days }
 
 # Elimination
 ageofheroes-eliminated = { $player } has been eliminated.
 ageofheroes-eliminated-you = You have been eliminated.
 
 # Hand
+ageofheroes-check-hand = Check hand
 ageofheroes-hand-empty = You have no cards.
+ageofheroes-initial-hand = Your starting hand ({ $count } { $count ->
+    [one] card
+    *[other] cards
+}): { $cards }
 ageofheroes-hand-contents = Your hand ({ $count } { $count ->
     [one] card
     *[other] cards
 }): { $cards }
 
 # Status
+ageofheroes-check-status = Check status
+ageofheroes-check-status-detailed = Detailed status
 ageofheroes-status = { $player } ({ $tribe }): { $cities } { $cities ->
     [one] city
     *[other] cities
@@ -392,6 +406,31 @@ ageofheroes-status-none = none
 ageofheroes-status-earthquake-armies = Recovering armies: { $count }
 ageofheroes-status-returning-armies = Returning armies: { $count }
 ageofheroes-status-returning-generals = Returning generals: { $count }
+ageofheroes-status-detailed-line = { $player } ({ $tribe }): { $cities } { $cities ->
+    [one] city
+    *[other] cities
+}, { $armies } { $armies ->
+    [one] army
+    *[other] armies
+}, { $generals } { $generals ->
+    [one] general
+    *[other] generals
+}, { $fortresses } { $fortresses ->
+    [one] fortress
+    *[other] fortresses
+}, monument { $monument }/5, roads: { $roads }{ $details }
+ageofheroes-status-detail-recovering-armies = { $count } recovering { $count ->
+    [one] army
+    *[other] armies
+}
+ageofheroes-status-detail-returning-armies = { $count } returning { $count ->
+    [one] army
+    *[other] armies
+}
+ageofheroes-status-detail-returning-generals = { $count } returning { $count ->
+    [one] general
+    *[other] generals
+}
 
 # Deck info
 ageofheroes-deck-empty = No more { $card } cards in the deck.
@@ -416,6 +455,12 @@ ageofheroes-fortune-prompt = You lost the roll. Use Fortune to reroll?
 ageofheroes-not-your-turn = It's not your turn.
 ageofheroes-game-not-started = The game hasn't started yet.
 ageofheroes-wrong-phase = This action is not available in the current phase.
+ageofheroes-invalid-player = This action is not available to you.
+ageofheroes-not-in-game = You are not in this game.
+ageofheroes-not-in-war = You are not involved in this war.
+ageofheroes-no-card-selected = Select a card first.
+ageofheroes-no-cards-to-discard = You have no cards to discard.
+ageofheroes-disaster-too-early = Disaster cards can only be played from day 2 onward.
 ageofheroes-no-resources = You don't have the required resources.
 
 # Building costs (for display)

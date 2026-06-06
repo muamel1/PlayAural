@@ -6,20 +6,21 @@ nine-description = Một trò chơi bài Nga phổ biến, trong đó người c
 
 # Kiểm tra số người chơi
 nine-error-invalid-player-count = Nine chỉ chơi được với 2, 3, 4 hoặc 6 người chơi.
+nine-error-nine-of-clubs-missing = Không tìm thấy 9 tép trong tay người chơi nào. Ván chơi không thể tiếp tục.
 
 # Thông báo chia bài
-nine-player-nine-deal = Chia {$cards} lá bài cho mỗi người chơi.
+nine-player-nine-deal = Chia { $cards } lá bài cho mỗi người chơi.
 
 # Bắt đầu trò chơi
-nine-you-start-player-announcement = Bạn có chín chuồn và sẽ bắt đầu ván chơi.
-nine-player-start-player-announcement = { $player } có chín chuồn và bắt đầu ván chơi.
+nine-you-start-player-announcement = Bạn có 9 tép và sẽ bắt đầu ván chơi.
+nine-player-start-player-announcement = { $player } có 9 tép và bắt đầu ván chơi.
 
 # Lượt đi
 nine-you-play-card = Bạn đánh { $card }.
 nine-player-plays-card = { $player } đánh { $card }.
 
-nine-you-plays-nine-clubs = Bạn đánh chín chuồn.
-nine-player-plays-nine-clubs = { $player } đánh chín chuồn.
+nine-you-plays-nine-clubs = Bạn đánh 9 tép.
+nine-player-plays-nine-clubs = { $player } đánh 9 tép.
 
 nine-you-plays-nine-suit = Bạn đánh { $card } để mở dãy { $suit }.
 nine-player-plays-nine-suit = { $player } đánh { $card } để mở dãy { $suit }.
@@ -32,9 +33,10 @@ nine-player-skips-turn = { $player } không có nước đi hợp lệ nên bỏ
 
 # Lý do không thể đánh bài
 nine-reason-not-your-turn = Chưa đến lượt bạn.
-nine-reason-must-play-nine-clubs = Bạn phải đánh chín chuồn để bắt đầu ván chơi.
+nine-reason-must-play-nine-clubs = Bạn phải đánh 9 tép để bắt đầu ván chơi.
 nine-reason-no-nine = Bạn không có quân chín nào để mở dãy mới.
 nine-reason-cannot-extend = Lá bài đó không nối được vào dãy { $suit }.
+nine-reason-must-skip = Bạn không có nước đi hợp lệ nên phải bỏ lượt.
 nine-reason-generic = Lá bài đó hiện không đánh được.
 
 # Chiến thắng

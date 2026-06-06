@@ -79,6 +79,11 @@ backgammon-point-occupied-selected = { $point } { $color }, { $count } selected
 # Action labels
 backgammon-label-double = Double
 backgammon-label-undo = Undo
+backgammon-label-next = Next
+backgammon-label-previous = Previous
+backgammon-label-deselect = Deselect
+backgammon-label-next-destination = Next destination
+backgammon-label-previous-destination = Previous destination
 
 # Selection feedback
 backgammon-selected-point = Selected point { $point }, { $count } checkers.

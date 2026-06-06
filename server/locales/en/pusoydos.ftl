@@ -196,6 +196,17 @@ pusoydos-trick-empty = The trick is empty.
 pusoydos-trick-status = { $player } played a { $combo } of { $cards }.
 pusoydos-your-hand = Your hand: { $cards }.
 
+pusoydos-score-no-scores = No scores yet.
+pusoydos-score-wins = { $player }: { $count } { $count ->
+    [one] win
+   *[other] wins
+}
+pusoydos-score-losses = { $player }: { $count } { $count ->
+    [one] loss
+   *[other] losses
+}
+pusoydos-score-points = { $player }: { $score } points
+
 pusoydos-one-card = { $player } has one card left!
 
 # =============================================================================

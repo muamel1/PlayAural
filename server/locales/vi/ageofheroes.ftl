@@ -150,6 +150,7 @@ ageofheroes-select-request = Bạn đang mời đổi lá { $card }. Bạn muố
 ageofheroes-cancel = Hủy
 ageofheroes-left-auction = { $player } rời phiên chợ.
 ageofheroes-left-auction-you = Bạn rời phiên chợ.
+ageofheroes-already-left-auction = Bạn đã rời phiên chợ rồi.
 ageofheroes-any-card = Bất kỳ lá nào
 ageofheroes-cannot-trade-own-special = Bạn không thể giao dịch tài nguyên kỳ quan riêng của mình.
 ageofheroes-resource-not-in-game = Tài nguyên đặc biệt này không được sử dụng trong ván này.
@@ -182,8 +183,8 @@ ageofheroes-tax-no-city-done-you = Thu thuế: Bạn đã đổi lá { $card } l
 
 # Xây dựng
 ageofheroes-construction-menu = Bạn muốn xây gì?
-ageofheroes-construction-done = { $player } đã xây { $article } { $building }.
-ageofheroes-construction-done-you = Bạn đã xây { $article } { $building }.
+ageofheroes-construction-done = { $player } đã xây { $building }.
+ageofheroes-construction-done-you = Bạn đã xây { $building }.
 ageofheroes-construction-stop = Dừng xây dựng
 ageofheroes-construction-stopped = Bạn đã quyết định dừng xây.
 ageofheroes-road-select-neighbor = Chọn hàng xóm để làm đường tới.
@@ -216,6 +217,10 @@ ageofheroes-war-prepare-defense = { $attacker } đang tấn công bạn; Chọn 
 ageofheroes-war-select-armies = Chọn số quân: { $count }
 ageofheroes-war-select-generals = Chọn số tướng: { $count }
 ageofheroes-war-select-heroes = Chọn anh hùng: { $count }
+ageofheroes-war-armies-count = Quân đội: { $count }
+ageofheroes-war-generals-count = Tướng lĩnh: { $count }
+ageofheroes-war-hero-armies-count = Anh hùng làm quân đội: { $count }
+ageofheroes-war-hero-generals-count = Anh hùng làm tướng: { $count }
 ageofheroes-war-attack = Tấn công...
 ageofheroes-war-defend = Phòng thủ...
 ageofheroes-war-prepared = Lực lượng của bạn: { $armies } { $armies ->
@@ -352,26 +357,32 @@ ageofheroes-discard-more = Bỏ thêm { $count } { $count ->
 }.
 
 # Chiến thắng
-ageofheroes-victory-cities = { $player } đã xây được 5 thành phố! Đế chế Năm Thành Phố.
-ageofheroes-victory-cities-you = Bạn đã xây được 5 thành phố! Đế chế Năm Thành Phố.
-ageofheroes-victory-monument = { $player } đã hoàn thành kỳ quan! Những người kiến tạo Văn minh Vĩ đại.
-ageofheroes-victory-monument-you = Bạn đã hoàn thành kỳ quan! Những người kiến tạo Văn minh Vĩ đại.
+ageofheroes-victory-cities = { $player } đã xây được { $cities } thành phố! Chiến thắng theo con đường Đế chế Thành Phố.
+ageofheroes-victory-cities-you = Bạn đã xây được { $cities } thành phố! Chiến thắng theo con đường Đế chế Thành Phố.
+ageofheroes-victory-monument = { $player } đã hoàn thành kỳ quan! Chiến thắng theo con đường Người Truyền Bá Văn Hóa Vĩ Đại.
+ageofheroes-victory-monument-you = Bạn đã hoàn thành kỳ quan! Chiến thắng theo con đường Người Truyền Bá Văn Hóa Vĩ Đại.
 ageofheroes-victory-last-standing = { $player } là bộ tộc cuối cùng còn trụ lại! Kẻ Kiên Cường Nhất.
 ageofheroes-victory-last-standing-you = Bạn là bộ tộc cuối cùng còn trụ lại! Kẻ Kiên Cường Nhất.
 ageofheroes-game-over = Kết thúc trò chơi.
+ageofheroes-final-winner = Người thắng: { $player }
+ageofheroes-final-days = Số ngày đã chơi: { $days }
 
 # Loại bỏ
 ageofheroes-eliminated = { $player } đã bị loại.
 ageofheroes-eliminated-you = Bạn đã bị loại.
 
 # Bài trên tay
+ageofheroes-check-hand = Xem bài trên tay
 ageofheroes-hand-empty = Bạn không có bài.
+ageofheroes-initial-hand = Bài khởi đầu của bạn ({ $count } lá): { $cards }
 ageofheroes-hand-contents = Bài trên tay ({ $count } { $count ->
     [one] lá
    *[other] lá
 }): { $cards }
 
 # Trạng thái
+ageofheroes-check-status = Xem trạng thái
+ageofheroes-check-status-detailed = Trạng thái chi tiết
 ageofheroes-status = { $player } ({ $tribe }): { $cities } { $cities ->
     [one] thành phố
    *[other] thành phố
@@ -392,6 +403,10 @@ ageofheroes-status-none = không có
 ageofheroes-status-earthquake-armies = Quân đang hồi phục: { $count }
 ageofheroes-status-returning-armies = Quân đang trở về: { $count }
 ageofheroes-status-returning-generals = Tướng đang trở về: { $count }
+ageofheroes-status-detailed-line = { $player } ({ $tribe }): { $cities } thành phố, { $armies } quân đội, { $generals } tướng lĩnh, { $fortresses } pháo đài, kỳ quan { $monument }/5, đường xá: { $roads }{ $details }
+ageofheroes-status-detail-recovering-armies = { $count } quân đang hồi phục
+ageofheroes-status-detail-returning-armies = { $count } quân đang trở về
+ageofheroes-status-detail-returning-generals = { $count } tướng đang trở về
 
 # Thông tin bộ bài
 ageofheroes-deck-empty = Không còn lá { $card } trong bộ.
@@ -416,6 +431,12 @@ ageofheroes-fortune-prompt = Bạn đã thua lượt gieo này. Dùng Vận may 
 ageofheroes-not-your-turn = Chưa đến lượt bạn.
 ageofheroes-game-not-started = Trò chơi chưa bắt đầu.
 ageofheroes-wrong-phase = Hành động này không khả dụng trong giai đoạn hiện tại.
+ageofheroes-invalid-player = Hành động này không khả dụng cho bạn.
+ageofheroes-not-in-game = Bạn không ở trong ván này.
+ageofheroes-not-in-war = Bạn không tham gia trận chiến này.
+ageofheroes-no-card-selected = Hãy chọn một lá bài trước.
+ageofheroes-no-cards-to-discard = Bạn không có lá bài nào để bỏ.
+ageofheroes-disaster-too-early = Chỉ có thể đánh bài thiên tai từ ngày thứ 2 trở đi.
 ageofheroes-no-resources = Bạn không đủ tài nguyên yêu cầu.
 
 # Chi phí xây dựng (để hiển thị)

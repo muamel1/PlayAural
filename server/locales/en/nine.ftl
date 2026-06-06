@@ -6,6 +6,7 @@ nine-description = A popular Russian card game in which players build suit seque
 
 # Player count validation
 nine-error-invalid-player-count = Nine can only be played with 2, 3, 4, or 6 players.
+nine-error-nine-of-clubs-missing = The nine of clubs was not found in any hand. The game cannot continue.
 
 # Dealing messages
 nine-player-nine-deal = Dealing {$cards} cards to all players.
@@ -35,6 +36,7 @@ nine-reason-not-your-turn = It is not your turn.
 nine-reason-must-play-nine-clubs = You must play the nine of clubs to start the game.
 nine-reason-no-nine = You do not have a nine to start a new sequence.
 nine-reason-cannot-extend = That card cannot extend the { $suit } sequence.
+nine-reason-must-skip = You have no valid moves and must skip your turn.
 nine-reason-generic = That card cannot be played right now.
 
 # Winning

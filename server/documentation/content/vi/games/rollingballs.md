@@ -1,100 +1,63 @@
 \*\*Bóng Lăn (Rolling Balls)\*\*
 
-
-
-Bóng Lăn là trò chơi liều lĩnh may rủi dành cho 2 đến 4 người chơi. Một chiếc ống được nhồi đầy các quả bóng, mỗi quả mang một giá trị điểm ẩn từ -5 đến +5 kèm theo mô tả hài hước. Đến lượt mình, bạn chọn số lượng bóng muốn rút từ đầu ống. Giá trị của chúng được cộng thẳng vào điểm của bạn, dù tốt hay xấu. Khi ống cạn bóng, người có nhiều điểm nhất sẽ thắng.
-
-
+Bóng Lăn là trò chơi may rủi dành cho 2 đến 4 người. Một chiếc ống chứa nhiều quả bóng, mỗi quả có giá trị điểm ẩn từ -5 đến +5 kèm một mô tả vui nhộn. Đến lượt mình, bạn chọn rút bao nhiêu bóng từ đầu ống. Điểm của các bóng đó được cộng thẳng vào tổng điểm của bạn, dù tốt hay xấu. Khi ống cạn, người có nhiều điểm nhất thắng.
 
 \*\*Cách chơi\*\*
 
+Khi ván bắt đầu, ống được nạp bóng ngẫu nhiên từ các bộ bóng đang bật. Số bóng phụ thuộc vào số người chơi: 25 bóng cho 2 người, 35 bóng cho 3 người, và 50 bóng cho 4 người.
 
+Đến lượt, bạn chọn số bóng muốn rút. Mặc định có thể rút từ 1 đến 3 bóng, nhưng chủ bàn có thể chỉnh giới hạn này. Bóng được công bố lần lượt bằng âm thanh và lời đọc: bóng dương cộng điểm, bóng âm trừ điểm, bóng 0 điểm không thay đổi tổng điểm. Sau khi rút xong, trò chơi thông báo điểm mới của bạn rồi chuyển lượt.
 
-Khi bắt đầu ván chơi, ống được nhồi đầy bóng lấy ngẫu nhiên từ các bộ bóng đang hoạt động. Số lượng bóng phụ thuộc vào số người chơi: 25 quả cho 2 người, 35 quả cho 3 người, và 50 quả cho 4 người.
+Nếu số bóng còn lại ít hơn mức tối thiểu phải rút, người đang đến lượt sẽ tự động rút hết số bóng còn lại.
 
+Trò chơi kết thúc ngay khi ống trống. Nếu nhiều người bằng điểm cao nhất, họ cùng thắng.
 
+\*\*Hành động\*\*
 
-Đến lượt, bạn chọn số quả bóng muốn rút từ đầu ống. Mặc định bạn có thể rút từ 1 đến 3 quả (chủ bàn có thể thay đổi). Bóng được lần lượt công bố kèm âm thanh và lời thông báo: bóng dương cộng thêm điểm, bóng âm trừ điểm, bóng không có giá trị thì không thay đổi gì. Sau khi tất cả bóng đã được công bố, điểm số cập nhật của bạn sẽ được thông báo và lượt chuyển sang người tiếp theo.
+\* \*\*Rút bóng:\*\* Rút số bóng đã chọn từ đầu ống. Giá trị từng bóng được áp dụng ngay.
 
+\* \*\*Xóc lại ống:\*\* Xáo trộn tối đa 15 bóng đầu tiên trong ống. Hành động này cần còn ít nhất 6 bóng, trừ điểm phạt nếu chủ bàn đặt phạt, chỉ dùng được một lần trong mỗi lượt, và có giới hạn số lần trong cả ván.
 
-
-Nếu số bóng còn lại trong ống ít hơn số bóng tối thiểu phải rút, những quả bóng đó sẽ tự động được rút bởi người chơi hiện tại.
-
-
-
-Trò chơi kết thúc ngay khi ống cạn. Nếu hòa điểm, những người chơi có điểm bằng nhau cùng chia thắng lợi.
-
-
-
-\*\*Các hành động\*\*
-
-
-
-\* \*\*Rút bóng:\*\* Rút số lượng bóng được chỉ định từ đầu ống. Bóng lần lượt được công bố và giá trị của chúng được áp dụng vào điểm của bạn ngay lập tức.
-
-\* \*\*Xóc lại ống:\*\* Xáo trộn ngẫu nhiên 15 quả bóng đầu tiên trong ống (hoặc toàn bộ số bóng còn lại nếu ít hơn 15 quả). Để xóc lại cần có ít nhất 6 quả bóng trong ống, và hành động này sẽ trừ điểm phạt, chỉ dùng được một lần trong mỗi lượt. Số lần xóc lại trong suốt ván chơi là có giới hạn.
-
-\* \*\*Xem trộm ống:\*\* Nhìn riêng tư toàn bộ nội dung ống, thấy tên và giá trị điểm của từng quả bóng theo thứ tự. Hành động này không tiêu tốn lượt của bạn. Số lần xem trong ván chơi là có giới hạn. Nếu bạn xem lại trong khi ống chưa thay đổi kể từ lần xem trước thì không tốn thêm lượt xem.
-
-
+\* \*\*Xem trộm ống:\*\* Xem riêng toàn bộ nội dung ống theo thứ tự, gồm tên và giá trị từng bóng. Hành động này không tốn lượt. Nếu xem lại khi ống chưa thay đổi từ lần xem trước, lượt xem không bị trừ thêm.
 
 \*\*Tùy chỉnh tại bàn chơi\*\*
 
+\* \*\*Rút tối thiểu:\*\* Số bóng ít nhất phải rút mỗi lượt.
 
+\* \*\*Rút tối đa:\*\* Số bóng nhiều nhất được rút mỗi lượt. Nếu tối đa thấp hơn tối thiểu, trò chơi tự điều chỉnh hai giá trị để chúng không mâu thuẫn.
 
-Chủ bàn có thể điều chỉnh các thiết lập sau trước khi trò chơi bắt đầu:
+\* \*\*Giới hạn xem trộm ống:\*\* Số lần mỗi người được xem trộm trong cả ván. Đặt 0 để tắt.
 
-\* \*\*Rút tối thiểu:\*\* Số quả bóng ít nhất phải rút mỗi lượt (mặc định 1, từ 1 đến 5).
+\* \*\*Giới hạn xóc lại ống:\*\* Số lần mỗi người được xóc lại ống. Đặt 0 để tắt.
 
-\* \*\*Rút tối đa:\*\* Số quả bóng nhiều nhất được rút mỗi lượt (mặc định 3, từ 1 đến 5). Nếu đặt thấp hơn mức tối thiểu, mức tối thiểu sẽ tự động điều chỉnh xuống, và ngược lại.
+\* \*\*Điểm phạt xóc lại ống:\*\* Số điểm bị trừ mỗi lần xóc lại.
 
-\* \*\*Giới hạn xem trộm ống:\*\* Số lần mỗi người chơi được phép xem ống trong suốt ván chơi (mặc định 5). Đặt 0 để tắt tính năng này.
+\* \*\*Bộ bóng:\*\* Chọn các bộ chủ đề được dùng trong ống. Phải chọn ít nhất một bộ.
 
-\* \*\*Giới hạn xóc lại ống:\*\* Số lần mỗi người chơi được xóc lại ống (mặc định 3). Đặt 0 để tắt tính năng này.
+\*\*Bộ bóng hiện có\*\*
 
-\* \*\*Điểm phạt xóc lại ống:\*\* Số điểm bị trừ mỗi lần xóc lại (mặc định 1, từ 0 đến 5). Chỉ hiển thị khi tính năng xóc lại đang bật.
+\* \*\*Du lịch Quốc tế:\*\* Các tình huống du lịch toàn cầu, từ rủi ro như Bị móc túi ở Paris và Thất lạc hành lý ở London, đến may mắn như Được nâng hạng vé máy bay First Class và Bao trọn chuyên cơ riêng.
 
-\* \*\*Bộ bóng:\*\* Bộ bóng chủ đề nào được dùng trong ống. Phải chọn ít nhất một bộ; chọn cả hai sẽ gộp chung thành một ống. Các bộ bóng hiện có:
+\* \*\*Cuộc phiêu lưu ở Việt Nam:\*\* Các tình huống quen thuộc tại Việt Nam, từ Bơi giữa đường Sài Gòn mùa mưa và Đi nhầm taxi dù, đến Được lì xì ngày Tết và Trúng độc đắc Vietlott.
 
-&#x20;   \* \*\*Du lịch Quốc tế:\*\* Bóng mang chủ đề du lịch toàn cầu, từ những rủi ro tệ nhất như Paris Pickpocket (-5) và Lost Luggage in London (-5), đến những may mắn tốt nhất như First Class Upgrade (+5) và Private Jet Charter (+5).
+\*\*Ví dụ một lượt\*\*
 
-&#x20;   \* \*\*Cuộc phiêu lưu ở Việt Nam:\*\* Bóng mang đậm văn hóa và đời sống Việt Nam, từ những hiểm họa như Stolen Motorbike (-5) và Flooded Street in Saigon (-5), đến những điều tốt đẹp như Billionaire Inheritance (+5) và Ultimate Happiness (+5).
+Đến lượt Trung. Trung nhấn \*\*P\*\* để xem trộm ống và thấy ba bóng tiếp theo là: Tham quan Đấu trường La Mã (+3), Lạc đà Cairo phun nước bọt (-2), và Được nâng hạng vé máy bay First Class (+5).
 
+Trung quyết định rút 3 bóng để lấy hai bóng cộng điểm, chấp nhận bóng trừ điểm ở giữa. Trung nhấn \*\*3\*\*.
 
+Trò chơi công bố từng bóng, áp dụng điểm, rồi thông báo tổng điểm mới. Lượt của Trung tăng thêm 6 điểm và chuyển sang người tiếp theo.
 
-\*\*Ví dụ một lượt chơi\*\*
+\*\*Phím tắt\*\*
 
-
-
-Đến lượt của Trung. Trung nhấn phím \*\*P\*\* để xem trộm ống và thấy 3 quả bóng tiếp theo là: +3 (Colosseum Tour), -2 (Cairo Camel Spit), và +5 (First Class Upgrade).
-
-
-
-Trung quyết định rút 3 quả bóng để lấy điểm thưởng, chấp nhận quả bóng trừ điểm ở giữa. Trung nhấn phím \*\*3\*\*.
-
-
-
-Trò chơi thông báo: "Bóng số 1: Colosseum Tour! Cộng 3 điểm!", "Bóng số 2: Cairo Camel Spit! Trừ 2 điểm!", "Bóng số 3: First Class Upgrade! Cộng 5 điểm!".
-
-
-
-Lượt chơi kết thúc, và tổng điểm của Trung tăng thêm 6 điểm. Lượt chơi chuyển sang người tiếp theo.
-
-
-
-\*\*Phím tắt bàn phím\*\*
-
-
-
-\* \*\*1-5:\*\* Rút số lượng bóng tương ứng từ ống.
+\* \*\*1-5:\*\* Rút số bóng tương ứng.
 
 \* \*\*D:\*\* Xóc lại ống.
 
 \* \*\*P:\*\* Xem trộm ống.
 
-\* \*\*T:\*\* Kiểm tra xem đang là lượt của ai.
+\* \*\*T:\*\* Kiểm tra lượt hiện tại.
 
-\* \*\*S:\*\* Kiểm tra điểm số.
+\* \*\*S:\*\* Kiểm tra điểm.
 
-\* \*\*Shift+S:\*\* Xem điểm số chi tiết.
-
+\* \*\*Shift+S:\*\* Xem điểm chi tiết.

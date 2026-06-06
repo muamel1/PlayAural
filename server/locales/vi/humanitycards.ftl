@@ -1,4 +1,4 @@
-# Bản địa hóa Humanity Cards (Bài Phản Nhân Loại)
+# Bản địa hóa Humanity Cards (Cards Against Humanity)
 
 game-name-humanitycards = Cards Against Humanity
 
@@ -17,9 +17,9 @@ hc-set-card-packs = Bộ bài (đã chọn { $count } trên { $total })
 hc-desc-card-packs = Chọn bộ bài sẽ dùng
 hc-option-changed-card-packs = Đã thay đổi lựa chọn bộ bài.
 
-hc-set-czar-selection = Cách chọn Trọng Tài: { $mode }
-hc-select-czar-selection = Chọn cách chỉ định Trọng Tài
-hc-option-changed-czar-selection = Cách chọn Trọng Tài đã đặt thành { $mode }.
+hc-set-czar-selection = Cách chọn trọng tài: { $mode }
+hc-select-czar-selection = Chọn cách chỉ định trọng tài
+hc-option-changed-czar-selection = Cách chọn trọng tài đã đặt thành { $mode }.
 
 hc-set-num-judges = Số trọng tài: { $count }
 hc-enter-num-judges = Nhập số trọng tài:
@@ -36,11 +36,11 @@ hc-round-start = Vòng { $round }.
 
 # Thông báo trọng tài
 hc-judge-is = { $player } { $count ->
-    [one] là Trọng Tài
-   *[other] và { $others } là các Trọng Tài
+    [one] là trọng tài
+   *[other] và { $others } là các trọng tài
 }.
-hc-you-are-judge = Bạn là Trọng Tài vòng này.
-hc-you-are-not-judge = Bạn không phải Trọng Tài vòng này.
+hc-you-are-judge = Bạn là trọng tài vòng này.
+hc-you-are-not-judge = Bạn không phải trọng tài vòng này.
 
 # Lá bài đen
 hc-black-card = Câu hỏi là: { $text }
@@ -67,7 +67,11 @@ hc-wrong-card-count = Bạn cần chọn đúng { $count } { $count ->
 
 # Giai đoạn chấm bài
 hc-judging-start = Đã đủ bài! Đến lúc chấm.
+hc-choose-best-card = Chọn lá bài hay nhất
+hc-choose-best-card-for = Chọn lá bài hay nhất khớp với: { $prompt }
 hc-select-winner-prompt = Chọn bài thắng cuộc
+hc-card-number = Lá bài { $number }
+hc-submission-number = Bài nộp { $number }
 hc-submission-option = { $text }
 
 # Kết quả
@@ -78,6 +82,7 @@ hc-score-line = { $player }: { $score } { $score ->
     [one] điểm
    *[other] điểm
 }
+hc-final-score-line = { $rank }. { $player }: { $score } điểm
 hc-all-submissions = Các bài khác:
 hc-submission-reveal = { $player }: { $text }
 
@@ -91,6 +96,7 @@ hc-select-cards-first = Hãy chọn ít nhất 1 lá bài trước.
 # Chiến thắng
 hc-game-winner = { $player } thắng với { $score } điểm!
 hc-you-win = Bạn thắng với { $score } điểm!
+hc-english-content-note = Lưu ý: nội dung câu hỏi và câu trả lời hiện chỉ hỗ trợ tiếng Anh.
 
 # Quản lý bộ bài
 hc-deck-reshuffled = Chồng bài trắng đã bỏ được xáo lại vào bộ bài.
@@ -99,6 +105,8 @@ hc-not-enough-cards = Không đủ bài. Hãy thử bật thêm bộ bài.
 
 # Quản lý bài trên tay
 hc-view-hand = Xem bài trên tay
+hc-toggle-card-keybind = Chọn/bỏ chọn lá bài { $number }
+hc-submit-cards-keybind = Nộp bài
 
 # Điểm số
 hc-view-scores = Xem điểm

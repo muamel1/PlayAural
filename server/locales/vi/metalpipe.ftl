@@ -1,12 +1,12 @@
 # Bản địa hóa Metal Pipe
 
 # Thông tin trò chơi
-game-name-metalpipe = Metal Pipe
+game-name-metalpipe = Ống Sắt
 
 # Sự kiện trong trò chơi
 metalpipe-hit-other = { $bonker } phang ống sắt vào đầu { $bonked }.
 metalpipe-hit-self = Ôi không! { $bonker } tự đập ống sắt vào đầu mình!
-metalpipe-winner = { $player } thắng, xin chúc mừng, bạn làm tốt lắm!
+metalpipe-winner = { $player } thắng. Chúc mừng!
 metalpipe-everyone-else-wins = Mọi người đều thắng trừ { $player }!
 
 # Tùy chọn

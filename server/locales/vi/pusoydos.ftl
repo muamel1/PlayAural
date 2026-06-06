@@ -188,13 +188,18 @@ pusoydos-confirm-pass = Dùng lại hành động bỏ lượt để xác nhận
 # =============================================================================
 
 pusoydos-player-plays-single = { $player } đánh { $card }.
-pusoydos-player-plays-combo = { $player } đánh một { $combo } gồm { $cards }.
+pusoydos-player-plays-combo = { $player } đánh tổ hợp { $combo } gồm { $cards }.
 pusoydos-player-passes = { $player } bỏ lượt.
 pusoydos-trick-won = { $player } giành được lượt bài.
 
 pusoydos-trick-empty = Bàn đang trống.
-pusoydos-trick-status = { $player } đã đánh một { $combo } gồm { $cards }.
+pusoydos-trick-status = { $player } đã đánh tổ hợp { $combo } gồm { $cards }.
 pusoydos-your-hand = Bài của bạn: { $cards }.
+
+pusoydos-score-no-scores = Chưa có điểm.
+pusoydos-score-wins = { $player }: { $count } vòng thắng
+pusoydos-score-losses = { $player }: { $count } lần thua
+pusoydos-score-points = { $player }: { $score } điểm
 
 pusoydos-one-card = { $player } chỉ còn một lá bài!
 
@@ -202,14 +207,14 @@ pusoydos-one-card = { $player } chỉ còn một lá bài!
 # Combo names
 # =============================================================================
 
-pusoydos-combo-single = Lá lẻ
-pusoydos-combo-pair = Đôi
-pusoydos-combo-three_of_a_kind = Sám cô
-pusoydos-combo-straight = Sảnh
-pusoydos-combo-flush = Thùng
-pusoydos-combo-full_house = Cù lũ
-pusoydos-combo-four_of_a_kind = Tứ quý
-pusoydos-combo-straight_flush = Thùng phá sảnh
+pusoydos-combo-single = lá lẻ
+pusoydos-combo-pair = đôi
+pusoydos-combo-three_of_a_kind = sám cô
+pusoydos-combo-straight = sảnh
+pusoydos-combo-flush = thùng
+pusoydos-combo-full_house = cù lũ
+pusoydos-combo-four_of_a_kind = tứ quý
+pusoydos-combo-straight_flush = thùng phá sảnh
 
 # Instant win hand names
 pusoydos-combo-dragon = Rồng

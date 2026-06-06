@@ -17,6 +17,7 @@ game-score-unit-coins = { $count ->
     [one] xu
    *[other] xu
 }
+game-score-unit-health = máu
 game-score-unit-ninetynine-tokens = { $count ->
     [one] thẻ
    *[other] thẻ

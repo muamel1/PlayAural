@@ -11,6 +11,8 @@ rb-take = Take { $count } { $count ->
 }
 rb-reshuffle-action = Reshuffle pipe ({ $remaining } uses remaining)
 rb-view-pipe-action = View pipe ({ $remaining } uses remaining)
+rb-key-reshuffle-pipe = Reshuffle pipe
+rb-key-view-pipe = View pipe
 
 # Take ball events
 rb-you-take = You take { $count } { $count ->

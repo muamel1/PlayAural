@@ -282,7 +282,7 @@ class NineGame(Game):
                 )
         else:
             # This should ideally not happen if deck is built correctly
-            self.broadcast("Error: Nine of Clubs not found in any hand. Aborting game.")
+            self.broadcast_l("nine-error-nine-of-clubs-missing", buffer="game")
             self.finish_game()
             return
 
@@ -487,7 +487,7 @@ class NineGame(Game):
                 is_enabled="_is_check_sequences_status_enabled",
                 is_hidden="_is_check_sequences_status_hidden",
                 get_label="_get_localized_check_sequences_label",  # Use get_label for dynamic localization
-                show_in_actions_menu=True,  # Set to True to make visible in general menu
+                include_spectators=True,
             )
         )
 
@@ -499,18 +499,9 @@ class NineGame(Game):
                 is_enabled="_is_check_hand_counts_status_enabled",
                 is_hidden="_is_check_hand_counts_status_hidden",
                 get_label="_get_localized_check_hand_counts_label",
-                show_in_actions_menu=True,
+                include_spectators=True,
             )
         )
-
-        # Reorder to put check_sequences_status first, then check_hand_counts_status
-        if "check_sequences_status" in action_set._order:
-            action_set._order.remove("check_sequences_status")
-        action_set._order.insert(0, "check_sequences_status")
-
-        if "check_hand_counts_status" in action_set._order:
-            action_set._order.remove("check_hand_counts_status")
-        action_set._order.insert(1, "check_hand_counts_status")
 
         # Hide generic score actions as they don't apply directly
         for action_id in ("check_scores", "check_scores_detailed"):
@@ -518,15 +509,23 @@ class NineGame(Game):
             if existing:
                 existing.show_in_actions_menu = False
 
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            self._order_touch_standard_actions(
+                action_set,
+                [
+                    "check_sequences_status",
+                    "check_hand_counts_status",
+                    "whose_turn",
+                    "whos_at_table",
+                ],
+            )
+
         return action_set
 
     def setup_keybinds(self) -> None:
         """Define all keybinds for the game."""
         super().setup_keybinds()
-
-        # Remove unneeded 's' keybind
-        if "s" in self._keybinds:
-            self._keybinds["s"] = []
 
         # Custom keybind for status (check sequences)
         self.define_keybind(
@@ -614,8 +613,25 @@ class NineGame(Game):
         return None
 
     def _is_check_sequences_status_hidden(self, player: Player) -> Visibility:
-        """Check sequences status is always hidden (keybind only)."""
+        """Check sequences status is keybind-only except on touch clients."""
+        user = self.get_user(player)
+        if self.status == "playing" and self.is_touch_client(user):
+            return Visibility.VISIBLE
         return Visibility.HIDDEN
+
+    def _is_whose_turn_hidden(self, player: Player) -> Visibility:
+        """Show shared turn status in the touch turn menu."""
+        user = self.get_user(player)
+        if self.status == "playing" and self.is_touch_client(user):
+            return Visibility.VISIBLE
+        return super()._is_whose_turn_hidden(player)
+
+    def _is_whos_at_table_hidden(self, player: Player) -> Visibility:
+        """Show table presence in the touch turn menu."""
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            return Visibility.VISIBLE
+        return super()._is_whos_at_table_hidden(player)
 
     def _is_skip_turn_enabled(self, player: Player) -> str | None:
         """Skip turn action is never enabled for direct player interaction."""
@@ -679,7 +695,10 @@ class NineGame(Game):
         return None
 
     def _is_check_hand_counts_status_hidden(self, player: Player) -> Visibility:
-        """Check hand counts is always hidden (keybind only)."""
+        """Check hand counts is keybind-only except on touch clients."""
+        user = self.get_user(player)
+        if self.status == "playing" and self.is_touch_client(user):
+            return Visibility.VISIBLE
         return Visibility.HIDDEN
 
     def _action_check_hand_counts_status(self, player: Player, action_id: str) -> None:

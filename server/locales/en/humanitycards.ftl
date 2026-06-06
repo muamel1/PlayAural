@@ -67,7 +67,11 @@ hc-wrong-card-count = You need to select exactly { $count } { $count ->
 
 # Judging phase
 hc-judging-start = All cards are in! Time to judge.
+hc-choose-best-card = Choose the best card
+hc-choose-best-card-for = Choose the best card that matches: { $prompt }
 hc-select-winner-prompt = Select the winning submission
+hc-card-number = Card { $number }
+hc-submission-number = Submission { $number }
 hc-submission-option = { $text }
 
 # Results
@@ -75,6 +79,10 @@ hc-winner-announcement = { $player } wins the round! Score: { $score }.
 hc-winner-card = Winning answer: { $text }
 hc-round-scores = Scores after round { $round }:
 hc-score-line = { $player }: { $score } { $score ->
+    [one] point
+   *[other] points
+}
+hc-final-score-line = { $rank }. { $player }: { $score } { $score ->
     [one] point
    *[other] points
 }
@@ -91,6 +99,7 @@ hc-select-cards-first = Select at least 1 card first.
 # Win
 hc-game-winner = { $player } wins with { $score } points!
 hc-you-win = You win with { $score } points!
+hc-english-content-note = Note: the question and answer card text currently supports English only.
 
 # Deck management
 hc-deck-reshuffled = White card discard pile reshuffled into the deck.
@@ -99,6 +108,8 @@ hc-not-enough-cards = Not enough cards. Try enabling more packs.
 
 # Hand management
 hc-view-hand = View hand
+hc-toggle-card-keybind = Toggle card { $number }
+hc-submit-cards-keybind = Submit cards
 
 # Scores
 hc-view-scores = View scores
