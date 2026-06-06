@@ -946,6 +946,10 @@ class BackgammonGame(Game):
         elif not remaining_dice(gs):
             self._end_moving_phase()
         else:
+            # The bot has another die to play this turn: pause between checkers
+            # so a multi-move turn reads as distinct beats rather than a burst.
+            if player.is_bot:
+                BotHelper.jolt_bot(player, ticks=random.randint(3, 6))  # nosec B311
             self.rebuild_all_menus()
 
     def _do_roll(self, player: BackgammonPlayer) -> None:
@@ -976,6 +980,11 @@ class BackgammonGame(Game):
             self.broadcast_l("backgammon-no-moves", buffer="game", player=player.name)
             self._end_moving_phase()
         else:
+            # Pause a bot after the roll so it doesn't snap straight into its
+            # first move — the dice deserve a beat. (_end_moving_phase already
+            # paces the cross-turn handoff.)
+            if player.is_bot:
+                BotHelper.jolt_bot(player, ticks=random.randint(4, 7))  # nosec B311
             self.rebuild_all_menus()
 
     def _check_forced_dice(self) -> None:
