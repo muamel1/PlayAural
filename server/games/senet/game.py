@@ -71,6 +71,7 @@ class SenetGame(Game):
 
     winner_name: str | None = None
     _nav_cursor: int | None = None
+    _nav_skip_rebuild: bool = False
 
     @classmethod
     def get_name(cls) -> str:
@@ -136,7 +137,7 @@ class SenetGame(Game):
                 label=Localization.get(locale, "senet-next-piece"),
                 handler="_action_navigate_next",
                 is_enabled="_is_navigate_enabled",
-                is_hidden="_is_always_hidden",
+                is_hidden="_is_navigate_hidden",
                 show_in_actions_menu=False,
             )
         )
@@ -146,7 +147,7 @@ class SenetGame(Game):
                 label=Localization.get(locale, "senet-previous-piece"),
                 handler="_action_navigate_prev",
                 is_enabled="_is_navigate_enabled",
-                is_hidden="_is_always_hidden",
+                is_hidden="_is_navigate_hidden",
                 show_in_actions_menu=False,
             )
         )
@@ -295,7 +296,14 @@ class SenetGame(Game):
             idx = 0 if direction == 1 else len(targets) - 1
 
         self._nav_cursor = targets[idx]
+        self._nav_skip_rebuild = True
         self.update_player_menu(player, selection_id=f"sq_{targets[idx]}")
+
+    def _should_rebuild_after_keybind(self, player: Player, executed_any: bool) -> bool:
+        if self._nav_skip_rebuild:
+            self._nav_skip_rebuild = False
+            return False
+        return super()._should_rebuild_after_keybind(player, executed_any)
 
     def _get_movable_squares(self, player_num: int) -> list[int]:
         gs = self.game_state
@@ -834,6 +842,12 @@ class SenetGame(Game):
         return None
 
     def _is_always_hidden(self, player: Player) -> Visibility:
+        return Visibility.HIDDEN
+
+    def _is_navigate_hidden(self, player: Player) -> Visibility:
+        user = self.get_user(player)
+        if self._is_navigate_enabled(player) is None and self.is_touch_client(user):
+            return Visibility.VISIBLE
         return Visibility.HIDDEN
 
     def _is_touch_info_hidden(self, player: Player) -> Visibility:

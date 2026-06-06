@@ -106,9 +106,7 @@ Combat bonuses: having at least one general gives +2 to your roll; the defender 
 
 The host can configure these settings at the table before starting:
 
-\* \*\*Victory Cities:\*\* The number of cities required to win by the Empire path (default 5, configurable from 3 to 7).
-
-\* \*\*Roads Only to Neighbors:\*\* When enabled (the default), roads can only be built to your immediate left and right neighbors in the seating arrangement.
+\* \*\*Victory Cities:\*\* The number of cities required to win by the Empire path (default 5, range 3 to 7).
 
 
 

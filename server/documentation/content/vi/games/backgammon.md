@@ -65,7 +65,7 @@ Luật Crawford được áp dụng tự động. Khi một người chỉ còn 
 
 Một trận gồm nhiều ván liên tiếp cho đến khi đạt điểm mục tiêu. Sau mỗi ván, điểm của người thắng được cộng vào tổng điểm trận. Người đầu tiên đạt hoặc vượt điểm mục tiêu thắng cả trận. Màu quân giữ nguyên trong suốt trận, nhưng mỗi ván mới có lượt tung mở màn riêng để xác định người đi trước. Khối nhân đôi được đặt lại về giữa (giá trị 1) cho mỗi ván mới.
 
-\*\*Tùy chỉnh được\*\*
+\*\*Tùy chọn trò chơi\*\*
 
 \* \*\*Độ dài trận:\*\* Mặc định 1. Phạm vi từ 1 đến 25. Đây là số điểm cần đạt để thắng cả trận. Giá trị 1 là ván đơn, không có khối nhân đôi.
 \* \*\*Chiến lược bot:\*\* Mặc định Đơn giản. Có hai lựa chọn: Đơn giản hoặc Ngẫu nhiên.

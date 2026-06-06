@@ -36,6 +36,7 @@ from ...ui.keybinds import KeybindState
 # ==========================================================================
 
 _humanity_packs: list[dict] | None = None
+CAH_SOUND_DIR = "game_cah"
 
 
 def load_humanity_packs() -> list[dict]:
@@ -807,23 +808,29 @@ class HumanityCardsGame(Game):
             return Visibility.VISIBLE
         return super()._is_whos_at_table_hidden(player)
 
+    def _format_names(self, locale: str, names: list[str]) -> str:
+        """Format a player-name list with the listener's locale rules."""
+        if not names:
+            return ""
+        return Localization.format_list_and(locale, names)
+
+    def _speak_judge_announcement(self, user) -> None:
+        judges = self._get_judges()
+        if not judges:
+            return
+        user.speak_l(
+            "hc-judge-is",
+            buffer="game",
+            judges=self._format_names(user.locale, [judge.name for judge in judges]),
+            count=len(judges),
+        )
+
     def _action_whose_judge(self, player: Player, action_id: str) -> None:
         """Announce who the current judge(s) are."""
         user = self.get_user(player)
         if not user:
             return
-        judges = self._get_judges()
-        if len(judges) == 1:
-            user.speak_l("hc-judge-is", buffer="game", player=judges[0].name, count=1, others="")
-        elif judges:
-            others = ", ".join(j.name for j in judges[1:])
-            user.speak_l(
-                "hc-judge-is",
-                buffer="game",
-                player=judges[0].name,
-                count=len(judges),
-                others=others,
-            )
+        self._speak_judge_announcement(user)
 
     def _action_whose_turn(self, player: Player, action_id: str) -> None:
         """Override default whose_turn to show submission status."""
@@ -832,13 +839,17 @@ class HumanityCardsGame(Game):
             return
 
         judges = self._get_judges()
-        judge_names = ", ".join(j.name for j in judges)
+        judge_names = self._format_names(user.locale, [j.name for j in judges])
 
         if self.phase == "submitting":
             # List who hasn't submitted
             waiting = [p.name for p in self._get_non_judges() if p.submitted_cards is None]
             if waiting:
-                user.speak_l("hc-waiting-for", buffer="game", names=", ".join(waiting))
+                user.speak_l(
+                    "hc-waiting-for",
+                    buffer="game",
+                    names=self._format_names(user.locale, waiting),
+                )
             else:
                 user.speak_l("hc-all-submitted-waiting-judge", buffer="game", judge=judge_names)
         elif self.phase == "judging":
@@ -917,14 +928,14 @@ class HumanityCardsGame(Game):
         if index in hcp.selected_indices:
             hcp.selected_indices.remove(index)
             if user:
-                user.play_sound("game_humanitycards/cardunselect.ogg")
+                user.play_sound(f"{CAH_SOUND_DIR}/cardunselect.ogg")
         else:
             if len(hcp.selected_indices) >= required:
                 # Deselect first to make room
                 hcp.selected_indices.pop(0)
             hcp.selected_indices.append(index)
             if user:
-                user.play_sound("game_humanitycards/cardselect.ogg")
+                user.play_sound(f"{CAH_SOUND_DIR}/cardselect.ogg")
 
         self.rebuild_player_menu(player)
 
@@ -1073,7 +1084,7 @@ class HumanityCardsGame(Game):
         hcp.selected_indices = []
 
         # Sound + announcement
-        self.play_sound(f"game_humanitycards/submit{random.randint(1, 2)}.ogg")  # nosec B311
+        self.play_sound(f"{CAH_SOUND_DIR}/submit{random.randint(1, 2)}.ogg")  # nosec B311
         user = self.get_user(player)
         if user:
             user.speak_l("hc-submitted", buffer="game")
@@ -1128,7 +1139,7 @@ class HumanityCardsGame(Game):
 
         # Play judge choice sound
         self.play_sound(
-            f"game_humanitycards/judgechoice{random.randint(1, 3)}.ogg"  # nosec B311
+            f"{CAH_SOUND_DIR}/judgechoice{random.randint(1, 3)}.ogg"  # nosec B311
         )
 
         self.broadcast_l(
@@ -1339,20 +1350,10 @@ class HumanityCardsGame(Game):
         self.broadcast_l("hc-round-start", buffer="game", round=self.round)
 
         # Announce judge(s)
-        judges = self._get_judges()
-        if len(judges) == 1:
-            self.broadcast_l(
-                "hc-judge-is", buffer="game", player=judges[0].name, count=1, others=""
-            )
-        else:
-            others = ", ".join(j.name for j in judges[1:])
-            self.broadcast_l(
-                "hc-judge-is",
-                buffer="game",
-                player=judges[0].name,
-                count=len(judges),
-                others=others,
-            )
+        for p in self.players:
+            user = self.get_user(p)
+            if user:
+                self._speak_judge_announcement(user)
 
         # Announce black card
         black_text = self._speech_friendly_black(self.current_black_card["text"])
@@ -1392,7 +1393,7 @@ class HumanityCardsGame(Game):
         self.submission_order = list(range(len(self.submissions)))
         random.shuffle(self.submission_order)  # nosec B311
 
-        self.play_sound("game_humanitycards/judging.ogg")
+        self.play_sound(f"{CAH_SOUND_DIR}/judging.ogg")
         self.broadcast_l("hc-judging-start", buffer="game")
 
         # Jolt judge bots
@@ -1404,7 +1405,7 @@ class HumanityCardsGame(Game):
 
     def _end_game(self, winner: HumanityCardsPlayer) -> None:
         """End the game and announce the winner."""
-        self.play_sound("game_humanitycards/win.ogg")
+        self.play_sound(f"{CAH_SOUND_DIR}/win.ogg")
         self.broadcast_personal_l(
             winner,
             "hc-you-win",

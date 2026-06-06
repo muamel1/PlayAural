@@ -433,7 +433,8 @@ class RollingBallsGame(Game):
             and not rb_player.has_reshuffled
             and len(self.pipe) >= 6
         )
-        if can_reshuffle:
+        user = self.get_user(player)
+        if can_reshuffle and self.is_touch_client(user):
             return Visibility.VISIBLE
         return Visibility.HIDDEN
 
@@ -448,7 +449,8 @@ class RollingBallsGame(Game):
             and rb_player.view_pipe_uses < self.options.view_pipe_limit
             and self.status == "playing"
         )
-        if can_view:
+        user = self.get_user(player)
+        if can_view and self.is_touch_client(user):
             return Visibility.VISIBLE
         return Visibility.HIDDEN
 

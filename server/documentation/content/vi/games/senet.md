@@ -77,7 +77,7 @@ Không quân nào được ra khỏi bàn từ các ô khác. Quân phải đế
 
 Người đầu tiên đưa cả năm quân của mình ra ngoài sẽ thắng ván cờ.
 
-\*\*Tùy chọn có thể điều chỉnh\*\*
+\*\*Tùy chọn trò chơi\*\*
 
 \* \*\*Độ khó của Bot:\*\* Mặc định Đơn giản. Lựa chọn: Đơn giản (bot cân nhắc nước đi bằng một phương pháp heuristic) hoặc Ngẫu nhiên (bot đi một nước hợp lệ ngẫu nhiên).
 

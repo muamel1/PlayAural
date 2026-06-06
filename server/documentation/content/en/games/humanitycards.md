@@ -70,7 +70,7 @@ The host can configure these settings at the table before starting:
 
 &#x20;   \* \*\*Most Recent Winner:\*\* The player who won the last round becomes the next Card Czar. The winner sits out the next round as a trade-off for their success. On the first round, this falls back to rotating.
 
-\* \*\*Number of Judges:\*\* How many players serve as Card Czar simultaneously, from 1 to 3. With multiple judges, any one of them can pick the winner. More judges means fewer players submitting answers each round, so this option works best with larger groups.
+\* \*\*Number of Judges:\*\* How many players serve as Card Czar simultaneously. Default 1, range 1 to 3. With multiple judges, any one of them can pick the winner. More judges means fewer players submitting answers each round, so this option works best with larger groups.
 
 
 

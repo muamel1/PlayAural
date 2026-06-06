@@ -65,7 +65,7 @@ The Crawford rule is applied automatically. When a player is exactly one point a
 
 A match consists of multiple games played to a target score. After each game, the winner's points are added to their match score. The first player to reach or exceed the target wins the match. Colors remain the same throughout the match, but a new opening roll determines who goes first in each game. The doubling cube resets to centered at 1 for each new game.
 
-\*\*Customizable Options\*\*
+\*\*Game Options\*\*
 
 \* \*\*Match Length:\*\* Default 1. Range 1 to 25. This is the number of points needed to win the match. A value of 1 is a single game with no doubling cube.
 \* \*\*Bot Difficulty:\*\* Default Simple. Choices: Simple or Random.

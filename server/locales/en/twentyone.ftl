@@ -11,6 +11,22 @@ twentyone-change-card-guide-header = Change card guide.
 twentyone-change-card-guide-footer = Table effect limit is five. Target change cards replace older target change cards.
 twentyone-none = none
 
+twentyone-option-starting-health = Starting health: { $hp }
+twentyone-option-enter-starting-health = Enter starting health:
+twentyone-option-changed-starting-health = Starting health set to { $hp }.
+twentyone-option-base-bet = Base bet: { $bet }
+twentyone-option-enter-base-bet = Enter base bet:
+twentyone-option-changed-base-bet = Base bet set to { $bet }.
+twentyone-option-starting-change-cards = Starting change cards per round: { $count }
+twentyone-option-enter-starting-change-cards = Enter starting change cards per round:
+twentyone-option-changed-starting-change-cards = Starting change cards per round set to { $count }.
+twentyone-option-draw-change-chance = Draw change card chance: { $percent }%
+twentyone-option-enter-draw-change-chance = Enter draw change card chance percentage:
+twentyone-option-changed-draw-change-chance = Draw change card chance set to { $percent }%.
+twentyone-option-deck-count = Deck count: { $count }
+twentyone-option-enter-deck-count = Enter deck count:
+twentyone-option-changed-deck-count = Deck count set to { $count }.
+
 twentyone-modifier-label-raise-1 = raise one
 twentyone-modifier-label-raise-2 = raise two
 twentyone-modifier-label-raise-2-plus = withdraw and raise two

@@ -827,6 +827,20 @@ class PusoyDosGame(Game, TurnTimerMixin):
             )
         )
 
+        if self.is_touch_client(user):
+            self._order_touch_standard_actions(
+                action_set,
+                [
+                    "check_trick",
+                    "read_hand",
+                    "read_card_counts",
+                    "check_turn_timer",
+                    "check_scores",
+                    "whose_turn",
+                    "whos_at_table",
+                ],
+            )
+
         return action_set
 
     def setup_keybinds(self) -> None:
@@ -835,13 +849,33 @@ class PusoyDosGame(Game, TurnTimerMixin):
             "space", "pusoydos-key-play", ["play_selected"], state=KeybindState.ACTIVE
         )
         self.define_keybind("p", "pusoydos-key-pass", ["pass"], state=KeybindState.ACTIVE)
-        self.define_keybind("c", "pusoydos-key-trick", ["check_trick"], include_spectators=True)
-        self.define_keybind("h", "pusoydos-key-hand", ["read_hand"], include_spectators=False)
         self.define_keybind(
-            "e", "pusoydos-key-counts", ["read_card_counts"], include_spectators=True
+            "c",
+            "pusoydos-key-trick",
+            ["check_trick"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
         )
         self.define_keybind(
-            "shift+t", "pusoydos-key-timer", ["check_turn_timer"], include_spectators=True
+            "h",
+            "pusoydos-key-hand",
+            ["read_hand"],
+            state=KeybindState.ACTIVE,
+            include_spectators=False,
+        )
+        self.define_keybind(
+            "e",
+            "pusoydos-key-counts",
+            ["read_card_counts"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
+        )
+        self.define_keybind(
+            "shift+t",
+            "pusoydos-key-timer",
+            ["check_turn_timer"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
         )
 
     def rebuild_player_menu(self, player: Player) -> None:
@@ -1518,7 +1552,7 @@ class PusoyDosGame(Game, TurnTimerMixin):
 
     def _is_check_hidden(self, player: Player) -> Visibility:
         user = self.get_user(player)
-        if user and getattr(user, "client_type", "") == "web":
+        if self.is_touch_client(user):
             return Visibility.VISIBLE if self.status == "playing" else Visibility.HIDDEN
         return Visibility.HIDDEN
 
@@ -1534,19 +1568,19 @@ class PusoyDosGame(Game, TurnTimerMixin):
 
     def _is_whos_at_table_hidden(self, player: "Player") -> Visibility:
         user = self.get_user(player)
-        if user and getattr(user, "client_type", "") == "web":
+        if self.is_touch_client(user):
             return Visibility.VISIBLE
         return super()._is_whos_at_table_hidden(player)
 
     def _is_whose_turn_hidden(self, player: "Player") -> Visibility:
         user = self.get_user(player)
-        if user and getattr(user, "client_type", "") == "web":
+        if self.is_touch_client(user):
             return Visibility.VISIBLE if self.status == "playing" else Visibility.HIDDEN
         return super()._is_whose_turn_hidden(player)
 
     def _is_check_scores_hidden(self, player: "Player") -> Visibility:
         user = self.get_user(player)
-        if user and getattr(user, "client_type", "") == "web":
+        if self.is_touch_client(user):
             return Visibility.VISIBLE if self.status == "playing" else Visibility.HIDDEN
         return super()._is_check_scores_hidden(player)
 

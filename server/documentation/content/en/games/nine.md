@@ -52,6 +52,14 @@ She plays the Nine of Hearts, opening the hearts sequence on the table. Her turn
 
 
 
+\*\*Game Options\*\*
+
+
+
+Nine has no game-specific options.
+
+
+
 \*\*Keyboard Shortcuts\*\*
 
 

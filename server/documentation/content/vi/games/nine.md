@@ -52,6 +52,14 @@ Lan chọn đánh \*\*9 cơ\*\*. Dãy cơ được mở, lượt của cô kết
 
 
 
+\*\*Tùy chọn trò chơi\*\*
+
+
+
+Nine không có tùy chọn riêng của trò chơi.
+
+
+
 \*\*Phím tắt\*\*
 
 

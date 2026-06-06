@@ -48,6 +48,11 @@ class EventHandlingMixin:
         elif event_type == "action":
             self._handle_action_event(player, event)
 
+    def _should_rebuild_after_keybind(self, player: "Player", executed_any: bool) -> bool:
+        """Allow games with focus-preserving keybinds to suppress full rebuilds."""
+        _ = player
+        return executed_any
+
     def _handle_action_event(self, player: "Player", event: dict) -> None:
         """Handle a direct action execution event."""
         action_id = event.get("action")
@@ -257,6 +262,7 @@ class EventHandlingMixin:
         # Don't rebuild if action is waiting for input, status box is open, or actions menu is open
         if (
             executed_any
+            and self._should_rebuild_after_keybind(player, executed_any)
             and player.id not in self._pending_actions
             and player.id not in self._status_box_open
             and player.id not in self._actions_menu_open

@@ -1110,28 +1110,30 @@ class MainWindow(wx.Frame):
         # Map key codes to key names for the server
         key_name = None
 
-        # Handle arrow keys - only send as keybinds if menu is empty
+        # Handle arrow keys. Plain arrows move around populated menus locally,
+        # but modified arrows are game keybinds (for example grid navigation).
         menu_is_empty = self.menu_list.GetCount() == 0
+        modified_arrow = event.ControlDown() or event.ShiftDown() or event.AltDown()
         if key_code == wx.WXK_UP:
-            if menu_is_empty:
+            if menu_is_empty or modified_arrow:
                 key_name = "up"
             else:
                 event.Skip()
                 return
         elif key_code == wx.WXK_DOWN:
-            if menu_is_empty:
+            if menu_is_empty or modified_arrow:
                 key_name = "down"
             else:
                 event.Skip()
                 return
         elif key_code == wx.WXK_LEFT:
-            if menu_is_empty:
+            if menu_is_empty or modified_arrow:
                 key_name = "left"
             else:
                 event.Skip()
                 return
         elif key_code == wx.WXK_RIGHT:
-            if menu_is_empty:
+            if menu_is_empty or modified_arrow:
                 key_name = "right"
             else:
                 event.Skip()
@@ -1151,6 +1153,8 @@ class MainWindow(wx.Frame):
             # Don't send to server, let it bubble up to the accelerator
             event.Skip()
             return
+        elif key_code == wx.WXK_BACK and event.ControlDown():
+            key_name = "backspace"
         elif key_code == wx.WXK_ESCAPE or key_code == wx.WXK_BACK:
             if key_code == wx.WXK_BACK and self.current_menu_id == "main_menu":
                 event.Skip()

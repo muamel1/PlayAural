@@ -77,7 +77,7 @@ No piece may bear off from any other square. Pieces must reach these final squar
 
 The first player to bear off all five of their pieces wins the game.
 
-\*\*Customizable Options\*\*
+\*\*Game Options\*\*
 
 \* \*\*Bot Difficulty:\*\* Default Simple. Choices: Simple (the bot weighs its moves with a heuristic) or Random (the bot plays a random legal move).
 

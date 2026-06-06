@@ -16,7 +16,7 @@ from ..registry import register_game
 from ...game_utils.actions import Action, ActionSet, MenuInput, Visibility
 from ...game_utils.bot_helper import BotHelper
 from ...game_utils.game_result import GameResult, PlayerResult
-from ...game_utils.options import IntOption, BoolOption, option_field
+from ...game_utils.options import IntOption, option_field
 from ...messages.localization import Localization
 from ...ui.keybinds import KeybindState
 
@@ -171,14 +171,6 @@ class AgeOfHeroesOptions(GameOptions):
             label="ageofheroes-set-victory-cities",
             prompt="ageofheroes-enter-victory-cities",
             change_msg="ageofheroes-option-changed-victory-cities",
-        )
-    )
-    neighbor_roads_only: bool = option_field(
-        BoolOption(
-            default=True,
-            value_key="enabled",
-            label="ageofheroes-toggle-neighbor-roads",
-            change_msg="ageofheroes-option-changed-neighbor-roads",
         )
     )
 

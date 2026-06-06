@@ -11,6 +11,22 @@ twentyone-change-card-guide-header = Hướng dẫn lá Biến.
 twentyone-change-card-guide-footer = Mỗi bên tối đa năm hiệu ứng trên bàn. Lá Biến đổi mục tiêu mới sẽ thay thế lá Biến đổi mục tiêu cũ.
 twentyone-none = không có
 
+twentyone-option-starting-health = Máu ban đầu: { $hp }
+twentyone-option-enter-starting-health = Nhập máu ban đầu:
+twentyone-option-changed-starting-health = Máu ban đầu đã đặt thành { $hp }.
+twentyone-option-base-bet = Cược cơ bản: { $bet }
+twentyone-option-enter-base-bet = Nhập cược cơ bản:
+twentyone-option-changed-base-bet = Cược cơ bản đã đặt thành { $bet }.
+twentyone-option-starting-change-cards = Lá Biến đầu vòng: { $count }
+twentyone-option-enter-starting-change-cards = Nhập số lá Biến đầu vòng:
+twentyone-option-changed-starting-change-cards = Số lá Biến đầu vòng đã đặt thành { $count }.
+twentyone-option-draw-change-chance = Tỉ lệ nhận lá Biến khi rút: { $percent }%
+twentyone-option-enter-draw-change-chance = Nhập tỉ lệ phần trăm nhận lá Biến khi rút:
+twentyone-option-changed-draw-change-chance = Tỉ lệ nhận lá Biến khi rút đã đặt thành { $percent }%.
+twentyone-option-deck-count = Số bộ bài: { $count }
+twentyone-option-enter-deck-count = Nhập số bộ bài:
+twentyone-option-changed-deck-count = Số bộ bài đã đặt thành { $count }.
+
 twentyone-modifier-label-raise-1 = tăng một
 twentyone-modifier-label-raise-2 = tăng hai
 twentyone-modifier-label-raise-2-plus = rút lại và tăng hai

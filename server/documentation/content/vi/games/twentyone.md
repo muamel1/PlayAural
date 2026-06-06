@@ -166,21 +166,21 @@ Nhấn \*\*C\*\* hoặc chọn \*\*Hướng dẫn lá Biến\*\* trong menu hàn
 
 
 
-\*\*Tùy chỉnh tại bàn chơi\*\*
+\*\*Tùy chọn trò chơi\*\*
 
 
 
 Chủ bàn có thể điều chỉnh các thiết lập sau trước khi trò chơi bắt đầu:
 
-\* \*\*Máu ban đầu:\*\* Điểm máu mỗi người chơi bắt đầu (mặc định là 10).
+\* \*\*Máu ban đầu:\*\* Điểm máu mỗi người chơi bắt đầu. Mặc định 10, phạm vi từ 1 đến 100.
 
-\* \*\*Cược cơ bản:\*\* Sát thương cơ bản người thua chịu mỗi vòng trước khi tính điều chỉnh từ hiệu ứng (mặc định là 1).
+\* \*\*Cược cơ bản:\*\* Sát thương cơ bản người thua chịu mỗi vòng trước khi tính điều chỉnh từ hiệu ứng. Mặc định 1, phạm vi từ 0 đến 50.
 
-\* \*\*Lá Biến đầu vòng:\*\* Số lá Biến ngẫu nhiên mỗi người nhận khi bắt đầu mỗi vòng (mặc định là 1).
+\* \*\*Lá Biến đầu vòng:\*\* Số lá Biến ngẫu nhiên mỗi người nhận khi bắt đầu mỗi vòng. Mặc định 1, phạm vi từ 0 đến 10.
 
-\* \*\*Tỉ lệ nhận lá Biến khi rút:\*\* Xác suất nhận thêm một lá Biến ngẫu nhiên mỗi khi rút thêm bài số (mặc định là 35 phần trăm).
+\* \*\*Tỉ lệ nhận lá Biến khi rút:\*\* Xác suất nhận thêm một lá Biến ngẫu nhiên mỗi khi rút thêm bài số. Mặc định 35%, phạm vi từ 0% đến 100%.
 
-\* \*\*Số bộ bài:\*\* Số bản sao bộ bài 1–11 được gộp vào bộ bài mỗi vòng (mặc định là 1, tức 11 lá). Nhiều bộ hơn nghĩa là nhiều lá hơn và ít đoán trước được hơn.
+\* \*\*Số bộ bài:\*\* Số bản sao bộ bài 1-11 được gộp vào bộ bài mỗi vòng. Mặc định 1, phạm vi từ 1 đến 10; một bộ nghĩa là 11 lá. Nhiều bộ hơn nghĩa là nhiều lá hơn và ít đoán trước được hơn.
 
 
 

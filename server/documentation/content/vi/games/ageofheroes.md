@@ -66,13 +66,9 @@ Tướng lĩnh cộng thưởng khi gieo. Pháo đài cộng thưởng cho bên 
 
 \* \*\*Kẻ Kiên Cường Nhất:\*\* Là bộ tộc cuối cùng còn trụ lại. Người chơi bị loại khi không còn thành phố và không còn bài.
 
-\*\*Tùy chỉnh tại bàn chơi\*\*
+\*\*Tùy chọn trò chơi\*\*
 
-\* \*\*Số thành phố để thắng:\*\* Số thành phố cần để thắng theo điều kiện đế chế.
-
-\* \*\*Chỉ làm đường tới hàng xóm:\*\* Khi bật, đường chỉ được xây tới người ngồi ngay bên trái hoặc bên phải.
-
-\* \*\*Số bài tối đa trên tay:\*\* Giới hạn bài cuối lượt.
+\* \*\*Số thành phố để thắng:\*\* Số thành phố cần để thắng theo điều kiện đế chế. Mặc định 5, phạm vi từ 3 đến 7.
 
 \*\*Ví dụ một lượt\*\*
 

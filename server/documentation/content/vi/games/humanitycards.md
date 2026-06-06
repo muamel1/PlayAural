@@ -30,17 +30,17 @@ Sau khi chọn xong, trò chơi công bố câu thắng và người thắng vò
 
 Trò chơi kết thúc khi có người đạt điểm mục tiêu.
 
-\*\*Tùy chỉnh tại bàn chơi\*\*
+\*\*Tùy chọn trò chơi\*\*
 
-\* \*\*Điểm để thắng:\*\* Số điểm cần đạt để thắng ván.
+\* \*\*Điểm để thắng:\*\* Số điểm cần đạt để thắng ván. Mặc định 7, phạm vi từ 3 đến 20.
 
-\* \*\*Số lá trên tay:\*\* Số lá bài trắng mỗi người giữ.
+\* \*\*Số lá trên tay:\*\* Số lá bài trắng mỗi người giữ. Mặc định 10, phạm vi từ 5 đến 15.
 
-\* \*\*Bộ bài:\*\* Chọn bộ nội dung dùng trong ván. Có thể kết hợp nhiều bộ, nhưng phải bật ít nhất một bộ.
+\* \*\*Bộ bài:\*\* Chọn bộ nội dung dùng trong ván. Mặc định là Bộ cơ bản. Có thể kết hợp nhiều bộ, nhưng phải bật ít nhất một bộ.
 
-\* \*\*Cách chọn trọng tài:\*\* Luân phiên, ngẫu nhiên, hoặc người thắng vòng trước.
+\* \*\*Cách chọn trọng tài:\*\* Cách chọn trọng tài mỗi vòng. Mặc định Luân phiên. Các lựa chọn: Luân phiên, Ngẫu nhiên, hoặc Người thắng vòng trước.
 
-\* \*\*Số trọng tài:\*\* Số người cùng làm trọng tài trong một vòng, từ 1 đến 3. Nhiều trọng tài phù hợp hơn với nhóm đông vì sẽ có ít người nộp bài hơn mỗi vòng.
+\* \*\*Số trọng tài:\*\* Số người cùng làm trọng tài trong một vòng. Mặc định 1, phạm vi từ 1 đến 3. Nhiều trọng tài phù hợp hơn với nhóm đông vì sẽ có ít người nộp bài hơn mỗi vòng.
 
 \*\*Các nhóm bộ bài\*\*
 

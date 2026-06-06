@@ -48,13 +48,13 @@ The host can configure these settings at the table before starting:
 
 \* \*\*Maximum Balls to Take:\*\* The most balls you can take per turn (default 3, range 1 to 5). If you set this lower than the minimum, the minimum is adjusted down automatically, and vice versa.
 
-\* \*\*View Pipe Limit:\*\* How many times each player can peek at the pipe during the game (default 5). Set to 0 to disable pipe viewing entirely.
+\* \*\*View Pipe Limit:\*\* How many times each player can peek at the pipe during the game (default 5, range 0 to 100). Set to 0 to disable pipe viewing entirely.
 
-\* \*\*Reshuffle Limit:\*\* How many times each player can reshuffle during the game (default 3). Set to 0 to disable reshuffling entirely.
+\* \*\*Reshuffle Limit:\*\* How many times each player can reshuffle during the game (default 3, range 0 to 100). Set to 0 to disable reshuffling entirely.
 
 \* \*\*Reshuffle Penalty:\*\* The number of points deducted each time you reshuffle (default 1, range 0 to 5). Only visible when reshuffling is enabled.
 
-\* \*\*Ball Packs:\*\* Which themed sets of balls to include in the pipe. At least one pack must be selected; selecting both combines them into one pool. Available packs are:
+\* \*\*Ball Packs:\*\* Which themed sets of balls to include in the pipe. The default is International Travel. At least one pack must be selected; selecting multiple packs combines them into one pool. Available packs are:
 
 &#x20;   \* \*\*International Travel:\*\* Balls themed around global travel, from Paris Pickpocket (-5) and Lost Luggage in London (-5) at the painful end, to First Class Upgrade (+5) and Private Jet Charter (+5) at the top.
 

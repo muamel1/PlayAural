@@ -35,9 +35,9 @@ hc-dealing-cards = Chia { $count } lá bài cho mỗi người chơi.
 hc-round-start = Vòng { $round }.
 
 # Thông báo trọng tài
-hc-judge-is = { $player } { $count ->
-    [one] là trọng tài
-   *[other] và { $others } là các trọng tài
+hc-judge-is = { $judges } { $count ->
+    [1] là trọng tài
+   *[other] là các trọng tài
 }.
 hc-you-are-judge = Bạn là trọng tài vòng này.
 hc-you-are-not-judge = Bạn không phải trọng tài vòng này.

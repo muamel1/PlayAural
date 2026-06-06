@@ -343,7 +343,8 @@ class TestRollingBallsActions:
         assert "status_box" in self.user1.menus
 
     def test_view_pipe_visible_when_uses_remain(self):
-        """Test view pipe is visible when uses remain."""
+        """Test view pipe is visible as a touch-client turn button when uses remain."""
+        set_web_client(self.game, self.player1)
         visible_actions = self.game.get_all_visible_actions(self.player1)
         visible_ids = [a.action.id for a in visible_actions]
 

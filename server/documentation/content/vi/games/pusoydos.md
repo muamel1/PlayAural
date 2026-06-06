@@ -76,27 +76,27 @@ Trong các chế độ dùng điểm, điểm phạt dựa trên số lá còn l
 
 Tùy chọn \*\*Phạt thêm cho mỗi lá 2 giữ lại\*\* sẽ nhân đôi tổng điểm phạt cho từng lá 2 còn trên tay người thua.
 
-\*\*Tùy chọn\*\*
+\*\*Tùy chọn trò chơi\*\*
 
-\* \*\*Chế độ chơi:\*\* Loại bỏ, Số lần thua, Điểm, hoặc Loại bỏ theo điểm.
+\* \*\*Chế độ chơi:\*\* Loại bỏ (mặc định), Số lần thua, Điểm, hoặc Loại bỏ theo điểm.
 
-\* \*\*Số vòng để thắng:\*\* Dùng trong chế độ Loại bỏ.
+\* \*\*Số vòng để thắng:\*\* Chỉ dùng trong chế độ Loại bỏ. Mặc định 2, phạm vi từ 1 đến 10.
 
-\* \*\*Số lần thua để bị loại:\*\* Dùng trong chế độ Số lần thua.
+\* \*\*Số lần thua để bị loại:\*\* Chỉ dùng trong chế độ Số lần thua. Mặc định 3, phạm vi từ 1 đến 10.
 
-\* \*\*Điểm mục tiêu:\*\* Dùng trong chế độ Điểm và Loại bỏ theo điểm.
+\* \*\*Điểm mục tiêu:\*\* Dùng trong chế độ Điểm và Loại bỏ theo điểm. Mặc định 100, phạm vi từ 10 đến 10000.
 
-\* \*\*Thời gian mỗi lượt:\*\* Giới hạn thời gian hành động, hoặc tắt giới hạn.
+\* \*\*Thời gian mỗi lượt:\*\* Giới hạn thời gian hành động. Các lựa chọn: Không giới hạn (mặc định), 10, 15, 20, 30, 45, 60 hoặc 90 giây.
 
-\* \*\*Cho phép lá 2 trong sảnh:\*\* Cho phép các sảnh như A-2-3-4-5.
+\* \*\*Cho phép lá 2 trong sảnh:\*\* Cho phép các sảnh như A-2-3-4-5. Tắt mặc định.
 
-\* \*\*Thắng ngay:\*\* Cho phép Rồng, Bốn lá 2 và Sáu đôi thắng vòng ngay sau khi chia.
+\* \*\*Thắng ngay:\*\* Cho phép Rồng, Bốn lá 2 và Sáu đôi thắng vòng ngay sau khi chia. Bật mặc định.
 
-\* \*\*Trao đổi bài:\*\* Tắt, Đơn giản, hoặc Đầy đủ.
+\* \*\*Trao đổi bài:\*\* Tắt (mặc định), Đơn giản, hoặc Đầy đủ. Chế độ Đầy đủ chỉ hợp lệ khi có đúng 2 hoặc 4 người chơi.
 
-\* \*\*Mức phạt:\*\* Tiêu chuẩn, Nặng, hoặc Cố định.
+\* \*\*Mức phạt:\*\* Chỉ dùng trong chế độ Điểm và Loại bỏ theo điểm. Các lựa chọn: Tiêu chuẩn (mặc định), Nặng, hoặc Cố định.
 
-\* \*\*Phạt thêm cho mỗi lá 2 giữ lại:\*\* Nhân đôi điểm phạt cho từng lá 2 còn lại trên tay người thua.
+\* \*\*Phạt thêm cho mỗi lá 2 giữ lại:\*\* Chỉ dùng trong chế độ Điểm và Loại bỏ theo điểm. Nhân đôi điểm phạt cho từng lá 2 còn lại trên tay người thua. Tắt mặc định.
 
 \*\*Phím tắt\*\*
 

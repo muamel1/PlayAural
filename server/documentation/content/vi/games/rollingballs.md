@@ -20,19 +20,19 @@ Trò chơi kết thúc ngay khi ống trống. Nếu nhiều người bằng đi
 
 \* \*\*Xem trộm ống:\*\* Xem riêng toàn bộ nội dung ống theo thứ tự, gồm tên và giá trị từng bóng. Hành động này không tốn lượt. Nếu xem lại khi ống chưa thay đổi từ lần xem trước, lượt xem không bị trừ thêm.
 
-\*\*Tùy chỉnh tại bàn chơi\*\*
+\*\*Tùy chọn trò chơi\*\*
 
-\* \*\*Rút tối thiểu:\*\* Số bóng ít nhất phải rút mỗi lượt.
+\* \*\*Rút tối thiểu:\*\* Số bóng ít nhất phải rút mỗi lượt. Mặc định 1, phạm vi từ 1 đến 5.
 
-\* \*\*Rút tối đa:\*\* Số bóng nhiều nhất được rút mỗi lượt. Nếu tối đa thấp hơn tối thiểu, trò chơi tự điều chỉnh hai giá trị để chúng không mâu thuẫn.
+\* \*\*Rút tối đa:\*\* Số bóng nhiều nhất được rút mỗi lượt. Mặc định 3, phạm vi từ 1 đến 5. Nếu tối đa thấp hơn tối thiểu, trò chơi tự điều chỉnh hai giá trị để chúng không mâu thuẫn.
 
-\* \*\*Giới hạn xem trộm ống:\*\* Số lần mỗi người được xem trộm trong cả ván. Đặt 0 để tắt.
+\* \*\*Giới hạn xem trộm ống:\*\* Số lần mỗi người được xem trộm trong cả ván. Mặc định 5, phạm vi từ 0 đến 100. Đặt 0 để tắt.
 
-\* \*\*Giới hạn xóc lại ống:\*\* Số lần mỗi người được xóc lại ống. Đặt 0 để tắt.
+\* \*\*Giới hạn xóc lại ống:\*\* Số lần mỗi người được xóc lại ống. Mặc định 3, phạm vi từ 0 đến 100. Đặt 0 để tắt.
 
-\* \*\*Điểm phạt xóc lại ống:\*\* Số điểm bị trừ mỗi lần xóc lại.
+\* \*\*Điểm phạt xóc lại ống:\*\* Số điểm bị trừ mỗi lần xóc lại. Mặc định 1, phạm vi từ 0 đến 5. Chỉ hiện khi xóc lại ống đang bật.
 
-\* \*\*Bộ bóng:\*\* Chọn các bộ chủ đề được dùng trong ống. Phải chọn ít nhất một bộ.
+\* \*\*Bộ bóng:\*\* Chọn các bộ chủ đề được dùng trong ống. Mặc định là Du lịch Quốc tế. Phải chọn ít nhất một bộ.
 
 \*\*Bộ bóng hiện có\*\*
 

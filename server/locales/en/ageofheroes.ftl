@@ -60,13 +60,11 @@ ageofheroes-war-destruction = Destruction
 ageofheroes-set-victory-cities = Victory cities: { $cities }
 ageofheroes-enter-victory-cities = Enter number of cities to win (3-7)
 ageofheroes-set-victory-monument = Monument completion: { $progress }%
-ageofheroes-toggle-neighbor-roads = Roads only to neighbors: { $enabled }
 ageofheroes-set-max-hand = Maximum hand size: { $cards } cards
 
 # Option change announcements
 ageofheroes-option-changed-victory-cities = Victory requires { $cities } cities.
 ageofheroes-option-changed-victory-monument = Monument completion threshold set to { $progress }%.
-ageofheroes-option-changed-neighbor-roads = Roads only to neighbors { $enabled }.
 ageofheroes-option-changed-max-hand = Maximum hand size set to { $cards } cards.
 
 # Setup phase

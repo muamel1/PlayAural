@@ -35,9 +35,9 @@ hc-dealing-cards = Dealing { $count } cards to each player.
 hc-round-start = Round { $round }.
 
 # Judge announcement
-hc-judge-is = { $player } { $count ->
-    [one] is the Card Czar
-   *[other] and { $others } are the Card Czars
+hc-judge-is = { $judges } { $count ->
+    [1] is the Card Czar
+   *[other] are the Card Czars
 }.
 hc-you-are-judge = You are the Card Czar this round.
 hc-you-are-not-judge = You are not the Card Czar this round.

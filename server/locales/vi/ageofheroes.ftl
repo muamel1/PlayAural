@@ -60,13 +60,11 @@ ageofheroes-war-destruction = Phá hủy
 ageofheroes-set-victory-cities = Số thành phố để thắng: { $cities }
 ageofheroes-enter-victory-cities = Nhập số thành phố cần để thắng (3-7)
 ageofheroes-set-victory-monument = Tiến độ kỳ quan để thắng: { $progress }%
-ageofheroes-toggle-neighbor-roads = Chỉ làm đường tới hàng xóm: { $enabled }
 ageofheroes-set-max-hand = Số bài tối đa trên tay: { $cards } lá
 
 # Thông báo thay đổi tùy chọn
 ageofheroes-option-changed-victory-cities = Điều kiện thắng: cần { $cities } thành phố.
 ageofheroes-option-changed-victory-monument = Điều kiện thắng: hoàn thành { $progress }% kỳ quan.
-ageofheroes-option-changed-neighbor-roads = Chỉ làm đường tới hàng xóm: { $enabled }.
 ageofheroes-option-changed-max-hand = Số bài tối đa trên tay đã đặt là { $cards } lá.
 
 # Giai đoạn Thiết lập
