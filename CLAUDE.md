@@ -387,7 +387,7 @@ The server currently registers **36 games**:
 - recent additions include `Tien Len`, `Color Game`, `Citadels`, `Dead Man's Deck`, and `Dead Man's Poker`
 
 ### Key Tech Stack
-- Python 3.11, `asyncio`, `websockets>=12.0`, `mashumaro`, `fluent-compiler`, `openskill`, `argon2-cffi`
+- Python 3.11, `asyncio`, `websockets>=12.0`, `mashumaro`, `fluent-runtime`, `openskill`, `argon2-cffi`
 - Desktop: `wxPython`, `accessible-output2`, `sound-lib`, `keyring`, `livekit`, `sounddevice`
 - Mobile: `expo`, `react-native`, `expo-audio`, `expo-speech`, `@react-native-async-storage/async-storage`, `expo-secure-store`
 - Package manager: `uv` for Python components, `npm` for the mobile client

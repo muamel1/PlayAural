@@ -2,16 +2,24 @@
 
 from pathlib import Path
 
-from fluent_compiler.bundle import FluentBundle
+from fluent.runtime import FluentBundle, FluentResource
 from babel.lists import format_list
 
 
 class Localization:
     """
-    Localization system using Mozilla Fluent via fluent-compiler.
+    Localization system using Mozilla Fluent via fluent.runtime.
 
     Loads .ftl files from the locales directory and provides message
     rendering with variable substitution.
+
+    We use the interpreting ``fluent.runtime`` rather than the codegen-based
+    ``fluent_compiler``: the latter compiles every message to a Python function
+    at load time, an O(n²) name-reservation pass that took ~16 s *per locale*
+    for our ~4 000-message bundles. The interpreter merely parses the FTL
+    (~0.2 s per locale) and walks the AST at format time (a few µs per call),
+    which is comfortably fast for a server formatting a handful of strings per
+    event. See the migration discussion for the full benchmark.
     """
 
     _bundles: dict[str, FluentBundle] = {}
@@ -54,16 +62,20 @@ class Localization:
             if not locale_dir.exists():
                 raise RuntimeError(f"No locale files found for {locale} or en")
 
-        # Load all .ftl files in the locale directory
-        ftl_content = []
-        for ftl_file in locale_dir.glob("*.ftl"):
-            ftl_content.append(ftl_file.read_text(encoding="utf-8"))
-
-        if not ftl_content:
+        # Load all .ftl files in the locale directory. Each file is added as a
+        # separate resource so a parse error is attributed to one file rather
+        # than poisoning the whole bundle.
+        ftl_files = sorted(locale_dir.glob("*.ftl"))
+        if not ftl_files:
             raise RuntimeError(f"No .ftl files found in {locale_dir}")
 
-        # Compile messages - join all content (use actual locale for bundle)
-        bundle = FluentBundle.from_string(actual_locale, "\n".join(ftl_content))
+        # use_isolating=True matches the previous fluent_compiler default; the
+        # bidi isolation characters it inserts are stripped in get().
+        bundle = FluentBundle([actual_locale], use_isolating=True)
+        for ftl_file in ftl_files:
+            bundle.add_resource(
+                FluentResource(ftl_file.read_text(encoding="utf-8"))
+            )
         cls._bundles[locale] = bundle
         return bundle
 
@@ -85,7 +97,15 @@ class Localization:
         """
         try:
             bundle = cls._get_bundle(locale)
-            result, errors = bundle.format(message_id, kwargs)
+            # Message ids may address an attribute via "message-id.attr".
+            base_id, _, attribute = message_id.partition(".")
+            message = bundle.get_message(base_id)
+            pattern = (
+                message.attributes.get(attribute) if attribute else message.value
+            )
+            if pattern is None:
+                return message_id
+            result, errors = bundle.format_pattern(pattern, kwargs)
             # Strip Unicode bidi isolation characters that Fluent adds
             for char in cls._BIDI_CHARS:
                 result = result.replace(char, "")

@@ -26,7 +26,7 @@ NC='\033[0m'
 SERVER_PACKAGES=(
   websockets
   argon2-cffi
-  fluent-compiler
+  fluent-runtime
   mashumaro
   babel
   openskill
