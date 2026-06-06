@@ -209,7 +209,7 @@ class RollingBallsGame(Game):
                 # Add new take actions
                 user = self.get_user(player)
                 locale = user.locale if user else "en"
-                for n in range(self.options.min_take, self.options.max_take + 1):
+                for n in range(1, 6):
                     turn_set.add(
                         Action(
                             id=f"take_{n}",
@@ -266,8 +266,10 @@ class RollingBallsGame(Game):
 
         action_set = ActionSet(name="turn")
 
-        # Take N balls (dynamic based on min/max options)
-        for n in range(self.options.min_take, self.options.max_take + 1):
+        # Take N balls: always create 1..5 so the number keybinds always
+        # resolve to a real action; the min/max range is enforced by
+        # _is_take_enabled / _is_take_hidden.
+        for n in range(1, 6):
             action_set.add(
                 Action(
                     id=f"take_{n}",
@@ -358,6 +360,8 @@ class RollingBallsGame(Game):
         if self.current_player != player:
             return "action-not-your-turn"
         count = int(action_id.removeprefix("take_"))
+        if count < self.options.min_take or count > self.options.max_take:
+            return "action-not-available"
         if len(self.pipe) < count:
             return "rb-not-enough-balls"
         return None
@@ -402,6 +406,8 @@ class RollingBallsGame(Game):
         if self.current_player != player:
             return Visibility.HIDDEN
         count = int(action_id.removeprefix("take_"))
+        if count < self.options.min_take or count > self.options.max_take:
+            return Visibility.HIDDEN
         if len(self.pipe) < count:
             return Visibility.HIDDEN
         return Visibility.VISIBLE
