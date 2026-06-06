@@ -384,7 +384,7 @@ The server currently registers **42 games**:
 - category ids are `cards`, `dice`, `board`, `poker`, `arcade`, and `misc`
 - the Play menu exposes a persisted category filter with dynamic per-category game counts
 - games usually expose one category through `get_category()`, while `get_categories()` supports future multi-category games
-- recent additions include `Tien Len`, `Color Game`, `Citadels`, `Dead Man's Deck`, `Dead Man's Poker`, `Metal Pipe`, `Nine`, `Senet`, `Cards Against Humanity`, `21`, and `Age of Heroes`
+- recent additions include `Metal Pipe`, `Nine`, `Senet`, `Cards Against Humanity`, `21`, and `Age of Heroes`
 
 ### Key Tech Stack
 - Python 3.11, `asyncio`, `websockets>=12.0`, `mashumaro`, `fluent-runtime`, `openskill`, `argon2-cffi`
