@@ -2475,6 +2475,10 @@ class GameClient {
                     btn.innerText = text;
                 }
 
+                // Keep the recycled button's highlight sound in sync; its focus
+                // listener (added in createMenuItem) reads dataset.sound live.
+                this.applyItemSound(btn, newItem);
+
                 if (id) {
                     btn.setAttribute('aria-disabled', 'false');
                     btn.dataset.id = id;
@@ -2545,6 +2549,15 @@ class GameClient {
         }
     }
 
+    applyItemSound(btn, item) {
+        const sound = (typeof item === 'string') ? null : (item && item.sound) || null;
+        if (sound) {
+            btn.dataset.sound = sound;
+        } else {
+            delete btn.dataset.sound;
+        }
+    }
+
     createMenuItem(item, index) {
         const btn = document.createElement('div');
         btn.className = "menu-item";
@@ -2561,6 +2574,14 @@ class GameClient {
 
         btn.innerText = text;
         btn.tabIndex = 0; // Always make focusable so screen readers can navigate read-only items
+
+        // Per-item highlight sound (e.g. backgammon board squares). Plays as the
+        // item gains focus — the moment a screen-reader/keyboard user lands on it.
+        // Sound-less items stay silent, preserving existing menu behaviour.
+        this.applyItemSound(btn, item);
+        btn.addEventListener('focus', () => {
+            if (btn.dataset.sound) this.play_sound(btn.dataset.sound);
+        });
 
         if (id) {
             btn.setAttribute('aria-disabled', 'false');

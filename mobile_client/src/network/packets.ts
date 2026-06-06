@@ -3,6 +3,7 @@ export type SpeechBuffer = "all" | "chat" | "game" | "system" | "misc";
 export type MenuItemData = {
   id?: string;
   text: string;
+  sound?: string;
 };
 
 export type MenuPacket = {

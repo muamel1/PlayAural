@@ -125,6 +125,7 @@ type AccessibilityFocusNode = Parameters<typeof findNodeHandle>[0] | { focus?: (
 type FocusableMenuItem = {
   id?: string;
   text: string;
+  sound?: string;
 };
 
 type MenuState = {
@@ -483,6 +484,7 @@ export function PlayAuralApp() {
   const sessionEstablishedRef = useRef(false);
   const appStateRef = useRef(appState);
   const lastPassiveUiSignatureRef = useRef<string | null>(null);
+  const lastMenuSoundKeyRef = useRef<string | null>(null);
   const authModeInitializedRef = useRef(false);
   const previousAuthModeRef = useRef<AuthMode | null>(null);
   const nativeFocusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -3688,6 +3690,28 @@ export function PlayAuralApp() {
     shortcutFocusIndex,
     getCurrentUiFocusSignature,
   ]);
+
+  // Per-item highlight sound (e.g. backgammon board squares), played as the
+  // cursor lands on an item — independent of self-voicing, since it is an audio
+  // cue rather than speech. Keyed on focus position so a board refresh under a
+  // stationary cursor does not replay it; items without a sound stay silent.
+  useEffect(() => {
+    if (!connected || mode !== "main") {
+      lastMenuSoundKeyRef.current = null;
+      return;
+    }
+    if (!focusedMenuItem) {
+      return;
+    }
+    const key = `${menuState.menuId}:${menuState.focusIndex}`;
+    if (key === lastMenuSoundKeyRef.current) {
+      return;
+    }
+    lastMenuSoundKeyRef.current = key;
+    if (focusedMenuItem.sound) {
+      void audio.playSound(focusedMenuItem.sound);
+    }
+  }, [audio, connected, mode, menuState.menuId, menuState.focusIndex, focusedMenuItem]);
 
   const connect = () => {
     if (!serverUrl || !username || !password) {
