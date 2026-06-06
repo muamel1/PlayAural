@@ -64,6 +64,13 @@ These provide permanent protection for the rest of the race and grant an extra t
 
 When an opponent plays a hazard on you, you have a \*\*7-second window\*\* to play the matching safety card from your hand by pressing \*\*D\*\*. This blocks the hazard and earns 300 bonus points at the end of the race.
 
+During that window, you may also select the matching safety card directly from your hand. It will automatically be treated as a Dirty Trick, not as a normal safety play.
+
+
+\*\*Unplayable Cards\*\*
+
+If you select a card that cannot currently be played, the game explains the exact reason and asks whether you want to discard it. Choose \*\*Discard\*\* to throw it away, or cancel to keep it.
+
 
 
 \*\*Scoring\*\*
@@ -83,6 +90,8 @@ When an opponent plays a hazard on you, you have a \*\*7-second window\*\* to pl
 \*\*Game Options\*\*
 
 \* \*\*Round Distance:\*\* The target distance for each race (default 1,000 miles, range 300-3,000).
+
+  If exact finish is enabled, the distance must be divisible by 25 because every distance card is a multiple of 25.
 
 \* \*\*Winning Score:\*\* The total score needed to win the match (default 5,000, range 1,000-10,000).
 

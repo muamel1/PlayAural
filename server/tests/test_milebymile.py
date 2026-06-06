@@ -16,6 +16,10 @@ from ..users.test_user import MockUser
 from ..users.bot import Bot
 
 
+def speech_texts(user: MockUser) -> list[str]:
+    return [message.data["text"] for message in user.messages if message.type == "speak"]
+
+
 class TestMileByMileGameUnit:
     """Unit tests for Mile by Mile game functions."""
 
@@ -245,6 +249,204 @@ class TestMileByMileTargetSelectionGuard:
         assert alice.id not in game._pending_actions
         assert "action_input_menu" not in alice_user.menus
         assert alice_user.get_last_spoken() == "It's not your turn."
+
+
+class TestMileByMileDirtyTricks:
+    def test_playing_matching_safety_card_normally_counts_as_dirty_trick(self):
+        game = MileByMileGame()
+        alice_user = MockUser("Alice", uuid="p1")
+        bob_user = MockUser("Bob", uuid="p2")
+        alice = game.add_player("Alice", alice_user)
+        bob = game.add_player("Bob", bob_user)
+        game.on_start()
+
+        safety = Card(id=1001, card_type=CardType.SAFETY, value=SafetyType.PUNCTURE_PROOF)
+        bob.hand = [safety]
+        bob_state = game.get_player_race_state(bob)
+        assert bob_state is not None
+        bob_state.problems = [HazardType.FLAT_TIRE, HazardType.STOP]
+        game.dirty_trick_window_team = bob.team_index
+        game.dirty_trick_window_hazard = HazardType.FLAT_TIRE
+        game.dirty_trick_window_ticks = 140
+        game.current_player = alice
+        game._update_turn_actions(bob)
+        alice_user.clear_messages()
+        bob_user.clear_messages()
+
+        game.execute_action(bob, "card_slot_1")
+
+        assert SafetyType.PUNCTURE_PROOF in bob_state.safeties
+        assert bob_state.dirty_trick_count == 1
+        assert HazardType.FLAT_TIRE not in bob_state.problems
+        assert HazardType.STOP not in bob_state.problems
+        assert game.dirty_trick_window_team is None
+        assert all(card.id != safety.id for card in bob.hand)
+        assert safety in game.protections_pile
+        assert any("You play Puncture Proof as a Dirty Trick" in text for text in speech_texts(bob_user))
+        assert any("Bob plays Puncture Proof as a Dirty Trick" in text for text in speech_texts(alice_user))
+
+
+class TestMileByMileUnplayableCardMenu:
+    def test_unplayable_card_opens_reason_discard_menu_and_reason_is_noop(self):
+        game = MileByMileGame()
+        alice_user = MockUser("Alice", uuid="p1")
+        bob_user = MockUser("Bob", uuid="p2")
+        alice = game.add_player("Alice", alice_user)
+        game.add_player("Bob", bob_user)
+        game.on_start()
+
+        blocked_card = Card(id=2001, card_type=CardType.DISTANCE, value="100")
+        alice.hand = [blocked_card]
+        alice_state = game.get_player_race_state(alice)
+        assert alice_state is not None
+        alice_state.problems = [HazardType.STOP]
+        game.current_player = alice
+        game._update_turn_actions(alice)
+        alice_user.clear_messages()
+
+        game.execute_action(alice, "card_slot_1")
+
+        assert alice.id in game._pending_actions
+        items = alice_user.get_current_menu_items("action_input_menu")
+        assert items is not None
+        assert alice_user.menus["action_input_menu"]["position"] == 2
+        assert [getattr(item, "id", "") for item in items] == [
+            "",
+            "discard_unplayable_card",
+            "_cancel",
+        ]
+        reason_text = getattr(items[0], "text", "")
+        assert "You cannot play 100 miles because you need a Green Light" in reason_text
+        assert "Do you want to discard it?" in reason_text
+        assert alice_user.get_last_spoken() == reason_text
+
+        game.handle_event(
+            alice,
+            {
+                "type": "menu",
+                "menu_id": "action_input_menu",
+                "selection_id": "",
+            },
+        )
+
+        assert alice.id in game._pending_actions
+        assert alice.hand == [blocked_card]
+        assert blocked_card not in game.discard_pile
+        assert game.current_player == alice
+
+        game.handle_event(
+            alice,
+            {
+                "type": "menu",
+                "menu_id": "action_input_menu",
+                "selection_id": "discard_unplayable_card",
+            },
+        )
+
+        assert blocked_card not in alice.hand
+        assert blocked_card in game.discard_pile
+        assert game.current_player != alice
+
+    def test_unplayable_reasons_are_specific_to_current_problem(self):
+        game = MileByMileGame()
+        alice_user = MockUser("Alice", uuid="p1")
+        bob_user = MockUser("Bob", uuid="p2")
+        alice = game.add_player("Alice", alice_user)
+        game.add_player("Bob", bob_user)
+        game.on_start()
+        alice_state = game.get_player_race_state(alice)
+        assert alice_state is not None
+
+        card = Card(id=2101, card_type=CardType.DISTANCE, value="100")
+        alice_state.problems = [HazardType.FLAT_TIRE, HazardType.STOP]
+        assert "flat tire" in game._get_unplayable_reason(alice, card, "en")
+
+        alice_state.problems = [HazardType.SPEED_LIMIT]
+        assert "Speed Limit" in game._get_unplayable_reason(alice, card, "en")
+
+        alice_state.problems = []
+        alice_state.used_200_mile_count = 2
+        card_200 = Card(id=2102, card_type=CardType.DISTANCE, value="200")
+        assert "two 200-mile cards" in game._get_unplayable_reason(alice, card_200, "en")
+
+
+class TestMileByMileTouchOrdering:
+    def test_touch_standard_actions_put_info_before_status(self):
+        game = MileByMileGame()
+        alice_user = MockUser("Alice", uuid="p1")
+        alice_user.client_type = "web"
+        bob_user = MockUser("Bob", uuid="p2")
+        alice = game.add_player("Alice", alice_user)
+        game.add_player("Bob", bob_user)
+
+        standard_set = game.get_action_set(alice, "standard")
+        assert standard_set is not None
+        assert standard_set._order.index("info") < standard_set._order.index(
+            "check_status"
+        )
+
+    def test_desktop_standard_actions_keep_status_before_info(self):
+        game = MileByMileGame()
+        alice_user = MockUser("Alice", uuid="p1")
+        bob_user = MockUser("Bob", uuid="p2")
+        alice = game.add_player("Alice", alice_user)
+        game.add_player("Bob", bob_user)
+
+        standard_set = game.get_action_set(alice, "standard")
+        assert standard_set is not None
+        assert standard_set._order.index("check_status") < standard_set._order.index(
+            "info"
+        )
+
+
+class TestMileByMileBroadcastsAndOptions:
+    def test_hazard_broadcasts_use_actor_and_target_context(self):
+        game = MileByMileGame()
+        alice_user = MockUser("Alice", uuid="p1")
+        bob_user = MockUser("Bob", uuid="p2")
+        alice = game.add_player("Alice", alice_user)
+        bob = game.add_player("Bob", bob_user)
+        game.on_start()
+
+        hazard = Card(id=3001, card_type=CardType.HAZARD, value=HazardType.STOP)
+        alice.hand = [hazard]
+        bob_state = game.get_player_race_state(bob)
+        assert bob_state is not None
+        bob_state.problems = []
+        game.current_player = alice
+        game._update_turn_actions(alice)
+        alice_user.clear_messages()
+        bob_user.clear_messages()
+
+        game.execute_action(alice, "card_slot_1")
+
+        assert any("You play Stop on Bob" in text for text in speech_texts(alice_user))
+        assert any("Alice plays Stop on you" in text for text in speech_texts(bob_user))
+
+    def test_exact_finish_blocks_target_not_divisible_by_25(self):
+        game = MileByMileGame(options=MileByMileOptions(round_distance=333))
+        game.add_player("Alice", MockUser("Alice", uuid="p1"))
+        game.add_player("Bob", MockUser("Bob", uuid="p2"))
+
+        assert "milebymile-error-perfect-distance-step" in game.prestart_validate()
+
+        game.options.only_allow_perfect_crossing = False
+        assert "milebymile-error-perfect-distance-step" not in game.prestart_validate()
+
+    def test_game_result_winner_uses_total_score_not_last_race_winner(self):
+        game = MileByMileGame()
+        alice = game.add_player("Alice", MockUser("Alice", uuid="p1"))
+        bob = game.add_player("Bob", MockUser("Bob", uuid="p2"))
+        game.on_start()
+        game._team_manager.teams[alice.team_index].total_score = 900
+        game._team_manager.teams[bob.team_index].total_score = 500
+        game.race_winner_team_index = bob.team_index
+
+        result = game.build_game_result()
+
+        assert result.custom_data["winner_name"] == "Alice"
+        assert result.custom_data["winner_ids"] == [alice.id]
+        assert result.custom_data["winner_score"] == 900
 
 
 def test_status_score_format_includes_localized_unit() -> None:

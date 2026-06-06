@@ -64,7 +64,7 @@ def test_ludo_mobile_standard_actions_follow_touch_order() -> None:
     assert "web_leave_table" in visible_ids
 
 
-def test_milebymile_touch_info_stays_above_bottom_status_actions() -> None:
+def test_milebymile_touch_info_stays_before_status_actions() -> None:
     game = MileByMileGame()
     game.setup_keybinds()
     u1 = MockUser("Alice", uuid="p1")
@@ -78,8 +78,8 @@ def test_milebymile_touch_info_stays_above_bottom_status_actions() -> None:
     action_set = game.create_standard_action_set(p1)
     order = action_set._order
 
-    assert order.index("check_status") < order.index("info")
-    assert order.index("info") < order.index("whose_turn")
+    assert order.index("info") < order.index("check_status")
+    assert order.index("check_status") < order.index("whose_turn")
     assert order[-2:] == ["whose_turn", "whos_at_table"]
 
     game.rebuild_player_menu(p1)
@@ -88,8 +88,8 @@ def test_milebymile_touch_info_stays_above_bottom_status_actions() -> None:
         for item in u1.menus["turn_menu"]["items"]
         if getattr(item, "id", None)
     ]
-    assert visible_ids.index("check_status") < visible_ids.index("info")
-    assert visible_ids.index("info") < visible_ids.index("whose_turn")
+    assert visible_ids.index("info") < visible_ids.index("check_status")
+    assert visible_ids.index("check_status") < visible_ids.index("whose_turn")
     assert visible_ids.index("whose_turn") < visible_ids.index("whos_at_table")
 
 
