@@ -29,6 +29,7 @@ from server.games.deadmanspoker.game import (
     SOUND_SPIN_CYLINDER,
     DeadMansPokerGame,
 )
+from server.game_utils.actions import Visibility
 from server.game_utils.cards import Card, card_name
 from server.game_utils.sequence_runner_mixin import SequenceOperation
 from server.games.registry import GameRegistry
@@ -427,6 +428,10 @@ def test_normal_fold_first_decision_requires_coward_fold() -> None:
 
     assert game._is_fold_enabled(player) == "deadmanspoker-fold-first-decision-use-coward"
     assert game._is_coward_fold_enabled(player) is None
+
+    # A disabled fold hides itself so the coward's fold takes its place.
+    assert game._is_fold_hidden(player) == Visibility.HIDDEN
+    assert game._is_coward_fold_hidden(player) == Visibility.VISIBLE
 
 
 def test_all_in_is_blocked_until_flop() -> None:

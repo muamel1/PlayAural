@@ -887,10 +887,14 @@ class DeadMansPokerGame(Game):
     def _is_call_hidden(self, player: Player) -> Visibility:
         if self.phase not in {PHASE_DECISION, PHASE_ALL_IN_RESPONSE}:
             return Visibility.HIDDEN
+        if self._is_call_enabled(player) is not None:
+            return Visibility.HIDDEN
         return self._is_turn_action_visible(player)
 
     def _is_fold_hidden(self, player: Player) -> Visibility:
         if self.phase not in {PHASE_DECISION, PHASE_ALL_IN_RESPONSE}:
+            return Visibility.HIDDEN
+        if self._is_fold_enabled(player) is not None:
             return Visibility.HIDDEN
         return self._is_turn_action_visible(player)
 
