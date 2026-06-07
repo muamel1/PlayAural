@@ -68,3 +68,62 @@ def test_build_action_hidden_when_unaffordable() -> None:
     # A fortress needs iron + wood + stone, which the player cannot cover.
     assert game._is_build_enabled(player, "build_fortress") == "ageofheroes-no-resources"
     assert game._is_build_hidden(player, "build_fortress") == Visibility.HIDDEN
+
+
+def _make_lobby_game(player_count: int = 3) -> AgeOfHeroesGame:
+    """Build a game with players seated but still in the lobby (not started)."""
+    game = AgeOfHeroesGame()
+    game.setup_keybinds()
+    for index in range(player_count):
+        name = f"Player{index + 1}"
+        game.add_player(name, MockUser(name, uuid=f"p{index + 1}"))
+    game.host = "Player1"
+    return game
+
+
+def test_roll_dice_hidden_before_game_starts() -> None:
+    """Roll Dice must not surface in the lobby.
+
+    ``phase`` defaults to ``GamePhase.SETUP`` while the table is still waiting,
+    so without a status guard the Roll Dice button leaked into the lobby for
+    touch clients before the game had started.
+    """
+    game = _make_lobby_game()
+    player = game.players[0]
+
+    # Sanity: the conditions that used to make this VISIBLE all hold.
+    assert game.status != "playing"
+    assert game.phase == GamePhase.SETUP
+    assert player.id not in game.setup_rolls
+
+    assert game._is_roll_dice_hidden(player) == Visibility.HIDDEN
+
+
+def test_roll_dice_visible_in_setup_for_unrolled_player() -> None:
+    """Once the game starts, a seated player who hasn't rolled sees Roll Dice."""
+    game = make_started_game()
+    player = game.get_active_players()[0]
+
+    assert game.status == "playing"
+    assert game.phase == GamePhase.SETUP
+    assert player.id not in game.setup_rolls
+
+    assert game._is_roll_dice_hidden(player) == Visibility.VISIBLE
+
+
+def test_roll_dice_hidden_after_player_rolled() -> None:
+    """Roll Dice disappears for a player who has already rolled in setup."""
+    game = make_started_game()
+    player = game.get_active_players()[0]
+    game.setup_rolls[player.id] = 9
+
+    assert game._is_roll_dice_hidden(player) == Visibility.HIDDEN
+
+
+def test_roll_dice_hidden_for_spectator() -> None:
+    """Spectators never see the gameplay-mutating Roll Dice button."""
+    game = make_started_game()
+    player = game.get_active_players()[0]
+    player.is_spectator = True
+
+    assert game._is_roll_dice_hidden(player) == Visibility.HIDDEN

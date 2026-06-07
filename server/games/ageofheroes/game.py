@@ -787,7 +787,18 @@ class AgeOfHeroesGame(Game):
         return None
 
     def _is_roll_dice_hidden(self, player: Player) -> Visibility:
-        """Roll dice is visible only in setup phase."""
+        """Roll dice is visible only in the setup phase of an active game.
+
+        The game's ``phase`` field defaults to ``GamePhase.SETUP`` while the
+        table is still in the lobby, so a phase check alone would surface this
+        button for touch clients before the game starts. Gate on
+        ``status == "playing"`` (and hide for spectators) the same way the
+        other touch-visible/gameplay actions in this game are gated.
+        """
+        if player.is_spectator:
+            return Visibility.HIDDEN
+        if self.status != "playing":
+            return Visibility.HIDDEN
         if self.phase != GamePhase.SETUP:
             return Visibility.HIDDEN
         if player.id in self.setup_rolls:
