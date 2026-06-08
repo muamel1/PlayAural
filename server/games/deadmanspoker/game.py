@@ -18,6 +18,7 @@ from ...game_utils.sequence_runner_mixin import SequenceBeat, SequenceOperation
 from ...messages.localization import Localization
 from ...ui.keybinds import KeybindState
 from .bot import bot_select_switch_card as _bot_select_switch_card
+from .bot import bot_record_switch_result as _bot_record_switch_result
 from .bot import bot_think as _bot_think
 
 
@@ -145,6 +146,10 @@ class DeadMansPokerPlayer(Player):
     all_ins_initiated: int = 0
     all_ins_matched: int = 0
     bullets_risked: int = 0
+    bot_switch_round_stage: int = 0
+    bot_switch_plan: str = ""
+    bot_switch_missed: bool = False
+    bot_switch_float_bias: float = 0.0
 
 
 @dataclass
@@ -277,6 +282,10 @@ class DeadMansPokerGame(Game):
             dmp_player.all_ins_initiated = 0
             dmp_player.all_ins_matched = 0
             dmp_player.bullets_risked = 0
+            dmp_player.bot_switch_round_stage = 0
+            dmp_player.bot_switch_plan = ""
+            dmp_player.bot_switch_missed = False
+            dmp_player.bot_switch_float_bias = 0.0
 
         self.start_sequence(
             "deadmanspoker_match_start",
@@ -450,6 +459,10 @@ class DeadMansPokerGame(Game):
             player.acted_this_hand = False
             player.used_switch = False
             player.matched_all_in = False
+            player.bot_switch_round_stage = 0
+            player.bot_switch_plan = ""
+            player.bot_switch_missed = False
+            player.bot_switch_float_bias = 0.0
 
         for _ in range(HAND_SIZE):
             for player in ordered:
@@ -1172,6 +1185,8 @@ class DeadMansPokerGame(Game):
             dmp_player.hand[self.pending_switch_card_index] = chosen
             dmp_player.hand = self._sort_private_hand(dmp_player.hand)
         dmp_player.used_switch = True
+        if dmp_player.is_bot:
+            _bot_record_switch_result(self, dmp_player, discarded, chosen)
         self.pending_switch_player_id = ""
         self.pending_switch_card_index = -1
         self.pending_switch_candidates.clear()

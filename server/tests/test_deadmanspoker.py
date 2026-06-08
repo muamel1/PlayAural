@@ -3,7 +3,10 @@
 from pathlib import Path
 import random
 
-from server.games.deadmanspoker.bot import bot_think as deadmanspoker_bot_think
+from server.games.deadmanspoker.bot import (
+    bot_select_switch_card,
+    bot_think as deadmanspoker_bot_think,
+)
 from server.games.deadmanspoker.game import (
     AUDIO_DURATIONS_TICKS,
     EIGHT_BULLET_DEATH_CHANCE,
@@ -169,6 +172,235 @@ def test_bot_game_completes_without_deadlock() -> None:
     game.on_start()
 
     assert advance_until(game, lambda: game.status == "finished", max_ticks=60000)
+
+
+def test_bot_waits_for_community_before_switching(monkeypatch) -> None:
+    game = make_bot_game(2)
+    player = game.players[0]
+    game.status = "playing"
+    game.game_active = True
+    game.phase = PHASE_DECISION
+    game.round_stage = 1
+    game.community = []
+    game.revealed_community_count = 0
+    player.hand = [Card(id=1, rank=2, suit=1), Card(id=2, rank=7, suit=2)]
+    for hand_player in game.players:
+        hand_player.active_in_hand = True
+        hand_player.committed_bullets = 1
+    player.acted_this_hand = True
+    game.set_turn_players([player])
+    monkeypatch.setattr(random, "random", lambda: 0.0)
+
+    assert game.bot_think(player) != "switch_card"
+
+
+def test_bot_switches_after_flop_when_private_cards_do_not_help(monkeypatch) -> None:
+    game = make_bot_game(2)
+    player = game.players[0]
+    game.status = "playing"
+    game.game_active = True
+    game.phase = PHASE_DECISION
+    game.round_stage = 2
+    game.community = [
+        Card(id=1, rank=10, suit=1),
+        Card(id=2, rank=11, suit=2),
+        Card(id=3, rank=3, suit=3),
+    ]
+    game.revealed_community_count = 3
+    player.hand = [Card(id=4, rank=2, suit=4), Card(id=5, rank=7, suit=1)]
+    for hand_player in game.players:
+        hand_player.active_in_hand = True
+        hand_player.committed_bullets = 2
+    player.acted_this_hand = True
+    game.set_turn_players([player])
+    monkeypatch.setattr(random, "random", lambda: 0.0)
+
+    assert game.bot_think(player) == "switch_card"
+
+
+def test_bot_switches_dead_card_when_chasing_flush(monkeypatch) -> None:
+    game = make_bot_game(2)
+    player = game.players[0]
+    game.status = "playing"
+    game.game_active = True
+    game.phase = PHASE_DECISION
+    game.round_stage = 2
+    game.community = [
+        Card(id=1, rank=2, suit=3),
+        Card(id=2, rank=6, suit=3),
+        Card(id=3, rank=10, suit=3),
+    ]
+    game.revealed_community_count = 3
+    player.hand = [Card(id=4, rank=13, suit=3), Card(id=5, rank=3, suit=2)]
+    for hand_player in game.players:
+        hand_player.active_in_hand = True
+        hand_player.committed_bullets = 2
+    player.acted_this_hand = True
+    game.set_turn_players([player])
+    monkeypatch.setattr(random, "random", lambda: 0.0)
+
+    assert game.bot_think(player) == "switch_card"
+    assert bot_select_switch_card(game, player, ["0", "1"]) == "1"
+
+
+def test_bot_records_missed_draw_after_switch_choice() -> None:
+    game = make_bot_game(2)
+    player = game.players[0]
+    game.status = "playing"
+    game.game_active = True
+    game.phase = PHASE_SWITCH
+    game.round_stage = 2
+    game.community = [
+        Card(id=1, rank=2, suit=3),
+        Card(id=2, rank=6, suit=3),
+        Card(id=3, rank=10, suit=3),
+    ]
+    game.revealed_community_count = 3
+    player.hand = [Card(id=4, rank=13, suit=3), Card(id=5, rank=3, suit=2)]
+    player.active_in_hand = True
+    player.bot_switch_round_stage = 2
+    player.bot_switch_plan = "draw"
+    player.bot_switch_float_bias = 0.5
+    game.pending_switch_player_id = player.id
+    game.pending_switch_card_index = 1
+    game.pending_switch_candidates = [
+        Card(id=6, rank=4, suit=2),
+        Card(id=7, rank=5, suit=1),
+        Card(id=8, rank=7, suit=4),
+    ]
+    game.pending_switch_previous_phase = PHASE_DECISION
+
+    game._action_choose_switch(player, "choose_switch_0")
+
+    assert player.used_switch
+    assert player.bot_switch_missed
+    assert player.bot_switch_plan == "draw"
+
+
+def test_bot_mixes_after_missed_round_two_switch(monkeypatch) -> None:
+    game = make_bot_game(2)
+    player = game.players[0]
+    game.status = "playing"
+    game.game_active = True
+    game.phase = PHASE_DECISION
+    game.round_stage = 2
+    game.community = [
+        Card(id=1, rank=2, suit=3),
+        Card(id=2, rank=6, suit=3),
+        Card(id=3, rank=10, suit=3),
+    ]
+    game.revealed_community_count = 3
+    player.hand = [Card(id=4, rank=13, suit=3), Card(id=6, rank=4, suit=2)]
+    for hand_player in game.players:
+        hand_player.active_in_hand = True
+        hand_player.committed_bullets = 2
+    player.acted_this_hand = True
+    player.used_switch = True
+    player.bot_switch_round_stage = 2
+    player.bot_switch_plan = "draw"
+    player.bot_switch_missed = True
+    player.bot_switch_float_bias = 0.5
+    game.set_turn_players([player])
+
+    monkeypatch.setattr(random, "random", lambda: 0.0)
+    assert game.bot_think(player) == "fold"
+
+    monkeypatch.setattr(random, "random", lambda: 0.99)
+    assert game.bot_think(player) == "call"
+
+
+def test_bot_does_not_panic_fold_after_heavy_commitment(monkeypatch) -> None:
+    game = make_bot_game(2)
+    player = game.players[0]
+    game.status = "playing"
+    game.game_active = True
+    game.phase = PHASE_DECISION
+    game.round_stage = 3
+    game.community = [
+        Card(id=1, rank=10, suit=1),
+        Card(id=2, rank=11, suit=2),
+        Card(id=3, rank=3, suit=3),
+        Card(id=4, rank=5, suit=4),
+        Card(id=5, rank=8, suit=1),
+    ]
+    game.revealed_community_count = 5
+    player.hand = [Card(id=6, rank=2, suit=2), Card(id=7, rank=7, suit=3)]
+    for hand_player in game.players:
+        hand_player.active_in_hand = True
+        hand_player.committed_bullets = 5
+    player.acted_this_hand = True
+    game.set_turn_players([player])
+    monkeypatch.setattr(random, "random", lambda: 0.0)
+
+    assert game.bot_think(player) != "fold"
+
+
+def test_bot_folds_garbage_to_early_all_in(monkeypatch) -> None:
+    game = make_bot_game(2)
+    responder = game.players[0]
+    initiator = game.players[1]
+    game.status = "playing"
+    game.game_active = True
+    game.phase = PHASE_ALL_IN_RESPONSE
+    game.round_stage = 2
+    game.community = [
+        Card(id=1, rank=10, suit=1),
+        Card(id=2, rank=11, suit=2),
+        Card(id=3, rank=3, suit=3),
+    ]
+    game.revealed_community_count = 3
+    responder.hand = [Card(id=4, rank=2, suit=4), Card(id=5, rank=7, suit=1)]
+    initiator.hand = [Card(id=6, rank=1, suit=1), Card(id=7, rank=13, suit=2)]
+    for hand_player in game.players:
+        hand_player.active_in_hand = True
+    responder.committed_bullets = 2
+    initiator.committed_bullets = MAX_BULLETS
+    initiator.matched_all_in = True
+    game.set_turn_players([responder])
+    monkeypatch.setattr(random, "random", lambda: 0.0)
+
+    assert game.bot_think(responder) == "fold"
+
+
+def test_bot_calls_all_in_with_strong_made_hand(monkeypatch) -> None:
+    game = make_bot_game(2)
+    responder = game.players[0]
+    initiator = game.players[1]
+    game.status = "playing"
+    game.game_active = True
+    game.phase = PHASE_ALL_IN_RESPONSE
+    game.round_stage = 2
+    game.community = [
+        Card(id=1, rank=10, suit=1),
+        Card(id=2, rank=11, suit=2),
+        Card(id=3, rank=12, suit=3),
+    ]
+    game.revealed_community_count = 3
+    responder.hand = [Card(id=4, rank=13, suit=4), Card(id=5, rank=1, suit=1)]
+    initiator.hand = [Card(id=6, rank=2, suit=1), Card(id=7, rank=2, suit=2)]
+    for hand_player in game.players:
+        hand_player.active_in_hand = True
+    responder.committed_bullets = 2
+    initiator.committed_bullets = MAX_BULLETS
+    initiator.matched_all_in = True
+    game.set_turn_players([responder])
+    monkeypatch.setattr(random, "random", lambda: 0.99)
+
+    assert game.bot_think(responder) == "call"
+
+
+def test_bot_switch_selection_keeps_board_made_pair() -> None:
+    game = make_bot_game(2)
+    player = game.players[0]
+    game.community = [
+        Card(id=1, rank=2, suit=1),
+        Card(id=2, rank=13, suit=2),
+        Card(id=3, rank=12, suit=3),
+    ]
+    game.revealed_community_count = 3
+    player.hand = [Card(id=4, rank=2, suit=4), Card(id=5, rank=1, suit=1)]
+
+    assert bot_select_switch_card(game, player, ["0", "1"]) == "1"
 
 
 def test_score_actions_are_disabled_silently() -> None:
