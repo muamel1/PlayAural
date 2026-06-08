@@ -69,6 +69,16 @@ class TestRegistration:
         assert options.rules_profile == "classic_00390"
         assert options.auto_apply_single_move is True
         assert options.faster_setup_one_pawn_out is False
+        assert SorryGame.relevant_preferences == ["brief_announcements"]
+
+
+def test_prestart_validation_rejects_unsupported_rules_profile() -> None:
+    game = make_game(rules_profile="unknown_profile")
+
+    assert (
+        "sorry-error-unsupported-rules-profile",
+        {"profile": "unknown_profile"},
+    ) in game.prestart_validate()
 
 
 def test_on_start_initializes_state_and_music() -> None:
@@ -489,8 +499,56 @@ def test_move_announcement_includes_destination() -> None:
         pawn=1,
         steps=3,
         destination=expected_destination,
+        brief="no",
     )
     assert advance_until(game, lambda: expected_message in user.get_spoken_messages(), max_ticks=40)
+
+
+def test_brief_move_announcement_uses_each_listener_preference() -> None:
+    game = make_game(start=True)
+    player = game.players[0]
+    user = game.get_user(player)
+    other_user = game.get_user(game.players[1])
+    assert user is not None
+    assert other_user is not None
+    user.preferences.brief_announcements = True
+    user.clear_messages()
+    other_user.clear_messages()
+
+    player_state = game.game_state.player_states[player.id]
+    player_state.pawns[0].zone = "track"
+    player_state.pawns[0].track_position = 5
+
+    move = next(
+        move
+        for move in generate_legal_moves(game.game_state, player_state, "3", RULES_PROFILES["classic_00390"])
+        if move.pawn_index == 1
+    )
+    game._apply_selected_move(player, move, "3")
+
+    expected_destination = Localization.get("en", "sorry-location-track", position=9)
+    expected_message = Localization.get(
+        "en",
+        "sorry-you-play-forward",
+        pawn=1,
+        steps=3,
+        destination=expected_destination,
+        brief="yes",
+    )
+    expected_other_message = Localization.get(
+        "en",
+        "sorry-play-forward",
+        player=player.name,
+        pawn=1,
+        steps=3,
+        destination=expected_destination,
+        brief="no",
+    )
+
+    assert advance_until(game, lambda: expected_message in user.get_spoken_messages(), max_ticks=40)
+    assert expected_destination not in expected_message
+    assert not any(expected_destination in message for message in user.get_spoken_messages())
+    assert expected_other_message in other_user.get_spoken_messages()
 
 
 def test_result_contains_home_counts() -> None:

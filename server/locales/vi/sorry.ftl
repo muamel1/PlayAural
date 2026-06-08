@@ -10,6 +10,7 @@ sorry-toggle-auto-apply-single-move = Tự đi khi chỉ có một nước: { $e
 sorry-option-changed-auto-apply-single-move = Tự đi khi chỉ có một nước đã đổi thành { $enabled }.
 sorry-toggle-faster-setup-one-pawn-out = Khởi đầu nhanh (ra sẵn một quân): { $enabled }
 sorry-option-changed-faster-setup-one-pawn-out = Khởi đầu nhanh đã đổi thành { $enabled }.
+sorry-error-unsupported-rules-profile = Bộ luật Sorry "{ $profile }" không được hỗ trợ. Hãy chọn Classic 00390 hoặc A5065 Core trước khi bắt đầu.
 
 sorry-draw-card = Rút thẻ
 sorry-check-board = Xem bàn cờ
@@ -41,18 +42,66 @@ sorry-deck-exhausted = Chồng bài Sorry! đã hết, nên ván cờ kết thú
 sorry-you-extra-turn = Bạn rút thẻ 2 và được đi thêm lượt.
 sorry-player-extra-turn = { $player } rút thẻ 2 và được đi thêm lượt.
 
-sorry-play-start = { $player } xuất quân { $pawn } đến { $destination }.
-sorry-you-play-start = Bạn xuất quân { $pawn } đến { $destination }.
-sorry-play-forward = { $player } di chuyển quân { $pawn } tiến { $steps } bước đến { $destination }.
-sorry-you-play-forward = Bạn di chuyển quân { $pawn } tiến { $steps } bước đến { $destination }.
-sorry-play-backward = { $player } di chuyển quân { $pawn } lùi { $steps } bước về { $destination }.
-sorry-you-play-backward = Bạn di chuyển quân { $pawn } lùi { $steps } bước về { $destination }.
-sorry-play-swap = { $player } đổi chỗ quân { $pawn } với quân { $target_pawn } của { $target_player }, rồi dừng ở { $destination }.
-sorry-you-play-swap = Bạn đổi chỗ quân { $pawn } với quân { $target_pawn } của { $target_player }, rồi dừng ở { $destination }.
-sorry-play-sorry = { $player } dùng lá Sorry! để thay quân { $target_pawn } của { $target_player }, rồi dừng ở { $destination }.
-sorry-you-play-sorry = Bạn dùng lá Sorry! để thay quân { $target_pawn } của { $target_player }, rồi dừng ở { $destination }.
-sorry-play-split7 = { $player } chia 7: quân { $pawn_a } đi { $steps_a } bước đến { $destination_a }, còn quân { $pawn_b } đi { $steps_b } bước đến { $destination_b }.
-sorry-you-play-split7 = Bạn chia 7: quân { $pawn_a } đi { $steps_a } bước đến { $destination_a }, còn quân { $pawn_b } đi { $steps_b } bước đến { $destination_b }.
+sorry-play-start =
+    { $brief ->
+        [yes] { $player } xuất quân { $pawn } khỏi điểm xuất phát.
+       *[no] { $player } xuất quân { $pawn } đến { $destination }.
+    }
+sorry-you-play-start =
+    { $brief ->
+        [yes] Bạn xuất quân { $pawn } khỏi điểm xuất phát.
+       *[no] Bạn xuất quân { $pawn } đến { $destination }.
+    }
+sorry-play-forward =
+    { $brief ->
+        [yes] { $player } đi quân { $pawn } tiến { $steps } bước.
+       *[no] { $player } đi quân { $pawn } tiến { $steps } bước đến { $destination }.
+    }
+sorry-you-play-forward =
+    { $brief ->
+        [yes] Bạn đi quân { $pawn } tiến { $steps } bước.
+       *[no] Bạn đi quân { $pawn } tiến { $steps } bước đến { $destination }.
+    }
+sorry-play-backward =
+    { $brief ->
+        [yes] { $player } đi quân { $pawn } lùi { $steps } bước.
+       *[no] { $player } đi quân { $pawn } lùi { $steps } bước về { $destination }.
+    }
+sorry-you-play-backward =
+    { $brief ->
+        [yes] Bạn đi quân { $pawn } lùi { $steps } bước.
+       *[no] Bạn đi quân { $pawn } lùi { $steps } bước về { $destination }.
+    }
+sorry-play-swap =
+    { $brief ->
+        [yes] { $player } đổi chỗ quân { $pawn } với quân { $target_pawn } của { $target_player }.
+       *[no] { $player } đổi chỗ quân { $pawn } với quân { $target_pawn } của { $target_player }, rồi dừng ở { $destination }.
+    }
+sorry-you-play-swap =
+    { $brief ->
+        [yes] Bạn đổi chỗ quân { $pawn } với quân { $target_pawn } của { $target_player }.
+       *[no] Bạn đổi chỗ quân { $pawn } với quân { $target_pawn } của { $target_player }, rồi dừng ở { $destination }.
+    }
+sorry-play-sorry =
+    { $brief ->
+        [yes] { $player } dùng lá Sorry! để thay quân { $target_pawn } của { $target_player }.
+       *[no] { $player } dùng lá Sorry! để thay quân { $target_pawn } của { $target_player }, rồi dừng ở { $destination }.
+    }
+sorry-you-play-sorry =
+    { $brief ->
+        [yes] Bạn dùng lá Sorry! để thay quân { $target_pawn } của { $target_player }.
+       *[no] Bạn dùng lá Sorry! để thay quân { $target_pawn } của { $target_player }, rồi dừng ở { $destination }.
+    }
+sorry-play-split7 =
+    { $brief ->
+        [yes] { $player } chia 7: quân { $pawn_a } đi { $steps_a } bước, còn quân { $pawn_b } đi { $steps_b } bước.
+       *[no] { $player } chia 7: quân { $pawn_a } đi { $steps_a } bước đến { $destination_a }, còn quân { $pawn_b } đi { $steps_b } bước đến { $destination_b }.
+    }
+sorry-you-play-split7 =
+    { $brief ->
+        [yes] Bạn chia 7: quân { $pawn_a } đi { $steps_a } bước, còn quân { $pawn_b } đi { $steps_b } bước.
+       *[no] Bạn chia 7: quân { $pawn_a } đi { $steps_a } bước đến { $destination_a }, còn quân { $pawn_b } đi { $steps_b } bước đến { $destination_b }.
+    }
 
 sorry-pawn-home = { $player } đưa quân { $pawn } về nhà.
 sorry-you-pawn-home = Quân { $pawn } của bạn đã về nhà.

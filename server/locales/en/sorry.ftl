@@ -10,6 +10,7 @@ sorry-toggle-auto-apply-single-move = Auto apply single move: { $enabled }
 sorry-option-changed-auto-apply-single-move = Auto apply single move set to { $enabled }.
 sorry-toggle-faster-setup-one-pawn-out = Faster setup (one pawn out): { $enabled }
 sorry-option-changed-faster-setup-one-pawn-out = Faster setup set to { $enabled }.
+sorry-error-unsupported-rules-profile = The selected Sorry rules profile "{ $profile }" is not supported. Choose Classic 00390 or A5065 Core before starting.
 
 sorry-draw-card = Draw card
 sorry-check-board = Read board
@@ -41,18 +42,66 @@ sorry-deck-exhausted = The Sorry deck is empty, so the game ends here.
 sorry-you-extra-turn = You drew a 2 and take another turn.
 sorry-player-extra-turn = { $player } drew a 2 and takes another turn.
 
-sorry-play-start = { $player } brings pawn { $pawn } out to { $destination }.
-sorry-you-play-start = You bring pawn { $pawn } out to { $destination }.
-sorry-play-forward = { $player } moves pawn { $pawn } forward { $steps } spaces to { $destination }.
-sorry-you-play-forward = You move pawn { $pawn } forward { $steps } spaces to { $destination }.
-sorry-play-backward = { $player } moves pawn { $pawn } backward { $steps } spaces to { $destination }.
-sorry-you-play-backward = You move pawn { $pawn } backward { $steps } spaces to { $destination }.
-sorry-play-swap = { $player } swaps pawn { $pawn } with { $target_player } pawn { $target_pawn } and finishes on { $destination }.
-sorry-you-play-swap = You swap pawn { $pawn } with { $target_player } pawn { $target_pawn } and finish on { $destination }.
-sorry-play-sorry = { $player } plays Sorry!, replacing { $target_player } pawn { $target_pawn }, and finishes on { $destination }.
-sorry-you-play-sorry = You play Sorry!, replace { $target_player } pawn { $target_pawn }, and finish on { $destination }.
-sorry-play-split7 = { $player } splits 7: pawn { $pawn_a } moves { $steps_a } spaces to { $destination_a }, and pawn { $pawn_b } moves { $steps_b } spaces to { $destination_b }.
-sorry-you-play-split7 = You split 7: pawn { $pawn_a } moves { $steps_a } spaces to { $destination_a }, and pawn { $pawn_b } moves { $steps_b } spaces to { $destination_b }.
+sorry-play-start =
+    { $brief ->
+        [yes] { $player } brings pawn { $pawn } out of start.
+       *[no] { $player } brings pawn { $pawn } out to { $destination }.
+    }
+sorry-you-play-start =
+    { $brief ->
+        [yes] You bring pawn { $pawn } out of start.
+       *[no] You bring pawn { $pawn } out to { $destination }.
+    }
+sorry-play-forward =
+    { $brief ->
+        [yes] { $player } moves pawn { $pawn } forward { $steps } spaces.
+       *[no] { $player } moves pawn { $pawn } forward { $steps } spaces to { $destination }.
+    }
+sorry-you-play-forward =
+    { $brief ->
+        [yes] You move pawn { $pawn } forward { $steps } spaces.
+       *[no] You move pawn { $pawn } forward { $steps } spaces to { $destination }.
+    }
+sorry-play-backward =
+    { $brief ->
+        [yes] { $player } moves pawn { $pawn } backward { $steps } spaces.
+       *[no] { $player } moves pawn { $pawn } backward { $steps } spaces to { $destination }.
+    }
+sorry-you-play-backward =
+    { $brief ->
+        [yes] You move pawn { $pawn } backward { $steps } spaces.
+       *[no] You move pawn { $pawn } backward { $steps } spaces to { $destination }.
+    }
+sorry-play-swap =
+    { $brief ->
+        [yes] { $player } swaps pawn { $pawn } with { $target_player } pawn { $target_pawn }.
+       *[no] { $player } swaps pawn { $pawn } with { $target_player } pawn { $target_pawn } and finishes on { $destination }.
+    }
+sorry-you-play-swap =
+    { $brief ->
+        [yes] You swap pawn { $pawn } with { $target_player } pawn { $target_pawn }.
+       *[no] You swap pawn { $pawn } with { $target_player } pawn { $target_pawn } and finish on { $destination }.
+    }
+sorry-play-sorry =
+    { $brief ->
+        [yes] { $player } plays Sorry!, replacing { $target_player } pawn { $target_pawn }.
+       *[no] { $player } plays Sorry!, replacing { $target_player } pawn { $target_pawn }, and finishes on { $destination }.
+    }
+sorry-you-play-sorry =
+    { $brief ->
+        [yes] You play Sorry! and replace { $target_player } pawn { $target_pawn }.
+       *[no] You play Sorry!, replace { $target_player } pawn { $target_pawn }, and finish on { $destination }.
+    }
+sorry-play-split7 =
+    { $brief ->
+        [yes] { $player } splits 7: pawn { $pawn_a } moves { $steps_a } spaces, and pawn { $pawn_b } moves { $steps_b } spaces.
+       *[no] { $player } splits 7: pawn { $pawn_a } moves { $steps_a } spaces to { $destination_a }, and pawn { $pawn_b } moves { $steps_b } spaces to { $destination_b }.
+    }
+sorry-you-play-split7 =
+    { $brief ->
+        [yes] You split 7: pawn { $pawn_a } moves { $steps_a } spaces, and pawn { $pawn_b } moves { $steps_b } spaces.
+       *[no] You split 7: pawn { $pawn_a } moves { $steps_a } spaces to { $destination_a }, and pawn { $pawn_b } moves { $steps_b } spaces to { $destination_b }.
+    }
 
 sorry-pawn-home = { $player } gets pawn { $pawn } home.
 sorry-you-pawn-home = Your pawn { $pawn } reaches home.

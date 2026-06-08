@@ -70,10 +70,11 @@ class SorryOptions(GameOptions):
         )
     )
 
-
 @register_game
 @dataclass
 class SorryGame(Game):
+    relevant_preferences = ["brief_announcements"]
+
     players: list[SorryPlayer] = field(default_factory=list)
     options: SorryOptions = field(default_factory=SorryOptions)
     score_unit_key = "game-score-unit-pawns-home"
@@ -109,12 +110,30 @@ class SorryGame(Game):
     def create_player(self, id: str, name: str, is_bot: bool) -> SorryPlayer:
         return SorryPlayer(id=id, name=name, is_bot=is_bot)
 
+    def prestart_validate(self) -> list[str | tuple[str, dict]]:
+        errors: list[str | tuple[str, dict]] = list(super().prestart_validate())
+        if self.options.rules_profile not in RULES_PROFILES:
+            errors.append(
+                (
+                    "sorry-error-unsupported-rules-profile",
+                    {"profile": self.options.rules_profile},
+                )
+            )
+        return errors
+
     def _player_locale(self, player: Player) -> str:
         user = self.get_user(player)
         return user.locale if user else "en"
 
     def _get_rules_profile(self):
         return get_rules_profile_by_id(self.options.rules_profile) or RULES_PROFILES["classic_00390"]
+
+    def _brief_announcement_mode(self, user: "User | None") -> str:
+        if user and user.preferences.get_effective(
+            "brief_announcements", game_type=self.get_type()
+        ):
+            return "yes"
+        return "no"
 
     def _get_player_state(self, player: Player) -> SorryPlayerState | None:
         return self.game_state.player_states.get(player.id)
@@ -855,61 +874,61 @@ class SorryGame(Game):
             if not user:
                 continue
             locale = user.locale
-            kwargs = {}
+            kwargs = {"brief": self._brief_announcement_mode(user)}
             personal_message_id = ""
             others_message_id = ""
             if move.move_type == "start":
                 personal_message_id = "sorry-you-play-start"
                 others_message_id = "sorry-play-start"
-                kwargs = {
+                kwargs.update({
                     "pawn": move.pawn_index,
                     "destination": self._move_destination(locale, player, move.pawn_index),
-                }
+                })
             elif move.move_type in {"forward", "sorry_fallback_forward"}:
                 personal_message_id = "sorry-you-play-forward"
                 others_message_id = "sorry-play-forward"
-                kwargs = {
+                kwargs.update({
                     "pawn": move.pawn_index,
                     "steps": move.steps or 0,
                     "destination": self._move_destination(locale, player, move.pawn_index),
-                }
+                })
             elif move.move_type == "backward":
                 personal_message_id = "sorry-you-play-backward"
                 others_message_id = "sorry-play-backward"
-                kwargs = {
+                kwargs.update({
                     "pawn": move.pawn_index,
                     "steps": move.steps or 0,
                     "destination": self._move_destination(locale, player, move.pawn_index),
-                }
+                })
             elif move.move_type == "swap":
                 personal_message_id = "sorry-you-play-swap"
                 others_message_id = "sorry-play-swap"
-                kwargs = {
+                kwargs.update({
                     "pawn": move.pawn_index,
                     "target_player": self._target_player_name(locale, move.target_player_id),
                     "target_pawn": move.target_pawn_index,
                     "destination": self._move_destination(locale, player, move.pawn_index),
-                }
+                })
             elif move.move_type == "sorry":
                 personal_message_id = "sorry-you-play-sorry"
                 others_message_id = "sorry-play-sorry"
-                kwargs = {
+                kwargs.update({
                     "pawn": move.pawn_index,
                     "target_player": self._target_player_name(locale, move.target_player_id),
                     "target_pawn": move.target_pawn_index,
                     "destination": self._move_destination(locale, player, move.pawn_index),
-                }
+                })
             elif move.move_type == "split7":
                 personal_message_id = "sorry-you-play-split7"
                 others_message_id = "sorry-play-split7"
-                kwargs = {
+                kwargs.update({
                     "pawn_a": move.pawn_index,
                     "steps_a": move.steps or 0,
                     "destination_a": self._move_destination(locale, player, move.pawn_index),
                     "pawn_b": move.secondary_pawn_index,
                     "steps_b": move.secondary_steps or 0,
                     "destination_b": self._move_destination(locale, player, move.secondary_pawn_index),
-                }
+                })
             else:
                 continue
 
