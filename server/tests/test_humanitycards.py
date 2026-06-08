@@ -68,6 +68,36 @@ def test_humanitycards_submit_and_judging_sounds_use_cah_pack(monkeypatch) -> No
     assert "game_cah/judging.ogg" in sounds
 
 
+def test_humanitycards_judging_turn_sound_respects_preference(monkeypatch) -> None:
+    monkeypatch.setattr("server.games.humanitycards.game.random.shuffle", lambda items: None)
+    game = HumanityCardsGame()
+    game.setup_keybinds()
+    player, other_submitter, judge = _add_three_players(game)
+    judge_user = game.get_user(judge)
+    assert judge_user is not None
+
+    game.status = "playing"
+    game.phase = "submitting"
+    game.judge_indices = [2]
+    game.current_black_card = {"text": "_", "pick": 1, "pack": "test"}
+    player.submitted_cards = ["first answer"]
+    other_submitter.submitted_cards = ["second answer"]
+
+    judge_user.preferences.play_turn_sound = True
+    game._start_judging()
+
+    assert judge_user.get_sounds_played() == ["game_cah/judging.ogg", "turn.ogg"]
+
+    judge_user.clear_messages()
+    game.phase = "submitting"
+    game.submissions = []
+    judge_user.preferences.play_turn_sound = False
+
+    game._start_judging()
+
+    assert judge_user.get_sounds_played() == ["game_cah/judging.ogg"]
+
+
 def test_humanitycards_judge_pick_and_win_sounds_use_cah_pack(monkeypatch) -> None:
     monkeypatch.setattr("server.games.humanitycards.game.random.randint", lambda a, b: a)
     game = HumanityCardsGame(options=HumanityCardsOptions(winning_score=1))

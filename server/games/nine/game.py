@@ -347,12 +347,12 @@ class NineGame(Game):
         if not player or not isinstance(player, NinePlayer):
             return
 
-        self.announce_turn()
-
         # Check for automatic skip
         if not self._has_valid_move(player):
             self._auto_skip_current_player_turn(player)
             return
+
+        self.announce_turn()
 
         # Jolt bot to think about next play
         if player.is_bot:

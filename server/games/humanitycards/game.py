@@ -389,6 +389,13 @@ class HumanityCardsGame(Game):
         judge_ids = {j.id for j in self._get_judges()}
         return [p for p in self.get_active_players() if p.id not in judge_ids]
 
+    def _play_judge_turn_sounds(self) -> None:
+        """Play the standard personal turn cue for judges who allow it."""
+        for judge in self._get_judges():
+            user = self.get_user(judge)
+            if user and user.preferences.play_turn_sound:
+                user.play_sound("turn.ogg")
+
     def _select_judges(self) -> None:
         """Select judge(s) for the current round based on czar_selection option."""
         active = self.get_active_players()
@@ -1394,6 +1401,7 @@ class HumanityCardsGame(Game):
         random.shuffle(self.submission_order)  # nosec B311
 
         self.play_sound(f"{CAH_SOUND_DIR}/judging.ogg")
+        self._play_judge_turn_sounds()
         self.broadcast_l("hc-judging-start", buffer="game")
 
         # Jolt judge bots
