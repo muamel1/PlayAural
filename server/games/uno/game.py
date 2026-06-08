@@ -383,7 +383,7 @@ class UnoGame(Game):
         self.define_keybind("r", "Choose red", ["color_red"], state=KeybindState.ACTIVE)
         self.define_keybind("y", "Choose yellow", ["color_yellow"], state=KeybindState.ACTIVE)
         self.define_keybind("g", "Choose green", ["color_green"], state=KeybindState.ACTIVE)
-        self.define_keybind("l", "Choose blue", ["color_blue"], state=KeybindState.ACTIVE)
+        self.define_keybind("b", "Choose blue", ["color_blue"], state=KeybindState.ACTIVE)
 
     # ==========================================================================
     # Menu syncing

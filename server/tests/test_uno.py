@@ -1,6 +1,7 @@
 from ..games.uno.game import UnoGame, UnoOptions
 from ..games.uno import cards
 from ..games.uno.cards import UnoCard
+from ..ui.keybinds import KeybindState
 from ..users.bot import Bot
 from ..users.test_user import MockUser
 
@@ -51,12 +52,29 @@ def test_uno_blocks_dependent_option_conflicts():
     ]
 
 
-def test_uno_blue_color_keybind_does_not_shadow_add_bot():
+def test_uno_blue_color_keybind_shares_b_by_game_state():
     game = UnoGame()
     game.setup_keybinds()
 
-    assert all(keybind.actions == ["add_bot"] for keybind in game._keybinds["b"])
-    assert any(keybind.actions == ["color_blue"] for keybind in game._keybinds["l"])
+    b_bindings = {(tuple(keybind.actions), keybind.state) for keybind in game._keybinds["b"]}
+    assert (("add_bot",), KeybindState.IDLE) in b_bindings
+    assert (("color_blue",), KeybindState.ACTIVE) in b_bindings
+
+
+def test_uno_blue_hotkey_chooses_blue_during_active_color_selection():
+    game, first, second = _two_player_game()
+    first.hand = [_card(1, cards.WILD, cards.WILD_CARD), _card(2, cards.RED, cards.NUMBER, 5)]
+    second.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
+    game.discard_pile = [_card(100, cards.YELLOW, cards.NUMBER, 5)]
+    game.current_color = cards.YELLOW
+    game.set_turn_players([first, second])
+    game.rebuild_all_menus()
+
+    game.execute_action(first, "play_card_1")
+    game.handle_event(first, {"type": "keybind", "key": "b"})
+
+    assert game.awaiting_wild_color is False
+    assert game.current_color == cards.BLUE
 
 
 def test_uno_deck_composition():
