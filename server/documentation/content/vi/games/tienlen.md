@@ -1,151 +1,94 @@
 \*\*Tiến Lên\*\*
 
-Tiến Lên là trò chơi bài leo thang rất quen thuộc ở Việt Nam, nơi người chơi phải biết lúc nào nên xả rác, lúc nào nên giữ Heo, lúc nào nên ém tứ quý hoặc đôi thông để chặt. Mục tiêu không phải là ăn điểm từng vòng bài, mà là \*\*đánh hết bài trên tay trước những người còn lại\*\*.
-
-Trong PlayAural, bàn Tiến Lên có hai biến thể:
-
-\* \*\*Tiến Lên Miền Nam\*\* - thoáng hơn, linh hoạt hơn, nhiều tình huống chặt hơn.
-\* \*\*Tiến Lên Miền Bắc / Tú Lơ Khơ\*\* - chặt chẽ hơn, yêu cầu đúng màu, đúng chất, và có thêm hạn chế với Heo.
+Tiến Lên là trò chơi bài leo thang quen thuộc ở Việt Nam. Người chơi cố gắng đánh hết bài trên tay, giữ nhịp bàn, xả rác đúng lúc, và dùng Heo, tứ quý hoặc đôi thông để xoay thế trận. PlayAural hỗ trợ cả Tiến Lên Miền Nam và Tiến Lên Miền Bắc.
 
 \*\*Cách Chơi\*\*
 
 Tiến Lên dùng bộ bài tây 52 lá. Mỗi người chơi được chia 13 lá.
 
-\* \*\*Thứ tự quân bài:\*\* 3 là nhỏ nhất, rồi đến 4, 5, 6, 7, 8, 9, 10, J, Q, K, A, và 2 là lớn nhất.
-\* \*\*Thứ tự chất:\*\* Bích nhỏ nhất, rồi đến Tép, rồi Rô, và Cơ là lớn nhất.
-\* \*\*Lượt khai cuộc:\*\* Người cầm \*\*3 Bích\*\* được quyền đi đầu, và lượt mở đầu bắt buộc phải có lá đó.
-\* \*\*Các ván sau:\*\* Người thắng ván trước sẽ được quyền khai ván kế tiếp.
-\* \*\*Trong lượt của mình:\*\* Bạn hoặc đánh một bộ bài hợp lệ để chặn lượt hiện tại, hoặc bỏ lượt.
-\* \*\*Khóa bỏ lượt:\*\* Khi đã bỏ lượt, bạn bị loại khỏi vòng chặn đó cho tới khi vòng bài được dọn.
-\* \*\*Dọn vòng:\*\* Khi tất cả người chơi khác đều bỏ lượt, người vừa đánh hợp lệ cuối cùng sẽ ăn vòng và được quyền khai bộ mới.
-\* \*\*Kết thúc ván:\*\* Ván kết thúc ngay khi có người đánh hết bài.
+\* \*\*Thứ tự quân bài:\*\* 3 nhỏ nhất, rồi đến 4, 5, 6, 7, 8, 9, 10, J, Q, K, A, và 2 lớn nhất.
+\* \*\*Thứ tự chất:\*\* Bích nhỏ nhất, rồi Chuồn, Rô, và Cơ lớn nhất.
+\* \*\*Ván đầu tiên:\*\* Người cầm 3 Bích được quyền khai ván. Người đó có thể đánh bất kỳ bộ hợp lệ nào; nước mở đầu không bắt buộc phải có 3 Bích.
+\* \*\*Các ván sau:\*\* Người về nhất ván trước được khai ván kế tiếp.
+\* \*\*Trong lượt của mình:\*\* Bạn đánh một bộ hợp lệ để chặn bộ đang nằm trên bàn, hoặc bỏ lượt.
+\* \*\*Khóa bỏ lượt:\*\* Khi đã bỏ lượt, bạn bị khóa khỏi vòng chặn hiện tại cho đến khi bàn dọn vòng, trừ các cửa chặt hợp lệ trong luật Miền Nam.
+\* \*\*Dọn vòng:\*\* Khi mọi người có quyền chặn đều bỏ lượt, người giữ bộ chưa bị chặn sẽ dọn vòng và khai bộ mới.
+\* \*\*Xếp hạng trong ván:\*\* Ván không kết thúc ngay khi người đầu tiên hết bài. Người đó về nhất và rời khỏi ván; những người còn lại tiếp tục đánh để xác định hạng nhì, hạng ba và người về chót.
 
 Trong PlayAural, bạn chọn một hoặc nhiều lá trên tay, rồi dùng lệnh \*\*Đánh các lá đang chọn\*\* để ra bộ bài đó.
 
 \*\*Các Bộ Bài Hợp Lệ\*\*
 
-Cả hai biến thể đều xoay quanh các dạng cơ bản sau:
-
-\* \*\*Rác:\*\* một lá bài lẻ.
+\* \*\*Rác:\*\* một lá lẻ.
 \* \*\*Đôi:\*\* hai lá cùng số.
 \* \*\*Sám cô:\*\* ba lá cùng số.
 \* \*\*Tứ quý:\*\* bốn lá cùng số.
-\* \*\*Sảnh:\*\* dãy số liên tiếp.
+\* \*\*Sảnh:\*\* ba lá trở lên có số liên tiếp.
+\* \*\*Đôi thông:\*\* chỉ có trong Miền Nam; từ ba đôi liên tiếp trở lên.
 
-Tuy nhiên, cách hiểu \*\*đôi\*\* và \*\*sảnh\*\* sẽ thay đổi tùy theo Miền Nam hay Miền Bắc.
+\*\*Tiến Lên Miền Nam\*\*
 
-\*\*Luật Tiến Lên Miền Nam\*\*
+Miền Nam là biến thể thoáng và giàu chiến thuật hơn.
 
-Miền Nam là biến thể thoáng hơn và phổ biến hơn trong các luật hiện đại.
-
-\* Đôi chỉ cần \*\*cùng số\*\*.
-\* Sảnh \*\*không cần đồng chất\*\*.
+\* Đôi chỉ cần cùng số.
+\* Sảnh có thể lẫn nhiều chất.
 \* Heo không được nằm trong sảnh.
-\* Chuỗi nhiều đôi liên tiếp là \*\*đôi thông\*\*.
-\* Từ \*\*ba đôi thông trở lên\*\* là đã trở thành bộ bài đặc biệt có khả năng chặt.
+\* Ba đôi thông trở lên là bộ hợp lệ và có thể dùng để khai vòng.
+\* Tứ quý, ba đôi thông, bốn đôi thông và năm đôi thông là các bộ chặt quan trọng.
 
-Ví dụ bộ hợp lệ theo luật Miền Nam:
+\*\*Luật Chặt Miền Nam\*\*
 
-\* Đôi 8 gồm bất kỳ hai lá 8.
-\* Sảnh 5-6-7 dù ba lá khác chất.
-\* Ba đôi thông như 5-5, 6-6, 7-7.
+\* Tứ quý hoặc ba đôi thông chặt được một Heo lẻ.
+\* Bốn đôi thông chặt được đôi Heo.
+\* Năm đôi thông chặt được ba Heo.
+\* Tứ quý hoặc bốn đôi thông chặt được ba đôi thông.
+\* Bốn đôi thông chặt được tứ quý.
+\* Một bộ chặt hợp lệ có thể nhảy vào ngoài lượt và cũng có thể giúp người đã bỏ lượt quay lại vòng chặn.
 
-\*\*Luật Chặt Trong Tiến Lên Miền Nam\*\*
+\*\*Tới Trắng Miền Nam\*\*
 
-Đây là phần quan trọng nhất của luật Miền Nam.
+Ngay sau khi chia bài, người chơi Tiến Lên Miền Nam có thể tới trắng nếu có:
 
-\* \*\*Chặt một Heo lẻ:\*\*
-\* \*\*Tứ quý\*\* chặt được một Heo lẻ.
-\* \*\*Ba đôi thông\*\* chặt được một Heo lẻ.
+\* \*\*Sáu đôi:\*\* đúng sáu đơn vị đôi trong 13 lá.
+\* \*\*Năm đôi thông:\*\* năm hạng liên tiếp trở lên, mỗi hạng có ít nhất hai lá, không tính Heo.
 
-\* \*\*Chặt đôi Heo:\*\*
-\* \*\*Bốn đôi thông\*\* chặt được một đôi Heo.
+\*\*Tiến Lên Miền Bắc / Tú Lơ Khơ\*\*
 
-\* \*\*Chặt ba Heo:\*\*
-\* \*\*Năm đôi thông\*\* chặt được bộ ba Heo.
+Miền Bắc chặt chẽ hơn nhiều.
 
-\* \*\*Chặt ba đôi thông:\*\*
-\* Ba đôi thông lớn hơn có thể đè ba đôi thông nhỏ hơn.
-\* \*\*Tứ quý\*\* cũng có thể chặt ba đôi thông.
-\* \*\*Bốn đôi thông\*\* cũng có thể chặt ba đôi thông thấp hơn.
+\* Đôi phải cùng số và đồng màu: Bích đi với Chuồn, hoặc Rô đi với Cơ.
+\* Sảnh phải đồng chất.
+\* Heo không được nằm trong sảnh.
+\* Khi chặn, bộ mới phải giữ đúng cấu trúc đồng màu hoặc đồng chất của bộ đang nằm trên bàn.
+\* Một Heo lẻ có thể bị chặt bằng tứ quý.
+\* Các luật chặt bằng đôi thông kiểu Miền Nam không áp dụng trong Miền Bắc.
+\* Bạn không được về bằng Heo, và cũng không được đánh một nước khiến trên tay chỉ còn toàn Heo.
 
-\* \*\*Chặt tứ quý:\*\*
-\* \*\*Bốn đôi thông\*\* chặt được tứ quý.
+\*\*Cách Tính Xu\*\*
 
-Lưu ý cách áp dụng trong PlayAural:
+PlayAural dùng xu ảo để thay cho luật ăn tiền ngoài đời.
 
-\* Trong phiên bản này, \*\*ba đôi thông không được dùng để khai vòng\*\*.
-\* Nói cách khác, ba đôi thông được xem là bộ phản đòn mạnh, không phải bộ để mở đầu một vòng bài trống.
+Mỗi ván được cộng trừ như sau:
 
-\*\*Luật Tiến Lên Miền Bắc / Tú Lơ Khơ\*\*
+\* \*\*2 người:\*\* nhất +10 xu, chót -10 xu.
+\* \*\*3 người:\*\* nhất +20 xu, nhì 0 xu, chót -20 xu.
+\* \*\*4 người:\*\* nhất +30 xu, nhì +10 xu, ba -10 xu, chót -30 xu.
+\* \*\*Thưởng tới trắng:\*\* người tới trắng nhận thêm +20 xu.
 
-Miền Bắc chặt chẽ hơn rất nhiều.
+Trận đấu kết thúc khi có người đạt mốc xu đã chọn.
 
-\* Đôi phải \*\*cùng số và đồng màu\*\*.
-\* Đỏ đi với đỏ, đen đi với đen.
-\* Cụ thể, đôi đen hợp lệ là Bích + Tép cùng số. Đôi đỏ hợp lệ là Rô + Cơ cùng số.
-\* Sảnh phải \*\*đồng chất\*\*.
-\* Trong phiên bản này, các sảnh đồng chất ở cuối dãy như \*\*Q-K-A-2\*\* hoặc \*\*J-Q-K-A-2\*\* vẫn hợp lệ theo luật Miền Bắc, nhưng sảnh không được quấn vòng xuống thấp, nên \*\*A-2-3\*\* vẫn là sai.
-\* Khi chặn một bộ bài đang nằm trên bàn, bộ chặn phải giữ đúng cấu trúc chất của bộ đó. Đây là điểm khiến Miền Bắc khó và nghiêm hơn Miền Nam.
+\*\*Tùy Chọn Trò Chơi\*\*
 
-Ví dụ bộ hợp lệ theo luật Miền Bắc:
-
-\* Đôi 9 đen: 9 Bích và 9 Tép.
-\* Đôi Q đỏ: Q Rô và Q Cơ.
-\* Sảnh 7-8-9 Cơ.
-
-Ví dụ bộ không hợp lệ theo luật Miền Bắc:
-
-\* Đôi cùng số nhưng một lá đỏ, một lá đen.
-\* Sảnh 7-8-9 mà lẫn nhiều chất.
-
-\*\*Luật Chặt Trong Tiến Lên Miền Bắc\*\*
-
-Luật chặt của Miền Bắc hẹp hơn Miền Nam trong phiên bản này.
-
-\* \*\*Tứ quý\*\* chặt được \*\*một Heo lẻ\*\*.
-\* Các kiểu chặt bằng \*\*đôi thông\*\* như ở Miền Nam \*\*không áp dụng\*\* trong luật Miền Bắc ở đây.
-\* \*\*Đôi Heo\*\* là một đôi đặc biệt rất mạnh. Nó chặn được mọi đôi khác hạng, nhưng không dùng cơ chế chặt kiểu đôi thông của Miền Nam.
-\* Trong phiên bản này, đôi Heo có thể được ghép từ \*\*bất kỳ hai chất nào\*\*. Khi so hai đôi Heo với nhau, đôi có Heo chất cao hơn sẽ mạnh hơn.
-
-\*\*Hạn Chế Riêng Của Heo Trong Miền Bắc\*\*
-
-Miền Bắc có thêm một điều rất quan trọng:
-
-\* Bạn \*\*không được về bằng Heo\*\*.
-\* Bạn cũng \*\*không được đánh một nước mà sau đó trên tay chỉ còn lại toàn Heo\*\*.
-
-Điều này khiến Heo trong Miền Bắc vừa mạnh vừa khó dùng. Giữ Heo có thể giúp bạn chặn ở giữa ván, nhưng nếu giữ sai thời điểm thì cuối ván lại bị kẹt.
-
-\*\*Bỏ Lượt Và Dọn Vòng\*\*
-
-\* Khi đã bỏ lượt, bạn bị khóa khỏi vòng chặn hiện tại.
-\* Bạn không thể quay lại vòng đó chỉ vì sau này nhìn ra một nước chặn thông thường.
-\* Trong Miền Nam, các ngoại lệ chặt Heo vẫn là phần chiến thuật quan trọng khi trên bàn đang có Heo hoặc bộ đặc biệt phù hợp.
-\* Khi vòng bài được dọn, toàn bộ trạng thái bỏ lượt được xóa và mọi người lại có quyền tham gia vòng mới.
-
-\*\*Cách Tính Thắng\*\*
-
-Phiên bản PlayAural này không dùng luật ăn tiền ngoài đời. Thay vào đó, bàn được tính theo \*\*số ván thắng\*\*.
-
-\* Mỗi lần đánh hết bài trước, bạn nhận \*\*1 ván thắng\*\*.
-\* Trận đấu kết thúc khi có người đạt mốc đã chọn:
-\* \*\*1 ván:\*\* ván đầu tiên quyết định luôn kết quả.
-\* \*\*Thắng 2 trong 3 ván:\*\* ai đạt 2 ván thắng trước sẽ thắng trận.
-\* \*\*Thắng 3 trong 5 ván:\*\* ai đạt 3 ván thắng trước sẽ thắng trận.
-
-\*\*Tùy Chỉnh Tại Bàn Chơi\*\*
-
-\* \*\*Biến thể:\*\* `Tiến Lên Miền Nam` hoặc `Tiến Lên Miền Bắc`.
-\* \*\*Độ dài trận:\*\* `1 ván`, `Thắng 2 trong 3 ván`, hoặc `Thắng 3 trong 5 ván`.
-\* \*\*Thời gian mỗi lượt:\*\* `10`, `15`, `20`, `30`, `45`, `60`, `90` giây, hoặc `Không giới hạn`.
+\* \*\*Biến thể:\*\* Tiến Lên Miền Nam (mặc định) hoặc Tiến Lên Miền Bắc.
+\* \*\*Mốc xu:\*\* 50 xu (mặc định), 100 xu, hoặc 200 xu.
+\* \*\*Thời gian mỗi lượt:\*\* Không giới hạn (mặc định), 10, 15, 20, 30, 45, 60 hoặc 90 giây.
 
 \*\*Phím Tắt\*\*
 
 \* \*\*Dấu cách:\*\* Đánh các lá đang chọn.
-\* \*\*P:\*\* Bỏ lượt.
-\* \*\*C:\*\* Nghe lượt bài hiện tại.
+\* \*\*P:\*\* Bỏ lượt. Nếu tùy chọn cá nhân \*\*Xác nhận hành động rủi ro\*\* đang bật, hãy bấm Bỏ lượt hai lần để xác nhận.
+\* \*\*C:\*\* Nghe vòng bài hiện tại.
 \* \*\*H:\*\* Đọc bài trên tay.
 \* \*\*E:\*\* Đọc số lá còn lại của từng người.
 \* \*\*V:\*\* Nghe biến thể đang chơi.
-\* \*\*Shift+T:\*\* Kiểm tra thời gian lượt.
+\* \*\*Shift+T:\*\* Kiểm tra đồng hồ lượt.
