@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
 import random
@@ -10,7 +11,7 @@ from ...game_utils.actions import Action, ActionSet, Visibility
 from ...game_utils.bot_helper import BotHelper
 from ...game_utils.game_result import GameResult, PlayerResult
 from ...game_utils.options import MenuOption, option_field
-from ...game_utils.cards import Card, DeckFactory, card_name, read_cards
+from ...game_utils.cards import Card, DeckFactory, card_name
 from ...game_utils.turn_timer_mixin import TurnTimerMixin
 from ...game_utils.poker_timer import PokerTurnTimer
 from ...messages.localization import Localization
@@ -23,6 +24,7 @@ from .evaluator import (
     TienLenCombo,
     card_strength,
     evaluate_combo,
+    get_rank_strength,
     sort_cards,
 )
 from .rules import get_rules
@@ -46,11 +48,29 @@ VARIANT_LABELS = {
     NORTHERN_VARIANT: "tienlen-variant-north",
 }
 
-MATCH_CHOICES = ["1", "3", "5"]
+MATCH_CHOICES = ["50", "100", "200"]
 MATCH_LABELS = {
-    "1": "tienlen-match-1",
-    "3": "tienlen-match-3",
-    "5": "tienlen-match-5",
+    "50": "tienlen-target-50",
+    "100": "tienlen-target-100",
+    "200": "tienlen-target-200",
+}
+
+LEGACY_MATCH_TARGETS = {
+    "1": 50,
+    "3": 100,
+    "5": 200,
+}
+
+PLACEMENT_COIN_PAYMENTS = {
+    2: [10, -10],
+    3: [20, 0, -20],
+    4: [30, 10, -10, -30],
+}
+
+INSTANT_WIN_BONUS = 20
+INSTANT_WIN_REASON_PRIORITY = {
+    "tienlen-instant-five-consecutive-pairs": 2,
+    "tienlen-instant-six-pairs": 1,
 }
 
 
@@ -58,8 +78,10 @@ MATCH_LABELS = {
 class TienLenPlayer(Player):
     hand: list[Card] = field(default_factory=list)
     selected_cards: set[int] = field(default_factory=set)
+    coins: int = 0
     hand_wins: int = 0
     passed_this_trick: bool = False
+    pass_confirm_ticks: int = 0
 
 
 @dataclass
@@ -79,11 +101,11 @@ class TienLenOptions(GameOptions):
         MenuOption(
             choices=MATCH_CHOICES,
             choice_labels=MATCH_LABELS,
-            default="1",
+            default="50",
             value_key="choice",
-            label="tienlen-set-match-length",
-            prompt="tienlen-select-match-length",
-            change_msg="tienlen-option-changed-match-length",
+            label="tienlen-set-coin-target",
+            prompt="tienlen-select-coin-target",
+            change_msg="tienlen-option-changed-coin-target",
         )
     )
     turn_timer: str = option_field(
@@ -102,14 +124,17 @@ class TienLenOptions(GameOptions):
 @dataclass
 @register_game
 class TienLenGame(Game, TurnTimerMixin):
+    relevant_preferences = ["confirm_destructive_actions"]
+
     players: list[TienLenPlayer] = field(default_factory=list)
     options: TienLenOptions = field(default_factory=TienLenOptions)
-    score_unit_key = "game-score-unit-hand-wins"
+    score_unit_key = "game-score-unit-coins"
 
     current_combo: TienLenCombo | None = None
     trick_winner_id: str | None = None
     trick_cards: list[Card] = field(default_factory=list)
     hand_winner_id: str | None = None
+    finishing_order_ids: list[str] = field(default_factory=list)
     is_first_turn: bool = True
     hand_wait_ticks: int = 0
     intro_wait_ticks: int = 0
@@ -148,11 +173,13 @@ class TienLenGame(Game, TurnTimerMixin):
     def create_player(self, player_id: str, name: str, is_bot: bool = False) -> TienLenPlayer:
         return TienLenPlayer(id=player_id, name=name, is_bot=is_bot)
 
-    def _target_hand_wins(self) -> int:
-        return (int(self.options.match_length) // 2) + 1
+    def _target_coins(self) -> int:
+        if self.options.match_length in LEGACY_MATCH_TARGETS:
+            return LEGACY_MATCH_TARGETS[self.options.match_length]
+        return int(self.options.match_length)
 
     def get_score_target(self) -> int | None:
-        return self._target_hand_wins()
+        return self._target_coins()
 
     @property
     def timer_warning_sound(self) -> str:
@@ -165,6 +192,33 @@ class TienLenGame(Game, TurnTimerMixin):
     def _rules(self):
         return get_rules(self.options.variant)
 
+    def _tienlen_players(self) -> list[TienLenPlayer]:
+        return [
+            player
+            for player in self.get_active_players()
+            if isinstance(player, TienLenPlayer)
+        ]
+
+    def _players_still_in_hand(self) -> list[TienLenPlayer]:
+        return [
+            player
+            for player in self._tienlen_players()
+            if player.hand and player.id not in self.finishing_order_ids
+        ]
+
+    def _card_name(self, card: Card, locale: str) -> str:
+        if self.options.variant != SOUTHERN_VARIANT or not locale.startswith("vi"):
+            return card_name(card, locale)
+        rank = Localization.get(locale, f"tienlen-south-rank-{card.rank}")
+        suit = Localization.get(locale, f"tienlen-south-suit-{card.suit}")
+        return Localization.get(locale, "tienlen-south-card-name", rank=rank, suit=suit)
+
+    def _read_cards(self, cards: list[Card], locale: str) -> str:
+        if not cards:
+            return Localization.get(locale, "no-cards")
+        names = [self._card_name(card, locale) for card in cards]
+        return Localization.format_list_and(locale, names)
+
     def on_start(self) -> None:
         self.status = "playing"
         self._sync_table_status()
@@ -174,12 +228,15 @@ class TienLenGame(Game, TurnTimerMixin):
         self.trick_winner_id = None
         self.trick_cards = []
         self.hand_winner_id = None
+        self.finishing_order_ids = []
 
         for player in self.get_active_players():
             if isinstance(player, TienLenPlayer):
+                player.coins = 0
                 player.hand_wins = 0
                 player.selected_cards.clear()
                 player.passed_this_trick = False
+                player.pass_confirm_ticks = 0
 
         self._team_manager.team_mode = "individual"
         self._team_manager.setup_teams([player.name for player in self.get_active_players()])
@@ -190,37 +247,105 @@ class TienLenGame(Game, TurnTimerMixin):
         self.intro_wait_ticks = 7 * 20
         self.broadcast_l("tienlen-game-start", buffer="game")
 
+    def _six_pairs(self, hand: list[Card]) -> bool:
+        rank_counts = Counter(card.rank for card in hand)
+        return sum(count // 2 for count in rank_counts.values()) == 6
+
+    def _five_consecutive_pairs(self, hand: list[Card]) -> bool:
+        pair_strengths = sorted(
+            get_rank_strength(rank)
+            for rank, count in Counter(card.rank for card in hand).items()
+            if count >= 2 and rank != 2
+        )
+        run_length = 1
+        for previous, current in zip(pair_strengths, pair_strengths[1:]):
+            if current == previous + 1:
+                run_length += 1
+                if run_length >= 5:
+                    return True
+            else:
+                run_length = 1
+        return False
+
+    def _instant_win_reason(self, player: TienLenPlayer) -> str | None:
+        if self.options.variant != SOUTHERN_VARIANT:
+            return None
+        if self._five_consecutive_pairs(player.hand):
+            return "tienlen-instant-five-consecutive-pairs"
+        if self._six_pairs(player.hand):
+            return "tienlen-instant-six-pairs"
+        return None
+
+    def _find_instant_winner(
+        self, players: list[TienLenPlayer]
+    ) -> tuple[TienLenPlayer, str] | None:
+        candidates: list[tuple[int, int, TienLenPlayer, str]] = []
+        for player in players:
+            reason_key = self._instant_win_reason(player)
+            if not reason_key:
+                continue
+            strongest_card = max((card_strength(card) for card in player.hand), default=0)
+            candidates.append(
+                (
+                    INSTANT_WIN_REASON_PRIORITY.get(reason_key, 0),
+                    strongest_card,
+                    player,
+                    reason_key,
+                )
+            )
+        if not candidates:
+            return None
+        candidates.sort(key=lambda item: (item[0], item[1]), reverse=True)
+        _, _, winner, reason_key = candidates[0]
+        return winner, reason_key
+
+    def _handle_instant_win(
+        self,
+        winner: TienLenPlayer,
+        reason_key: str,
+        players: list[TienLenPlayer],
+    ) -> None:
+        others = [player for player in players if player.id != winner.id]
+        others.sort(
+            key=lambda player: (
+                len(player.hand),
+                max((card_strength(card) for card in player.hand), default=0),
+            )
+        )
+        self.finishing_order_ids = [winner.id] + [player.id for player in others]
+        self.play_sound("game_crazyeights/bigwin.ogg")
+        self._finish_hand(instant_winner=winner, instant_reason_key=reason_key)
+
     def _start_new_hand(self) -> None:
         self.round += 1
         self.is_first_turn = True
         self.current_combo = None
         self.trick_winner_id = None
         self.trick_cards = []
+        self.finishing_order_ids = []
 
-        active = self.get_active_players()
+        active = self._tienlen_players()
         for player in active:
-            if isinstance(player, TienLenPlayer):
-                player.hand = []
-                player.selected_cards.clear()
-                player.passed_this_trick = False
+            player.hand = []
+            player.selected_cards.clear()
+            player.passed_this_trick = False
+            player.pass_confirm_ticks = 0
 
         deck, _ = DeckFactory.standard_deck()
         deck.shuffle()
         for _ in range(13):
             for player in active:
-                if isinstance(player, TienLenPlayer):
-                    card = deck.draw_one()
-                    if card:
-                        player.hand.append(card)
+                card = deck.draw_one()
+                if card:
+                    player.hand.append(card)
 
         rules = self._rules()
         start_player = None
         for player in active:
-            if isinstance(player, TienLenPlayer):
-                player.hand = sort_cards(player.hand)
-                if any(card.rank == rules.opening_rank and card.suit == rules.opening_suit for card in player.hand):
-                    start_player = player
-                    break
+            player.hand = sort_cards(player.hand)
+            if any(card.rank == rules.opening_rank and card.suit == rules.opening_suit for card in player.hand):
+                start_player = player
+                break
 
         if self.hand_winner_id:
             previous_winner = self.get_player_by_id(self.hand_winner_id)
@@ -249,8 +374,14 @@ class TienLenGame(Game, TurnTimerMixin):
 
         for player in active:
             user = self.get_user(player)
-            if user and isinstance(player, TienLenPlayer):
-                user.speak_l("tienlen-dealt", buffer="game", cards=read_cards(player.hand, user.locale))
+            if user:
+                user.speak_l("tienlen-dealt", buffer="game", cards=self._read_cards(player.hand, user.locale))
+
+        instant = self._find_instant_winner(active)
+        if instant:
+            instant_winner, reason_key = instant
+            self._handle_instant_win(instant_winner, reason_key, active)
+            return
 
         self._start_turn()
 
@@ -259,21 +390,54 @@ class TienLenGame(Game, TurnTimerMixin):
         if not player or not isinstance(player, TienLenPlayer):
             return
 
-        active_ids = [active_player.id for active_player in self.get_active_players()]
-        if self.trick_winner_id not in active_ids and self.current_combo is not None:
-            self.trick_winner_id = player.id
+        for active_player in self._tienlen_players():
+            active_player.pass_confirm_ticks = 0
+
+        if self._finish_hand_if_ready():
+            return
+
+        if not player.hand:
+            self.advance_turn(announce=False)
+            self._start_turn()
+            return
 
         if self.trick_winner_id == player.id:
             self.current_combo = None
             self.trick_cards = []
             self.trick_winner_id = None
-            for active_player in self.get_active_players():
-                if isinstance(active_player, TienLenPlayer):
-                    active_player.passed_this_trick = False
+            for active_player in self._tienlen_players():
+                active_player.passed_this_trick = False
         elif player.passed_this_trick and not (
             self.options.variant == SOUTHERN_VARIANT
             and self.current_combo is not None
-            and self._rules().is_two_combo(self.current_combo)
+            and self._rules().has_chop_window(self.current_combo)
+        ):
+            if self._all_available_players_passed():
+                self.current_combo = None
+                self.trick_cards = []
+                self.trick_winner_id = None
+                for active_player in self._tienlen_players():
+                    active_player.passed_this_trick = False
+            else:
+                self.advance_turn(announce=False)
+                self._start_turn()
+                return
+
+        if self._all_available_players_passed():
+            winner = self.get_player_by_id(self.trick_winner_id)
+            if isinstance(winner, TienLenPlayer) and winner.id in self.turn_player_ids:
+                self.current_player = winner
+                self._start_turn()
+                return
+            self.current_combo = None
+            self.trick_cards = []
+            self.trick_winner_id = None
+            for active_player in self._tienlen_players():
+                active_player.passed_this_trick = False
+
+        if player.passed_this_trick and self.current_combo is not None and not (
+            self.options.variant == SOUTHERN_VARIANT
+            and self._rules().has_chop_window(self.current_combo)
         ):
             self.advance_turn(announce=False)
             self._start_turn()
@@ -284,6 +448,18 @@ class TienLenGame(Game, TurnTimerMixin):
             BotHelper.jolt_bot(player, ticks=random.randint(18, 30))
         self.start_turn_timer()
         self.rebuild_all_menus()
+
+    def _all_available_players_passed(self) -> bool:
+        if self.current_combo is None:
+            return False
+        remaining = self._players_still_in_hand()
+        if not remaining:
+            return False
+        if self.trick_winner_id in {player.id for player in remaining}:
+            eligible = [player for player in remaining if player.id != self.trick_winner_id]
+        else:
+            eligible = remaining
+        return bool(eligible) and all(player.passed_this_trick for player in eligible)
 
     def on_tick(self) -> None:
         super().on_tick()
@@ -302,6 +478,10 @@ class TienLenGame(Game, TurnTimerMixin):
             if self.hand_wait_ticks == 0:
                 self._start_new_hand()
             return
+
+        for player in self._tienlen_players():
+            if player.pass_confirm_ticks > 0:
+                player.pass_confirm_ticks -= 1
 
         self.on_tick_turn_timer()
         BotHelper.on_tick(self)
@@ -328,6 +508,7 @@ class TienLenGame(Game, TurnTimerMixin):
             return
 
         if self.current_combo:
+            player.pass_confirm_ticks = 1
             self._action_pass(player, "pass")
 
     def create_turn_action_set(self, player: TienLenPlayer) -> ActionSet:
@@ -350,7 +531,7 @@ class TienLenGame(Game, TurnTimerMixin):
                 label="",
                 handler="_action_play_selected",
                 is_enabled="_is_play_selected_enabled",
-                is_hidden="_is_turn_action_hidden",
+                is_hidden="_is_play_selected_hidden",
                 get_label="_get_play_selected_label",
                 show_in_actions_menu=False,
             )
@@ -429,8 +610,8 @@ class TienLenGame(Game, TurnTimerMixin):
                 "read_hand",
                 "read_card_counts",
                 "check_variant",
-                "check_scores",
                 "check_turn_timer",
+                "check_scores",
                 "whose_turn",
                 "whos_at_table",
             ]
@@ -491,18 +672,19 @@ class TienLenGame(Game, TurnTimerMixin):
                 )
             )
 
-        if self.current_player == player:
+        if player.hand:
             turn_set.add(
                 Action(
                     id="play_selected",
                     label="",
                     handler="_action_play_selected",
                     is_enabled="_is_play_selected_enabled",
-                    is_hidden="_is_turn_action_hidden",
+                    is_hidden="_is_play_selected_hidden",
                     get_label="_get_play_selected_label",
                     show_in_actions_menu=False,
                 )
             )
+        if self.current_player == player:
             turn_set.add(
                 Action(
                     id="pass",
@@ -523,6 +705,36 @@ class TienLenGame(Game, TurnTimerMixin):
         if self.current_player != player:
             return None
         return player
+
+    def _require_tienlen_player(self, player: Player) -> TienLenPlayer | None:
+        if not isinstance(player, TienLenPlayer):
+            return None
+        if player.is_spectator:
+            return None
+        if not player.hand:
+            return None
+        return player
+
+    def _selected_cards(self, player: TienLenPlayer) -> list[Card]:
+        return [card for card in player.hand if card.id in player.selected_cards]
+
+    def _can_play_out_of_turn_chop(
+        self,
+        player: TienLenPlayer,
+        selected: list[Card] | None = None,
+    ) -> bool:
+        if self.current_player == player:
+            return False
+        if self.options.variant != SOUTHERN_VARIANT or self.current_combo is None:
+            return False
+        if player.id not in self.turn_player_ids or not player.hand:
+            return False
+        rules = self._rules()
+        selected_cards = selected if selected is not None else self._selected_cards(player)
+        combo = rules.evaluate(selected_cards)
+        if not combo:
+            return False
+        return rules.can_play_out_of_turn(self.current_combo, combo)
 
     def _send_error(self, player: TienLenPlayer, msg_key: str, **kwargs) -> None:
         user = self.get_user(player)
@@ -546,7 +758,7 @@ class TienLenGame(Game, TurnTimerMixin):
         self.update_player_menu(active_player)
 
     def _action_play_selected(self, player: Player, action_id: str) -> None:
-        active_player = self._require_active_player(player)
+        active_player = self._require_tienlen_player(player)
         if not active_player:
             return
 
@@ -554,7 +766,14 @@ class TienLenGame(Game, TurnTimerMixin):
             self._send_error(active_player, "tienlen-error-no-cards")
             return
 
-        selected = [card for card in active_player.hand if card.id in active_player.selected_cards]
+        selected = self._selected_cards(active_player)
+        out_of_turn_chop = self.current_player != active_player
+        if out_of_turn_chop:
+            if not self._can_play_out_of_turn_chop(active_player, selected):
+                self._send_error(active_player, "tienlen-error-not-your-turn-chop")
+                return
+            self.turn_index = self.turn_player_ids.index(active_player.id)
+
         rules = self._rules()
         is_valid, error_key, error_kwargs = rules.validate_play(
             active_player.hand,
@@ -576,6 +795,7 @@ class TienLenGame(Game, TurnTimerMixin):
             active_player.hand.remove(card)
         active_player.hand = sort_cards(active_player.hand)
         active_player.selected_cards.clear()
+        active_player.pass_confirm_ticks = 0
         self.current_combo = combo
         self.trick_cards = combo.cards[:]
         self.trick_winner_id = active_player.id
@@ -594,7 +814,7 @@ class TienLenGame(Game, TurnTimerMixin):
             self.play_sound("game_crazyeights/onecard.ogg")
 
         if not active_player.hand:
-            self._end_hand(active_player)
+            self._player_finishes(active_player)
             return
 
         self.advance_turn(announce=False)
@@ -607,7 +827,18 @@ class TienLenGame(Game, TurnTimerMixin):
         if not self.current_combo:
             self._send_error(active_player, "tienlen-error-must-play")
             return
+        if not active_player.is_bot and active_player.pass_confirm_ticks == 0:
+            user = self.get_user(active_player)
+            if user:
+                wants_confirm = user.preferences.get_effective(
+                    "confirm_destructive_actions", game_type=self.get_type()
+                )
+                if wants_confirm:
+                    active_player.pass_confirm_ticks = 200
+                    user.speak_l("tienlen-confirm-pass", buffer="game")
+                    return
         active_player.passed_this_trick = True
+        active_player.pass_confirm_ticks = 0
         active_player.selected_cards.clear()
         self.play_sound("game_crazyeights/pass.ogg")
         self._broadcast_pass(active_player)
@@ -629,7 +860,7 @@ class TienLenGame(Game, TurnTimerMixin):
             buffer="game",
             player=winner_name,
             combo=combo_name,
-            cards=read_cards(self.trick_cards, user.locale),
+            cards=self._read_cards(self.trick_cards, user.locale),
         )
 
     def _action_read_hand(self, player: Player, action_id: str) -> None:
@@ -638,7 +869,7 @@ class TienLenGame(Game, TurnTimerMixin):
         user = self.get_user(player)
         if user:
             player.hand = sort_cards(player.hand)
-            user.speak_l("tienlen-your-hand", buffer="game", cards=read_cards(player.hand, user.locale))
+            user.speak_l("tienlen-your-hand", buffer="game", cards=self._read_cards(player.hand, user.locale))
 
     def _action_read_card_counts(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)
@@ -689,7 +920,7 @@ class TienLenGame(Game, TurnTimerMixin):
         if not card:
             return action_id
         locale = self._player_locale(player)
-        name = card_name(card, locale)
+        name = self._card_name(card, locale)
         if card_id in player.selected_cards:
             return Localization.get(locale, "tienlen-card-selected", card=name)
         return Localization.get(locale, "tienlen-card-unselected", card=name)
@@ -715,6 +946,8 @@ class TienLenGame(Game, TurnTimerMixin):
             return "action-not-playing"
         if player.is_spectator:
             return "action-spectator"
+        if isinstance(player, TienLenPlayer) and not player.hand:
+            return "tienlen-error-already-finished"
         if self.current_player != player:
             return "action-not-your-turn"
         if self.hand_wait_ticks > 0:
@@ -732,11 +965,38 @@ class TienLenGame(Game, TurnTimerMixin):
             return Visibility.HIDDEN
         return Visibility.VISIBLE
 
+    def _is_play_selected_enabled(self, player: Player) -> str | None:
+        base = self._is_card_toggle_enabled(player)
+        if base:
+            return base
+        if not isinstance(player, TienLenPlayer):
+            return "action-not-available"
+        if self.current_player == player:
+            return None
+        if self._can_play_out_of_turn_chop(player):
+            return None
+        return "tienlen-error-not-your-turn-chop"
+
+    def _is_play_selected_hidden(self, player: Player) -> Visibility:
+        if self.status != "playing" or player.is_spectator:
+            return Visibility.HIDDEN
+        if self.hand_wait_ticks > 0 or self.intro_wait_ticks > 0:
+            return Visibility.HIDDEN
+        if not isinstance(player, TienLenPlayer) or not player.hand:
+            return Visibility.HIDDEN
+        if self.current_player == player:
+            return Visibility.VISIBLE
+        if self._can_play_out_of_turn_chop(player):
+            return Visibility.VISIBLE
+        return Visibility.HIDDEN
+
     def _is_card_toggle_enabled(self, player: Player, *, action_id: str | None = None) -> str | None:
         if self.status != "playing":
             return "action-not-playing"
         if player.is_spectator:
             return "action-spectator"
+        if isinstance(player, TienLenPlayer) and not player.hand:
+            return "tienlen-error-already-finished"
         if self.hand_wait_ticks > 0:
             return "action-wait-for-hand"
         if self.intro_wait_ticks > 0:
@@ -748,10 +1008,9 @@ class TienLenGame(Game, TurnTimerMixin):
             return Visibility.HIDDEN
         if self.hand_wait_ticks > 0 or self.intro_wait_ticks > 0:
             return Visibility.HIDDEN
+        if isinstance(player, TienLenPlayer) and not player.hand:
+            return Visibility.HIDDEN
         return Visibility.VISIBLE
-
-    def _is_play_selected_enabled(self, player: Player) -> str | None:
-        return self._is_turn_action_enabled(player)
 
     def _is_pass_enabled(self, player: Player) -> str | None:
         if not self.current_combo:
@@ -808,23 +1067,55 @@ class TienLenGame(Game, TurnTimerMixin):
             return Visibility.HIDDEN
         return super()._is_check_scores_hidden(player)
 
+    def _speak_actor_message(
+        self,
+        actor: TienLenPlayer,
+        listener: Player,
+        self_key: str,
+        other_key: str,
+        **kwargs,
+    ) -> None:
+        user = self.get_user(listener)
+        if not user:
+            return
+        if listener.id == actor.id:
+            user.speak_l(self_key, buffer="game", **kwargs)
+        else:
+            user.speak_l(other_key, buffer="game", player=actor.name, **kwargs)
+
     def _broadcast_play(self, player: TienLenPlayer, combo: TienLenCombo) -> None:
         for table_player in self.players:
             user = self.get_user(table_player)
             if not user:
                 continue
             combo_name = Localization.get(user.locale, f"tienlen-combo-{combo.type_name}")
-            cards = read_cards(combo.cards, user.locale)
+            cards = self._read_cards(combo.cards, user.locale)
             if combo.type_name == "single":
-                user.speak_l("tienlen-player-plays-single", buffer="game", player=player.name, card=cards)
+                self._speak_actor_message(
+                    player,
+                    table_player,
+                    "tienlen-you-play-single",
+                    "tienlen-player-plays-single",
+                    card=cards,
+                )
             else:
-                user.speak_l("tienlen-player-plays-combo", buffer="game", player=player.name, combo=combo_name, cards=cards)
+                self._speak_actor_message(
+                    player,
+                    table_player,
+                    "tienlen-you-play-combo",
+                    "tienlen-player-plays-combo",
+                    combo=combo_name,
+                    cards=cards,
+                )
 
     def _broadcast_pass(self, player: TienLenPlayer) -> None:
         for table_player in self.players:
-            user = self.get_user(table_player)
-            if user:
-                user.speak_l("tienlen-player-passes", buffer="game", player=player.name)
+            self._speak_actor_message(
+                player,
+                table_player,
+                "tienlen-you-pass",
+                "tienlen-player-passes",
+            )
 
     def _sync_team_scores(self) -> None:
         for team in self._team_manager.teams:
@@ -833,43 +1124,177 @@ class TienLenGame(Game, TurnTimerMixin):
             if isinstance(player, TienLenPlayer):
                 team = self._team_manager.get_team(player.name)
                 if team:
-                    team.total_score = player.hand_wins
+                    team.total_score = player.coins
 
-    def _end_hand(self, winner: TienLenPlayer) -> None:
-        winner.hand_wins += 1
+    def _broadcast_player_finishes(self, player: TienLenPlayer, place: int) -> None:
+        for table_player in self.players:
+            self._speak_actor_message(
+                player,
+                table_player,
+                "tienlen-you-finish-place",
+                "tienlen-player-finishes-place",
+                place=place,
+            )
+
+    def _player_finishes(self, player: TienLenPlayer) -> None:
+        if player.id not in self.finishing_order_ids:
+            self.finishing_order_ids.append(player.id)
+            self._broadcast_player_finishes(player, len(self.finishing_order_ids))
+        self.play_sound("game_crazyeights/youwin.ogg")
+
+        if self._finish_hand_if_ready():
+            return
+
+        old_order = list(self.turn_player_ids)
+        try:
+            old_index = old_order.index(player.id)
+        except ValueError:
+            old_index = self.turn_index
+
+        remaining = self._players_still_in_hand()
+        self.set_turn_players(remaining)
+        remaining_ids = set(self.turn_player_ids)
+        next_id = None
+        for offset in range(1, len(old_order) + 1):
+            candidate = old_order[(old_index + offset) % len(old_order)]
+            if candidate in remaining_ids:
+                next_id = candidate
+                break
+        if next_id is None and self.turn_player_ids:
+            next_id = self.turn_player_ids[0]
+        if next_id:
+            self.turn_index = self.turn_player_ids.index(next_id)
+        self._start_turn()
+
+    def _finish_hand_if_ready(self) -> bool:
+        remaining = self._players_still_in_hand()
+        if len(remaining) > 1:
+            return False
+        if remaining and remaining[0].id not in self.finishing_order_ids:
+            self.finishing_order_ids.append(remaining[0].id)
+        self._finish_hand()
+        return True
+
+    def _finalize_finishing_order(self) -> list[TienLenPlayer]:
+        active_by_id = {player.id: player for player in self._tienlen_players()}
+        ordered: list[TienLenPlayer] = []
+        for player_id in self.finishing_order_ids:
+            player = active_by_id.get(player_id)
+            if player and player not in ordered:
+                ordered.append(player)
+        remaining = [player for player in active_by_id.values() if player not in ordered]
+        remaining.sort(
+            key=lambda player: (
+                len(player.hand),
+                max((card_strength(card) for card in player.hand), default=0),
+            )
+        )
+        ordered.extend(remaining)
+        return ordered
+
+    def _finish_hand(
+        self,
+        *,
+        instant_winner: TienLenPlayer | None = None,
+        instant_reason_key: str | None = None,
+    ) -> None:
+        ordered = self._finalize_finishing_order()
+        if not ordered:
+            return
+
+        payments = PLACEMENT_COIN_PAYMENTS.get(len(ordered), [])
+        deltas: dict[str, int] = {}
+        for index, player in enumerate(ordered):
+            delta = payments[index] if index < len(payments) else 0
+            if instant_winner and player.id == instant_winner.id:
+                delta += INSTANT_WIN_BONUS
+            player.coins += delta
+            deltas[player.id] = delta
+
+        winner = ordered[0]
         self.hand_winner_id = winner.id
         self._sync_team_scores()
 
-        if winner.hand_wins >= self._target_hand_wins():
+        if instant_winner and instant_reason_key:
+            self._broadcast_instant_win(instant_winner, instant_reason_key)
+
+        for table_player in self.players:
+            self._speak_actor_message(
+                winner,
+                table_player,
+                "tienlen-you-win-hand",
+                "tienlen-player-wins-hand",
+            )
+        for index, player in enumerate(ordered, 1):
+            self.broadcast_l(
+                "tienlen-hand-settlement-line",
+                buffer="game",
+                place=index,
+                player=player.name,
+                change=self._format_coin_delta(deltas[player.id]),
+                total=player.coins,
+            )
+
+        match_winner = max(ordered, key=lambda player: player.coins)
+        if match_winner.coins >= self._target_coins():
             self.play_sound("game_crazyeights/bigwin.ogg")
-            self.broadcast_l("tienlen-game-over", buffer="game", player=winner.name)
+            self._broadcast_game_over(match_winner)
             self.finish_game()
             return
 
-        self.play_sound("game_crazyeights/youwin.ogg")
-        self.broadcast_l(
-            "tienlen-hand-winner",
-            buffer="game",
-            player=winner.name,
-            wins=winner.hand_wins,
-            target=self._target_hand_wins(),
-        )
+        self.play_sound("game_crazyeights/newhand.ogg")
         self.hand_wait_ticks = 5 * 20
         self.rebuild_all_menus()
+
+    def _broadcast_instant_win(self, winner: TienLenPlayer, reason_key: str) -> None:
+        for table_player in self.players:
+            user = self.get_user(table_player)
+            if not user:
+                continue
+            reason = Localization.get(user.locale, reason_key)
+            if table_player.id == winner.id:
+                user.speak_l("tienlen-you-instant-win", buffer="game", reason=reason)
+            else:
+                user.speak_l(
+                    "tienlen-player-instant-wins",
+                    buffer="game",
+                    player=winner.name,
+                    reason=reason,
+                )
+
+    def _broadcast_game_over(self, winner: TienLenPlayer) -> None:
+        for table_player in self.players:
+            user = self.get_user(table_player)
+            if not user:
+                continue
+            if table_player.id == winner.id:
+                user.speak_l("tienlen-you-win-match", buffer="game", coins=winner.coins)
+            else:
+                user.speak_l(
+                    "tienlen-player-wins-match",
+                    buffer="game",
+                    player=winner.name,
+                    coins=winner.coins,
+                )
+
+    def _format_coin_delta(self, delta: int) -> str:
+        if delta > 0:
+            return f"+{delta}"
+        return str(delta)
 
     def build_game_result(self) -> GameResult:
         active_players = [player for player in self.players if not player.is_spectator]
         winner = max(
             (player for player in active_players if isinstance(player, TienLenPlayer)),
             key=lambda player: (
-                player.hand_wins,
+                player.coins,
                 -len(player.hand),
                 -card_strength(player.hand[0]) if player.hand else 0,
             ),
             default=None,
         )
         final_scores = {
-            player.name: player.hand_wins
+            player.name: player.coins
             for player in active_players
             if isinstance(player, TienLenPlayer)
         }
@@ -888,7 +1313,7 @@ class TienLenGame(Game, TurnTimerMixin):
             custom_data={
                 "winner_name": winner.name if winner else None,
                 "winner_ids": [winner.id] if winner else [],
-                "winner_score": winner.hand_wins if winner else 0,
+                "winner_score": winner.coins if winner else 0,
                 "final_scores": final_scores,
             },
         )

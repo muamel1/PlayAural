@@ -84,7 +84,7 @@ def test_team_manager_uses_target_score_for_target_unit_pluralization() -> None:
         (LudoGame, "game-score-unit-tokens-home"),
         (NinetyNineGame, "game-score-unit-ninetynine-tokens"),
         (SorryGame, "game-score-unit-pawns-home"),
-        (TienLenGame, "game-score-unit-hand-wins"),
+        (TienLenGame, "game-score-unit-coins"),
     ],
 )
 def test_games_with_non_point_scores_declare_score_unit(game_cls, unit_key) -> None:
@@ -139,8 +139,8 @@ def test_games_with_non_point_scores_declare_score_unit(game_cls, unit_key) -> N
         (
             TienLenGame,
             {"final_scores": {"Alice": 1, "Bob": 2}},
-            ["1. Bob: 2 hand wins", "2. Alice: 1 hand win"],
-            ["1. Bob: 2 ván thắng", "2. Alice: 1 ván thắng"],
+            ["1. Bob: 2 coins", "2. Alice: 1 coin"],
+            ["1. Bob: 2 xu", "2. Alice: 1 xu"],
         ),
     ],
 )

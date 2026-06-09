@@ -188,7 +188,7 @@ def _evaluate_northern(cards: list[Card]) -> TienLenCombo | None:
                 max(suits),
                 structure_signature=suits,
             )
-        if len({card.suit for card in ordered}) == 1:
+        if len({card.suit for card in ordered}) == 1 and not cards_contain_two(ordered):
             is_straight, high_rank, high_suit = _straight_signature(ordered)
             if is_straight:
                 return TienLenCombo(
@@ -210,7 +210,7 @@ def _evaluate_northern(cards: list[Card]) -> TienLenCombo | None:
             structure_signature=suits,
         )
 
-    if count >= 3 and len({card.suit for card in ordered}) == 1:
+    if count >= 3 and len({card.suit for card in ordered}) == 1 and not cards_contain_two(ordered):
         is_straight, high_rank, high_suit = _straight_signature(ordered)
         if is_straight:
             return TienLenCombo(

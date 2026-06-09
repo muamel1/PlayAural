@@ -4,9 +4,9 @@ tienlen-set-variant = Variant: { $choice }
 tienlen-select-variant = Select Tien Len variant:
 tienlen-option-changed-variant = Variant set to { $choice }.
 
-tienlen-set-match-length = Match Length: { $choice }
-tienlen-select-match-length = Select match length:
-tienlen-option-changed-match-length = Match length set to { $choice }.
+tienlen-set-coin-target = Coin target: { $choice }
+tienlen-select-coin-target = Select match coin target:
+tienlen-option-changed-coin-target = Coin target set to { $choice }.
 
 tienlen-set-turn-timer = Turn Timer: { $choice }
 tienlen-select-turn-timer = Select turn timer duration:
@@ -14,9 +14,9 @@ tienlen-option-changed-turn-timer = Turn timer set to { $choice }.
 
 tienlen-variant-south = Southern Tien Len
 tienlen-variant-north = Northern Tien Len
-tienlen-match-1 = Single Hand
-tienlen-match-3 = Best of 3
-tienlen-match-5 = Best of 5
+tienlen-target-50 = 50 coins
+tienlen-target-100 = 100 coins
+tienlen-target-200 = 200 coins
 
 tienlen-timer-10 = 10 Seconds
 tienlen-timer-15 = 15 Seconds
@@ -40,6 +40,7 @@ tienlen-play-invalid = Invalid combination.
 tienlen-play-combo = Play { $combo }
 
 tienlen-pass = Pass
+tienlen-confirm-pass = Passing locks you out of the current trick. Press Pass again within 10 seconds to confirm.
 tienlen-check-trick = Check trick
 tienlen-read-hand = Read hand
 tienlen-read-card-counts = Read card counts
@@ -49,21 +50,26 @@ tienlen-timer-disabled = The turn timer is disabled.
 tienlen-timer-remaining = { $seconds } seconds remaining.
 
 tienlen-error-no-cards = You have not selected any cards.
-tienlen-error-invalid-combo = The selected cards do not form a valid combination.
-tienlen-error-first-turn-3s = You must include the 3 of Spades in the opening play.
-tienlen-error-pass-lock = You already passed on this trick and must wait for the next trick.
-tienlen-error-pass-lock-two = You already passed on this trick. You may only return with a legal chop against the current 2s.
-tienlen-error-wrong-length = You must play exactly { $count } cards to beat the current trick.
-tienlen-error-must-match-type = Your play must match the current trick's combination type.
-tienlen-error-structure-mismatch = In Northern Tien Len, your play must match the required suit or color structure of the current trick.
+tienlen-error-invalid-combo = The selected cards do not form a valid Tien Len combination for this variant.
+tienlen-error-pass-lock = You already passed on this trick and must wait until the table clears.
+tienlen-error-pass-lock-chop = You already passed on this trick. You may only return with a legal chop against the current 2s or chopping combination.
+tienlen-error-wrong-length = You must play exactly { $count } cards to answer the current trick.
+tienlen-error-must-match-type = Your play must match the current trick's combination type unless it is a legal chop.
+tienlen-error-structure-mismatch = In Northern Tien Len, your play must match the suit or color structure of the current trick.
 tienlen-error-lower-combo = Your combination does not beat the current trick.
 tienlen-error-must-play = You cannot pass when starting a new trick.
 tienlen-error-cannot-finish-on-two = In Northern Tien Len, you cannot finish the hand with 2s or leave only 2s behind.
-tienlen-error-cannot-lead-three-consecutive-pairs = In Southern Tien Len, three consecutive pairs cannot be used to open a trick.
+tienlen-error-not-your-turn-chop = It is not your turn. In Southern Tien Len you may only jump in with a selected legal chop.
+tienlen-error-already-finished = You have already finished this hand.
 
+tienlen-you-play-single = You play { $card }.
 tienlen-player-plays-single = { $player } plays { $card }.
+tienlen-you-play-combo = You play { $combo }: { $cards }.
 tienlen-player-plays-combo = { $player } plays { $combo }: { $cards }.
-tienlen-player-passes = { $player } passes.
+tienlen-you-pass = You pass and are locked out until this trick clears.
+tienlen-player-passes = { $player } passes and is locked out until this trick clears.
+tienlen-you-finish-place = You emptied your hand and take place { $place } for this hand.
+tienlen-player-finishes-place = { $player } empties their hand and takes place { $place } for this hand.
 tienlen-trick-empty = The trick is empty.
 tienlen-trick-status = { $player } is leading with { $combo }: { $cards }.
 tienlen-your-hand = Your hand: { $cards }.
@@ -76,10 +82,35 @@ tienlen-combo-four_of_a_kind = four of a kind
 tienlen-combo-straight = straight
 tienlen-combo-consecutive_pairs = consecutive pairs
 
-tienlen-hand-winner = { $player } wins the hand. They now have { $wins } of { $target } hand wins.
-tienlen-game-over = The match is over. { $player } wins Tien Len.
+tienlen-instant-six-pairs = six pairs
+tienlen-instant-five-consecutive-pairs = five consecutive pairs
+tienlen-you-instant-win = You have an instant win with { $reason }.
+tienlen-player-instant-wins = { $player } has an instant win with { $reason }.
+tienlen-you-win-hand = You take first place for this hand. Coin settlement follows.
+tienlen-player-wins-hand = { $player } takes first place for this hand. Coin settlement follows.
+tienlen-hand-settlement-line = Place { $place }: { $player } { $change } coins, now { $total } coins.
+tienlen-you-win-match = You win the Tien Len match with { $coins } coins.
+tienlen-player-wins-match = { $player } wins the Tien Len match with { $coins } coins.
 tienlen-line-format = { $rank }. { $player }: { $score ->
-    [one] 1 hand win
-   *[other] { $score } hand wins
+    [one] 1 coin
+   *[other] { $score } coins
 }
 
+tienlen-south-card-name = { $rank } of { $suit }
+tienlen-south-rank-1 = Ace
+tienlen-south-rank-2 = 2
+tienlen-south-rank-3 = 3
+tienlen-south-rank-4 = 4
+tienlen-south-rank-5 = 5
+tienlen-south-rank-6 = 6
+tienlen-south-rank-7 = 7
+tienlen-south-rank-8 = 8
+tienlen-south-rank-9 = 9
+tienlen-south-rank-10 = 10
+tienlen-south-rank-11 = Jack
+tienlen-south-rank-12 = Queen
+tienlen-south-rank-13 = King
+tienlen-south-suit-1 = Diamonds
+tienlen-south-suit-2 = Clubs
+tienlen-south-suit-3 = Hearts
+tienlen-south-suit-4 = Spades

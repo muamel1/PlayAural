@@ -4,9 +4,9 @@ tienlen-set-variant = Biến thể: { $choice }
 tienlen-select-variant = Chọn biến thể Tiến Lên:
 tienlen-option-changed-variant = Đã đổi biến thể thành { $choice }.
 
-tienlen-set-match-length = Độ dài trận: { $choice }
-tienlen-select-match-length = Chọn độ dài trận:
-tienlen-option-changed-match-length = Đã đổi độ dài trận thành { $choice }.
+tienlen-set-coin-target = Mốc xu: { $choice }
+tienlen-select-coin-target = Chọn mốc xu để thắng trận:
+tienlen-option-changed-coin-target = Mốc xu thắng trận đã đổi thành { $choice }.
 
 tienlen-set-turn-timer = Thời gian mỗi lượt: { $choice }
 tienlen-select-turn-timer = Chọn thời gian mỗi lượt:
@@ -14,9 +14,9 @@ tienlen-option-changed-turn-timer = Đã đổi thời gian mỗi lượt thành
 
 tienlen-variant-south = Tiến Lên Miền Nam
 tienlen-variant-north = Tiến Lên Miền Bắc
-tienlen-match-1 = 1 ván
-tienlen-match-3 = Thắng 2 trong 3 ván
-tienlen-match-5 = Thắng 3 trong 5 ván
+tienlen-target-50 = 50 xu
+tienlen-target-100 = 100 xu
+tienlen-target-200 = 200 xu
 
 tienlen-timer-10 = 10 giây
 tienlen-timer-15 = 15 giây
@@ -29,7 +29,7 @@ tienlen-timer-unlimited = Không giới hạn
 
 tienlen-game-start = Bắt đầu Tiến Lên.
 tienlen-new-hand = Ván { $round }.
-tienlen-dealt = Đã chia 13 lá bài: { $cards }.
+tienlen-dealt = Đã chia 13 lá: { $cards }.
 tienlen-variant-status = Bàn này đang chơi theo luật { $variant }.
 
 tienlen-card-unselected = { $card }
@@ -40,32 +40,38 @@ tienlen-play-invalid = Bộ bài đã chọn không hợp lệ.
 tienlen-play-combo = Đánh { $combo }
 
 tienlen-pass = Bỏ lượt
-tienlen-check-trick = Xem lượt bài hiện tại
+tienlen-confirm-pass = Bỏ lượt sẽ khóa bạn khỏi vòng chặn hiện tại. Bấm Bỏ lượt lần nữa trong 10 giây để xác nhận.
+tienlen-check-trick = Xem vòng bài hiện tại
 tienlen-read-hand = Đọc bài trên tay
 tienlen-read-card-counts = Đọc số lá còn lại
 tienlen-check-variant = Xem luật đang chơi
-tienlen-check-turn-timer = Xem thời gian lượt
+tienlen-check-turn-timer = Xem đồng hồ lượt
 tienlen-timer-disabled = Đồng hồ lượt đang tắt.
 tienlen-timer-remaining = Còn { $seconds } giây.
 
 tienlen-error-no-cards = Bạn chưa chọn lá bài nào.
-tienlen-error-invalid-combo = Các lá đã chọn không tạo thành bộ bài hợp lệ.
-tienlen-error-first-turn-3s = Lượt mở đầu phải có lá 3 Bích.
-tienlen-error-pass-lock = Bạn đã bỏ lượt trong vòng này và phải chờ sang vòng mới.
-tienlen-error-pass-lock-two = Bạn đã bỏ lượt trong vòng này. Bạn chỉ được quay lại nếu chặt Heo hiện tại một cách hợp lệ.
-tienlen-error-wrong-length = Bạn phải đánh đúng { $count } lá để chặn lượt bài hiện tại.
-tienlen-error-must-match-type = Bộ bài đánh ra phải cùng loại với bộ đang nằm trên bàn.
-tienlen-error-structure-mismatch = Trong Tiến Lên Miền Bắc, bộ chặn phải đúng cấu trúc đồng màu hoặc đồng chất của lượt hiện tại.
-tienlen-error-lower-combo = Bộ bài của bạn không đủ lớn để chặn lượt bài hiện tại.
+tienlen-error-invalid-combo = Những lá đã chọn không tạo thành bộ bài hợp lệ theo luật Tiến Lên của bàn này.
+tienlen-error-pass-lock = Bạn đã bỏ lượt trong vòng chặn này và phải chờ đến khi bàn dọn vòng.
+tienlen-error-pass-lock-chop = Bạn đã bỏ lượt trong vòng chặn này. Bạn chỉ được quay lại bằng một bộ chặt hợp lệ đối với Heo hoặc bộ chặt đang nằm trên bàn.
+tienlen-error-wrong-length = Bạn phải đánh đúng { $count } lá để trả lời vòng bài hiện tại.
+tienlen-error-must-match-type = Bộ bài đánh ra phải cùng kiểu với bộ đang nằm trên bàn, trừ khi đó là một nước chặt hợp lệ.
+tienlen-error-structure-mismatch = Trong Tiến Lên Miền Bắc, bộ chặn phải giữ đúng cấu trúc đồng màu hoặc đồng chất của vòng bài hiện tại.
+tienlen-error-lower-combo = Bộ bài của bạn chưa đủ lớn để chặn vòng bài hiện tại.
 tienlen-error-must-play = Bạn không được bỏ lượt khi đang là người khai vòng.
-tienlen-error-cannot-finish-on-two = Trong Tiến Lên Miền Bắc, bạn không được về bằng Heo hoặc để lại toàn Heo trên tay.
-tienlen-error-cannot-lead-three-consecutive-pairs = Trong Tiến Lên Miền Nam, bộ ba đôi thông không được dùng để khai vòng.
+tienlen-error-cannot-finish-on-two = Trong Tiến Lên Miền Bắc, bạn không được về bằng Heo hoặc đánh một nước khiến trên tay chỉ còn toàn Heo.
+tienlen-error-not-your-turn-chop = Chưa tới lượt bạn. Trong Tiến Lên Miền Nam, bạn chỉ được nhảy vào khi đã chọn một bộ chặt hợp lệ.
+tienlen-error-already-finished = Bạn đã hết bài trong ván này rồi.
 
+tienlen-you-play-single = Bạn đánh { $card }.
 tienlen-player-plays-single = { $player } đánh { $card }.
+tienlen-you-play-combo = Bạn đánh { $combo }: { $cards }.
 tienlen-player-plays-combo = { $player } đánh { $combo }: { $cards }.
-tienlen-player-passes = { $player } bỏ lượt.
+tienlen-you-pass = Bạn bỏ lượt và bị khóa cho đến khi vòng bài này được dọn.
+tienlen-player-passes = { $player } bỏ lượt và bị khóa cho đến khi vòng bài này được dọn.
+tienlen-you-finish-place = Bạn đã hết bài và về hạng { $place } trong ván này.
+tienlen-player-finishes-place = { $player } đã hết bài và về hạng { $place } trong ván này.
 tienlen-trick-empty = Bàn đang trống.
-tienlen-trick-status = { $player } đang dẫn bằng { $combo }: { $cards }.
+tienlen-trick-status = { $player } đang giữ vòng bằng { $combo }: { $cards }.
 tienlen-your-hand = Bài của bạn: { $cards }.
 tienlen-card-count-line = { $player } còn { $count } lá
 
@@ -76,6 +82,32 @@ tienlen-combo-four_of_a_kind = tứ quý
 tienlen-combo-straight = sảnh
 tienlen-combo-consecutive_pairs = đôi thông
 
-tienlen-hand-winner = { $player } thắng ván này. Hiện họ đã có { $wins } trên mục tiêu { $target } ván thắng.
-tienlen-game-over = Trận đấu kết thúc. { $player } thắng Tiến Lên.
-tienlen-line-format = { $rank }. { $player }: { $score } ván thắng
+tienlen-instant-six-pairs = sáu đôi
+tienlen-instant-five-consecutive-pairs = năm đôi thông
+tienlen-you-instant-win = Bạn tới trắng với { $reason }.
+tienlen-player-instant-wins = { $player } tới trắng với { $reason }.
+tienlen-you-win-hand = Bạn về nhất ván này. Sau đây là phần cộng trừ xu.
+tienlen-player-wins-hand = { $player } về nhất ván này. Sau đây là phần cộng trừ xu.
+tienlen-hand-settlement-line = Hạng { $place }: { $player } { $change } xu, hiện có { $total } xu.
+tienlen-you-win-match = Bạn thắng trận Tiến Lên với { $coins } xu.
+tienlen-player-wins-match = { $player } thắng trận Tiến Lên với { $coins } xu.
+tienlen-line-format = { $rank }. { $player }: { $score } xu
+
+tienlen-south-card-name = { $rank } { $suit }
+tienlen-south-rank-1 = xì
+tienlen-south-rank-2 = heo
+tienlen-south-rank-3 = 3
+tienlen-south-rank-4 = 4
+tienlen-south-rank-5 = 5
+tienlen-south-rank-6 = 6
+tienlen-south-rank-7 = 7
+tienlen-south-rank-8 = 8
+tienlen-south-rank-9 = 9
+tienlen-south-rank-10 = 10
+tienlen-south-rank-11 = bồi
+tienlen-south-rank-12 = đầm
+tienlen-south-rank-13 = già
+tienlen-south-suit-1 = rô
+tienlen-south-suit-2 = chuồn
+tienlen-south-suit-3 = cơ
+tienlen-south-suit-4 = bích

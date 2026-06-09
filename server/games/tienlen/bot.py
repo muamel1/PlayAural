@@ -49,6 +49,8 @@ def _generate_straights(hand: list[Card], variant: str, exact_length: int | None
     if variant == NORTHERN_VARIANT:
         by_suit: dict[int, list[Card]] = {}
         for card in sort_cards(hand):
+            if card.rank == 2:
+                continue
             by_suit.setdefault(card.suit, []).append(card)
         for suit_cards in by_suit.values():
             for start in range(len(suit_cards)):
@@ -217,15 +219,6 @@ def bot_think(game: "TienLenGame", player: "TienLenPlayer") -> list[int]:
     candidates = generate_candidate_combos(hand, game.options.variant, current_combo)
     if not candidates:
         return []
-
-    if game.is_first_turn:
-        opening_candidates = [
-            combo
-            for combo in candidates
-            if any(card.rank == rules.opening_rank and card.suit == rules.opening_suit for card in combo.cards)
-        ]
-        if opening_candidates:
-            candidates = opening_candidates
 
     legal: list[TienLenCombo] = []
     for combo in candidates:

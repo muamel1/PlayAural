@@ -30,11 +30,6 @@ class TienLenRuleSet:
     def is_two_combo(self, combo: TienLenCombo) -> bool:
         return bool(combo.cards) and all(card.rank == 2 for card in combo.cards)
 
-    def can_lead_combo(self, combo: TienLenCombo) -> bool:
-        if self.variant == SOUTHERN_VARIANT and combo.type_name == "consecutive_pairs" and combo.pair_count == 3:
-            return False
-        return True
-
     def is_special_cutter(self, combo: TienLenCombo) -> bool:
         if combo.type_name == "four_of_a_kind":
             return True
@@ -54,9 +49,19 @@ class TienLenRuleSet:
     def can_bypass_pass_lock(self, current_combo: TienLenCombo, play_combo: TienLenCombo) -> bool:
         if self.variant != SOUTHERN_VARIANT:
             return False
-        if not self.is_two_combo(current_combo):
+        return self._beats_special(play_combo, current_combo)
+
+    def can_play_out_of_turn(self, current_combo: TienLenCombo, play_combo: TienLenCombo) -> bool:
+        if self.variant != SOUTHERN_VARIANT:
+            return False
+        if not self.is_special_cutter(play_combo):
             return False
         return self._beats_special(play_combo, current_combo)
+
+    def has_chop_window(self, current_combo: TienLenCombo) -> bool:
+        if self.variant != SOUTHERN_VARIANT:
+            return False
+        return self.is_two_combo(current_combo) or self.is_special_cutter(current_combo)
 
     def _compare_pair_of_twos(self, play_combo: TienLenCombo, current_combo: TienLenCombo) -> bool:
         play_suits = sorted((get_suit_strength(card.suit) for card in play_combo.cards), reverse=True)
@@ -159,30 +164,21 @@ class TienLenRuleSet:
         hand: list[Card],
         selected_cards: list[Card],
         current_combo: TienLenCombo | None,
-        is_first_turn: bool,
+        _is_first_turn: bool,
         has_passed_this_trick: bool,
     ) -> tuple[bool, str | None, dict]:
         combo = self.evaluate(selected_cards)
         if not combo:
             return False, "tienlen-error-invalid-combo", {}
 
-        if current_combo is None:
-            if not self.can_lead_combo(combo):
-                return False, "tienlen-error-cannot-lead-three-consecutive-pairs", {}
-        else:
+        if current_combo is not None:
             if has_passed_this_trick and not self.can_bypass_pass_lock(current_combo, combo):
-                if self.variant == SOUTHERN_VARIANT and self.is_two_combo(current_combo):
-                    return False, "tienlen-error-pass-lock-two", {}
+                if self.variant == SOUTHERN_VARIANT and self.has_chop_window(current_combo):
+                    return False, "tienlen-error-pass-lock-chop", {}
                 return False, "tienlen-error-pass-lock", {}
             if not self.combo_beats(combo, current_combo):
                 error_key, error_kwargs = self._comparison_error_key(combo, current_combo)
                 return False, error_key, error_kwargs
-
-        if is_first_turn:
-            has_opening_card = any(card.rank == self.opening_rank and card.suit == self.opening_suit for card in selected_cards)
-            player_has_opening_card = any(card.rank == self.opening_rank and card.suit == self.opening_suit for card in hand)
-            if player_has_opening_card and not has_opening_card:
-                return False, "tienlen-error-first-turn-3s", {}
 
         remaining_hand = [card for card in hand if card not in selected_cards]
         if not self.can_finish(remaining_hand, combo):

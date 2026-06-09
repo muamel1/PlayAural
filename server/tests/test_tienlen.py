@@ -65,22 +65,23 @@ def test_game_registered_and_defaults() -> None:
     assert game.get_name() == "Tien Len"
     assert game.get_type() == "tienlen"
     assert game.options.variant == SOUTHERN_VARIANT
-    assert game.options.match_length == "1"
+    assert game.options.match_length == "50"
 
 
-def test_tienlen_match_length_targets_best_of_series() -> None:
+def test_tienlen_match_target_uses_virtual_coins() -> None:
     assert (
-        TienLenGame(options=TienLenOptions(match_length="1")).get_score_target()
-        == 1
+        TienLenGame(options=TienLenOptions(match_length="50")).get_score_target()
+        == 50
     )
     assert (
-        TienLenGame(options=TienLenOptions(match_length="3")).get_score_target()
-        == 2
+        TienLenGame(options=TienLenOptions(match_length="100")).get_score_target()
+        == 100
     )
     assert (
-        TienLenGame(options=TienLenOptions(match_length="5")).get_score_target()
-        == 3
+        TienLenGame(options=TienLenOptions(match_length="200")).get_score_target()
+        == 200
     )
+    assert TienLenGame(options=TienLenOptions(match_length="1")).get_score_target() == 50
 
 
 def test_tienlen_uses_ninetynine_background_music_on_start() -> None:
@@ -119,7 +120,7 @@ def test_northern_combo_evaluation_requires_dong_mau_and_dong_chat() -> None:
     assert valid_pair is not None and valid_pair.type_name == "pair"
     assert invalid_straight is None
     assert valid_straight is not None and valid_straight.type_name == "straight"
-    assert high_end_straight is not None and high_end_straight.type_name == "straight"
+    assert high_end_straight is None
 
 
 def test_southern_chop_matrix() -> None:
@@ -168,18 +169,28 @@ def test_northern_cannot_finish_on_two() -> None:
     assert error_key == "tienlen-error-cannot-finish-on-two"
 
 
-def test_first_turn_requires_three_of_spades() -> None:
-    game = make_game(start=True)
-    current = game.current_player
-    assert current is not None
-    current.hand = [c(1, 3, 4), c(2, 4, 4), c(3, 5, 4)]
-    current.selected_cards = {2}
+def test_first_turn_holder_of_three_spades_can_lead_any_legal_combo() -> None:
+    rules = get_rules(SOUTHERN_VARIANT)
+    hand = [c(1, 3, 4), c(2, 4, 4), c(3, 5, 4)]
 
-    game.execute_action(current, "play_selected")
+    is_valid, error_key, _ = rules.validate_play(hand, [hand[1]], None, True, False)
 
-    user = game.get_user(current)
-    assert isinstance(user, MockUser)
-    assert user.get_last_spoken() == "You must include the 3 of Spades in the opening play."
+    assert is_valid is True
+    assert error_key is None
+
+
+def test_southern_three_consecutive_pairs_can_open_trick() -> None:
+    rules = get_rules(SOUTHERN_VARIANT)
+    hand = [
+        c(1, 5, 4), c(2, 5, 2),
+        c(3, 6, 4), c(4, 6, 2),
+        c(5, 7, 4), c(6, 7, 2),
+    ]
+
+    is_valid, error_key, _ = rules.validate_play(hand, hand[:], None, False, False)
+
+    assert is_valid is True
+    assert error_key is None
 
 
 def test_southern_passed_player_can_still_act_to_chop_two() -> None:
@@ -232,7 +243,7 @@ def test_northern_structure_mismatch_reports_specific_error() -> None:
     user = game.get_user(current)
     assert isinstance(user, MockUser)
     assert user.get_last_spoken() == (
-        "In Northern Tien Len, your play must match the required suit or color structure of the current trick."
+        "In Northern Tien Len, your play must match the suit or color structure of the current trick."
     )
 
 
@@ -247,6 +258,9 @@ def test_trick_resets_after_all_other_players_pass() -> None:
     follower.hand = [c(2, 3, 4)]
     leader.selected_cards = {1}
     game.execute_action(leader, "play_selected")
+    follower_user = game.get_user(follower)
+    assert isinstance(follower_user, MockUser)
+    follower_user._preferences.confirm_destructive_actions = False
 
     game.execute_action(follower, "pass")
 
@@ -260,6 +274,7 @@ def test_southern_pass_lock_reports_chop_specific_error() -> None:
     game.is_first_turn = False
     game.current_combo = evaluate_combo([c(50, 2, 4)], SOUTHERN_VARIANT)
     game.trick_winner_id = player1.id
+    game.set_turn_players([player1, player2, game.players[2]])
     game.turn_index = game.turn_player_ids.index(player2.id)
     player2.passed_this_trick = True
     player2.hand = [c(1, 5, 4)]
@@ -270,8 +285,80 @@ def test_southern_pass_lock_reports_chop_specific_error() -> None:
     user = game.get_user(player2)
     assert isinstance(user, MockUser)
     assert user.get_last_spoken() == (
-        "You already passed on this trick. You may only return with a legal chop against the current 2s."
+        "You already passed on this trick. You may only return with a legal chop against the current 2s or chopping combination."
     )
+
+
+def test_pass_respects_confirm_risky_actions_preference() -> None:
+    game = make_game(player_count=3, start=True, variant=SOUTHERN_VARIANT)
+    player1, current, player3 = game.players
+    game.set_turn_players([player1, current, player3])
+    game.turn_index = 1
+    player1.hand = [c(80, 5, 4)]
+    current.hand = [c(81, 6, 4)]
+    player3.hand = [c(82, 7, 4)]
+    game.is_first_turn = False
+    game.current_combo = evaluate_combo([c(99, 5, 4)], SOUTHERN_VARIANT)
+    game.trick_winner_id = player1.id
+    game.rebuild_all_menus()
+
+    game.execute_action(current, "pass")
+
+    user = game.get_user(current)
+    assert isinstance(user, MockUser)
+    assert current.pass_confirm_ticks == 200
+    assert current.passed_this_trick is False
+    assert user.get_last_spoken() == (
+        "Passing locks you out of the current trick. Press Pass again within 10 seconds to confirm."
+    )
+
+    game.execute_action(current, "pass")
+
+    assert current.pass_confirm_ticks == 0
+    assert current.passed_this_trick is True
+
+
+def test_pass_confirmation_can_be_disabled() -> None:
+    game = make_game(player_count=3, start=True, variant=SOUTHERN_VARIANT)
+    player1, current, player3 = game.players
+    game.set_turn_players([player1, current, player3])
+    game.turn_index = 1
+    player1.hand = [c(80, 5, 4)]
+    current.hand = [c(81, 6, 4)]
+    player3.hand = [c(82, 7, 4)]
+    user = game.get_user(current)
+    assert isinstance(user, MockUser)
+    user._preferences.confirm_destructive_actions = False
+    game.is_first_turn = False
+    game.current_combo = evaluate_combo([c(99, 5, 4)], SOUTHERN_VARIANT)
+    game.trick_winner_id = player1.id
+    game.rebuild_all_menus()
+
+    game.execute_action(current, "pass")
+
+    assert current.pass_confirm_ticks == 0
+    assert current.passed_this_trick is True
+
+
+def test_pass_confirmation_expires() -> None:
+    game = make_game(player_count=3, start=True, variant=SOUTHERN_VARIANT)
+    player1, current, player3 = game.players
+    game.set_turn_players([player1, current, player3])
+    game.turn_index = 1
+    player1.hand = [c(80, 5, 4)]
+    current.hand = [c(81, 6, 4)]
+    player3.hand = [c(82, 7, 4)]
+    game.is_first_turn = False
+    game.current_combo = evaluate_combo([c(99, 5, 4)], SOUTHERN_VARIANT)
+    game.trick_winner_id = player1.id
+    game.rebuild_all_menus()
+
+    game.execute_action(current, "pass")
+    current.pass_confirm_ticks = 1
+    game.on_tick()
+
+    assert current.pass_confirm_ticks == 0
+    assert current.passed_this_trick is False
 
 
 def test_hand_sorting_rebuilds_in_tien_len_order() -> None:
@@ -324,13 +411,161 @@ def test_web_info_actions_visible() -> None:
     assert "check_scores" in active_actions
 
 
+def test_touch_standard_actions_keep_game_info_before_shared_status() -> None:
+    game = make_game(web_first=True, start=True)
+    player = game.players[0]
+
+    action_ids = [entry.action.id for entry in game.get_all_enabled_actions(player)]
+
+    assert action_ids.index("check_turn_timer") < action_ids.index("check_scores")
+    assert action_ids.index("check_scores") < action_ids.index("whose_turn")
+    assert action_ids.index("whose_turn") < action_ids.index("whos_at_table")
+
+
+def test_player_finishing_does_not_end_hand_until_places_are_known() -> None:
+    game = make_game(player_count=3, start=True, variant=SOUTHERN_VARIANT)
+    player1, player2, player3 = game.players
+    game.set_turn_players([player1, player2, player3])
+    game.turn_index = 0
+    game.is_first_turn = False
+    game.current_combo = None
+    game.trick_winner_id = None
+    player1.hand = [c(1, 5, 4)]
+    player2.hand = [c(2, 6, 4), c(3, 8, 4)]
+    player3.hand = [c(4, 7, 4), c(5, 9, 4)]
+    player1.selected_cards = {1}
+
+    game.execute_action(player1, "play_selected")
+
+    assert game.status == "playing"
+    assert game.hand_wait_ticks == 0
+    assert game.finishing_order_ids == [player1.id]
+    assert player1.hand == []
+    assert game.current_player == player2
+
+
+def test_two_player_hand_settles_to_virtual_coins() -> None:
+    game = make_game(player_count=2, start=True, variant=SOUTHERN_VARIANT)
+    player1, player2 = game.players
+    player1.hand = []
+    player2.hand = [c(2, 6, 4)]
+    game.finishing_order_ids = []
+
+    game._player_finishes(player1)
+
+    assert game.hand_wait_ticks > 0
+    assert player1.coins == 10
+    assert player2.coins == -10
+    assert game.hand_winner_id == player1.id
+
+
+def test_southern_instant_win_reasons_include_six_pairs_and_five_consecutive_pairs() -> None:
+    game = make_game(player_count=2, variant=SOUTHERN_VARIANT)
+    player = game.players[0]
+    player.hand = [
+        c(1, 3, 4), c(2, 3, 2),
+        c(3, 5, 4), c(4, 5, 2),
+        c(5, 7, 4), c(6, 7, 2),
+        c(7, 9, 4), c(8, 9, 2),
+        c(9, 11, 4), c(10, 11, 2),
+        c(11, 13, 4), c(12, 13, 2),
+        c(13, 1, 3),
+    ]
+    assert game._instant_win_reason(player) == "tienlen-instant-six-pairs"
+
+    player.hand = [
+        c(21, 3, 4), c(22, 3, 2),
+        c(23, 4, 4), c(24, 4, 2),
+        c(25, 5, 4), c(26, 5, 2),
+        c(27, 6, 4), c(28, 6, 2),
+        c(29, 7, 4), c(30, 7, 2),
+        c(31, 9, 4), c(32, 11, 2), c(33, 1, 3),
+    ]
+    assert game._instant_win_reason(player) == "tienlen-instant-five-consecutive-pairs"
+
+
+def test_instant_win_settles_with_bonus() -> None:
+    game = make_game(player_count=3, start=True, variant=SOUTHERN_VARIANT)
+    player1, player2, player3 = game.players
+    player1.hand = [c(index, 3 + (index // 2), 4 if index % 2 == 0 else 2) for index in range(12)]
+    player1.hand.append(c(99, 1, 3))
+    player2.hand = [c(200, 5, 4)]
+    player3.hand = [c(201, 6, 4)]
+
+    game._handle_instant_win(player1, "tienlen-instant-six-pairs", [player1, player2, player3])
+
+    assert player1.coins == 40
+    assert player2.coins == 0
+    assert player3.coins == -20
+    assert game.hand_wait_ticks > 0
+
+
+def test_out_of_turn_southern_chop_can_override_current_two() -> None:
+    game = make_game(player_count=3, start=True, variant=SOUTHERN_VARIANT)
+    player1, player2, player3 = game.players
+    game.set_turn_players([player1, player2, player3])
+    game.turn_index = 1
+    game.is_first_turn = False
+    game.current_combo = evaluate_combo([c(90, 2, 4)], SOUTHERN_VARIANT)
+    game.trick_winner_id = player1.id
+    player3.hand = [
+        c(1, 5, 4), c(2, 5, 2),
+        c(3, 6, 4), c(4, 6, 2),
+        c(5, 7, 4), c(6, 7, 2),
+    ]
+    player3.selected_cards = {card.id for card in player3.hand}
+    game.rebuild_player_menu(player3)
+
+    game.execute_action(player3, "play_selected")
+
+    assert game.trick_winner_id == player3.id
+    assert game.current_player == player1
+
+
+def test_play_and_pass_broadcasts_use_first_and_third_person() -> None:
+    game = make_game(player_count=2, start=True, variant=SOUTHERN_VARIANT)
+    player1, player2 = game.players
+    game.set_turn_players([player1, player2])
+    game.turn_index = 0
+    game.is_first_turn = False
+    player1.hand = [c(1, 5, 4), c(2, 9, 4)]
+    player1.selected_cards = {1}
+    user1 = game.get_user(player1)
+    user2 = game.get_user(player2)
+    assert isinstance(user1, MockUser)
+    assert isinstance(user2, MockUser)
+    user1.clear_messages()
+    user2.clear_messages()
+
+    game.execute_action(player1, "play_selected")
+
+    assert "You play" in (user1.get_spoken_messages()[0])
+    assert "Player1 plays" in (user2.get_spoken_messages()[0])
+
+    user2._preferences.confirm_destructive_actions = False
+    user1.clear_messages()
+    user2.clear_messages()
+    game.execute_action(player2, "pass")
+
+    assert "Player2 passes" in (user1.get_spoken_messages()[0])
+    assert "You pass" in (user2.get_spoken_messages()[0])
+
+
+def test_southern_vietnamese_card_terms_are_variant_specific() -> None:
+    game = TienLenGame(options=TienLenOptions(variant=SOUTHERN_VARIANT))
+    assert game._read_cards([c(1, 2, 2), c(2, 12, 2)], "vi") == "heo chuồn và đầm chuồn"
+
+    northern = TienLenGame(options=TienLenOptions(variant=NORTHERN_VARIANT))
+    assert northern._read_cards([c(1, 2, 2)], "vi") != "heo chuồn"
+
+
 def test_bot_game_completes_in_southern_variant() -> None:
     random.seed(1234)
-    game = make_game(player_count=3, start=True, bot_all=True, match_length="1", variant=SOUTHERN_VARIANT)
-    assert advance_until(game, lambda: game.status == "finished", max_ticks=12000)
+    game = make_game(player_count=3, start=True, bot_all=True, match_length="50", variant=SOUTHERN_VARIANT)
+    assert advance_until(game, lambda: game.status == "finished", max_ticks=30000)
 
 
 def test_bot_game_completes_in_northern_variant() -> None:
     random.seed(4321)
-    game = make_game(player_count=3, start=True, bot_all=True, match_length="1", variant=NORTHERN_VARIANT)
-    assert advance_until(game, lambda: game.status == "finished", max_ticks=12000)
+    game = make_game(player_count=3, start=True, bot_all=True, match_length="50", variant=NORTHERN_VARIANT)
+    assert advance_until(game, lambda: game.status == "finished", max_ticks=30000)
