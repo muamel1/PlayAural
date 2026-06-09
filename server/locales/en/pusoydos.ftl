@@ -9,8 +9,8 @@ pusoydos-desc-rounds-to-win = How many rounds a player must win before they are 
 pusoydos-desc-target-score = The point total a player must reach to win the game (points mode) or be eliminated (points elimination mode).
 pusoydos-desc-turn-timer = Time limit per turn. Set to unlimited for no limit.
 pusoydos-desc-allow-2-in-straights = Whether the 2 can be used in straights (e.g. A-2-3-4-5).
-pusoydos-desc-instant-wins = Whether special dealt hands (Dragon, Four 2s, Six Pairs) win the round instantly.
-pusoydos-desc-card-passing = Whether cards are exchanged between winners and losers after dealing.
+pusoydos-desc-instant-wins = Whether special dealt hands (Dragon, Four 2s, Six Pairs) win the round instantly. This cannot be combined with card passing.
+pusoydos-desc-card-passing = Whether cards are exchanged between winners and losers after dealing. This cannot be combined with instant wins.
 pusoydos-desc-penalty-tier = How aggressively remaining cards are penalized at the end of a round.
 pusoydos-desc-penalty-per-two = Whether each 2 remaining in hand doubles the penalty.
 
@@ -86,11 +86,15 @@ pusoydos-option-changed-penalty-per-two = Penalty per 2 held set to { $enabled }
 pusoydos-new-hand = Round { $round }.
 pusoydos-dealt = Dealt { $count } cards: { $cards }.
 
+pusoydos-you-first-player = You have the 3 of Clubs and go first.
 pusoydos-first-player = { $player } has the 3 of Clubs and goes first.
+pusoydos-you-first-player-lowest = You have the lowest card and go first.
 pusoydos-first-player-lowest = { $player } has the lowest card and goes first.
 
 # Elimination mode
+pusoydos-you-eliminated = You win { $count } rounds and are out! Well played.
 pusoydos-player-eliminated = { $player } wins { $count } rounds and is out! Well played.
+pusoydos-you-last-player = You are the last player remaining. Game over!
 pusoydos-last-player = { $player } is the last player remaining. Game over!
 pusoydos-players-remaining = { $count } { $count ->
     [one] player
@@ -98,26 +102,45 @@ pusoydos-players-remaining = { $count } { $count ->
 } remaining.
 
 # Losses mode
+pusoydos-you-round-loser = You finish last and take a loss! ({ $count } { $count ->
+    [one] loss
+   *[other] losses
+} total.)
 pusoydos-round-loser = { $player } finishes last and takes a loss! ({ $count } { $count ->
     [one] loss
    *[other] losses
 } total.)
+pusoydos-you-losses-game-over = You reach { $count } losses and lose the game!
 pusoydos-losses-game-over = { $player } reaches { $count } losses and loses the game!
 
 # Points mode
+pusoydos-penalty-entry = { $points } { $points ->
+    [one] point
+   *[other] points
+} from { $player }
+pusoydos-you-penalty-summary = You win the round: { $breakdown }. ({ $gained } this round, { $total } total.)
 pusoydos-penalty-summary = { $player } wins the round: { $breakdown }. ({ $gained } this round, { $total } total.)
+pusoydos-you-win-round = You win the round!
 pusoydos-round-winner = { $player } wins the round!
+pusoydos-you-go-out = You go out!
 pusoydos-player-goes-out = { $player } goes out!
+pusoydos-you-points-winner = You reach { $score } points and win the game!
 pusoydos-points-winner = { $player } reaches { $score } points and wins the game!
 
 # Points elimination mode
+pusoydos-you-points-elim-penalty = You get { $points } points. ({ $total } total.)
 pusoydos-points-elim-penalty = { $player } gets { $points } points. ({ $total } total.)
+pusoydos-you-points-elim-eliminated = You reach { $score } points and are eliminated!
 pusoydos-points-elim-eliminated = { $player } reaches { $score } points and is eliminated!
+pusoydos-you-points-elim-winner = You are the last player standing. You win!
 pusoydos-points-elim-winner = { $player } is the last player standing. { $player } wins!
 
 # Instant wins
+pusoydos-you-instant-win-dragon = You have a Dragon (13-card straight)! Instant win!
 pusoydos-instant-win-dragon = { $player } has a Dragon (13-card straight)! Instant win!
+pusoydos-you-instant-win-four-twos = You have all four 2s! Instant win!
 pusoydos-instant-win-four-twos = { $player } has all four 2s! Instant win!
+pusoydos-you-instant-win-six-pairs = You have six pairs! Instant win!
 pusoydos-instant-win-six-pairs = { $player } has six pairs! Instant win!
 pusoydos-checking-instant-wins = Checking for instant win hands...
 pusoydos-no-instant-wins = No instant wins this round.
@@ -156,6 +179,11 @@ pusoydos-check-trick = Check trick
 pusoydos-read-hand = Read hand
 pusoydos-check-turn-timer = Check turn timer
 pusoydos-read-card-counts = Card counts
+pusoydos-card-count-line = { $player }: { $count } { $count ->
+    [one] card
+   *[other] cards
+}
+pusoydos-card-counts-empty = No active players have cards to count.
 pusoydos-timer-disabled = The turn timer is disabled.
 pusoydos-timer-remaining = { $seconds } seconds remaining.
 
@@ -172,6 +200,7 @@ pusoydos-key-timer = Turn timer
 # =============================================================================
 
 pusoydos-error-full-passing-players = Full card passing requires exactly 2 or 4 players.
+pusoydos-error-instant-wins-card-passing = Instant wins and card passing conflict. Disable one of them before starting the game.
 pusoydos-error-no-cards = You have not selected any cards.
 pusoydos-error-invalid-combo = The selected cards do not form a valid combination.
 pusoydos-error-first-turn-3c = You must include the 3 of Clubs in the first play.
@@ -181,15 +210,25 @@ pusoydos-error-wrong-length = You must play exactly { $count } { $count ->
 } to beat the current trick.
 pusoydos-error-lower-combo = Your combination is lower than the current trick.
 pusoydos-error-must-play = You cannot pass when starting a new trick.
+pusoydos-error-select-cards-to-give = Select exactly { $count } { $count ->
+    [one] card
+   *[other] cards
+} to give back to { $recipient }.
+pusoydos-error-select-required-give-cards = Select the required number of cards before confirming the exchange.
+pusoydos-error-eliminated = You are already out of this game.
 pusoydos-confirm-pass = Use the pass action again to confirm.
 
 # =============================================================================
 # Broadcasts
 # =============================================================================
 
+pusoydos-you-play-single = You play { $card }.
 pusoydos-player-plays-single = { $player } plays { $card }.
+pusoydos-you-play-combo = You play a { $combo } of { $cards }.
 pusoydos-player-plays-combo = { $player } plays a { $combo } of { $cards }.
+pusoydos-you-pass = You pass.
 pusoydos-player-passes = { $player } passes.
+pusoydos-you-win-trick = You win the trick.
 pusoydos-trick-won = { $player } wins the trick.
 
 pusoydos-trick-empty = The trick is empty.
@@ -207,6 +246,7 @@ pusoydos-score-losses = { $player }: { $count } { $count ->
 }
 pusoydos-score-points = { $player }: { $score } points
 
+pusoydos-you-one-card = You have one card left!
 pusoydos-one-card = { $player } has one card left!
 
 # =============================================================================
