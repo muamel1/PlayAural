@@ -20,13 +20,13 @@ sorry-check-status = Check status
 
 sorry-move-slot = Move option { $slot }
 sorry-move-slot-fallback = Choose move
-sorry-move-start = Move pawn { $pawn } out of start
-sorry-move-forward = Move pawn { $pawn } forward { $steps }
-sorry-move-backward = Move pawn { $pawn } backward { $steps }
-sorry-move-swap = Swap pawn { $pawn } with { $target_player } pawn { $target_pawn }
-sorry-move-sorry = Use Sorry! with pawn { $pawn } against { $target_player } pawn { $target_pawn }
-sorry-move-split7-pick = Split 7 between pawn { $pawn_a } and pawn { $pawn_b }
-sorry-move-split7-option = Pawn { $pawn_a } moves { $steps_a }, pawn { $pawn_b } moves { $steps_b }
+sorry-move-start = Move pawn { $pawn } from { $position } out of start
+sorry-move-forward = Move pawn { $pawn } from { $position } forward { $steps }
+sorry-move-backward = Move pawn { $pawn } from { $position } backward { $steps }
+sorry-move-swap = Swap pawn { $pawn } at { $position } with { $target_player } pawn { $target_pawn } at { $target_position }
+sorry-move-sorry = Use Sorry! with pawn { $pawn } at { $position } against { $target_player } pawn { $target_pawn } at { $target_position }
+sorry-move-split7-pick = Split 7 between pawn { $pawn_a } at { $position_a } and pawn { $pawn_b } at { $position_b }
+sorry-move-split7-option = Pawn { $pawn_a } at { $position_a } moves { $steps_a }, pawn { $pawn_b } at { $position_b } moves { $steps_b }
 
 sorry-card-none = no active card
 sorry-card-sorry = Sorry!

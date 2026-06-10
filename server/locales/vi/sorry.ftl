@@ -20,13 +20,13 @@ sorry-check-status = Xem trạng thái
 
 sorry-move-slot = Nước đi { $slot }
 sorry-move-slot-fallback = Chọn nước đi
-sorry-move-start = Đưa quân { $pawn } ra khỏi điểm xuất phát
-sorry-move-forward = Đi quân { $pawn } tiến { $steps }
-sorry-move-backward = Đi quân { $pawn } lùi { $steps }
-sorry-move-swap = Đổi vị trí quân { $pawn } với quân { $target_pawn } của { $target_player }
-sorry-move-sorry = Dùng thẻ Sorry! để thay quân { $target_pawn } của { $target_player } bằng quân { $pawn }
-sorry-move-split7-pick = Chia 7 cho quân { $pawn_a } và quân { $pawn_b }
-sorry-move-split7-option = Quân { $pawn_a } đi { $steps_a }, quân { $pawn_b } đi { $steps_b }
+sorry-move-start = Đưa quân { $pawn } từ { $position } ra khỏi điểm xuất phát
+sorry-move-forward = Đi quân { $pawn } từ { $position } tiến { $steps }
+sorry-move-backward = Đi quân { $pawn } từ { $position } lùi { $steps }
+sorry-move-swap = Đổi chỗ quân { $pawn } ở { $position } với quân { $target_pawn } của { $target_player } ở { $target_position }
+sorry-move-sorry = Dùng thẻ Sorry! với quân { $pawn } ở { $position } để thay quân { $target_pawn } của { $target_player } ở { $target_position }
+sorry-move-split7-pick = Chia 7 cho quân { $pawn_a } ở { $position_a } và quân { $pawn_b } ở { $position_b }
+sorry-move-split7-option = Quân { $pawn_a } ở { $position_a } đi { $steps_a }, quân { $pawn_b } ở { $position_b } đi { $steps_b }
 
 sorry-card-none = chưa có thẻ nào
 sorry-card-sorry = Sorry!

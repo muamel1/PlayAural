@@ -437,6 +437,68 @@ def test_sorry_card_prompt_focuses_first_choice_after_draw() -> None:
     assert user.menus["turn_menu"]["selection_id"] == "move_slot_1"
 
 
+def test_move_labels_include_current_pawn_positions() -> None:
+    game = make_game(start=True)
+    player = game.players[0]
+    player_state = game.game_state.player_states[player.id]
+    player_state.pawns[0].zone = "track"
+    player_state.pawns[0].track_position = 10
+    game.game_state.current_card = "3"
+    game.game_state.turn_phase = "choose_move"
+
+    forward_move = next(
+        move for move in game._get_current_legal_moves(player) if move.move_type == "forward"
+    )
+
+    label = game._move_label("en", player, forward_move)
+
+    assert "pawn 1 from square 11" in label
+
+
+def test_swap_and_sorry_labels_include_target_positions() -> None:
+    game = make_game(start=True)
+    player = game.players[0]
+    opponent = game.players[1]
+    player_state = game.game_state.player_states[player.id]
+    opponent_state = game.game_state.player_states[opponent.id]
+    player_state.pawns[0].zone = "track"
+    player_state.pawns[0].track_position = 10
+    opponent_state.pawns[0].zone = "track"
+    opponent_state.pawns[0].track_position = 16
+
+    swap_move = next(
+        move
+        for move in generate_legal_moves(
+            game.game_state,
+            player_state,
+            "11",
+            game._get_rules_profile(),
+        )
+        if move.move_type == "swap"
+    )
+    swap_label = game._move_label("en", player, swap_move)
+
+    assert "pawn 1 at square 11" in swap_label
+    assert f"{opponent.name} pawn 1 at square 17" in swap_label
+
+    player_state.pawns[0].zone = "start"
+    player_state.pawns[0].track_position = None
+    sorry_move = next(
+        move
+        for move in generate_legal_moves(
+            game.game_state,
+            player_state,
+            "sorry",
+            game._get_rules_profile(),
+        )
+        if move.move_type == "sorry"
+    )
+    sorry_label = game._move_label("en", player, sorry_move)
+
+    assert "pawn 1 at start" in sorry_label
+    assert f"{opponent.name} pawn 1 at square 17" in sorry_label
+
+
 def test_info_actions_remain_available_during_draw_sequence() -> None:
     game = make_game(start=True)
     player = game.players[0]

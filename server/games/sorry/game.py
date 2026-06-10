@@ -445,7 +445,7 @@ class SorryGame(Game):
             return Localization.get(locale, "sorry-move-slot-fallback")
         active_moves = self._active_move_list(player)
         if 1 <= slot <= len(active_moves):
-            return self._move_label(locale, active_moves[slot - 1])
+            return self._move_label(locale, player, active_moves[slot - 1])
         return Localization.get(locale, "sorry-move-slot", slot=slot)
 
     def on_start(self) -> None:
@@ -743,14 +743,21 @@ class SorryGame(Game):
         )
         return beats
 
-    def _move_label(self, locale: str, move: SorryMove) -> str:
+    def _move_label(self, locale: str, player: Player, move: SorryMove) -> str:
+        own_position = self._pawn_location(locale, player.id, move.pawn_index)
         if move.move_type == "start":
-            return Localization.get(locale, "sorry-move-start", pawn=move.pawn_index)
+            return Localization.get(
+                locale,
+                "sorry-move-start",
+                pawn=move.pawn_index,
+                position=own_position,
+            )
         if move.move_type in {"forward", "sorry_fallback_forward"}:
             return Localization.get(
                 locale,
                 "sorry-move-forward",
                 pawn=move.pawn_index,
+                position=own_position,
                 steps=move.steps or 0,
             )
         if move.move_type == "backward":
@@ -758,40 +765,59 @@ class SorryGame(Game):
                 locale,
                 "sorry-move-backward",
                 pawn=move.pawn_index,
+                position=own_position,
                 steps=move.steps or 0,
             )
         if move.move_type == "swap":
             target_name = self._target_player_name(locale, move.target_player_id)
+            target_position = self._pawn_location(
+                locale,
+                move.target_player_id,
+                move.target_pawn_index,
+            )
             return Localization.get(
                 locale,
                 "sorry-move-swap",
                 pawn=move.pawn_index,
+                position=own_position,
                 target_player=target_name,
                 target_pawn=move.target_pawn_index,
+                target_position=target_position,
             )
         if move.move_type == "sorry":
             target_name = self._target_player_name(locale, move.target_player_id)
+            target_position = self._pawn_location(
+                locale,
+                move.target_player_id,
+                move.target_pawn_index,
+            )
             return Localization.get(
                 locale,
                 "sorry-move-sorry",
                 pawn=move.pawn_index,
+                position=own_position,
                 target_player=target_name,
                 target_pawn=move.target_pawn_index,
+                target_position=target_position,
             )
         if move.move_type == "split7_pick":
             return Localization.get(
                 locale,
                 "sorry-move-split7-pick",
                 pawn_a=move.pawn_index,
+                position_a=own_position,
                 pawn_b=move.secondary_pawn_index,
+                position_b=self._pawn_location(locale, player.id, move.secondary_pawn_index),
             )
         if move.move_type == "split7":
             return Localization.get(
                 locale,
                 "sorry-move-split7-option",
                 pawn_a=move.pawn_index,
+                position_a=own_position,
                 steps_a=move.steps or 0,
                 pawn_b=move.secondary_pawn_index,
+                position_b=self._pawn_location(locale, player.id, move.secondary_pawn_index),
                 steps_b=move.secondary_steps or 0,
             )
         return Localization.get(locale, "sorry-move-slot-fallback")
@@ -799,6 +825,29 @@ class SorryGame(Game):
     def _target_player_name(self, locale: str, player_id: str | None) -> str:
         target = self.get_player_by_id(player_id) if player_id else None
         return target.name if target else Localization.get(locale, "unknown-player")
+
+    def _pawn_location(self, locale: str, player_id: str | None, pawn_index: int | None) -> str:
+        player_state = self.game_state.player_states.get(player_id or "")
+        if player_state is None or pawn_index is None:
+            return Localization.get(locale, "sorry-location-start")
+        if pawn_index < 1 or pawn_index > len(player_state.pawns):
+            return Localization.get(locale, "sorry-location-start")
+        pawn = player_state.pawns[pawn_index - 1]
+        if pawn.zone == "start":
+            return Localization.get(locale, "sorry-location-start")
+        if pawn.zone == "track":
+            return Localization.get(
+                locale,
+                "sorry-location-track",
+                position=(pawn.track_position or 0) + 1,
+            )
+        if pawn.zone == "home_path":
+            return Localization.get(
+                locale,
+                "sorry-location-home-path",
+                steps=pawn.home_steps,
+            )
+        return Localization.get(locale, "sorry-location-home")
 
     def _describe_pawn(self, locale: str, player_state: SorryPlayerState, pawn_index: int) -> str:
         pawn = player_state.pawns[pawn_index - 1]
