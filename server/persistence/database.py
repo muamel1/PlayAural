@@ -572,6 +572,128 @@ class Database:
 
         return counts
 
+    def prune_unsupported_leaderboard_data(
+        self,
+        supported_stat_keys_by_game: dict[str, set[str]],
+        rating_game_types: set[str] | list[str] | tuple[str, ...],
+    ) -> dict[str, int]:
+        """Delete leaderboard aggregates no longer supported by registered games.
+
+        This cleanup is intentionally scoped to derived leaderboard tables. It
+        does not alter historical game results, saved tables, or any other game
+        data. An empty support map is a no-op to avoid destructive cleanup during
+        a startup/import failure.
+        """
+        supported = {
+            game_type: set(stat_keys)
+            for game_type, stat_keys in supported_stat_keys_by_game.items()
+            if game_type
+        }
+        rating_supported = {game_type for game_type in rating_game_types if game_type}
+        logger = logging.getLogger("playaural.db.prune")
+        counts = {"player_game_stats": 0, "player_ratings": 0}
+
+        startup_scan_msg = (
+            "Database Pruning: Checking unsupported leaderboard data "
+            f"for {len(supported)} registered games. "
+            "Tables checked: player_game_stats, player_ratings."
+        )
+        logger.info(startup_scan_msg)
+        print(startup_scan_msg)
+
+        if not supported:
+            skip_msg = (
+                "Database Pruning: Skipped unsupported-leaderboard cleanup because "
+                "the leaderboard support map was empty."
+            )
+            logger.warning(skip_msg)
+            print(skip_msg)
+            return counts
+
+        cursor = self._conn.cursor()
+        unsupported_stat_pairs: list[tuple[str, str]] = []
+        cursor.execute(
+            """
+            SELECT DISTINCT game_type, stat_key
+            FROM player_game_stats
+            ORDER BY game_type, stat_key
+            """
+        )
+        for row in cursor.fetchall():
+            game_type = row["game_type"]
+            stat_key = row["stat_key"]
+            if game_type in supported and stat_key not in supported[game_type]:
+                unsupported_stat_pairs.append((game_type, stat_key))
+
+        cursor.execute(
+            """
+            SELECT DISTINCT game_type
+            FROM player_ratings
+            ORDER BY game_type
+            """
+        )
+        unsupported_rating_types = [
+            row["game_type"]
+            for row in cursor.fetchall()
+            if row["game_type"] in supported
+            and row["game_type"] not in rating_supported
+        ]
+
+        if unsupported_stat_pairs:
+            stat_label = ", ".join(
+                f"{game_type}:{stat_key}"
+                for game_type, stat_key in unsupported_stat_pairs
+            )
+        else:
+            stat_label = "none"
+        rating_label = (
+            ", ".join(unsupported_rating_types)
+            if unsupported_rating_types
+            else "none"
+        )
+        logger.info(
+            "Database Pruning: Unsupported leaderboard stat keys detected: %s",
+            stat_label,
+        )
+        logger.info(
+            "Database Pruning: Unsupported rating game types detected: %s",
+            rating_label,
+        )
+        print(f"Database Pruning: Unsupported leaderboard stat keys detected: {stat_label}.")
+        print(f"Database Pruning: Unsupported rating game types detected: {rating_label}.")
+
+        with self._conn:
+            for game_type, stat_key in unsupported_stat_pairs:
+                cursor.execute(
+                    """
+                    DELETE FROM player_game_stats
+                    WHERE game_type = ? AND stat_key = ?
+                    """,
+                    (game_type, stat_key),
+                )
+                counts["player_game_stats"] += cursor.rowcount
+
+            for game_type in unsupported_rating_types:
+                cursor.execute(
+                    "DELETE FROM player_ratings WHERE game_type = ?",
+                    (game_type,),
+                )
+                counts["player_ratings"] += cursor.rowcount
+
+        total_deleted = sum(counts.values())
+        detail = self._format_cleanup_counts(counts)
+        logger.info(
+            "Database Pruning: Unsupported-leaderboard cleanup removed %d rows. Details: %s",
+            total_deleted,
+            detail,
+        )
+        print(
+            "Database Pruning: Unsupported-leaderboard cleanup removed "
+            f"{total_deleted} rows. Details: {detail}."
+        )
+
+        return counts
+
     # User operations
 
     def get_user_by_email(self, email: str) -> UserRecord | None:

@@ -254,6 +254,11 @@ PlayAural Server
         self._db.prune_unregistered_game_data(
             {game_class.get_type() for game_class in GameRegistry.get_all()}
         )
+        stat_keys_by_game, rating_game_types = self._get_leaderboard_prune_spec()
+        self._db.prune_unsupported_leaderboard_data(
+            stat_keys_by_game,
+            rating_game_types,
+        )
         self._auth = AuthManager(self._db)
 
         # Initialize trust levels for users
@@ -282,6 +287,46 @@ PlayAural Server
 
         protocol = "wss" if self._ssl_cert else "ws"
         print(f"Server running on {protocol}://{self.host}:{self.port}")
+
+    def _get_leaderboard_prune_spec(self) -> tuple[dict[str, set[str]], set[str]]:
+        """Build persisted leaderboard stat allowlists from registered games."""
+        built_in_stat_keys = {
+            "games_played": {"games_played"},
+            "wins": {"wins", "losses"},
+            "total_score": {"total_score"},
+            "high_score": {"high_score"},
+        }
+        stat_keys_by_game: dict[str, set[str]] = {}
+        rating_game_types: set[str] = set()
+
+        for game_class in GameRegistry.get_all():
+            game_type = game_class.get_type()
+            supported = set(game_class.get_supported_leaderboards())
+            stat_keys: set[str] = set()
+            for leaderboard_type, stat_keys_for_type in built_in_stat_keys.items():
+                if leaderboard_type in supported:
+                    stat_keys.update(stat_keys_for_type)
+            if "rating" in supported:
+                rating_game_types.add(game_type)
+
+            for config in game_class.get_leaderboard_types():
+                leaderboard_id = config["id"]
+                aggregate = config.get("aggregate", "sum")
+                if config.get("path"):
+                    if aggregate == "max":
+                        stat_keys.add(f"custom_{leaderboard_id}_high")
+                    elif aggregate == "avg":
+                        stat_keys.add(f"custom_{leaderboard_id}_sum")
+                        stat_keys.add(f"custom_{leaderboard_id}_count")
+                    else:
+                        stat_keys.add(f"custom_{leaderboard_id}")
+                elif config.get("numerator") and config.get("denominator"):
+                    stat_keys.add(f"custom_{leaderboard_id}_numerator")
+                    stat_keys.add(f"custom_{leaderboard_id}_denominator")
+
+            stat_keys_by_game[game_type] = stat_keys
+
+        return stat_keys_by_game, rating_game_types
 
     async def stop(self) -> None:
         """Stop the server."""

@@ -294,6 +294,131 @@ def test_prune_unregistered_game_data_empty_allowlist_is_noop(db):
     assert [row[0] for row in cursor.fetchall()] == ["lastcard"]
 
 
+def test_prune_unsupported_leaderboard_data_removes_only_invalid_stats(db, capsys):
+    cursor = db._conn.cursor()
+    stat_rows = [
+        ("p1", "pig", "games_played", 5),
+        ("p1", "pig", "wins", 2),
+        ("p1", "pig", "losses", 3),
+        ("p1", "pig", "total_score", 240),
+        ("p1", "pig", "high_score", 120),
+        ("p1", "pig", "junk_score", 999),
+        ("p2", "twentyone", "games_played", 3),
+        ("p2", "twentyone", "wins", 1),
+        ("p2", "twentyone", "losses", 2),
+        ("p2", "twentyone", "total_score", 50),
+        ("p2", "twentyone", "high_score", 30),
+        ("p3", "metalpipe", "games_played", 4),
+        ("p3", "metalpipe", "losses", 4),
+        ("p4", "battle", "games_played", 2),
+        ("p4", "battle", "custom_most_enemies_defeated_high", 13),
+        ("p4", "battle", "custom_deepest_wave_reached_high", 5),
+        ("p4", "battle", "total_score", 500),
+        ("p5", "lastcard", "wins", 8),
+    ]
+    cursor.executemany(
+        """
+        INSERT INTO player_game_stats (player_id, game_type, stat_key, stat_value)
+        VALUES (?, ?, ?, ?)
+        """,
+        stat_rows,
+    )
+    rating_rows = [
+        ("p1", "pig", 30.0, 6.0),
+        ("p2", "twentyone", 28.0, 7.0),
+        ("p3", "metalpipe", 31.0, 5.0),
+        ("p6", "blackjack", 27.0, 8.0),
+        ("p5", "lastcard", 35.0, 4.0),
+    ]
+    cursor.executemany(
+        "INSERT INTO player_ratings (player_id, game_type, mu, sigma) VALUES (?, ?, ?, ?)",
+        rating_rows,
+    )
+    db._conn.commit()
+
+    counts = db.prune_unsupported_leaderboard_data(
+        {
+            "pig": {"games_played", "wins", "losses", "total_score", "high_score"},
+            "twentyone": {"games_played", "wins", "losses"},
+            "metalpipe": set(),
+            "battle": {
+                "games_played",
+                "custom_most_enemies_defeated_high",
+                "custom_deepest_wave_reached_high",
+            },
+            "blackjack": {"games_played"},
+        },
+        {"pig", "twentyone"},
+    )
+    printed = capsys.readouterr().out
+
+    assert counts == {"player_game_stats": 6, "player_ratings": 2}
+    assert "Unsupported leaderboard stat keys detected" in printed
+    assert "metalpipe:games_played" in printed
+    assert "twentyone:total_score" in printed
+    assert "Unsupported rating game types detected: blackjack, metalpipe" in printed
+
+    cursor.execute(
+        """
+        SELECT player_id, game_type, stat_key, stat_value
+        FROM player_game_stats
+        ORDER BY player_id, game_type, stat_key
+        """
+    )
+    remaining_stats = [tuple(row) for row in cursor.fetchall()]
+    assert remaining_stats == [
+        ("p1", "pig", "games_played", 5.0),
+        ("p1", "pig", "high_score", 120.0),
+        ("p1", "pig", "losses", 3.0),
+        ("p1", "pig", "total_score", 240.0),
+        ("p1", "pig", "wins", 2.0),
+        ("p2", "twentyone", "games_played", 3.0),
+        ("p2", "twentyone", "losses", 2.0),
+        ("p2", "twentyone", "wins", 1.0),
+        ("p4", "battle", "custom_deepest_wave_reached_high", 5.0),
+        ("p4", "battle", "custom_most_enemies_defeated_high", 13.0),
+        ("p4", "battle", "games_played", 2.0),
+        ("p5", "lastcard", "wins", 8.0),
+    ]
+
+    cursor.execute(
+        """
+        SELECT player_id, game_type
+        FROM player_ratings
+        ORDER BY player_id, game_type
+        """
+    )
+    assert [tuple(row) for row in cursor.fetchall()] == [
+        ("p1", "pig"),
+        ("p2", "twentyone"),
+        ("p5", "lastcard"),
+    ]
+
+
+def test_prune_unsupported_leaderboard_data_empty_support_map_is_noop(db):
+    cursor = db._conn.cursor()
+    cursor.execute(
+        """
+        INSERT INTO player_game_stats (player_id, game_type, stat_key, stat_value)
+        VALUES (?, ?, ?, ?)
+        """,
+        ("p1", "metalpipe", "games_played", 1),
+    )
+    cursor.execute(
+        "INSERT INTO player_ratings (player_id, game_type, mu, sigma) VALUES (?, ?, ?, ?)",
+        ("p1", "metalpipe", 30.0, 6.0),
+    )
+    db._conn.commit()
+
+    counts = db.prune_unsupported_leaderboard_data({}, set())
+
+    assert counts == {"player_game_stats": 0, "player_ratings": 0}
+    cursor.execute("SELECT game_type, stat_key FROM player_game_stats")
+    assert [tuple(row) for row in cursor.fetchall()] == [("metalpipe", "games_played")]
+    cursor.execute("SELECT game_type FROM player_ratings")
+    assert [row[0] for row in cursor.fetchall()] == ["metalpipe"]
+
+
 def test_delete_user_cascades(db):
     db.create_user("Alice", "hash")
     alice = db.get_user("Alice")
