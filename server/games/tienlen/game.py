@@ -629,18 +629,8 @@ class TienLenGame(Game, TurnTimerMixin):
         self.define_keybind("v", "Check variant", ["check_variant"], include_spectators=True)
         self.define_keybind("shift+t", "Turn timer", ["check_turn_timer"], include_spectators=True)
 
-    def rebuild_player_menu(self, player: Player) -> None:
+    def before_menu_build(self, player: Player) -> None:
         self._sync_turn_actions(player)
-        super().rebuild_player_menu(player)
-
-    def update_player_menu(self, player: Player, selection_id: str | None = None) -> None:
-        self._sync_turn_actions(player)
-        super().update_player_menu(player, selection_id=selection_id)
-
-    def rebuild_all_menus(self) -> None:
-        for player in self.players:
-            self._sync_turn_actions(player)
-        super().rebuild_all_menus()
 
     def _sync_turn_actions(self, player: Player) -> None:
         if not isinstance(player, TienLenPlayer):

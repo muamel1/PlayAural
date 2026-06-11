@@ -332,21 +332,9 @@ class DominosGame(Game):
         self.define_keybind("e", "Read counts", ["read_counts"], state=KeybindState.ACTIVE, include_spectators=True)
         self.define_keybind("w", "Read hand", ["read_hand"], state=KeybindState.ACTIVE)
 
-    def rebuild_player_menu(self, player: Player) -> None:
+    def before_menu_build(self, player: Player) -> None:
         self._sync_turn_actions(player)
         self._sync_standard_actions(player)
-        super().rebuild_player_menu(player)
-
-    def update_player_menu(self, player: Player, selection_id: str | None = None) -> None:
-        self._sync_turn_actions(player)
-        self._sync_standard_actions(player)
-        super().update_player_menu(player, selection_id=selection_id)
-
-    def rebuild_all_menus(self) -> None:
-        for player in self.players:
-            self._sync_turn_actions(player)
-            self._sync_standard_actions(player)
-        super().rebuild_all_menus()
 
     def _sync_standard_actions(self, player: Player) -> None:
         standard_set = self.get_action_set(player, "standard")

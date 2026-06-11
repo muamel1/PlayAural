@@ -123,13 +123,8 @@ class GridTestGame(GridGameMixin, Game):
         for action in self.build_grid_actions(player):
             turn_set.add(action)
 
-    def rebuild_player_menu(self, player: Player) -> None:
+    def before_menu_build(self, player: Player) -> None:
         self._sync_grid_turn_actions(player)
-        super().rebuild_player_menu(player)
-
-    def update_player_menu(self, player: Player, selection_id: str | None = None) -> None:
-        self._sync_grid_turn_actions(player)
-        super().update_player_menu(player, selection_id=selection_id)
 
     def setup_keybinds(self) -> None:
         super().setup_keybinds()

@@ -390,19 +390,10 @@ class NinetyNineGame(Game):
             )
         return errors
 
-    def rebuild_player_menu(self, player: Player) -> None:
-        """Refresh localized dynamic card labels before rebuilding the menu."""
+    def before_menu_build(self, player: Player) -> None:
+        """Refresh localized dynamic card labels before any menu paint."""
         if isinstance(player, NinetyNinePlayer):
             self._update_turn_actions(player)
-        super().rebuild_player_menu(player)
-
-    def update_player_menu(
-        self, player: Player, selection_id: str | None = None
-    ) -> None:
-        """Refresh localized dynamic card labels before preserving menu focus."""
-        if isinstance(player, NinetyNinePlayer):
-            self._update_turn_actions(player)
-        super().update_player_menu(player, selection_id)
 
     def _on_replacement_slot_reclaimed(
         self, bot_name: str, human_name: str

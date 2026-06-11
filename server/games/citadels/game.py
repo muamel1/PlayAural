@@ -486,18 +486,8 @@ class CitadelsGame(Game):
         self.define_keybind("k", "Read character", ["read_character"], state=KeybindState.ACTIVE)
         self.define_keybind("f", "Read discards", ["read_discards"], state=KeybindState.ACTIVE, include_spectators=True)
 
-    def rebuild_player_menu(self, player: Player) -> None:
+    def before_menu_build(self, player: Player) -> None:
         self._sync_player_action_sets(player)
-        super().rebuild_player_menu(player)
-
-    def update_player_menu(self, player: Player, selection_id: str | None = None) -> None:
-        self._sync_player_action_sets(player)
-        super().update_player_menu(player, selection_id=selection_id)
-
-    def rebuild_all_menus(self) -> None:
-        for player in self.players:
-            self._sync_player_action_sets(player)
-        super().rebuild_all_menus()
 
     def find_action(self, player: Player, action_id: str) -> Action | None:
         self._sync_player_action_sets(player)

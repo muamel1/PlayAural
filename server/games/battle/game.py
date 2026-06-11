@@ -1459,21 +1459,9 @@ class BattleGame(Game):
         self.define_keybind("u", Localization.get("en", "battle-undo-selection"), ["battle_undo_selection"], state=KeybindState.ACTIVE)
         self.define_keybind("d", Localization.get("en", "battle-done-selecting"), ["battle_done_selecting"], state=KeybindState.ACTIVE)
 
-    def rebuild_player_menu(self, player: Player) -> None:
+    def before_menu_build(self, player: Player) -> None:
         self._sync_turn_actions(player)
         self._sync_standard_actions(player)
-        super().rebuild_player_menu(player)
-
-    def update_player_menu(self, player: Player, selection_id: str | None = None) -> None:
-        self._sync_turn_actions(player)
-        self._sync_standard_actions(player)
-        super().update_player_menu(player, selection_id=selection_id)
-
-    def rebuild_all_menus(self) -> None:
-        for player in self.players:
-            self._sync_turn_actions(player)
-            self._sync_standard_actions(player)
-        super().rebuild_all_menus()
 
     def _sync_standard_actions(self, player: Player) -> None:
         action_set = self.get_action_set(player, "standard")

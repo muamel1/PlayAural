@@ -488,18 +488,8 @@ class ChessGame(GridGameMixin, Game):
             state=KeybindState.ACTIVE,
         )
 
-    def rebuild_player_menu(self, player: Player) -> None:
+    def before_menu_build(self, player: Player) -> None:
         self._sync_standard_actions(player)
-        super().rebuild_player_menu(player)
-
-    def update_player_menu(self, player: Player, selection_id: str | None = None) -> None:
-        self._sync_standard_actions(player)
-        super().update_player_menu(player, selection_id=selection_id)
-
-    def rebuild_all_menus(self) -> None:
-        for player in self.players:
-            self._sync_standard_actions(player)
-        super().rebuild_all_menus()
 
     def _sync_standard_actions(self, player: Player) -> None:
         action_set = self.get_action_set(player, "standard")
