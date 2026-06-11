@@ -82,6 +82,19 @@ class TableManager:
         for table in list(self._tables.values()):
             table.on_tick()
 
+    def flush_menus(self) -> None:
+        """Flush pending menu refreshes for every table's game.
+
+        The per-tick half of the framework menu flush (the other half runs at
+        the end of each Game.handle_event). Runs after all game ticks so menus
+        marked dirty by bots, sequences, timers, and out-of-game server paths
+        are built once and sent in the same tick's packet flush.
+        """
+        for table in list(self._tables.values()):
+            game = table.game
+            if game is not None and hasattr(game, "flush_menus"):
+                game.flush_menus()
+
     def add_table(self, table: Table) -> None:
         """Add an existing table (e.g., loaded from database)."""
         table._manager = self

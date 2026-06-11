@@ -86,7 +86,8 @@ async def test_options_submenu_blocks_game_menu_rebuild_while_playing() -> None:
         assert server._user_states[host.username]["menu"] == "options_audio_submenu"
 
         host.clear_messages()
-        game.rebuild_player_menu(host_player)
+        game.refresh_menus(host_player)
+        game.flush_menus()
 
         assert not any(
             message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"

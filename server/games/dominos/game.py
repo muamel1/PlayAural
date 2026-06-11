@@ -593,7 +593,7 @@ class DominosGame(Game):
 
         self._update_all_turn_actions()
         self.announce_turn()
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._queue_bot_turn()
 
     def _get_hand_size(self) -> int:
@@ -1009,7 +1009,7 @@ class DominosGame(Game):
         self.advance_turn(announce=False)
         self._update_all_turn_actions()
         self.announce_turn()
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._queue_bot_turn()
 
     def _finish_round_from_empty_hand(self, winner: DominosPlayer) -> None:
@@ -1086,7 +1086,7 @@ class DominosGame(Game):
         self.round_wait_ticks = 5 * 20
         for player in self.get_active_players():
             player.hand = []
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _team_pip_totals(self) -> dict[int, int]:
         totals: dict[int, int] = {team.index: 0 for team in self.team_manager.teams}

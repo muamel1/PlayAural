@@ -62,6 +62,7 @@ class TestMidnightGameUnit:
         game.add_player("Bob", user2)
 
         game.on_start()
+        game.flush_menus()
 
         # Modify some state
         game.players[0].round_score = 20
@@ -105,6 +106,7 @@ class TestMidnightGameActions:
         self.player1 = self.game.add_player("Alice", self.user1)
         self.player2 = self.game.add_player("Bob", self.user2)
         self.game.on_start()
+        self.game.flush_menus()
         self.game.reset_turn_order()
 
     def test_roll_initial(self):
@@ -263,6 +265,7 @@ class TestMidnightGameActions:
         random.seed(42)
 
         self.game.execute_action(self.player1, "roll")
+        self.game.flush_menus()
 
         assert self.user1.menus["turn_menu"]["selection_id"] == "toggle_die_0"
 
@@ -273,6 +276,7 @@ class TestMidnightGameActions:
         self.game.execute_action(self.player1, "toggle_die_0")
 
         self.game.execute_action(self.player1, "roll")
+        self.game.flush_menus()
 
         menu = self.user1.menus["turn_menu"]
         visible_ids = [item.id for item in menu["items"] if getattr(item, "id", None)]
@@ -315,6 +319,7 @@ class TestMidnightPlayTest:
         game.add_player("Bot2", bot2)
 
         game.on_start()
+        game.flush_menus()
 
         # Run game with periodic save/reload to test persistence
         max_ticks = 2000
@@ -333,6 +338,7 @@ class TestMidnightPlayTest:
                     game.setup_player_actions(player)
 
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active, "Game should have ended"
         # At least one player should have won a round
@@ -349,6 +355,7 @@ class TestMidnightPlayTest:
             game.add_player(bot.username, bot)
 
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 3000
         for tick in range(max_ticks):
@@ -366,6 +373,7 @@ class TestMidnightPlayTest:
                     game.setup_player_actions(player)
 
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active
 
@@ -380,6 +388,7 @@ class TestMidnightPlayTest:
         game.add_player("Bot", bot)
 
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 2000
         for tick in range(max_ticks):
@@ -433,6 +442,7 @@ class TestMidnightPlayTest:
                         game.execute_action(current, "bank")
             else:
                 game.on_tick()
+                game.flush_menus()
 
         assert not game.game_active
 
@@ -453,11 +463,13 @@ class TestMidnightPlayTest:
             game.add_player("Bot2", bot2)
 
             game.on_start()
+            game.flush_menus()
 
             for _ in range(rounds * 1000 + 1000):
                 if not game.game_active:
                     break
                 game.on_tick()
+                game.flush_menus()
 
             assert not game.game_active, f"Game with {rounds} rounds should complete"
 
@@ -474,6 +486,7 @@ class TestMidnightPersistence:
         game.add_player("Bob", user2)
 
         game.on_start()
+        game.flush_menus()
 
         # Set various state
         game.round = 5
@@ -514,6 +527,7 @@ class TestMidnightPersistence:
         game.add_player("Alice", user)
         game.add_player("Bot", bot)
         game.on_start()
+        game.flush_menus()
 
         # Do some actions
         game.execute_action(game.players[0], "roll")

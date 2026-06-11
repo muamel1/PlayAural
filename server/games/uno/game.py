@@ -245,7 +245,7 @@ class UnoGame(Game):
         self.add_player(bot_name, Bot(bot_name))
         self.broadcast_l("table-joined", buffer="game", player=bot_name)
         self.broadcast_sound("join.ogg")
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_remove_bot(self, player: Player, action_id: str) -> None:
         for i in range(len(self.players) - 1, -1, -1):
@@ -253,7 +253,7 @@ class UnoGame(Game):
                 self.remove_player(self.players[i].id)
                 self.broadcast_sound("leave.ogg")
                 break
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _perform_leave_game(self, player: Player) -> None:
         if player.is_spectator:
@@ -261,7 +261,7 @@ class UnoGame(Game):
             if self._table:
                 self._table.remove_member(player.name)
             self.broadcast_sound("leave_spectator.ogg")
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         if self.status == "playing" and not player.is_bot:
@@ -272,7 +272,7 @@ class UnoGame(Game):
             if other_humans:
                 if self._replace_with_bot(player):
                     self.broadcast_sound("leave.ogg")
-                self.rebuild_all_menus()
+                self.refresh_menus()
                 return
 
         self.remove_player(player.id)
@@ -284,7 +284,7 @@ class UnoGame(Game):
         if not has_humans:
             self.destroy()
             return
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # ==========================================================================
     # Action sets / keybinds
@@ -737,7 +737,7 @@ class UnoGame(Game):
             return
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(20, 35))
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _auto_skip(self, player: UnoPlayer) -> None:
         """End a player's turn when they cannot play (no pass action exists)."""
@@ -932,7 +932,7 @@ class UnoGame(Game):
         if card.value == 0 and self.options.zero_seven_rule:
             self._rotate_hands()
         # A straight is an extra play; the turn pointer does not move.
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _set_straight_anchor(self, card: UnoCard) -> None:
         if not self.options.straights:
@@ -985,7 +985,7 @@ class UnoGame(Game):
             self._clear_straight()
             if player.is_bot:
                 BotHelper.jolt_bot(player, ticks=random.randint(15, 25))
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         if not is_wild:
@@ -1040,7 +1040,7 @@ class UnoGame(Game):
             user.speak_l("uno-choose-swap", buffer="game")
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(15, 25))
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _resolve_winning_play(self, player: UnoPlayer, card: UnoCard) -> None:
         """Handle a play that empties the hand (round end)."""
@@ -1146,7 +1146,7 @@ class UnoGame(Game):
         if self._has_playable(player):
             if player.is_bot:
                 BotHelper.jolt_bot(player, ticks=random.randint(10, 20))
-            self.rebuild_all_menus()
+            self.refresh_menus()
         else:
             self._auto_skip(player)
 
@@ -1174,7 +1174,7 @@ class UnoGame(Game):
             p.hand = hands[(i + self.turn_direction) % n]
         self.play_sound("game_uno/handchange.ogg")
         self.broadcast_l("uno-rotate-hands", buffer="game")
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_choose_swap(self, player: Player, action_id: str) -> None:
         if not isinstance(player, UnoPlayer):
@@ -1220,7 +1220,7 @@ class UnoGame(Game):
         elif was_current:
             self._advance_turn()
         else:
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def _action_bluff_challenge(self, player: Player, action_id: str) -> None:
         p = self._require_current(player)
@@ -1276,7 +1276,7 @@ class UnoGame(Game):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(15, 25))
         self.wild_wait_ticks = WILD_TRANSITION_TICKS
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_draw(self, player: Player, action_id: str) -> None:
         p = self._require_current(player)
@@ -1317,7 +1317,7 @@ class UnoGame(Game):
         if playable or had_playable:
             self.consecutive_passes = 0
             # Jump focus to the card just drawn.
-            self.update_player_menu(p, selection_id=f"play_card_{card.id}")
+            self.request_menu_focus(p, f"play_card_{card.id}")
             if p.is_bot:
                 BotHelper.jolt_bot(p, ticks=random.randint(15, 25))
             return
@@ -1345,7 +1345,7 @@ class UnoGame(Game):
             player.uno_window_ticks = 0
             self.play_sound("game_uno/uno.ogg")
             self._broadcast_uno(player)
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
         # Call out someone who is in their open window.
         target = self._callable_target(player)
@@ -1366,7 +1366,7 @@ class UnoGame(Game):
                     )
             target.uno_grace_ticks = 0
             target.uno_window_ticks = 0
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     # ==========================================================================
     # Info actions
@@ -1418,7 +1418,7 @@ class UnoGame(Game):
         user = self.get_user(player)
         if user:
             user.speak_l("uno-sorting-color", buffer="game")
-        self.rebuild_player_menu(player)
+        self.refresh_menus(player)
 
     def _action_sort_number(self, player: Player, action_id: str) -> None:
         if not isinstance(player, UnoPlayer):
@@ -1427,7 +1427,7 @@ class UnoGame(Game):
         user = self.get_user(player)
         if user:
             user.speak_l("uno-sorting-number", buffer="game")
-        self.rebuild_player_menu(player)
+        self.refresh_menus(player)
 
     # ==========================================================================
     # Enable / hide callbacks
@@ -1890,7 +1890,7 @@ class UnoGame(Game):
             return
         self._sync_team_scores()
         self.hand_wait_ticks = HAND_END_TICKS
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _score_first_to_limit(self, winner: UnoPlayer, losers: list[tuple[UnoPlayer, int]]) -> None:
         total = sum(pts for _, pts in losers)

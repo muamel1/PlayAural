@@ -363,7 +363,7 @@ class NineGame(Game):
             BotHelper.jolt_bot(player, ticks=random.randint(30, 50))
 
         self._update_all_turn_actions()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _auto_skip_current_player_turn(self, player: NinePlayer) -> None:
         """Execute the logic for automatically skipping a player's turn."""

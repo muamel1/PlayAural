@@ -570,7 +570,7 @@ class PiratesGame(Game):
         self.set_turn_players(active_players)
 
         # Rebuild menus and start first turn
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._start_round()
 
         # Jolt bots
@@ -650,7 +650,7 @@ class PiratesGame(Game):
         else:
             self._announce_turn()
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         # Jolt bots
         BotHelper.jolt_bots(self, ticks=random.randint(80, 120))

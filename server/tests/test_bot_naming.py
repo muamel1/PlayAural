@@ -23,7 +23,8 @@ def make_game():
     user = MockUser("Host", uuid="host")
     host = game.add_player("Host", user)
     game.host = "Host"
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     return game, host, user
 
 

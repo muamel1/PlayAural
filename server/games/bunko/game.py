@@ -203,7 +203,7 @@ class BunkoGame(Game):
         if not current:
             return
         self.announce_turn(turn_sound="game_squares/begin turn.ogg")
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._queue_bot_turn()
 
     def _start_round(self, starter: BunkoPlayer | None = None) -> None:

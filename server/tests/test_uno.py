@@ -68,7 +68,8 @@ def test_uno_blue_hotkey_chooses_blue_during_active_color_selection():
     game.discard_pile = [_card(100, cards.YELLOW, cards.NUMBER, 5)]
     game.current_color = cards.YELLOW
     game.set_turn_players([first, second])
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(first, "play_card_1")
     game.handle_event(first, {"type": "keybind", "key": "b"})
@@ -108,6 +109,7 @@ def test_spectator_excluded_from_uno_scores_after_start():
     watcher.is_spectator = True
 
     game.on_start()
+    game.flush_menus()
     alice.score = 12
     bob.score = 4
     game._sync_team_scores()
@@ -176,7 +178,8 @@ def test_playing_wild_locks_until_color_then_advances():
     ]
     second.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     game.set_turn_players([first, second])
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(first, "play_card_1")
     assert game.awaiting_wild_color is True
@@ -209,7 +212,8 @@ def test_draw_two_keeps_turn_when_skip_after_draw_off():
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
 
@@ -223,7 +227,8 @@ def test_draw_two_skips_when_skip_after_draw_on():
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
 
@@ -245,7 +250,8 @@ def test_callout_forces_silent_player_to_draw_four():
         _card(5, cards.GREEN, cards.NUMBER, 8),
     ]
     game.set_turn_players([first, second])
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(second, "uno")  # call out
 
@@ -264,7 +270,8 @@ def test_say_uno_protects_from_callout():
         _card(5, cards.GREEN, cards.NUMBER, 8),
     ]
     game.set_turn_players([first, second])
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(first, "uno")  # first announces UNO
     assert first.said_uno is True
@@ -290,7 +297,8 @@ def test_stale_said_uno_cleared_when_drawing_back_above_one_card():
 
     # Back down to one card, the player can announce UNO again.
     first.hand = [_card(1, cards.RED, cards.NUMBER, 1)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     assert game._is_uno_enabled(first) is None
     game.execute_action(first, "uno")
     assert first.said_uno is True
@@ -310,10 +318,13 @@ def test_draw_hidden_during_wild_transition():
     ]
     second.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     game.set_turn_players([first, second])
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(first, "play_card_1")
+    game.flush_menus()
     game.execute_action(first, "color_green")
+    game.flush_menus()
     assert game.wild_wait_ticks > 0
     assert game.current_player is first
     assert game.cards_to_draw == 4
@@ -344,7 +355,8 @@ def test_bot_play_announced_before_uno(monkeypatch):
     ]
     alice.hand = [_card(4, cards.BLUE, cards.NUMBER, 1)]
     game.set_turn_players([botb, alice])
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     observer.clear_messages()
 
     game.execute_action(botb, "play_card_2")
@@ -373,10 +385,12 @@ def _run_bot_game(scoring_mode: str) -> UnoGame:
     for i in range(3):
         game.add_player(f"Bot{i}", Bot(f"Bot{i}"))
     game.on_start()
+    game.flush_menus()
     for _ in range(80000):
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
     return game
 
 
@@ -415,7 +429,8 @@ def test_draw_two_stacking_accumulates():
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.RED, cards.DRAW_TWO), _card(5, cards.BLUE, cards.NUMBER, 8)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")  # obligation 2 -> B
     assert game.cards_to_draw == 2
@@ -431,7 +446,8 @@ def test_draw_two_auto_accept_when_no_response():
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]  # no response
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
     assert len(b.hand) == 3  # auto-drew 2
@@ -451,7 +467,8 @@ def test_skip_response_passes_obligation_in_two_player():
         _card(2, cards.BLUE, cards.NUMBER, 9),
     ]
     b.hand = [_card(3, cards.RED, cards.SKIP), _card(5, cards.GREEN, cards.NUMBER, 8)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")  # obligation 2 -> B
     assert game.current_player is b
@@ -473,7 +490,8 @@ def test_reverse_response_passes_obligation_in_two_player():
         _card(2, cards.BLUE, cards.NUMBER, 9),
     ]
     b.hand = [_card(3, cards.RED, cards.REVERSE), _card(5, cards.GREEN, cards.NUMBER, 8)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")  # obligation 2 -> B
     game.execute_action(b, "play_card_3")  # B reverses defensively
@@ -489,7 +507,8 @@ def test_skip_response_passes_obligation_in_three_player():
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.RED, cards.SKIP), _card(5, cards.GREEN, cards.NUMBER, 8)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")  # obligation 2 -> B
     game.execute_action(b, "play_card_3")  # B skips
@@ -504,6 +523,7 @@ def _advance_through_wild(game, ticks=25):
         if game.wild_wait_ticks == 0:
             break
         game.on_tick()
+        game.flush_menus()
 
 
 def test_bluff_challenge_catches_bluffer():
@@ -511,7 +531,8 @@ def test_bluff_challenge_catches_bluffer():
     # A holds a red card (matching current color) yet plays Wild Draw Four -> bluff.
     a.hand = [_card(1, cards.WILD, cards.WILD_DRAW_FOUR), _card(2, cards.RED, cards.NUMBER, 5)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7), _card(6, cards.GREEN, cards.NUMBER, 8)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
     assert game.awaiting_wild_color is True
@@ -531,7 +552,8 @@ def test_bluff_challenge_wrong_punishes_challenger():
     # A has no red card -> Wild Draw Four is legitimate.
     a.hand = [_card(1, cards.WILD, cards.WILD_DRAW_FOUR), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7), _card(6, cards.GREEN, cards.NUMBER, 8)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
     assert game.is_bluff is False
@@ -547,7 +569,8 @@ def test_bluffer_cannot_call_own_bluff():
     game, (a, b) = _n_player_game(["A", "B"], UnoOptions(responses=False, bluff=True))
     a.hand = [_card(1, cards.WILD, cards.WILD_DRAW_FOUR), _card(2, cards.RED, cards.NUMBER, 5)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7), _card(6, cards.GREEN, cards.NUMBER, 8)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
     game.execute_action(a, "color_blue")
@@ -567,7 +590,8 @@ def test_zero_rotates_hands():
     a.hand = [_card(1, cards.RED, cards.NUMBER, 0), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
     # Hands rotate by +1: A<-B, B<-C, C<-A(remaining blue 9).
@@ -579,9 +603,11 @@ def test_seven_swaps_with_chosen_player():
     game, (a, b) = _n_player_game(["A", "B"], UnoOptions(zero_seven_rule=True))
     a.hand = [_card(1, cards.RED, cards.NUMBER, 7), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 3), _card(5, cards.GREEN, cards.NUMBER, 4)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
+    game.flush_menus()
     assert game.awaiting_swap_target is True
 
     game.execute_action(a, f"swap_target_{b.id}")
@@ -594,9 +620,11 @@ def test_seven_can_decline_swap():
     game, (a, b) = _n_player_game(["A", "B"], UnoOptions(zero_seven_rule=True))
     a.hand = [_card(1, cards.RED, cards.NUMBER, 7), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 3)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
+    game.flush_menus()
     assert game.awaiting_swap_target is True
 
     game.execute_action(a, "swap_target_none")  # keep own hand
@@ -610,9 +638,11 @@ def test_swap_hides_other_actions_while_choosing():
     game, (a, b) = _n_player_game(["A", "B"], UnoOptions(zero_seven_rule=True))
     a.hand = [_card(1, cards.RED, cards.NUMBER, 7), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 3)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
+    game.flush_menus()
     assert game.awaiting_swap_target is True
 
     # The remaining card and the draw must be hidden during swap selection.
@@ -635,12 +665,14 @@ def test_straight_seven_triggers_swap():
         _card(8, cards.BLUE, cards.NUMBER, 1),
     ]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 3), _card(5, cards.GREEN, cards.NUMBER, 4)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")  # in-turn red 6 -> B
     assert game.current_player is b
 
     game.execute_action(a, "play_card_2")  # A straights red 7 out of turn
+    game.flush_menus()
     assert game.awaiting_swap_target is True
     assert game.swap_player_id == a.id
 
@@ -663,9 +695,11 @@ def test_intercepted_seven_opens_swap_then_replays():
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 8)]
     c.hand = [_card(4, cards.RED, cards.NUMBER, 7), _card(6, cards.BLUE, cards.NUMBER, 2)]
     game.turn_index = 0  # A current; C intercepts the red 7 out of turn
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(c, "play_card_4")  # exact-match interception of red 7
+    game.flush_menus()
     assert game.awaiting_swap_target is True
     assert game.swap_player_id == c.id
     # Frozen: another player cannot play during the swap.
@@ -692,7 +726,8 @@ def test_straight_zero_rotates_hands():
     ]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 3)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 5)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")  # in-turn red 1 -> B
     game.execute_action(a, "play_card_2")  # A straights red 0 out of turn
@@ -718,10 +753,12 @@ def test_stuck_turn_auto_resolves():
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     game.deck = []  # cannot draw
     game.set_turn_players([a, b])
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     assert game.current_player is a
 
     game.on_tick()
+    game.flush_menus()
     assert game.current_player is b  # stuck turn auto-resolved
 
 
@@ -729,7 +766,8 @@ def test_free_draw_allowed_with_playable_card():
     game, (a, b) = _n_player_game(["A", "B"], UnoOptions(free_draws=2))
     a.hand = [_card(1, cards.RED, cards.NUMBER, 5)]  # playable on red top
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "draw")
     assert a.free_draws_used == 1
@@ -742,7 +780,8 @@ def test_draw_unplayable_card_auto_skips_turn():
     a.hand = [_card(1, cards.BLUE, cards.NUMBER, 9)]  # not playable on red 5 top
     game.deck = [_card(50, cards.GREEN, cards.NUMBER, 3)]  # drawn card also unplayable
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "draw")
     assert len(a.hand) == 2  # drew the card
@@ -753,7 +792,8 @@ def test_skip_after_draw_passes_turn():
     game, (a, b) = _n_player_game(["A", "B"], UnoOptions(skip_after_draw=True))
     a.hand = [_card(1, cards.BLUE, cards.NUMBER, 9)]  # not playable on red top
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "draw")
     assert len(a.hand) == 2
@@ -770,7 +810,8 @@ def test_interception_steals_play_and_turn():
     a.hand = [_card(1, cards.RED, cards.NUMBER, 5), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     c.hand = [_card(4, cards.RED, cards.NUMBER, 5), _card(6, cards.YELLOW, cards.NUMBER, 1)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")  # in-turn -> B
     assert game.current_player is b
@@ -791,7 +832,8 @@ def test_draw_two_interception_plays_as_own_turn():
     b.hand = [_card(4, cards.RED, cards.DRAW_TWO), _card(5, cards.BLUE, cards.NUMBER, 8)]
     c.hand = [_card(6, cards.GREEN, cards.NUMBER, 7)]
     game.turn_index = 2  # C is the current player; B intercepts out of turn
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(b, "play_card_4")
     assert game.top_card.id == 4
@@ -807,7 +849,8 @@ def test_skip_interception_plays_as_own_turn():
     b.hand = [_card(4, cards.RED, cards.SKIP), _card(5, cards.BLUE, cards.NUMBER, 8)]
     c.hand = [_card(6, cards.GREEN, cards.NUMBER, 7)]
     game.turn_index = 2  # C current; B intercepts
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(b, "play_card_4")
     assert game.top_card.id == 4
@@ -821,7 +864,8 @@ def test_super_interception_ignores_color():
     a.hand = [_card(1, cards.RED, cards.NUMBER, 5), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 5), _card(6, cards.GREEN, cards.NUMBER, 1)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
     game.execute_action(c, "play_card_4")  # yellow 5 onto red 5 (any color)
@@ -834,7 +878,8 @@ def test_invalid_interception_penalizes():
     a.hand = [_card(1, cards.RED, cards.NUMBER, 5), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     c.hand = [_card(4, cards.GREEN, cards.NUMBER, 7)]  # not an exact match
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")
     game.execute_action(c, "play_card_4")  # invalid out-of-turn play
@@ -852,7 +897,8 @@ def test_straight_continues_same_player_same_color():
         _card(7, cards.BLUE, cards.NUMBER, 9),
     ]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(a, "play_card_1")  # in-turn red 5 -> B
     assert game.current_player is b
@@ -875,10 +921,12 @@ def test_bot_game_completes_with_interceptions_and_straights():
     for i in range(4):
         game.add_player(f"Bot{i}", Bot(f"Bot{i}"))
     game.on_start()
+    game.flush_menus()
     for _ in range(120000):
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
     assert game.status == "finished"
 
 
@@ -894,10 +942,12 @@ def test_bot_game_completes_with_advanced_responses():
     for i in range(3):
         game.add_player(f"Bot{i}", Bot(f"Bot{i}"))
     game.on_start()
+    game.flush_menus()
     for _ in range(120000):
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
     assert game.status == "finished"
 
 
@@ -915,10 +965,12 @@ def test_bot_game_completes_with_all_advanced_rules():
     for i in range(4):
         game.add_player(f"Bot{i}", Bot(f"Bot{i}"))
     game.on_start()
+    game.flush_menus()
     for _ in range(120000):
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
     assert game.status == "finished"
 
 
@@ -934,8 +986,10 @@ def test_bot_game_completes_with_straights_and_zero_seven():
     for i in range(4):
         game.add_player(f"Bot{i}", Bot(f"Bot{i}"))
     game.on_start()
+    game.flush_menus()
     for _ in range(120000):
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
     assert game.status == "finished"

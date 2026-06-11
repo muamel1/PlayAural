@@ -220,8 +220,8 @@ class Table(DataClassJSONMixin):
                 if self._game:
                     self._game.broadcast_l("new-host", buffer="system", player=new_host)
                     self._game.host = new_host
-                    if hasattr(self._game, "rebuild_all_menus"):
-                        self._game.rebuild_all_menus()
+                    if hasattr(self._game, "refresh_menus"):
+                        self._game.refresh_menus()
             else:
                 # No non-spectator human can take over as host: destroy the table.
                 # This handles the case where only spectators remain after the host leaves

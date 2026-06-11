@@ -21,13 +21,19 @@ class EventHandlingMixin:
         - self.resolve_action(player, action) -> ResolvedAction
         - self.execute_action(player, action_id, input_value?, context?)
         - self.get_all_visible_actions(player) -> list[ResolvedAction]
-        - self.rebuild_player_menu(player)
-        - self.rebuild_all_menus()
+        - self.refresh_menus(player?), self.flush_menus()
         - self._is_player_spectator(player) -> bool
     """
 
     def handle_event(self, player: "Player", event: dict) -> None:
-        """Handle an event from a player."""
+        """Handle an event from a player.
+
+        This is the single entry point for player-driven events, so it ends
+        with the framework menu flush: every menu refresh recorded while
+        handling the event is built and sent here, synchronously with the
+        event. (Refreshes recorded outside an event — bots, sequences,
+        timers — are flushed once per server tick instead.)
+        """
         event_type = event.get("type")
 
         if event_type == "menu":
@@ -48,10 +54,7 @@ class EventHandlingMixin:
         elif event_type == "action":
             self._handle_action_event(player, event)
 
-    def _should_rebuild_after_keybind(self, player: "Player", executed_any: bool) -> bool:
-        """Allow games with focus-preserving keybinds to suppress full rebuilds."""
-        _ = player
-        return executed_any
+        self.flush_menus()
 
     def _handle_action_event(self, player: "Player", event: dict) -> None:
         """Handle a direct action execution event."""
@@ -76,10 +79,7 @@ class EventHandlingMixin:
         resolved = self.resolve_action(player, action)
         if resolved.enabled:
             self.execute_action(player, action_id, context=context)
-            
-            # Don't rebuild if action is waiting for input
-            if player.id not in self._pending_actions:
-                self.rebuild_all_menus()
+            self.refresh_menus()
         elif resolved.disabled_reason:
             if resolved.disabled_reason != "action-not-available":
                 user = self.get_user(player)
@@ -114,9 +114,7 @@ class EventHandlingMixin:
                 resolved = self.resolve_action(player, action)
                 if resolved.enabled:
                     self.execute_action(player, selection_id)
-                    # Don't rebuild if action is waiting for input
-                    if player.id not in self._pending_actions:
-                        self.rebuild_all_menus()
+                    self.refresh_menus()
                 elif resolved.disabled_reason:
                     if resolved.disabled_reason != "action-not-available":
                         user = self.get_user(player)
@@ -129,9 +127,7 @@ class EventHandlingMixin:
                 if 0 <= selection < len(visible):
                     resolved = visible[selection]
                     self.execute_action(player, resolved.action.id)
-                    # Don't rebuild if action is waiting for input
-                    if player.id not in self._pending_actions:
-                        self.rebuild_all_menus()
+                    self.refresh_menus()
 
         elif menu_id == "actions_menu":
             # Actions menu - use selection_id directly
@@ -144,18 +140,18 @@ class EventHandlingMixin:
                 user.remove_menu("status_box")
                 user.speak_l("status-box-closed", buffer="game")
                 self._status_box_open.discard(player.id)
-                self.rebuild_player_menu(player)
+                self.refresh_menus(player)
 
         elif menu_id == "game_over":
             # Handle game over menu - Return to lobby or Leave game
             # When the game is over, `self` here is the NEW lobby game instance
             if selection_id == "return_to_lobby":
-                self.rebuild_player_menu(player)
+                self.refresh_menus(player)
             elif selection_id == "leave_game":
                 self.execute_action(player, "leave_game")
             else:
                 # By default, assume they hit enter on a score line, which goes to lobby
-                self.rebuild_player_menu(player)
+                self.refresh_menus(player)
 
         elif menu_id == "action_input_menu":
             # Handle action input menu selection
@@ -164,10 +160,10 @@ class EventHandlingMixin:
                 if selection_id not in ("_cancel", "back"):
                     # Execute the action with the selected input
                     self.execute_action(player, action_id, selection_id)
-            self.rebuild_player_menu(player)
+            self.refresh_menus(player)
         elif menu_id == "action_input_editbox":
             self._pending_actions.pop(player.id, None)
-            self.rebuild_player_menu(player)
+            self.refresh_menus(player)
         elif menu_id == "leave_game_confirm":
             user = self.get_user(player)
             if user:
@@ -182,7 +178,7 @@ class EventHandlingMixin:
                 handler = getattr(self, "_perform_leave_game", None)
                 if handler:
                     handler(player)
-            self.rebuild_player_menu(player)
+            self.refresh_menus(player)
 
     def _handle_editbox_event(self, player: "Player", event: dict) -> None:
         """Handle an editbox submission event."""
@@ -195,7 +191,7 @@ class EventHandlingMixin:
                 action_id = self._pending_actions.pop(player.id)
                 if text and not event.get("cancelled") and not event.get("cancel"):
                     self.execute_action(player, action_id, text)
-            self.rebuild_player_menu(player)
+            self.refresh_menus(player)
 
     def _handle_keybind_event(self, player: "Player", event: dict) -> None:
         """Handle a keybind press event."""
@@ -264,15 +260,12 @@ class EventHandlingMixin:
                             if user:
                                 user.speak_l(resolved.disabled_reason, buffer="game")
 
-        # Don't rebuild if action is waiting for input, status box is open, or actions menu is open
-        if (
-            executed_any
-            and self._should_rebuild_after_keybind(player, executed_any)
-            and player.id not in self._pending_actions
-            and player.id not in self._status_box_open
-            and player.id not in self._actions_menu_open
-        ):
-            self.rebuild_all_menus()
+        # Any executed action may have changed shared state; mark everyone.
+        # The flush guards (pending input, status box, actions menu, system
+        # overlays) protect each player individually at paint time, and a
+        # no-op repaint costs no packet.
+        if executed_any:
+            self.refresh_menus()
 
     def _handle_actions_menu_selection(self, player: "Player", action_id: str) -> None:
         """Handle selection from the actions menu."""
@@ -280,13 +273,11 @@ class EventHandlingMixin:
         self._actions_menu_open.discard(player.id)
         # Handle "go back" - just return to turn menu
         if action_id == "go_back":
-            self.rebuild_player_menu(player)
+            self.refresh_menus(player)
             return
         action = self.find_action(player, action_id)
         if action:
             resolved = self.resolve_action(player, action)
             if resolved.enabled:
                 self.execute_action(player, action_id)
-        # Don't rebuild if action is waiting for input
-        if player.id not in self._pending_actions:
-            self.rebuild_player_menu(player)
+        self.refresh_menus(player)

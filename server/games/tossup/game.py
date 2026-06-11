@@ -482,7 +482,7 @@ class TossUpGame(Game):
             self._setup_bot_target(player)
 
         # Rebuild menus to reflect new turn
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _setup_bot_target(self, player: Player) -> None:
         """Set up the bot's target score for this turn."""

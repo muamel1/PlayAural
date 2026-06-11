@@ -441,12 +441,12 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
             self._pending_actions.pop(player.id, None)
             bp = self._as_bp(player)
             if not bp:
-                self.rebuild_player_menu(player)
+                self.refresh_menus(player)
                 return
             if selection_id == "_cancel" or not selection_id:
                 # Cancel — reset pending and return to grid
                 self.placing_orientation_pending[bp.id] = False
-                self.rebuild_player_menu(bp)
+                self.refresh_menus(bp)
                 return
             horizontal = selection_id == "horizontal"
             self._try_place_ship(bp, horizontal)
@@ -501,7 +501,7 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
                 self.placing_orientation_pending[player.id] = False
             self._announce_deploy_phase()
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _auto_deploy_all(self) -> None:
         """Auto-place ships for all players, then start battle."""
@@ -543,7 +543,7 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
         self.announce_turn()
         self._maybe_start_timer()
         self._jolt_bots()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _maybe_start_timer(self) -> None:
         try:
@@ -760,7 +760,7 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
             )
             # Reset orientation pending so they can pick again
             self.placing_orientation_pending[bp.id] = False
-            self.rebuild_player_menu(bp)
+            self.refresh_menus(bp)
             return
 
         # Place the ship
@@ -799,7 +799,7 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
             user.speak_l("battleship-deploy-done", buffer="game")
             self._check_all_deployed()
 
-        self.rebuild_player_menu(bp)
+        self.refresh_menus(bp)
 
     def _check_all_deployed(self) -> None:
         """Check if all players have finished deploying."""
@@ -925,7 +925,7 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
             if self.options.replay_on_hit:
                 self._maybe_start_timer()
                 self._jolt_bots()
-                self.rebuild_all_menus()
+                self.refresh_menus()
                 return
 
         else:
@@ -1062,7 +1062,7 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
             cursor = self._get_cursor(bp)
             label = self.get_cell_label(cursor.row, cursor.col, bp, user.locale)
             user.speak(label, buffer="game")
-        self.update_player_menu(bp)
+        self.refresh_menus(bp)
 
     def _is_toggle_view_enabled(self, player: "Player") -> str | None:
         if self.status != "playing":

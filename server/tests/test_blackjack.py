@@ -1216,7 +1216,8 @@ def test_blackjack_status_keybinds_do_not_rebuild_menus() -> None:
     game.dealer_hole_revealed = True
     game.set_turn_players([host_player], reset_index=True)
 
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     host_user.messages = []
 
     game.execute_action(host_player, "whose_turn")

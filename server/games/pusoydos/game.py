@@ -524,7 +524,7 @@ class PusoyDosGame(Game, TurnTimerMixin):
                     self._complete_give(p, give_ids)
                 else:
                     # Human needs to select — rebuild menus so they see the selection UI
-                    self.rebuild_all_menus()
+                    self.refresh_menus()
                     return
 
         # All done
@@ -684,7 +684,7 @@ class PusoyDosGame(Game, TurnTimerMixin):
             BotHelper.jolt_bot(player, ticks=random.randint(30, 50))
 
         self.start_turn_timer()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def on_tick(self) -> None:
         super().on_tick()
@@ -1006,7 +1006,7 @@ class PusoyDosGame(Game, TurnTimerMixin):
         else:
             p.selected_cards.add(card_id)
 
-        self.update_player_menu(p)
+        self.refresh_menus(p)
 
     def _action_play_selected(self, player: Player, action_id: str) -> None:
         p = self._require_active_turn_player(player)
@@ -1279,13 +1279,13 @@ class PusoyDosGame(Game, TurnTimerMixin):
             return
 
         self.hand_wait_ticks = 5 * 20
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_round_losses(self) -> None:
         """Losses mode: last-place player takes a loss. First to target losses loses the game."""
         if not self.finishing_order:
             self.hand_wait_ticks = 5 * 20
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         loser_id = self.finishing_order[-1]
@@ -1314,7 +1314,7 @@ class PusoyDosGame(Game, TurnTimerMixin):
 
         self._sync_team_scores()
         self.hand_wait_ticks = 5 * 20
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_round_points_elimination(self) -> None:
         """Points elimination: losers get points, reaching target eliminates you, last standing wins."""
@@ -1370,7 +1370,7 @@ class PusoyDosGame(Game, TurnTimerMixin):
 
         self._sync_team_scores()
         self.hand_wait_ticks = 5 * 20
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_round_elimination(self) -> None:
         """Elimination mode: check if any player reached required wins."""
@@ -1410,7 +1410,7 @@ class PusoyDosGame(Game, TurnTimerMixin):
 
         self._sync_team_scores()
         self.hand_wait_ticks = 5 * 20
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _calculate_penalty(self, player: PusoyDosPlayer) -> int:
         """Calculate point penalty for a player based on remaining cards."""

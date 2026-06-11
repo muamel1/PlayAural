@@ -905,7 +905,7 @@ def bot_play_disaster_on_target(
 
     # Return to action selection so bot can continue its turn
     game.sub_phase = PlaySubPhase.SELECT_ACTION
-    game.rebuild_all_menus()
+    game.refresh_menus()
 
 
 def _find_disaster_card_index(hand: list[Card], disaster_type: str) -> int | None:

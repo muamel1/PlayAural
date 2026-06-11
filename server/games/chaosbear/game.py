@@ -332,7 +332,7 @@ class ChaosBearGame(Game):
         self.broadcast_l("chaosbear-intro-3", buffer="game")
 
         # Rebuild menus and announce first turn
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         self._announce_turn()
 
@@ -458,7 +458,7 @@ class ChaosBearGame(Game):
             
             # Reset rolling flag for next player
             self.is_rolling = False
-            self.rebuild_all_menus()
+            self.refresh_menus()
             
             # Jolt bots (Faster: 10-20 ticks)
             BotHelper.jolt_bots(self, ticks=random.randint(10, 20))
@@ -480,7 +480,7 @@ class ChaosBearGame(Game):
         self._announce_turn()
         
         self.is_rolling = False
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         # Jolt bots (Faster: 10-20 ticks)
         BotHelper.jolt_bots(self, ticks=random.randint(10, 20))
@@ -489,7 +489,7 @@ class ChaosBearGame(Game):
         """The bear takes its turn."""
         self.cancel_sequences_by_tag("turn_flow")
         self.is_rolling = True
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         # Check if any players are close - play warning
         for player in self.players:
@@ -750,7 +750,7 @@ class ChaosBearGame(Game):
 
         self.cancel_sequences_by_tag("turn_flow")
         self.is_rolling = True
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         self.play_sound("game_pig/roll.ogg")
 
@@ -803,7 +803,7 @@ class ChaosBearGame(Game):
 
         self.cancel_sequences_by_tag("turn_flow")
         self.is_rolling = True
-        self.rebuild_all_menus()
+        self.refresh_menus()
         
         self.play_sound(f"game_chaosbear/draw{random.randint(1, 2)}.ogg")
         self.broadcast_l("chaosbear-draws-card", buffer="game", player=player.name)

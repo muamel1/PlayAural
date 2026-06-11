@@ -376,7 +376,7 @@ def execute_single_build(
 
             # Enter road permission subphase
             game.sub_phase = PlaySubPhase.ROAD_PERMISSION
-            game.rebuild_all_menus()
+            game.refresh_menus()
 
             # Notify target player
             if target_index < len(active_players):
@@ -440,4 +440,4 @@ def start_construction(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) -> None
         user = game.get_user(player)
         if user:
             user.speak_l("ageofheroes-construction-menu", buffer="game")
-        game.rebuild_all_menus()
+        game.refresh_menus()

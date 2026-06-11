@@ -529,7 +529,7 @@ class ChessGame(GridGameMixin, Game):
             black=black_player.name,
         )
         self.announce_turn(turn_sound=SOUND_TURN)
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._queue_bot_turn()
 
     def on_tick(self) -> None:
@@ -945,9 +945,9 @@ class ChessGame(GridGameMixin, Game):
                 square=index_to_notation(square),
                 count=len(legal_moves),
             )
-            self.update_player_menu(
+            self.request_menu_focus(
                 player,
-                selection_id=self.grid_cell_action_id(*self.square_to_view(player, square)),
+                self.grid_cell_action_id(*self.square_to_view(player, square)),
             )
             return
 
@@ -956,7 +956,7 @@ class ChessGame(GridGameMixin, Game):
             self.bot_move_targets.pop(player.id, None)
             user.play_sound(SOUND_SETDOWN)
             user.speak_l("chess-selection-cleared", buffer="game")
-            self.update_player_menu(player)
+            self.refresh_menus(player)
             return
 
         if piece is not None and piece.color == player.color:
@@ -973,9 +973,9 @@ class ChessGame(GridGameMixin, Game):
                 square=index_to_notation(square),
                 count=len(legal_moves),
             )
-            self.update_player_menu(
+            self.request_menu_focus(
                 player,
-                selection_id=self.grid_cell_action_id(*self.square_to_view(player, square)),
+                self.grid_cell_action_id(*self.square_to_view(player, square)),
             )
             return
 
@@ -983,7 +983,7 @@ class ChessGame(GridGameMixin, Game):
         if not legal:
             user.play_sound(SOUND_SETDOWN)
             user.speak_l("chess-illegal-move", buffer="game")
-            self.update_player_menu(player)
+            self.refresh_menus(player)
             return
 
         self._execute_move_full(player, selected, square)
@@ -1453,7 +1453,7 @@ class ChessGame(GridGameMixin, Game):
             user = self.get_user(player)
             if user:
                 user.speak_l("chess-choose-promotion", buffer="game")
-            self.rebuild_all_menus()
+            self.refresh_menus()
             if player.is_bot:
                 BotHelper.jolt_bot(player, ticks=random.randint(6, 12))
             return
@@ -1541,7 +1541,7 @@ class ChessGame(GridGameMixin, Game):
             self.current_color = next_player.color
         self.announce_turn(turn_sound=SOUND_TURN)
         self._announce_claim_available(next_player)
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._queue_bot_turn()
 
     def _execute_move_full(self, player: ChessPlayer, from_sq: int, to_sq: int) -> None:
@@ -1940,7 +1940,7 @@ class ChessGame(GridGameMixin, Game):
         responder = self._get_pending_response_player()
         if responder and responder.is_bot:
             BotHelper.jolt_bot(responder, ticks=random.randint(6, 12))
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_accept_draw(self, player: Player, action_id: str) -> None:
         chess_player = self._as_chess_player(player)
@@ -1967,7 +1967,7 @@ class ChessGame(GridGameMixin, Game):
             "chess-player-declines-draw",
             buffer="game",
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_request_undo(self, player: Player, action_id: str) -> None:
         chess_player = self._as_chess_player(player)
@@ -1983,7 +1983,7 @@ class ChessGame(GridGameMixin, Game):
         responder = self._get_pending_response_player()
         if responder and responder.is_bot:
             BotHelper.jolt_bot(responder, ticks=random.randint(6, 12))
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_accept_undo(self, player: Player, action_id: str) -> None:
         chess_player = self._as_chess_player(player)
@@ -1999,7 +1999,7 @@ class ChessGame(GridGameMixin, Game):
             "chess-player-accepts-undo",
             buffer="game",
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._queue_bot_turn()
 
     def _action_decline_undo(self, player: Player, action_id: str) -> None:
@@ -2013,7 +2013,7 @@ class ChessGame(GridGameMixin, Game):
             "chess-player-declines-undo",
             buffer="game",
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_flip_board(self, player: Player, action_id: str) -> None:
         self.board_flipped[player.id] = not self.board_flipped.get(player.id, False)
@@ -2025,7 +2025,7 @@ class ChessGame(GridGameMixin, Game):
                 buffer="game",
                 color=Localization.get(user.locale, f"chess-color-{perspective}"),
             )
-        self.rebuild_player_menu(player)
+        self.refresh_menus(player)
 
     def _build_grid_menu_kwargs(self) -> dict:
         if self.status != "playing" or self.promotion_pending or self._has_pending_response():

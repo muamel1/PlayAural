@@ -42,6 +42,7 @@ def make_game(
     game.host = names[0] if names else "Player1"
     if start:
         game.on_start()
+        game.flush_menus()
     return game
 
 
@@ -50,6 +51,7 @@ def advance_until(game: SorryGame, condition, max_ticks: int = 600) -> bool:
         if condition():
             return True
         game.on_tick()
+        game.flush_menus()
     return condition()
 
 
@@ -250,7 +252,8 @@ def test_web_turn_menu_orders_utility_actions_at_bottom() -> None:
 
     game.game_state.current_card = "1"
     game.game_state.turn_phase = "choose_move"
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
 
     ids = [item.id for item in user.menus["turn_menu"]["items"]]
     assert "draw_card" in ids
@@ -277,7 +280,8 @@ def test_turn_menu_contains_web_info_actions() -> None:
     user = game.get_user(player)
     assert user is not None
 
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
     labels = [item.text for item in user.menus["turn_menu"]["items"]]
 
     assert Localization.get("en", "sorry-check-board") in labels
@@ -410,6 +414,7 @@ def test_selecting_move_focuses_draw_card() -> None:
     game.game_state.turn_phase = "choose_move"
 
     game._action_choose_move(player, "move_slot_1")
+    game.flush_menus()
 
     assert user.menus["turn_menu"]["selection_id"] == "draw_card"
 
@@ -435,6 +440,7 @@ def test_split_prompt_focuses_first_split_option() -> None:
     )
 
     game._action_choose_move(player, f"move_slot_{split_slot}")
+    game.flush_menus()
 
     assert game.game_state.turn_phase == "choose_split"
     assert user.menus["turn_menu"]["selection_id"] == "move_slot_1"

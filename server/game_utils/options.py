@@ -739,7 +739,7 @@ class OptionsHandlerMixin:
     Expects on the Game class:
         - self.options: GameOptions (subclass with option_field declarations)
         - self.get_user(player) -> User | None
-        - self.rebuild_all_menus()
+        - self.refresh_menus()
     """
 
     def create_options_action_set(self, player: "Player") -> ActionSet:
@@ -821,7 +821,7 @@ class OptionsHandlerMixin:
         # Update labels and rebuild menus
         if hasattr(self.options, "update_options_labels"):
             self.options.update_options_labels(self)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _handle_option_toggle(self, option_name: str) -> None:
         """Handle a declarative boolean option toggle.
@@ -843,7 +843,7 @@ class OptionsHandlerMixin:
         # Update labels and rebuild menus
         if hasattr(self.options, "update_options_labels"):
             self.options.update_options_labels(self)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _broadcast_option_change(self, meta: OptionMeta, value: Any) -> None:
         """Broadcast an option change announcement to all players."""
@@ -883,7 +883,7 @@ class OptionsHandlerMixin:
         """Re-render the options action set for all players and rebuild menus."""
         if hasattr(self.options, "update_options_labels"):
             self.options.update_options_labels(self)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_open_multiselect(self, player: "Player", action_id: str) -> None:
         """Open a multi-select option's sub-menu.

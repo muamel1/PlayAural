@@ -415,7 +415,7 @@ class ThreesGame(Game, DiceGameMixin):
 
             BotHelper.jolt_bot(player, ticks=random.randint(15, 30))
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # Dice toggle handlers provided by DiceGameMixin
 
@@ -549,7 +549,7 @@ class ThreesGame(Game, DiceGameMixin):
 
             BotHelper.jolt_bot(player, ticks=random.randint(20, 40))
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_game(self) -> None:
         """End the game and announce winner."""

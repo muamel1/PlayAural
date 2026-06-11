@@ -730,7 +730,7 @@ class BattleGame(Game):
         self.play_ambience("battle/crowds/ambience_reserves_selections.ogg")
         self.broadcast_l("battle-selection-start", buffer="game")
         self._auto_select_for_bots()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _auto_select_for_bots(self) -> None:
         for player in self.get_active_players():
@@ -920,7 +920,7 @@ class BattleGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _begin_next_turn(self) -> None:
         if self.options.turn_mode == TURN_MODE_INITIATIVE:
@@ -952,7 +952,7 @@ class BattleGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _select_next_fighter(self) -> BattleFighter | None:
         alive = self._alive_fighters()
@@ -1029,7 +1029,7 @@ class BattleGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _resolve_damage(self, launcher: BattleFighter, target: BattleFighter, block: BattleEffectBlock) -> int:
         base_damage = random.randint(block.min or 0, block.max or 0)
@@ -1668,13 +1668,13 @@ class BattleGame(Game):
             user = self.get_user(player)
             if user:
                 user.speak_l("battle-selection-limit-reached", buffer="game")
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_battle_undo_selection(self, player: Player, action_id: str) -> None:
         battle_player = self._as_battle_player(player)
         if battle_player and battle_player.selected_preset_ids:
             battle_player.selected_preset_ids.pop()
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def _action_battle_done_selecting(self, player: Player, action_id: str) -> None:
         self._action_battle_submit_selection(player, action_id)
@@ -1694,7 +1694,7 @@ class BattleGame(Game):
                 self._announce_selected_fighter(player, preset_id)
         battle_player.selection_locked = True
         self.broadcast_l("battle-selection-locked", buffer="game", player=player.name)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _target_option_label(self, locale: str, target: BattleFighter) -> str:
         return self._target_option_label_for_player(locale, target, None)
@@ -1755,7 +1755,7 @@ class BattleGame(Game):
             if target:
                 self._begin_move_resolution(fighter, target, move)
             return
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_whose_turn(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)

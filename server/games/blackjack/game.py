@@ -421,7 +421,7 @@ class BlackjackGame(Game):
         self._apply_rules_profile(self.options.rules_profile)
         if hasattr(self.options, "update_options_labels"):
             self.options.update_options_labels(self)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _resolve_rules_profile(self) -> str:
         profile = self.options.rules_profile
@@ -886,23 +886,6 @@ class BlackjackGame(Game):
         self.play_music("game_3cardpoker/mus.ogg")
         self._start_between_hands()
 
-    def _should_rebuild_after_keybind(self, player: Player, executed_any: bool) -> bool:
-        """Skip keybind-driven menu rebuild for read-only check actions."""
-        pending = getattr(self, "_suppress_keybind_rebuild_player_ids", None)
-        if pending and player.id in pending:
-            pending.discard(player.id)
-            return False
-        return super()._should_rebuild_after_keybind(player, executed_any)
-
-    def _suppress_keybind_rebuild(self, player: Player) -> None:
-        """Suppress post-keybind menu rebuild for this player when appropriate."""
-        context = self.get_action_context(player)
-        if not context.from_keybind:
-            return
-        suppress = getattr(self, "_suppress_keybind_rebuild_player_ids", set())
-        suppress.add(player.id)
-        self._suppress_keybind_rebuild_player_ids = suppress
-
     def on_tick(self) -> None:
         super().on_tick()
         self.process_scheduled_sounds()
@@ -1068,7 +1051,7 @@ class BlackjackGame(Game):
             BotHelper.jolt_bot(player, ticks=random.randint(20, 35))  # nosec B311
 
         self._start_turn_timer()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _start_player_phase(self, players: list[BlackjackPlayer]) -> None:
         self.phase = "players"
@@ -1130,7 +1113,7 @@ class BlackjackGame(Game):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(20, 35))  # nosec B311
         self._start_turn_timer()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _advance_insurance_to_next_player(self) -> None:
         if not self.turn_player_ids:
@@ -1458,7 +1441,7 @@ class BlackjackGame(Game):
 
         self._announce_player_total(p)
         self._start_turn_timer()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_take_insurance(self, player: Player, action_id: str) -> None:
         p = player if isinstance(player, BlackjackPlayer) else None
@@ -1567,7 +1550,6 @@ class BlackjackGame(Game):
         user = self.get_user(player)
         if not p or not user:
             return
-        self._suppress_keybind_rebuild(player)
 
         if not p.in_hand and not p.hand and not p.split_hand:
             user.speak_l("blackjack-no-hand", buffer="game")
@@ -1634,7 +1616,6 @@ class BlackjackGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        self._suppress_keybind_rebuild(player)
 
         if not self.dealer_hand:
             user.speak_l("blackjack-no-dealer-cards", buffer="game")
@@ -1660,7 +1641,6 @@ class BlackjackGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        self._suppress_keybind_rebuild(player)
 
         lines: list[str] = []
         for p in self.get_active_players():
@@ -1758,14 +1738,12 @@ class BlackjackGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        self._suppress_keybind_rebuild(player)
         user.speak(self._rules_readout_text(user.locale), buffer="game")
 
     def _action_whose_turn(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)
         if not user:
             return
-        self._suppress_keybind_rebuild(player)
 
         if self._is_between_hands():
             waiting = [
@@ -1787,7 +1765,6 @@ class BlackjackGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        self._suppress_keybind_rebuild(player)
         remaining = self.timer.seconds_remaining()
         if remaining <= 0:
             user.speak_l("poker-timer-disabled", buffer="game")
@@ -1795,11 +1772,9 @@ class BlackjackGame(Game):
             user.speak_l("poker-timer-remaining", seconds=remaining, buffer="game")
 
     def _action_whos_at_table(self, player: Player, action_id: str) -> None:
-        self._suppress_keybind_rebuild(player)
         super()._action_whos_at_table(player, action_id)
 
     def _action_check_scores(self, player: Player, action_id: str) -> None:
-        self._suppress_keybind_rebuild(player)
         super()._action_check_scores(player, action_id)
 
     def _bot_input_set_next_bet(self, player: Player) -> str:
@@ -2266,7 +2241,7 @@ class BlackjackGame(Game):
 
         self._start_turn_timer()
         self.next_hand_wait_ticks = self.timer.ticks_remaining
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _deal_initial_cards(self, players: list[BlackjackPlayer]) -> None:
         players = [p for p in players if p.in_hand and p.bet > 0]
@@ -2423,7 +2398,7 @@ class BlackjackGame(Game):
 
         self._announce_player_total(player)
         self._start_turn_timer()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _settle_hand(self) -> None:
         self.phase = "settle"

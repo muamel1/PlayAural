@@ -1930,7 +1930,7 @@ class MileByMileGame(Game):
                 user.speak_l("milebymile-you-drew", buffer="game", card=card_name)
 
         self._update_turn_actions(player)
-        self.rebuild_player_menu(player)
+        self.refresh_menus(player)
         # Don't end turn - safety grants extra turn
 
         # Jolt bot to think about next play
@@ -2114,7 +2114,7 @@ class MileByMileGame(Game):
             BotHelper.jolt_bot(player, ticks=random.randint(30, 50))
 
         self._update_all_turn_actions()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_turn(self) -> None:
         """End current player's turn."""
@@ -2166,7 +2166,7 @@ class MileByMileGame(Game):
             self._round_timer.start()
             # Disable all actions during countdown
             self._update_all_turn_actions()
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def on_round_timer_ready(self) -> None:
         """Called when round timer expires - start the next race."""

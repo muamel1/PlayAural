@@ -138,14 +138,13 @@ class Game(
         ] = {}  # player_id -> context during action execution
         self._status_box_open: set[str] = set()  # player_ids with status box open
         self._actions_menu_open: set[str] = set()  # player_ids with actions menu open
-        # Menu focus intent (runtime-only): player_id -> item id to land on at
-        # the next full-table rebuild. Set via request_menu_focus(); consumed
-        # exactly once by rebuild_all_menus().
+        # Menu refresh recording (runtime-only). refresh_menus() and
+        # request_menu_focus() mark intent here; the framework-driven
+        # flush_menus() consumes it (end of handle_event + once per tick).
+        self._menu_dirty: set[str] = set()  # player_ids needing a repaint
+        self._menu_dirty_all: bool = False  # repaint everyone at next flush
+        # player_id -> item id for a one-shot focus jump at the next flush.
         self._pending_menu_focus: dict[str, str] = {}
-        # When True, the next no-focus rebuild_all_menus() becomes a
-        # focus-preserving update_all_menus(). Set via
-        # defer_next_rebuild_to_update(); consumed exactly once.
-        self._next_full_rebuild_is_update: bool = False
         # Runtime-only options navigation stack for multi-select options
         # (player_id -> list of path segments). Transient lobby state; not
         # serialized, so it safely resets to top-level on reconnect/restore.
@@ -387,8 +386,7 @@ class Game(
                 is_bot=False,
                 is_spectator=False,
             )
-            if hasattr(self, "rebuild_all_menus"):
-                self.rebuild_all_menus()
+            self.refresh_menus()
 
     def remove_spectator(self, player_id: str) -> None:
         """Remove a spectator from the game state entirely."""
@@ -514,9 +512,9 @@ class Game(
                  if human_count == 1:
                       self.broadcast_l("game-resumed", buffer="system", player=user.username)
                  
-                 # Rebuild the player's menu so they have immediate UI state
-                 if hasattr(self, "rebuild_player_menu"):
-                     self.rebuild_player_menu(player)
+                 # Mark the player's menu for repaint so they have UI state
+                 # at the next flush (within the current tick).
+                 self.refresh_menus(player)
 
     def get_user(self, player: Player) -> User | None:
         """Get the user for a player."""

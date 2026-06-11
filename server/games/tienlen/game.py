@@ -447,7 +447,7 @@ class TienLenGame(Game, TurnTimerMixin):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(18, 30))
         self.start_turn_timer()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _all_available_players_passed(self) -> bool:
         if self.current_combo is None:
@@ -745,7 +745,7 @@ class TienLenGame(Game, TurnTimerMixin):
             active_player.selected_cards.remove(card_id)
         else:
             active_player.selected_cards.add(card_id)
-        self.update_player_menu(active_player)
+        self.refresh_menus(active_player)
 
     def _action_play_selected(self, player: Player, action_id: str) -> None:
         active_player = self._require_tienlen_player(player)
@@ -1234,7 +1234,7 @@ class TienLenGame(Game, TurnTimerMixin):
 
         self.play_sound("game_crazyeights/newhand.ogg")
         self.hand_wait_ticks = 5 * 20
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _broadcast_instant_win(self, winner: TienLenPlayer, reason_key: str) -> None:
         for table_player in self.players:

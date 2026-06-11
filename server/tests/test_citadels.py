@@ -68,12 +68,14 @@ def make_game(
     game.host = "Player1"
     if start:
         game.on_start()
+        game.flush_menus()
     return game
 
 
 def advance_ticks(game: CitadelsGame, ticks: int) -> None:
     for _ in range(ticks):
         game.on_tick()
+        game.flush_menus()
 
 
 def advance_until(game: CitadelsGame, condition, max_ticks: int = 400) -> bool:
@@ -81,6 +83,7 @@ def advance_until(game: CitadelsGame, condition, max_ticks: int = 400) -> bool:
         if condition():
             return True
         game.on_tick()
+        game.flush_menus()
     return condition()
 
 
@@ -190,7 +193,7 @@ def test_selection_phase_plays_turn_sound_and_prompts_the_current_picker() -> No
     assert "Choose a character now." in first_user.get_spoken_messages()
     first_selection_updates = [
         message for message in first_user.messages
-        if message.type == "update_menu" and message.data.get("menu_id") == "turn_menu"
+        if message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
     ]
     assert first_selection_updates
     assert first_selection_updates[-1].data.get("selection_id", "").startswith("select_character_")
@@ -198,13 +201,14 @@ def test_selection_phase_plays_turn_sound_and_prompts_the_current_picker() -> No
     second_user.clear_messages()
     available_rank = game._selection_options_for_player(first)[0]
     game.execute_action(first, f"select_character_{available_rank}")
+    game.flush_menus()
 
     assert game.current_player == second
     assert second_user.get_sounds_played() == ["turn.ogg"]
     assert second_user.get_last_spoken() == "Choose a character now."
     second_selection_updates = [
         message for message in second_user.messages
-        if message.type == "update_menu" and message.data.get("menu_id") == "turn_menu"
+        if message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
     ]
     assert second_selection_updates
     assert second_selection_updates[-1].data.get("selection_id", "").startswith("select_character_")
@@ -607,9 +611,10 @@ def test_dynamic_target_and_toggle_menus_focus_the_expected_item() -> None:
     game.turn_resource_taken = True
     user.clear_messages()
     game.execute_action(player, "magician_swap_mode")
+    game.flush_menus()
     swap_updates = [
         message for message in user.messages
-        if message.type == "update_menu" and message.data.get("menu_id") == "turn_menu"
+        if message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
     ]
     assert swap_updates[-1].data.get("selection_id") == f"magician_swap_target_{target.id}"
 
@@ -617,17 +622,19 @@ def test_dynamic_target_and_toggle_menus_focus_the_expected_item() -> None:
     game.turn_resource_taken = True
     user.clear_messages()
     game.execute_action(player, "magician_redraw")
+    game.flush_menus()
     redraw_updates = [
         message for message in user.messages
-        if message.type == "update_menu" and message.data.get("menu_id") == "turn_menu"
+        if message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
     ]
     assert redraw_updates[-1].data.get("selection_id") == "magician_redraw_toggle_660"
 
     user.clear_messages()
     game.execute_action(player, "magician_redraw_toggle_661")
+    game.flush_menus()
     toggle_updates = [
         message for message in user.messages
-        if message.type == "update_menu" and message.data.get("menu_id") == "turn_menu"
+        if message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
     ]
     assert toggle_updates[-1].data.get("selection_id") == "magician_redraw_toggle_661"
 
@@ -637,9 +644,10 @@ def test_dynamic_target_and_toggle_menus_focus_the_expected_item() -> None:
     game.turn_resource_taken = True
     user.clear_messages()
     game.execute_action(player, "warlord_destroy_mode")
+    game.flush_menus()
     warlord_updates = [
         message for message in user.messages
-        if message.type == "update_menu" and message.data.get("menu_id") == "turn_menu"
+        if message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
     ]
     assert warlord_updates[-1].data.get("selection_id") == f"warlord_destroy_target_{target.id}_663"
 
@@ -676,9 +684,10 @@ def test_canceling_swap_submenu_restores_focus_to_parent_menu_top_action() -> No
 
     user.clear_messages()
     game.execute_action(player, "cancel_subphase")
+    game.flush_menus()
     updates = [
         message for message in user.messages
-        if message.type == "update_menu" and message.data.get("menu_id") == "turn_menu"
+        if message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
     ]
     assert updates
     assert updates[-1].data.get("selection_id") == "magician_swap_mode"
@@ -693,9 +702,10 @@ def test_assassin_target_selection_restores_focus_to_main_turn_menu_top_action()
     begin_turn(game, player, CHARACTER_ASSASSIN)
     user.clear_messages()
     game.execute_action(player, f"assassinate_target_{CHARACTER_KING}")
+    game.flush_menus()
     updates = [
         message for message in user.messages
-        if message.type == "update_menu" and message.data.get("menu_id") == "turn_menu"
+        if message.type == "show_menu" and message.data.get("menu_id") == "turn_menu"
     ]
     assert updates
     assert updates[-1].data.get("selection_id") == "take_gold"
@@ -842,7 +852,8 @@ def test_touch_standard_actions_follow_the_shared_touch_order() -> None:
     assert order.index("check_scores") < order.index("whose_turn")
     assert order.index("whose_turn") < order.index("whos_at_table")
 
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
     visible_ids = [item.id for item in user.menus["turn_menu"]["items"] if getattr(item, "id", None)]
     assert visible_ids.index("read_status") < visible_ids.index("check_scores")
     assert visible_ids.index("read_status_detailed") < visible_ids.index("check_scores")
@@ -923,7 +934,8 @@ def test_brief_announcements_strip_ranks_from_selection_menu_labels() -> None:
     user = game.get_user(picker)
     user.preferences.brief_announcements = True
 
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     labels = [
         entry.label
         for entry in game.get_all_visible_actions(picker)
@@ -950,7 +962,8 @@ def test_turn_auto_ends_for_human_when_no_actions_remain() -> None:
     player.hand = []
     player.gold = 2
     game.turn_resource_taken = True
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     assert game.current_player is player
     assert game._is_end_turn_enabled(player) is None
@@ -958,6 +971,7 @@ def test_turn_auto_ends_for_human_when_no_actions_remain() -> None:
     # Nothing but end-turn is left, so the next tick finishes the turn for them
     # and resolution advances to the next claimed rank.
     game.on_tick()
+    game.flush_menus()
     assert game.current_player is nxt
 
 
@@ -972,10 +986,12 @@ def test_turn_does_not_auto_end_while_an_action_is_available() -> None:
     player.gold = 5
     player.hand = [make_card(700, "Tavern", 1, DISTRICT_TRADE)]  # affordable -> buildable
     game.turn_resource_taken = True
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     assert game._has_optional_turn_action(player) is True
     game.on_tick()
+    game.flush_menus()
     # Declining an available build is the player's call; the turn stays put.
     assert game.current_player is player
 

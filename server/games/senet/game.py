@@ -69,7 +69,6 @@ class SenetGame(Game):
 
     winner_name: str | None = None
     _nav_cursor: int | None = None
-    _nav_skip_rebuild: bool = False
 
     @classmethod
     def get_name(cls) -> str:
@@ -290,14 +289,7 @@ class SenetGame(Game):
             idx = 0 if direction == 1 else len(targets) - 1
 
         self._nav_cursor = targets[idx]
-        self._nav_skip_rebuild = True
-        self.update_player_menu(player, selection_id=f"sq_{targets[idx]}")
-
-    def _should_rebuild_after_keybind(self, player: Player, executed_any: bool) -> bool:
-        if self._nav_skip_rebuild:
-            self._nav_skip_rebuild = False
-            return False
-        return super()._should_rebuild_after_keybind(player, executed_any)
+        self.request_menu_focus(player, f"sq_{targets[idx]}")
 
     def _get_movable_squares(self, player_num: int) -> list[int]:
         gs = self.game_state
@@ -398,7 +390,7 @@ class SenetGame(Game):
 
         self.play_music("game_pig/mus.ogg")
         BotHelper.jolt_bots(self, ticks=random.randint(4, 8))
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def on_tick(self) -> None:
         super().on_tick()
@@ -500,7 +492,7 @@ class SenetGame(Game):
             self._after_move_or_skip(player)
             return
 
-        self.update_all_menus()
+        self.refresh_menus()
 
     def _play_dice_sound(self) -> None:
         self.broadcast_sound(f"game_squares/diceroll{random.randint(1, 3)}.ogg")
@@ -609,7 +601,7 @@ class SenetGame(Game):
             if self._score_horus_if_ready(player):
                 return
             BotHelper.jolt_bots(self, ticks=random.randint(3, 6))
-            self.update_all_menus()
+            self.refresh_menus()
         else:
             self._end_turn()
 
@@ -655,7 +647,7 @@ class SenetGame(Game):
         if opp_player and self._score_horus_if_ready(opp_player):
             return
         BotHelper.jolt_bots(self, ticks=random.randint(3, 6))
-        self.update_all_menus()
+        self.refresh_menus()
 
     # ======================================================================
     # Win

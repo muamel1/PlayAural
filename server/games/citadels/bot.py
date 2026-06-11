@@ -121,11 +121,11 @@ def bot_think(game: "CitadelsGame", player: "CitadelsPlayer") -> str | None:
     if not game.turn_resource_taken:
         if rank == CHARACTER_ASSASSIN and game.killed_rank is None:
             game.turn_subphase = SUBPHASE_ASSASSIN_TARGET
-            game.rebuild_all_menus()
+            game.refresh_menus()
             return None
         if rank == CHARACTER_THIEF and game.robbed_rank is None:
             game.turn_subphase = SUBPHASE_THIEF_TARGET
-            game.rebuild_all_menus()
+            game.refresh_menus()
             return None
         return _choose_resource_action(game, player)
 

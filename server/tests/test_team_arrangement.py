@@ -17,7 +17,8 @@ def make_game(game_cls, options, player_count: int = 4):
         name = f"Player{index + 1}"
         game.add_player(name, MockUser(name, uuid=f"p{index + 1}"))
     game.host = "Player1"
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     return game
 
 

@@ -948,7 +948,7 @@ class HumanityCardsGame(Game):
             if user:
                 user.play_sound(f"{CAH_SOUND_DIR}/cardselect.ogg")
 
-        self.rebuild_player_menu(player)
+        self.refresh_menus(player)
 
     # Per-index toggle handlers
     def _action_toggle_card_0(self, player: Player, action_id: str) -> None:
@@ -1111,7 +1111,7 @@ class HumanityCardsGame(Game):
             total=total,
         )
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         # Check if all have submitted
         if submitted_count >= total:
@@ -1202,7 +1202,7 @@ class HumanityCardsGame(Game):
                 self.black_discard.append(self.current_black_card)
                 self.current_black_card = None
 
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def _action_view_black_card(self, player: Player, action_id: str) -> None:
         """View the current black card prompt."""
@@ -1383,7 +1383,7 @@ class HumanityCardsGame(Game):
             if p.is_bot and not self._is_judge(p):
                 BotHelper.jolt_bot(p, ticks=random.randint(20, 40))  # nosec B311
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _start_judging(self) -> None:
         """Transition to judging phase."""
@@ -1413,7 +1413,7 @@ class HumanityCardsGame(Game):
             if j.is_bot:
                 BotHelper.jolt_bot(j, ticks=random.randint(30, 50))  # nosec B311
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_game(self, winner: HumanityCardsPlayer) -> None:
         """End the game and announce the winner."""

@@ -220,7 +220,7 @@ class RollingBallsGame(Game):
                             show_in_actions_menu=False,
                         )
                     )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # ==========================================================================
     # Pipe management
@@ -640,7 +640,7 @@ class RollingBallsGame(Game):
         BotHelper.jolt_bot(player, ticks=random.randint(8, 12))  # nosec B311
 
         # Rebuild menus to reflect updated remaining count
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_view_pipe(self, player: Player, action_id: str) -> None:
         """View the pipe contents (private to the requesting player)."""
@@ -672,7 +672,7 @@ class RollingBallsGame(Game):
         self.status_box(player, lines)
 
         # Rebuild menus to reflect updated remaining count
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
 
     # ==========================================================================
@@ -758,7 +758,7 @@ class RollingBallsGame(Game):
         if player.is_bot:
             BotHelper.set_target(player, 0)
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def on_tick(self) -> None:
         """Called every tick. Handle bot AI, ball reveals, and scheduled sounds."""
@@ -789,7 +789,7 @@ class RollingBallsGame(Game):
             player.view_pipe_uses += 1
             player.last_viewed_pipe = [b.copy() for b in self.pipe]
             player.bot_pipe_memory = min(6, len(self.pipe))
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
         perceived = []
         for i, ball in enumerate(self.pipe):

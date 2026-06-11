@@ -113,7 +113,6 @@ class BackgammonGame(Game):
     # Ctrl+Up/Down navigation cursor
     _nav_cursor: int | None = None
     _nav_selected_source: int | None = None
-    _nav_skip_rebuild: bool = False
 
     @classmethod
     def get_name(cls) -> str:
@@ -448,7 +447,7 @@ class BackgammonGame(Game):
           Bottom row (L→R): 12 11 10  9  8  7 |  6  5  4  3  2  1
 
         Home board (1-6) is bottom-right. Opponent enters top-left.
-        For White, rebuild_player_menu swaps the two halves so both
+        For White, the menu build swaps the two halves so both
         players see their own home at bottom-right.
         """
         top = list(range(12, 24))  # indices 12,13,...,23 (pts 13→24)
@@ -474,7 +473,7 @@ class BackgammonGame(Game):
         if gs.selected_source is not None:
             gs.selected_source = None
             self.play_sound("game_chess/setdown.ogg")
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def _navigate(self, player: BackgammonPlayer, direction: int) -> None:
         """Cycle through navigation targets with ctrl+up/down.
@@ -512,12 +511,8 @@ class BackgammonGame(Game):
             idx = 0 if direction == 1 else len(targets) - 1
 
         self._nav_cursor = targets[idx]
-        self._nav_skip_rebuild = True
         self._play_navigation_sound(player, targets[idx])
-        self.update_player_menu(
-            player,
-            selection_id=f"point_{targets[idx]}",
-        )
+        self.request_menu_focus(player, f"point_{targets[idx]}")
 
     def _get_navigation_destinations(self, color: str, source: int) -> list[int]:
         """Destinations for source, ordered: opponent blots, own blots, other."""
@@ -706,7 +701,7 @@ class BackgammonGame(Game):
             self.broadcast_l("backgammon-no-moves", buffer="game", player=winner_name)
             self._end_moving_phase()
         else:
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def on_tick(self) -> None:
         super().on_tick()
@@ -741,13 +736,6 @@ class BackgammonGame(Game):
                 self._action_point_click(player, action_id)
                 return
         super().execute_action(player, action_id, input_value=input_value, context=context)
-
-    def _should_rebuild_after_keybind(self, player, executed_any: bool) -> bool:
-        """Skip auto-rebuild when navigation already sent an update."""
-        if self._nav_skip_rebuild:
-            self._nav_skip_rebuild = False
-            return False
-        return super()._should_rebuild_after_keybind(player, executed_any)
 
     # ==========================================================================
     # Point click handler (roll + select + move)
@@ -926,7 +914,7 @@ class BackgammonGame(Game):
 
         gs.selected_source = None
         self.play_sound("game_chess/setdown.ogg")
-        self.update_player_menu(player)
+        self.refresh_menus(player)
         return True
 
     def _try_apply_move_direct(self, player: BackgammonPlayer, source: int, dest: int) -> None:
@@ -1004,7 +992,7 @@ class BackgammonGame(Game):
             # so a multi-move turn reads as distinct beats rather than a burst.
             if player.is_bot:
                 BotHelper.jolt_bot(player, ticks=random.randint(3, 6))  # nosec B311
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def _do_roll(self, player: BackgammonPlayer) -> None:
         """Roll dice and enter moving phase."""
@@ -1039,7 +1027,7 @@ class BackgammonGame(Game):
             # paces the cross-turn handoff.)
             if player.is_bot:
                 BotHelper.jolt_bot(player, ticks=random.randint(4, 7))  # nosec B311
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def _check_forced_dice(self) -> None:
         """Check and apply the must-use-both-dice rule."""
@@ -1081,7 +1069,7 @@ class BackgammonGame(Game):
         # board. The grid persists for both players across the turn change (see
         # get_visible_actions: off-turn points disable but stay visible), so the
         # receiving player's cursor keeps its anchor instead of resetting.
-        self.update_all_menus()
+        self.refresh_menus()
 
     # ==========================================================================
     # Doubling cube
@@ -1121,7 +1109,7 @@ class BackgammonGame(Game):
         opp = self._get_player_by_color(opp_color)
         if opp and opp.is_bot:
             BotHelper.jolt_bot(opp, ticks=random.randint(3, 6))
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_accept_double(self, player: Player, action_id: str) -> None:
         if not isinstance(player, BackgammonPlayer):
@@ -1136,7 +1124,7 @@ class BackgammonGame(Game):
         gs.cube_owner = player.color
         gs.turn_phase = "pre_roll"
         self.broadcast_l("backgammon-accepts", buffer="game", player=player.name)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_drop_double(self, player: Player, action_id: str) -> None:
         if not isinstance(player, BackgammonPlayer):
@@ -1184,7 +1172,7 @@ class BackgammonGame(Game):
         user = self.get_user(player)
         if user:
             user.speak_l("backgammon-undone", buffer="game")
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # ==========================================================================
     # Info keybinds
@@ -1421,7 +1409,7 @@ class BackgammonGame(Game):
                 self.destroy()
                 return
 
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         self.players = [p for p in self.players if p.id != player.id]
@@ -1441,7 +1429,7 @@ class BackgammonGame(Game):
                         self.host = p.name
                         self.broadcast_l("new-host", buffer="system", player=p.name)
                         break
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     # ==========================================================================
     # Sound helpers

@@ -243,7 +243,7 @@ class DeadMansPokerGame(Game):
             if player.id not in self._pending_actions:
                 for other in self.players:
                     if other != player:
-                        self.update_player_menu(other)
+                        self.refresh_menus(other)
             return
 
         if resolved.disabled_reason and resolved.disabled_reason != "action-not-available":
@@ -514,7 +514,7 @@ class DeadMansPokerGame(Game):
             self.community = self.deck.draw(COMMUNITY_CARD_COUNT)
 
         self.set_turn_players(ordered)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         beats = [
             SequenceBeat(
@@ -569,7 +569,7 @@ class DeadMansPokerGame(Game):
         for player in self.active_hand_players:
             player.acted_this_round = False
         self._set_next_pending_turn()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _set_next_pending_turn(self, *, after_player_id: str = "") -> bool:
         pending = self._pending_turn_players()
@@ -599,7 +599,7 @@ class DeadMansPokerGame(Game):
         self.announce_turn()
         if selected.is_bot:
             BotHelper.jolt_bot(selected, ticks=random.randint(10, 22))  # nosec B311
-        self.rebuild_all_menus()
+        self.refresh_menus()
         return True
 
     def _pending_turn_players(self) -> list[DeadMansPokerPlayer]:
@@ -1148,7 +1148,7 @@ class DeadMansPokerGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _finish_fold(self, player_id: str, context: str) -> None:
         player = self.get_player_by_id(player_id)
@@ -1196,7 +1196,7 @@ class DeadMansPokerGame(Game):
                 buffer="game",
                 cards=read_cards(self.pending_switch_candidates, user.locale),
             )
-        self.rebuild_player_menu(dmp_player)
+        self.refresh_menus(dmp_player)
         if dmp_player.is_bot:
             BotHelper.jolt_bot(dmp_player, ticks=random.randint(8, 16))  # nosec B311
 
@@ -1250,9 +1250,7 @@ class DeadMansPokerGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        if self.has_active_sequence(sequence_id="deadmanspoker_switch"):
-            self.defer_next_rebuild_to_update()
-        self.rebuild_player_menu(dmp_player, focus="call")
+        self.request_menu_focus(dmp_player, "call")
 
     def _start_commit_sequence(
         self,
@@ -1295,7 +1293,7 @@ class DeadMansPokerGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _finish_normal_call(self, player_id: str) -> None:
         player = self.get_player_by_id(player_id)
@@ -1380,7 +1378,7 @@ class DeadMansPokerGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _resolve_all_in_after_responses(self) -> None:
         if self.pending_roulette_ids:
@@ -1439,7 +1437,7 @@ class DeadMansPokerGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _resolve_showdown(self) -> None:
         active = self.active_hand_players
@@ -1565,7 +1563,7 @@ class DeadMansPokerGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _start_pending_roulette(self) -> None:
         players = [
@@ -1670,7 +1668,7 @@ class DeadMansPokerGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _roulette_is_lethal(self, bullets: int) -> bool:
         if bullets <= 0:
@@ -1743,7 +1741,7 @@ class DeadMansPokerGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def on_sequence_callback(
         self,

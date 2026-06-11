@@ -769,7 +769,7 @@ def resolve_war_round(game: AgeOfHeroesGame) -> None:
     else:
         # Continue to next round - reset rolls
         game.war_state.reset_round_rolls()
-        game.rebuild_all_menus()
+        game.refresh_menus()
 
         # Jolt both bots to roll for next round
         active_players = game.get_active_players()
@@ -825,7 +825,7 @@ def execute_war_battle(game: AgeOfHeroesGame) -> None:
     war.reset_round_rolls()
 
     # Rebuild menus to show "Roll dice" button
-    game.rebuild_all_menus()
+    game.refresh_menus()
 
     # Jolt both bots to act immediately (set think ticks to 0)
     active_players = game.get_active_players()

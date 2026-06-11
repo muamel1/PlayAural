@@ -142,7 +142,7 @@ class SnakesAndLaddersGame(Game):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(20, 40))
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def on_sequence_callback(
         self,
@@ -315,7 +315,7 @@ class SnakesAndLaddersGame(Game):
         """Handle roll action with sequential events."""
         snakes_player: SnakesPlayer = player # type: ignore
         self.is_rolling = True
-        self.rebuild_all_menus() # Update UI to disable button
+        self.refresh_menus() # Update UI to disable button
         
         # Roll dice (1-6)
         roll = random.randint(1, 6)

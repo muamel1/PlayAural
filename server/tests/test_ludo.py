@@ -67,6 +67,7 @@ class TestLudoUnit:
         alice = game.add_player("Alice", MockUser("Alice"))
         bob = game.add_player("Bob", MockUser("Bob"))
         game.on_start()
+        game.flush_menus()
 
         alice.finished_count = 2
         bob.finished_count = 1
@@ -93,6 +94,7 @@ class TestLudoUnit:
         for u in users:
             game.add_player(u.username, u)
         game.on_start()
+        game.flush_menus()
 
         colors = [p.color for p in game.players]
         assert colors == ["red", "blue", "green", "yellow"]
@@ -102,6 +104,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         for player in game.players:
             assert len(player.tokens) == 4
@@ -141,6 +144,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
         player = game.players[0]
 
         for sq in SAFE_SQUARES:
@@ -154,6 +158,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
         player = game.players[0]  # Red
 
         # All start positions should be safe, not just the moving player's
@@ -166,6 +171,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
         player = game.players[0]
 
         for pos in ALL_START_POSITIONS:
@@ -178,6 +184,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         # Use Blue (home_entry=12) and put token well past entry
         # so it doesn't trigger home column logic
@@ -198,6 +205,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         player = game.players[0]  # Red, home_entry=51
         token = player.tokens[0]
@@ -214,6 +222,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         player = game.players[0]
         token = player.tokens[0]
@@ -230,6 +239,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         player = game.players[0]  # Red, home_entry=51
         token = player.tokens[0]
@@ -246,6 +256,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         attacker = game.players[0]  # Red
         victim = game.players[1]  # Blue
@@ -268,6 +279,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         attacker = game.players[0]
         victim = game.players[1]
@@ -290,6 +302,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         attacker = game.players[0]
         victim = game.players[1]
@@ -315,6 +328,7 @@ class TestLudoUnit:
         for i in range(3):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         attacker = game.players[0]
         victim_one = game.players[1]
@@ -338,6 +352,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         player = game.players[0]
 
@@ -358,6 +373,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         player = game.players[0]  # Red
         token = player.tokens[0]
@@ -372,6 +388,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         attacker = game.players[0]
         victim = game.players[1]
@@ -388,6 +405,7 @@ class TestLudoUnit:
         for i in range(2):
             game.add_player(f"P{i}", MockUser(f"P{i}"))
         game.on_start()
+        game.flush_menus()
 
         player = game.players[1]  # Blue, home entry 12
         token = player.tokens[0]
@@ -413,6 +431,7 @@ class TestLudoUnit:
         game.add_player("Alice", u1)
         game.add_player("Bob", u2)
         game.on_start()
+        game.flush_menus()
 
         # Modify some state
         game.players[0].tokens[0].state = "track"
@@ -445,6 +464,7 @@ class TestLudoActions:
         self.p1 = self.game.add_player("Alice", self.u1)
         self.p2 = self.game.add_player("Bob", self.u2)
         self.game.on_start()
+        self.game.flush_menus()
 
     def test_roll_visible_for_current_player(self):
         visible = self.game.get_all_visible_actions(self.p1)
@@ -498,6 +518,7 @@ class TestLudoActions:
         monkeypatch.setattr("server.games.ludo.game.random.randint", fixed_randint)
 
         self.game._action_roll_dice(self.p1, "roll_dice")
+        self.game.flush_menus()
 
         menu = self.u1.menus["turn_menu"]
         menu_ids = [item.id for item in menu["items"]]
@@ -519,6 +540,7 @@ class TestLudoActions:
         assert self.u1.menus["turn_menu"]["selection_id"] is None
         for _ in range(40):
             self.game.on_tick()
+            self.game.flush_menus()
             if not self.game.active_sequences:
                 break
         assert self.game.current_player == self.p2
@@ -548,6 +570,7 @@ class TestLudoActions:
         self.p1.move_options = {0: "Token 1 (position 5)"}
 
         self.game._action_move_token(self.p1, "move_token_1")
+        self.game.flush_menus()
 
         assert self.u1.menus["turn_menu"]["selection_id"] == "roll_dice"
         assert self.u2.menus["turn_menu"]["selection_id"] is None
@@ -782,6 +805,7 @@ class TestLudoConsecutiveSixes:
         self.p1 = self.game.add_player("Alice", self.u1)
         self.p2 = self.game.add_player("Bob", self.u2)
         self.game.on_start()
+        self.game.flush_menus()
 
     def test_extra_turn_on_six(self):
         # Put a token on track so the 6 has a valid move
@@ -917,6 +941,7 @@ class TestLudoBot:
         game.add_player("Bot", bot)
         game.add_player("Victim", victim)
         game.on_start()
+        game.flush_menus()
 
         bot_player = game.players[1]
         human_player = game.players[0]
@@ -952,6 +977,7 @@ class TestLudoPlayTest:
         game.add_player("Bot1", bot1)
         game.add_player("Bot2", bot2)
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 50000
         for tick in range(max_ticks):
@@ -966,6 +992,7 @@ class TestLudoPlayTest:
                 for player in game.players:
                     game.setup_player_actions(player)
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active, "Game should have ended"
         winner = [p for p in game.players if p.finished_count >= 4]
@@ -978,6 +1005,7 @@ class TestLudoPlayTest:
         for bot in bots:
             game.add_player(bot.username, bot)
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 100000
         for tick in range(max_ticks):
@@ -992,6 +1020,7 @@ class TestLudoPlayTest:
                 for player in game.players:
                     game.setup_player_actions(player)
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active, "4-player game should have ended"
 
@@ -1003,6 +1032,7 @@ class TestLudoPlayTest:
         game.add_player("Human", human)
         game.add_player("Bot", bot)
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 50000
         for tick in range(max_ticks):
@@ -1025,6 +1055,7 @@ class TestLudoPlayTest:
                 else:
                     game.execute_action(current, "roll_dice")
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active
 
@@ -1036,11 +1067,13 @@ class TestLudoPlayTest:
         game.add_player("Bot1", bot1)
         game.add_player("Bot2", bot2)
         game.on_start()
+        game.flush_menus()
 
         for tick in range(50000):
             if not game.game_active:
                 break
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active
 
@@ -1052,11 +1085,13 @@ class TestLudoPlayTest:
         game.add_player("Bot1", bot1)
         game.add_player("Bot2", bot2)
         game.on_start()
+        game.flush_menus()
 
         for tick in range(50000):
             if not game.game_active:
                 break
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active
 
@@ -1071,6 +1106,7 @@ class TestLudoPersistence:
         game.add_player("Alice", u1)
         game.add_player("Bob", u2)
         game.on_start()
+        game.flush_menus()
 
         # Modify state
         game.players[0].tokens[0].state = "track"
@@ -1104,6 +1140,7 @@ class TestLudoPersistence:
         game.add_player("Alice", user)
         game.add_player("Bot", bot)
         game.on_start()
+        game.flush_menus()
 
         # Save and reload
         json_str = game.to_json()
@@ -1123,6 +1160,7 @@ class TestLudoPersistence:
         p1 = game.add_player("Alice", user)
         game.add_player("Bot", bot)
         game.on_start()
+        game.flush_menus()
 
         p1.tokens[0].state = "track"
         p1.tokens[0].position = 10

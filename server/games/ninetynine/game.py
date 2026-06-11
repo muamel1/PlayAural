@@ -1011,7 +1011,7 @@ class NinetyNineGame(Game):
             pause_bots=True,
         )
         self._update_all_turn_actions()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _start_turn(self) -> None:
         """Start a player's turn."""
@@ -1041,7 +1041,7 @@ class NinetyNineGame(Game):
             BotHelper.jolt_bot(player, ticks=random.randint(20, 40))
 
         self._update_all_turn_actions()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _has_safe_card(self, player: NinetyNinePlayer) -> bool:
         """Check if player has any card that won't make them go over 99 (action cards)."""
@@ -1686,9 +1686,9 @@ class NinetyNineGame(Game):
             if not isinstance(p, NinetyNinePlayer):
                 continue
             if p.id == player.id and drawn_slot_id is not None:
-                self.update_player_menu(p, selection_id=drawn_slot_id)
+                self.request_menu_focus(p, drawn_slot_id)
             else:
-                self.update_player_menu(p)
+                self.refresh_menus(p)
 
     def _action_check_count(self, player: Player, action_id: str) -> None:
         """Announce the current count."""
@@ -1751,7 +1751,7 @@ class NinetyNineGame(Game):
                         return
                 else:
                     self._update_turn_actions(player)
-                    self.update_player_menu(player)
+                    self.refresh_menus(player)
 
         BotHelper.on_tick(self)
 

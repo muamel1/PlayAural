@@ -573,7 +573,7 @@ class TradeoffGame(Game):
                 user = self.get_user(player)
                 if user:
                     user.speak_l("tradeoff-keeping", buffer="game", value=value)
-                self.rebuild_player_menu(player)
+                self.refresh_menus(player)
                 return
 
     def _trade_by_value(self, player: Player, value: int) -> None:
@@ -587,7 +587,7 @@ class TradeoffGame(Game):
                 user = self.get_user(player)
                 if user:
                     user.speak_l("tradeoff-trading", buffer="game", value=value)
-                self.rebuild_player_menu(player)
+                self.refresh_menus(player)
                 return
 
     def _toggle_trade(self, player: Player, index: int) -> None:
@@ -607,7 +607,7 @@ class TradeoffGame(Game):
             tp.trading_indices.append(index)
             if user:
                 user.speak_l("tradeoff-trading", buffer="game", value=die_value)
-        self.rebuild_player_menu(player)
+        self.refresh_menus(player)
 
     def _action_confirm_trades(self, player: Player, action_id: str) -> None:
         """Confirm the player's trade selections."""
@@ -632,7 +632,7 @@ class TradeoffGame(Game):
         tp.trading_indices = []
 
         self._check_all_traded()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _check_all_traded(self) -> None:
         """Move to the taking phase once every active player has confirmed."""
@@ -685,7 +685,7 @@ class TradeoffGame(Game):
 
         # Round-robin: advance to next taker after every die taken
         self._advance_taker()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _start_taking_phase(self) -> None:
         """Transition to the taking phase, lowest scorer goes first."""
@@ -868,7 +868,7 @@ class TradeoffGame(Game):
             if p.is_bot:
                 BotHelper.jolt_bot(p, ticks=random.randint(15, 30))  # nosec B311
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # ==========================================================================
     # Scoring

@@ -29,7 +29,7 @@ class DiceGameMixin:
     Expects the game class to have:
     - self.get_user(player) -> User
     - self.get_action_set(player, name) -> ActionSet
-    - self.rebuild_player_menu(player)
+    - self.refresh_menus(player)
     - Player objects with a `dice: DiceSet` attribute
 
     Games must implement these methods for dice action state:
@@ -489,7 +489,7 @@ class DiceGameMixin:
             if user:
                 user.speak_l("dice-rerolling", buffer="game", value=die_val)
 
-        self.rebuild_player_menu(player)
+        self.refresh_menus(player)
 
     def _keep_by_value(self, player: Player, value: int) -> None:
         """
@@ -510,7 +510,7 @@ class DiceGameMixin:
                     dice.keep(i)
                     if user:
                         user.speak_l("dice-keeping", buffer="game", value=value)
-                    self.rebuild_player_menu(player)
+                    self.refresh_menus(player)
                     return
 
         # No matching die found - silent
@@ -534,7 +534,7 @@ class DiceGameMixin:
                     dice.unkeep(i)
                     if user:
                         user.speak_l("dice-rerolling", buffer="game", value=value)
-                    self.rebuild_player_menu(player)
+                    self.refresh_menus(player)
                     return
 
         # No matching die found - silent

@@ -514,7 +514,7 @@ class SorryGame(Game):
         self.game_state.split_pawn_b = None
         if announce:
             self.announce_turn()
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._queue_current_bot()
 
     def _end_turn_after_card(self, card_face: str) -> None:
@@ -534,7 +534,7 @@ class SorryGame(Game):
                     buffer="game",
                 )
             self.announce_turn()
-            self.rebuild_all_menus()
+            self.refresh_menus()
             self._queue_current_bot()
             return
         self.advance_turn(announce=True)
@@ -1062,9 +1062,8 @@ class SorryGame(Game):
         self._sync_player_counts()
         self.game_state.turn_phase = "resolving"
         if focus_after_move:
-            self.rebuild_all_menus(focus="draw_card", focus_player=player)
-        else:
-            self.rebuild_all_menus()
+            self.request_menu_focus(player, "draw_card")
+        self.refresh_menus()
         self.start_sequence(
             "turn_flow",
             self._build_move_sequence(player, move, card_face, captures),
@@ -1115,7 +1114,8 @@ class SorryGame(Game):
         user = self.get_user(player)
         if user:
             user.speak_l("sorry-choose-split", buffer="game")
-        self.rebuild_all_menus(focus_player=player, focus="move_slot_1")
+        self.request_menu_focus(player, "move_slot_1")
+        self.refresh_menus()
         self._queue_current_bot()
 
     def _enter_choose_move(
@@ -1139,7 +1139,8 @@ class SorryGame(Game):
         if defer_menu_rebuild:
             self.request_menu_focus(player, "move_slot_1")
         else:
-            self.rebuild_all_menus(focus_player=player, focus="move_slot_1")
+            self.request_menu_focus(player, "move_slot_1")
+            self.refresh_menus()
         self._queue_current_bot()
 
     def _action_draw_card(self, player: Player, action_id: str) -> None:
@@ -1153,7 +1154,7 @@ class SorryGame(Game):
             return
 
         self.game_state.turn_phase = "resolving"
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self.start_sequence(
             "turn_flow",
             self._build_draw_sequence(player, card_face),

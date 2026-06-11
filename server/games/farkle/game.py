@@ -778,10 +778,10 @@ class FarkleGame(Game):
 
         # Update scoring actions based on new roll
         self.update_scoring_actions(farkle_player)
-        self.rebuild_player_menu(
-            farkle_player,
-            focus=self._first_scoring_action_id(farkle_player),
-        )
+        focus = self._first_scoring_action_id(farkle_player)
+        if focus:
+            self.request_menu_focus(farkle_player, focus)
+        self.refresh_menus(farkle_player)
 
     def _action_take_combo(self, player: Player, action_id: str) -> None:
         """Handle taking a scoring combination."""
@@ -834,7 +834,7 @@ class FarkleGame(Game):
         if not has_combination(farkle_player.dice.values, combo_type, number):
             # Combo no longer available (stale menu state), refresh the menu
             self.update_scoring_actions(farkle_player)
-            self.rebuild_player_menu(farkle_player)
+            self.refresh_menus(farkle_player)
             return
 
         points = get_combination_points(combo_type, number)
@@ -885,7 +885,7 @@ class FarkleGame(Game):
 
         # Update actions
         self.update_scoring_actions(farkle_player)
-        self.rebuild_player_menu(farkle_player)
+        self.refresh_menus(farkle_player)
 
     def _remove_combo_dice(
         self, player: FarklePlayer, combo_type: str, number: int
@@ -1071,7 +1071,7 @@ class FarkleGame(Game):
             BotHelper.set_target(player, 0)  # Bot will calculate during think
 
         # Rebuild menus
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def on_tick(self) -> None:
         """Called every tick. Handle bot AI and scheduled sounds."""

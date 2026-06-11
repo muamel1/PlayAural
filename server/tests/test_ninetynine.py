@@ -280,6 +280,7 @@ class TestMilestones:
         self.player1 = self.game.add_player("Alice", self.user1)
         self.player2 = self.game.add_player("Bob", self.user2)
         self.game.on_start()
+        self.game.flush_menus()
         # Set initial tokens
         self.player1.tokens = 9
         self.player2.tokens = 9
@@ -402,12 +403,14 @@ class TestNinetyNinePlayTest:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 3000
         for tick in range(max_ticks):
             if not game.game_active:
                 break
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active, "Game should have ended"
 
@@ -426,12 +429,14 @@ class TestNinetyNinePlayTest:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 5000
         for tick in range(max_ticks):
             if not game.game_active:
                 break
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active
 
@@ -446,12 +451,14 @@ class TestNinetyNinePlayTest:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 5000
         for tick in range(max_ticks):
             if not game.game_active:
                 break
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active
 
@@ -469,12 +476,14 @@ class TestNinetyNinePlayTest:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 5000
         for tick in range(max_ticks):
             if not game.game_active:
                 break
             game.on_tick()
+            game.flush_menus()
 
         assert not game.game_active
 
@@ -490,6 +499,7 @@ class TestNinetyNinePlayTest:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
         game.alive_player_ids = [player1.id, player2.id]
         game.set_turn_players([player1, player2])
         game.turn_index = 0
@@ -516,6 +526,7 @@ class TestNinetyNinePlayTest:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
         game.alive_player_ids = [player1.id, player2.id]
         game.set_turn_players([player1, player2])
         game.turn_index = 0
@@ -533,6 +544,7 @@ class TestNinetyNinePlayTest:
 
         for _ in range(DRAW_TIMEOUT_TICKS + 1):
             game.on_tick()
+            game.flush_menus()
 
         assert player1.draw_timeout_ticks == 0
         assert len(player1.hand) == 1  # forfeited the top-up
@@ -548,6 +560,7 @@ class TestNinetyNinePlayTest:
         player2 = game.add_player("Bob", user2)
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
         game.alive_player_ids = [player1.id, player2.id]
         game.set_turn_players([player1, player2])
         game.turn_index = 0
@@ -564,12 +577,13 @@ class TestNinetyNinePlayTest:
         user1.messages.clear()
 
         game._action_draw_card(player1, "draw_card")
+        game.flush_menus()
 
         drawn = next(c for c in player1.hand if c.id not in before_ids)
         expected_slot = f"card_slot_{player1.hand.index(drawn) + 1}"
         sel = None
         for msg in user1.messages:
-            if msg.type == "update_menu" and msg.data.get("menu_id") == "turn_menu":
+            if msg.type == "show_menu" and msg.data.get("menu_id") == "turn_menu":
                 sel = msg.data.get("selection_id")
         assert sel == expected_slot
 
@@ -586,6 +600,7 @@ class TestNinetyNinePlayTest:
         players = [game.add_player(u.username, u) for u in users]
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
         game.alive_player_ids = [p.id for p in players]
         game.set_turn_players(players)
         game.turn_index = 0
@@ -610,6 +625,7 @@ class TestNinetyNinePlayTest:
         # Ticking must not spin on the dead seat.
         for _ in range(DRAW_TIMEOUT_TICKS + 5):
             game.on_tick()
+            game.flush_menus()
         assert game.current_player in players[1:]
 
     def test_action_cards_bot_prefers_forcing_no_safe_response(self):
@@ -622,6 +638,7 @@ class TestNinetyNinePlayTest:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
         game.alive_player_ids = [bot_player.id, opp_player.id]
         game.set_turn_players([bot_player, opp_player])
         game.turn_index = 0
@@ -646,6 +663,7 @@ class TestNinetyNinePlayTest:
         players = [game.add_player(user.username, user) for user in users]
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
 
         eliminated = players[2]
         eliminated.tokens = 0
@@ -684,6 +702,7 @@ class TestNinetyNinePlayTest:
         player2 = game.add_player("Bob", user2)
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
         game.alive_player_ids = [player1.id, player2.id]
         game.set_turn_players([player1, player2])
         game.turn_index = 0
@@ -704,9 +723,11 @@ class TestNinetyNinePlayTest:
 
         for _ in range(ROUND_TRANSITION_TICKS - 1):
             game.on_tick()
+            game.flush_menus()
         assert game.round == round_before
 
         game.on_tick()
+        game.flush_menus()
         assert game.round == round_before + 1
         assert not game.has_active_sequence(tag=ROUND_TRANSITION_TAG)
 
@@ -721,6 +742,7 @@ class TestNinetyNinePlayTest:
         opponent = game.add_player("Bob", opponent_user)
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
         game.alive_player_ids = [player.id, opponent.id]
         game.set_turn_players([player, opponent])
         card = Card(id=903, rank=1, suit=SUIT_HEARTS)
@@ -733,7 +755,8 @@ class TestNinetyNinePlayTest:
         assert action.label == card_name(card, "en")
 
         game.attach_user(player.id, user)
-        game.rebuild_player_menu(player)
+        game.refresh_menus(player)
+        game.flush_menus()
         items = user.get_current_menu_items("turn_menu")
         check_count_action = game.get_action_set(player, "standard").get_action("check_count")
 
@@ -762,6 +785,7 @@ class TestNinetyNineChoiceDialogs:
         self.player2 = self.game.add_player("Bob", self.user2)
         self.game.setup_keybinds()
         self.game.on_start()
+        self.game.flush_menus()
         self.game.alive_player_ids = [self.player1.id, self.player2.id]
         self.game.set_turn_players([self.player1, self.player2])
         self.game.turn_index = 0
@@ -905,6 +929,7 @@ class TestNinetyNinePersistence:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
 
         # Modify state
         game.count = 55
@@ -941,6 +966,7 @@ class TestNinetyNinePersistence:
 
         game.setup_keybinds()
         game.on_start()
+        game.flush_menus()
 
         max_ticks = 2000
         for tick in range(max_ticks):
@@ -962,6 +988,7 @@ class TestNinetyNinePersistence:
                 game.rebuild_runtime_state()
 
             game.on_tick()
+            game.flush_menus()
 
         # Game should complete without errors
         assert not game.game_active or tick == max_ticks - 1

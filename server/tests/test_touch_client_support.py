@@ -75,7 +75,8 @@ def test_ludo_mobile_standard_actions_follow_touch_order() -> None:
     assert order.index("check_scores") < order.index("whose_turn")
     assert order.index("whose_turn") < order.index("whos_at_table")
 
-    game.rebuild_player_menu(p1)
+    game.refresh_menus(p1)
+    game.flush_menus()
     visible_ids = [
         item.id
         for item in u1.menus["turn_menu"]["items"]
@@ -103,7 +104,8 @@ def test_milebymile_touch_info_stays_before_status_actions() -> None:
     assert order.index("check_status") < order.index("whose_turn")
     assert order[-2:] == ["whose_turn", "whos_at_table"]
 
-    game.rebuild_player_menu(p1)
+    game.refresh_menus(p1)
+    game.flush_menus()
     visible_ids = [
         item.id
         for item in u1.menus["turn_menu"]["items"]
@@ -403,7 +405,8 @@ def test_disabled_turn_menu_action_click_speaks_same_reason_as_keybind() -> None
     game.on_start()
     assert game.current_player != bob_player
 
-    game.rebuild_player_menu(bob_player)
+    game.refresh_menus(bob_player)
+    game.flush_menus()
     visible_ids = [item.id for item in bob.menus["turn_menu"]["items"] if getattr(item, "id", None)]
     assert "roll" in visible_ids
 
@@ -444,7 +447,8 @@ def test_recent_games_mobile_turn_menu_has_static_table_controls(
     assert user is not None
 
     game.on_start()
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
 
     visible_ids = [
         item.id
@@ -464,7 +468,8 @@ def test_backgammon_mobile_grid_menu_keeps_static_controls_after_grid() -> None:
     game.add_player("Bob", MockUser("Bob", uuid="backgammon-grid-mobile-2"))
     game.host = "Alice"
     game.on_start()
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
 
     menu = user.menus["turn_menu"]
     visible_ids = [
@@ -489,7 +494,8 @@ def test_senet_mobile_grid_menu_keeps_static_controls_after_grid() -> None:
     game.add_player("Bob", MockUser("Bob", uuid="senet-grid-mobile-2"))
     game.host = "Alice"
     game.on_start()
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
 
     menu = user.menus["turn_menu"]
     visible_ids = [
@@ -524,7 +530,8 @@ def test_chess_mobile_standard_actions_are_visible_once() -> None:
     assert order.index("check_clock") < order.index("whose_turn")
     assert order.index("whose_turn") < order.index("whos_at_table")
 
-    game.rebuild_player_menu(white)
+    game.refresh_menus(white)
+    game.flush_menus()
     visible_ids = [
         item.id
         for item in user.menus["turn_menu"]["items"]

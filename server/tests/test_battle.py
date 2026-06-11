@@ -52,6 +52,7 @@ def make_game(
     game.host = "Player1"
     if start:
         game.on_start()
+        game.flush_menus()
     return game
 
 
@@ -60,6 +61,7 @@ def advance_until(game: BattleGame, condition, max_ticks: int = 400) -> bool:
         if condition():
             return True
         game.on_tick()
+        game.flush_menus()
     return condition()
 
 
@@ -251,6 +253,7 @@ def test_bot_selection_announces_choices_to_room() -> None:
     game.attach_user(bot_player.id, Bot(bot_player.name, uuid=bot_player.id))
 
     game.on_start()
+    game.flush_menus()
 
     human_user = game.get_user(game.players[0])
     spoken = human_user.get_spoken_messages()
@@ -352,6 +355,7 @@ def test_team_roster_actions_are_contextual_and_not_for_spectators() -> None:
     spectator = team_game.players[2]
     spectator.is_spectator = True
     team_game.on_start()
+    team_game.flush_menus()
     p1, p2 = team_game.players[:2]
     select_and_submit(team_game, p1, "novice_boxer")
     select_and_submit(team_game, p2, "boxer")
@@ -447,6 +451,7 @@ def test_spectator_status_and_move_announcements_use_neutral_team_names() -> Non
     spectator = game.players[1]
     spectator.is_spectator = True
     game.on_start()
+    game.flush_menus()
     player = game.players[0]
     select_and_submit(game, player, "novice_boxer")
     assert advance_until(game, lambda: game.phase == PHASE_COMBAT and any(fighter.is_arena_enemy for fighter in game.fighters), max_ticks=200)
@@ -665,6 +670,7 @@ def test_health_elimination_plays_lose_then_death_and_fall_sounds() -> None:
     game._resolve_eliminations(attacker)
     for _ in range(60):
         game.on_tick()
+        game.flush_menus()
 
     sounds = game.get_user(p1).get_sounds_played()
     assert "game_pig/lose.ogg" in sounds
@@ -688,6 +694,7 @@ def test_speed_elimination_only_plays_global_lose_sound() -> None:
     game._resolve_eliminations(attacker)
     for _ in range(60):
         game.on_tick()
+        game.flush_menus()
 
     sounds = game.get_user(p1).get_sounds_played()
     assert "game_pig/lose.ogg" in sounds

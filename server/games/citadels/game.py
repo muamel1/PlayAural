@@ -867,7 +867,7 @@ class CitadelsGame(Game):
         if was_selection_picker:
             self.set_turn_players([player])
         if was_current or was_selection_picker or self.current_player == player:
-            self.rebuild_all_menus()
+            self.refresh_menus()
             self._schedule_bot_turn(player)
         return True
 
@@ -923,7 +923,7 @@ class CitadelsGame(Game):
             self.set_turn_players([first])
             self._announce_selection_turn(first, round_number=self.round)
             return
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _finish_selection_phase(self) -> None:
         if self.available_character_ranks:
@@ -934,7 +934,7 @@ class CitadelsGame(Game):
         self.turn_index = 0
         self.current_rank = CHARACTER_ASSASSIN
         self.broadcast_l("citadels-turn-phase-start", buffer="game")
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._advance_rank_resolution()
 
     def _advance_rank_resolution(self) -> None:
@@ -1078,7 +1078,7 @@ class CitadelsGame(Game):
             self._start_round_cleanup()
             return
         self.current_rank += 1
-        self.rebuild_all_menus()
+        self.refresh_menus()
         self._advance_rank_resolution()
 
     def _start_round_cleanup(self) -> None:
@@ -1154,14 +1154,19 @@ class CitadelsGame(Game):
         *,
         selection_id: str | None = None,
     ) -> None:
-        self.rebuild_all_menus()
+        self.refresh_menus()
+        # The focus target is computed from the player's action set, which is
+        # stale mid-event (the framework flush hasn't resynced it yet) — e.g.
+        # right after cancelling a sub-phase the submenu actions still linger.
+        # Sync via our own before_menu_build hook (idempotent) first.
+        self.before_menu_build(player)
         target_id = selection_id
         if target_id is not None and self.find_action(player, target_id) is None:
             target_id = None
         if target_id is None:
             target_id = self._preferred_focus_action_id(player)
         if target_id is not None:
-            self.update_player_menu(player, selection_id=target_id)
+            self.request_menu_focus(player, target_id)
 
     def _first_visible_action_id(self, player: Player) -> str | None:
         visible_actions = self.get_all_visible_actions(player)

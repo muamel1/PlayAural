@@ -444,10 +444,10 @@ class YahtzeeGame(Game, DiceGameMixin):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(15, 25))  # nosec B311
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
         # After rolling, move focus to first die toggle so player can immediately keep/unkeep
         if ytz_player.rolls_left > 0:
-            self.update_player_menu(player, selection_id="toggle_die_0")
+            self.request_menu_focus(player, "toggle_die_0")
 
     def _action_score(self, player: Player, action_id: str) -> None:
         """Handle scoring in a category."""
@@ -681,7 +681,7 @@ class YahtzeeGame(Game, DiceGameMixin):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(10, 20))  # nosec B311
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_turn(self) -> None:
         player = self.current_player

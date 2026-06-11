@@ -354,7 +354,7 @@ class LudoGame(Game):
         if player and player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(20, 40))  # nosec B311
         self.announce_turn()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_turn(self) -> None:
         self.cancel_sequences_by_tag("turn_flow")
@@ -755,11 +755,8 @@ class LudoGame(Game):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(20, 40))  # nosec B311
         first_move_action = f"move_token_{min(ludo_player.move_options) + 1}"
-        self._rebuild_all_menus_with_player_focus(ludo_player, first_move_action)
-
-    def _rebuild_all_menus_with_player_focus(self, focused_player: Player, focus: str) -> None:
-        for player in self.players:
-            self.rebuild_player_menu(player, focus=focus if player == focused_player else None)
+        self.request_menu_focus(ludo_player, first_move_action)
+        self.refresh_menus()
 
     def _action_move_token(self, player: Player, action_id: str) -> None:
         ludo_player: LudoPlayer = player  # type: ignore
@@ -770,7 +767,8 @@ class LudoGame(Game):
         self.is_rolling = True
         token = ludo_player.tokens[token_index]
         self._start_move_sequence(ludo_player, token)
-        self._rebuild_all_menus_with_player_focus(ludo_player, "roll_dice")
+        self.request_menu_focus(ludo_player, "roll_dice")
+        self.refresh_menus()
 
     def _schedule_move(self, player: LudoPlayer, token: LudoToken) -> None:
         """Backward-compatible wrapper around the shared sequence runner."""

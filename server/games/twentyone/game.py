@@ -820,7 +820,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
         if self._draws_locked_for(p):
             self._play_sound_for_player(p, SOUND_ACTION_FAIL)
             self._announce_draw_locked(p)
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         card = self._draw_card()
@@ -831,7 +831,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
                 "twentyone-you-cannot-hit-empty-deck",
                 "twentyone-player-cannot-hit-empty-deck",
             )
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         self.play_sound(SOUND_HIT, volume=80)
@@ -852,7 +852,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
         if random.randint(1, 100) <= chance:  # nosec B311
             self._give_random_modifiers(p, 1, announce=True)
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_stand(self, player: Player, action_id: str) -> None:
         p = player if isinstance(player, TwentyOnePlayer) else None
@@ -928,11 +928,11 @@ class TwentyOneGame(ActionGuardMixin, Game):
         self.modifier_used_since_last_stand_resolution = True
         self._trigger_harvest_rewards()
         if self.phase != "turns":
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
         if opponent:
             self._play_bet_change_sounds(p, opponent, my_bet_before, opp_bet_before)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_check_status(self, player: Player, action_id: str) -> None:
         p = player if isinstance(player, TwentyOnePlayer) else None
@@ -1246,7 +1246,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
             self._play_target_reminder_sound(current)
             if self._modifiers_locked_for(current):
                 self._play_sound_for_player(current, SOUND_LOCKDOWN_ACTIVE, volume=65)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _advance_turn_after_action(self) -> None:
         if self.phase != "turns":
@@ -1260,7 +1260,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
             self._play_target_reminder_sound(current)
             if self._modifiers_locked_for(current):
                 self._play_sound_for_player(current, SOUND_LOCKDOWN_ACTIVE, volume=65)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _settle_round(self) -> None:
         players = self._alive_players()
@@ -1295,7 +1295,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
 
         configured_wait = max(0, self.options.next_round_wait_ticks)
         self.next_round_wait_ticks = max(BETWEEN_ROUND_WAIT_TICKS, configured_wait)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _clear_pending_round_resolution(self) -> None:
         self.round_resolution_wait_ticks = 0
@@ -1380,7 +1380,7 @@ class TwentyOneGame(ActionGuardMixin, Game):
         if len(survivors) <= 1:
             self._end_game(survivors[0] if survivors else None)
             return
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _process_bot_turn(self) -> None:
         current = self.current_player

@@ -203,7 +203,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
         bot_player = self.add_player(bot_name, bot_user)
         self.broadcast_l("table-joined", buffer="game", player=bot_name)
         self.play_table_join_sound(bot_player)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_remove_bot(self, player: Player, action_id: str) -> None:
         for i in range(len(self.players) - 1, -1, -1):
@@ -213,7 +213,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
                 self.remove_player(bot.id)
                 self.play_table_leave_sound(bot, is_bot=True)
                 break
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _perform_leave_game(self, player: Player) -> None:
         if player.is_spectator:
@@ -223,7 +223,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
                 self._table.remove_member(player.name)
             # Standard spectator leave sound
             self.play_table_leave_sound(player, is_spectator=True)
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         if self.status == "playing" and not player.is_bot:
@@ -237,7 +237,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
                     is_bot=False,
                     is_spectator=False,
                 )
-                self.rebuild_all_menus()
+                self.refresh_menus()
                 return
 
         # Full removal logic
@@ -258,7 +258,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
             self.destroy()
             return
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # ==========================================================================
     # Action sets
@@ -582,7 +582,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
 
         self.start_turn_timer()
         self._sync_turn_actions(player)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _advance_turn(self) -> None:
         self.advance_turn(announce=False)
@@ -640,7 +640,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
                 return
             self.awaiting_wild_suit = True
             self.start_turn_timer()  # reset timer for suit selection
-            self.rebuild_all_menus()
+            self.refresh_menus()
             if p.is_bot:
                 BotHelper.jolt_bot(p, ticks=random.randint(20, 30))
             return
@@ -695,7 +695,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
         self.start_turn_timer()  # reset timer after drawing
         self._broadcast_draw(p, 1)
         selection_id = f"play_card_{card.id}" if playable else None
-        self.update_player_menu(p, selection_id=selection_id)
+        self.request_menu_focus(p, selection_id)
         if p.is_bot:
             BotHelper.jolt_bot(p, ticks=random.randint(20, 30))
 
@@ -753,7 +753,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
 
         self.timer.clear()
         self.wild_wait_ticks = 15
-        self.rebuild_all_menus()
+        self.refresh_menus()
         return
 
     def _action_read_top(self, player: Player, action_id: str) -> None:
@@ -1205,7 +1205,7 @@ class CrazyEightsGame(Game, TurnTimerMixin):
             return
 
         self.hand_wait_ticks = 5 * 20
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _hand_points(self, hand: list[Card]) -> int:
         total = 0

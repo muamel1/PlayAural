@@ -214,7 +214,7 @@ class CoupGame(Game):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(20, 50))
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_turn(self) -> None:
         """End current player's turn."""
@@ -827,7 +827,7 @@ class CoupGame(Game):
             return
 
         self.is_resolving = True
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         coup_player.coins -= 7
         self.play_sound("game_coup/coup.ogg")
@@ -906,7 +906,7 @@ class CoupGame(Game):
             self.broadcast_l("coup-claims-exchange", buffer="game", player=player.name)
 
         self.broadcast_l("coup-waiting-for-reactions", buffer="game")
-        self.rebuild_all_menus()
+        self.refresh_menus()
         # Jolt bots heavily so they don't react instantly
         BotHelper.jolt_bots(self, ticks=random.randint(40, 80)) # 2-4 seconds delay
 
@@ -921,7 +921,7 @@ class CoupGame(Game):
 
         self.interrupt_timer_ticks = 0
         self.is_resolving = True
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         self.play_sound("game_coup/challenge.ogg")
         claimer = self.get_player_by_id(self.active_claimer_id)
@@ -974,7 +974,7 @@ class CoupGame(Game):
         self.passed_players = set()
 
         self.broadcast_l("coup-waiting-for-reactions", buffer="game")
-        self.rebuild_all_menus()
+        self.refresh_menus()
         BotHelper.jolt_bots(self, ticks=random.randint(40, 80))
 
     def _action_pass(self, player: Player, action_id: str) -> None:
@@ -999,7 +999,7 @@ class CoupGame(Game):
             self.interrupt_timer_ticks = 1
 
         # Rebuild all menus so everyone sees that this player passed/menu updates
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _get_required_character_for_action(self, action: str) -> str:
         mapping = {
@@ -1201,7 +1201,7 @@ class CoupGame(Game):
                                 {"type": "claim_unchallenged", "role": role}
                             )
                     self.is_resolving = True
-                    self.rebuild_all_menus()
+                    self.refresh_menus()
                     blocker = self.get_player_by_id(self.active_claimer_id)
                     self.broadcast_l("coup-block-successful", buffer="game", blocker=blocker.name if blocker else "Someone")
                     sound_file = ""
@@ -1247,7 +1247,7 @@ class CoupGame(Game):
 
         elif self.active_action == "assassinate":
             self.is_resolving = True
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
             sound_file = "assassinate.ogg"
             self.play_sound(f"game_coup/{sound_file}")
@@ -1301,7 +1301,7 @@ class CoupGame(Game):
             self.return_count = 0
             self.turn_phase = "exchanging"
             self.interrupt_timer_ticks = 0
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
             if player.is_bot:
                 BotHelper.jolt_bot(player, ticks=random.randint(10, 20))
@@ -1347,7 +1347,7 @@ class CoupGame(Game):
             self.broadcast_l("coup-exchange-complete", buffer="game", player=player.name)
             self._end_turn()
         else:
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def _broadcast_card_message(self, message_key: str, character: str | Character, **kwargs) -> None:
         """Broadcast a message with a localized card name to all players."""
@@ -1389,7 +1389,7 @@ class CoupGame(Game):
             # Need to pick — use _losing_player_id so active_target_id is never overwritten
             self._losing_player_id = player.id
             self.turn_phase = "losing_influence"
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
             if player.is_bot:
                 BotHelper.jolt_bot(player, ticks=random.randint(10, 20))
@@ -1412,7 +1412,7 @@ class CoupGame(Game):
             return
 
         self.is_resolving = True
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         sound_file = f"chardestroy{random.randint(1, 2)}.ogg"
         self.play_sound(f"game_coup/{sound_file}")

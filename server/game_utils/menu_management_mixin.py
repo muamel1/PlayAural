@@ -1,24 +1,34 @@
 """Mixin providing menu management functionality for games.
 
-The menu orchestrators (``rebuild_player_menu``, ``update_player_menu``,
-``rebuild_all_menus``, ``update_all_menus``) are **sealed**: games must not
-override them. They own the focus-steal guards (status boxes, actions menus,
-global system menus, pending inputs), bot/finished/destroyed handling, and
-focus scoping. Per-game overrides of these methods repeatedly reintroduced
-focus-stealing and menu-clobbering bugs (see CLAUDE.md, "Menu Focus on
-Refresh and Turn Transitions").
+Game code never paints menus. It RECORDS intent through two calls:
 
-Games customize menu behavior through these hooks instead:
+- ``refresh_menus(player=None)`` — mark one player (or everyone) as needing
+  a repaint.
+- ``request_menu_focus(player, action_id)`` — queue a one-shot focus jump
+  for a player (and mark them for repaint).
+
+One sealed flush point — ``flush_menus()``, called by the framework at the
+end of every ``handle_event()`` and once per server tick — builds and sends
+the menus for dirty players. A plain refresh therefore can never move a
+cursor, double-paint, or clobber an overlay: the flush owns the focus-steal
+guards (status boxes, actions menus, global system menus, pending inputs),
+bot skipping, finished-state end screens, and focus delivery. Per-game
+copies of that logic were the root cause of a long line of focus-stealing
+bugs, so the orchestrators are **sealed**: a game class that overrides one
+fails at import time.
+
+Games customize what gets painted through these hooks:
 
 - ``before_menu_build(player)`` — sync dynamic action sets (e.g. per-card
   play actions) before any menu paint. Runs for bots too, so action sets
-  stay valid for bot decision logic.
+  stay valid for bot decision logic. Must be idempotent.
 - ``build_menu_items(player, user)`` — supply custom ``MenuItem`` lists and
   grid layout kwargs (e.g. the backgammon/senet board grids).
-- ``request_menu_focus(player, action_id)`` — land the cursor on a specific
-  item at the next full-table rebuild.
-- ``defer_next_rebuild_to_update()`` — make the next no-focus full rebuild
-  focus-preserving (for delayed sequence-runner repaints).
+
+Clients preserve the user's cursor by item identity across a same-menu
+repaint, so a flush without a queued focus intent is always
+focus-preserving; focus only moves when an intent says so, and each intent
+fires at most once.
 """
 
 from dataclasses import dataclass, field
@@ -36,10 +46,9 @@ from .client_types import is_touch_client
 #: Menu orchestrator methods that games must not override. Enforced at class
 #: creation time by ``MenuManagementMixin.__init_subclass__``.
 SEALED_MENU_ORCHESTRATORS = (
-    "rebuild_player_menu",
-    "update_player_menu",
-    "rebuild_all_menus",
-    "update_all_menus",
+    "refresh_menus",
+    "flush_menus",
+    "_paint_player_menu",
     "_is_menu_refresh_blocked",
 )
 
@@ -49,7 +58,7 @@ class MenuBuild:
     """Result of the ``build_menu_items`` hook.
 
     ``items`` is the full turn-menu item list in display order. ``grid_kwargs``
-    holds the grid layout kwargs forwarded to ``show_menu``/``update_menu``
+    holds the grid layout kwargs forwarded to ``show_menu``
     (``grid_enabled``, ``grid_width``, ``grid_height``), or ``{}`` for a flat
     list menu.
     """
@@ -59,7 +68,7 @@ class MenuBuild:
 
 
 class MenuManagementMixin:
-    """Mixin providing menu rebuilding and status box functionality.
+    """Mixin providing menu refresh recording, flushing, and status boxes.
 
     Expects on the Game class:
         - self._destroyed: bool
@@ -69,7 +78,8 @@ class MenuManagementMixin:
         - self._actions_menu_open: set[str]
         - self._pending_actions: dict[str, str]
         - self._pending_menu_focus: dict[str, str]
-        - self._next_full_rebuild_is_update: bool
+        - self._menu_dirty: set[str]
+        - self._menu_dirty_all: bool
         - self.get_user(player) -> User | None
         - self.get_all_visible_actions(player) -> list[ResolvedAction]
     """
@@ -81,22 +91,19 @@ class MenuManagementMixin:
                 raise TypeError(
                     f"{cls.__module__}.{cls.__qualname__} overrides {name}(), "
                     "which is a sealed menu orchestrator.\n"
-                    "The orchestrators own the focus-steal guards (status "
-                    "boxes, actions menus, global system menus, pending "
-                    "inputs), bot/finished/destroyed handling, and focus "
-                    "scoping. Per-game overrides of them repeatedly "
-                    "reintroduced focus-stealing and menu-clobbering bugs "
-                    "(see CLAUDE.md, 'Menu Focus on Refresh and Turn "
-                    "Transitions').\n"
+                    "The flush owns the focus-steal guards (status boxes, "
+                    "actions menus, global system menus, pending inputs), "
+                    "bot/finished/destroyed handling, and focus delivery. "
+                    "Per-game overrides of that logic repeatedly reintroduced "
+                    "focus-stealing and menu-clobbering bugs (see CLAUDE.md, "
+                    "'Menu Refresh and Focus').\n"
                     "Customize through a sanctioned hook instead:\n"
                     "  - before_menu_build(player): sync dynamic action sets "
                     "before any menu paint\n"
                     "  - build_menu_items(player, user): supply custom "
                     "MenuItem lists / grid layouts\n"
-                    "  - request_menu_focus(player, action_id): land focus "
-                    "on an item at the next full rebuild\n"
-                    "  - defer_next_rebuild_to_update(): keep a delayed full "
-                    "repaint focus-preserving\n"
+                    "  - request_menu_focus(player, action_id): queue a "
+                    "one-shot focus jump for the next flush\n"
                     "See server/game_utils/menu_management_mixin.py for the "
                     "hook contracts."
                 )
@@ -108,7 +115,7 @@ class MenuManagementMixin:
     def before_menu_build(self, player: "Player") -> None:
         """Hook: sync dynamic action sets before any menu paint.
 
-        Called at the very top of every per-player menu refresh, before the
+        Called at the top of every per-player menu paint, before the
         destroyed/bot/finished early-outs — so action sets are also refreshed
         for bots (whose menus are never rendered but whose action sets drive
         bot decisions). Must be idempotent. Default is a no-op.
@@ -144,33 +151,67 @@ class MenuManagementMixin:
         return MenuBuild(items=items, grid_kwargs=grid_kwargs)
 
     # ------------------------------------------------------------------
-    # Focus intent API
+    # Recording API (what game code calls)
     # ------------------------------------------------------------------
 
-    def request_menu_focus(self, player: "Player", action_id: str) -> None:
-        """Land the cursor on ``action_id`` at the next full-table rebuild.
+    def refresh_menus(self, player: "Player | None" = None) -> None:
+        """Mark ``player`` (or every player) as needing a menu repaint.
 
-        The intent is per-player and used-or-discarded at the next
-        ``rebuild_all_menus()`` (including one triggered later by the
-        sequence runner): it is consumed at most once, so a delayed repaint
-        cannot produce a second screen-reader jump, and an explicit ``focus``
-        argument passed to ``rebuild_all_menus`` supersedes it entirely.
+        Recording only — nothing is built or sent here. The framework flushes
+        at the end of the current ``handle_event()`` and once per server
+        tick, so over-marking costs one set insert, never a packet or a
+        Fluent render. A repaint without a queued focus intent preserves
+        every player's cursor (clients follow item identity), so the safe
+        habit — refresh after any state change — is also the cheap habit.
+        """
+        if player is None:
+            self._menu_dirty_all = True
+        else:
+            self._menu_dirty.add(player.id)
+
+    def request_menu_focus(self, player: "Player", action_id: str) -> None:
+        """Queue a one-shot focus jump to ``action_id`` for ``player``.
+
+        The intent is a single per-player slot (the last writer wins) and is
+        consumed by the next flush that paints this player, so a delayed
+        repaint can never produce a second screen-reader jump. Requesting
+        focus marks the player for repaint; no separate ``refresh_menus``
+        call is needed unless other players' menus changed too.
         """
         self._pending_menu_focus[player.id] = action_id
-
-    def defer_next_rebuild_to_update(self) -> None:
-        """Make the next no-focus ``rebuild_all_menus()`` focus-preserving.
-
-        Use when a delayed flow (e.g. a sequence-runner unlock) will trigger a
-        full-table rebuild that should not reset anyone's cursor because the
-        interesting focus change already happened. Consumed exactly once, and
-        only by a ``rebuild_all_menus()`` call with no focus arguments.
-        """
-        self._next_full_rebuild_is_update = True
+        self._menu_dirty.add(player.id)
 
     # ------------------------------------------------------------------
     # Sealed orchestrators — do not override in games
     # ------------------------------------------------------------------
+
+    def flush_menus(self) -> None:
+        """Build and send menus for players marked dirty (sealed).
+
+        Called by the framework only: at the end of every
+        ``Game.handle_event()`` and once per server tick (after game ticks,
+        before the per-user packet flush). Game code records intent with
+        ``refresh_menus()`` / ``request_menu_focus()`` and never flushes.
+        """
+        if self._destroyed:
+            self._menu_dirty.clear()
+            self._menu_dirty_all = False
+            return
+
+        if self._menu_dirty_all:
+            targets = list(self.players)
+        elif self._menu_dirty:
+            targets = [p for p in self.players if p.id in self._menu_dirty]
+        else:
+            return
+        self._menu_dirty.clear()
+        self._menu_dirty_all = False
+
+        for player in targets:
+            # The focus intent is used-or-discarded at this flush: it never
+            # survives to a later flush where it could fire stale.
+            focus = self._pending_menu_focus.pop(player.id, None)
+            self._paint_player_menu(player, focus)
 
     def _is_menu_refresh_blocked(self, player: "Player", user: "User") -> bool:
         """True when painting a turn menu would clobber an open overlay.
@@ -198,31 +239,32 @@ class MenuManagementMixin:
 
         return bool(self._pending_actions.get(player.id))
 
-    def rebuild_player_menu(self, player: "Player", focus: str | None = None) -> None:
-        """Rebuild the turn menu for a player (sealed orchestrator).
+    def _paint_player_menu(self, player: "Player", focus: str | None) -> None:
+        """Build and send one player's turn menu (sealed; flush-internal).
 
-        Pass ``focus`` (an item id) to land the cursor on a specific item — e.g.
-        a freshly drawn card. With ``focus`` omitted, clients preserve the
-        player's current focus by item identity across the refresh.
+        Always sends the full show form; clients treat a same-id menu packet
+        as an in-place diff that preserves focus by item identity, so this
+        never resets a cursor. ``focus`` (an item id) is the player's
+        consumed focus intent, delivered as an explicit selection.
         """
         self.before_menu_build(player)
 
         if self._destroyed:
-            return  # Don't rebuild menus after game is destroyed
+            return
 
         if player.is_bot:
             # Bots discard all UI (show_menu is a no-op), so skip building the
-            # menu entirely. Otherwise every rebuild resolves the full action set
+            # menu entirely. Otherwise every flush resolves the full action set
             # and renders each label through Fluent for a player that never sees
             # it — a large per-tick cost in bot-heavy games and on the live server.
             return
 
         if self.status == "finished":
-            # BUGFIX: If game is finished, we should restore the end screen
-            # instead of doing nothing (which leaves user with no menu)
+            # A dirty flush on a finished game restores the end screen instead
+            # of doing nothing (which would leave the user with no menu).
 
-            # Robustness: If _last_game_result is missing (e.g. after server restart),
-            # try to rebuild it from current state.
+            # Robustness: If _last_game_result is missing (e.g. after server
+            # restart), try to rebuild it from current state.
             if self._last_game_result is None and hasattr(self, "build_game_result"):
                 self._last_game_result = self.build_game_result()
 
@@ -246,80 +288,6 @@ class MenuManagementMixin:
             selection_id=focus,
             **build.grid_kwargs,
         )
-
-    def rebuild_all_menus(
-        self,
-        focus: str | None = None,
-        *,
-        focus_player: "Player | None" = None,
-    ) -> None:
-        """Rebuild menus for all players (sealed orchestrator).
-
-        ``focus`` (an item id) applies to every player that has such an item;
-        pass ``focus_player`` to scope it to one player so the others keep
-        their current focus anchor. Players without an explicit focus consume
-        any pending ``request_menu_focus`` intent.
-        """
-        if self._destroyed:
-            return  # Don't rebuild menus after game is destroyed
-
-        if (
-            focus is None
-            and focus_player is None
-            and self._next_full_rebuild_is_update
-        ):
-            self._next_full_rebuild_is_update = False
-            self.update_all_menus()
-            return
-
-        for player in self.players:
-            # A pending focus intent is used-or-discarded at every full
-            # rebuild: an explicit focus supersedes it, and it never survives
-            # to a later rebuild where it could cause a stale cursor jump.
-            pending_focus = self._pending_menu_focus.pop(player.id, None)
-            player_focus = (
-                focus
-                if focus is not None
-                and (focus_player is None or player == focus_player)
-                else None
-            )
-            if player_focus is None:
-                player_focus = pending_focus
-            self.rebuild_player_menu(player, focus=player_focus)
-
-    def update_player_menu(
-        self, player: "Player", selection_id: str | None = None
-    ) -> None:
-        """Update the turn menu for a player, preserving focus (sealed)."""
-        self.before_menu_build(player)
-
-        if self._destroyed:
-            return
-        if player.is_bot:
-            return  # Bots discard all UI; skip menu resolution + label render.
-        if self.status == "finished":
-            return
-        user = self.get_user(player)
-        if not user:
-            return
-
-        if self._is_menu_refresh_blocked(player, user):
-            return
-
-        build = self.build_menu_items(player, user)
-        user.update_menu(
-            "turn_menu",
-            build.items,
-            selection_id=selection_id,
-            **build.grid_kwargs,
-        )
-
-    def update_all_menus(self) -> None:
-        """Update menus for all players, preserving focus (sealed)."""
-        if self._destroyed:
-            return
-        for player in self.players:
-            self.update_player_menu(player)
 
     # ------------------------------------------------------------------
     # Status boxes

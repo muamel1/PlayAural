@@ -300,7 +300,8 @@ def test_pass_respects_confirm_risky_actions_preference() -> None:
     game.is_first_turn = False
     game.current_combo = evaluate_combo([c(99, 5, 4)], SOUTHERN_VARIANT)
     game.trick_winner_id = player1.id
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(current, "pass")
 
@@ -332,7 +333,8 @@ def test_pass_confirmation_can_be_disabled() -> None:
     game.is_first_turn = False
     game.current_combo = evaluate_combo([c(99, 5, 4)], SOUTHERN_VARIANT)
     game.trick_winner_id = player1.id
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(current, "pass")
 
@@ -351,7 +353,8 @@ def test_pass_confirmation_expires() -> None:
     game.is_first_turn = False
     game.current_combo = evaluate_combo([c(99, 5, 4)], SOUTHERN_VARIANT)
     game.trick_winner_id = player1.id
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(current, "pass")
     current.pass_confirm_ticks = 1
@@ -374,7 +377,8 @@ def test_hand_sorting_rebuilds_in_tien_len_order() -> None:
         c(6, 3, 3),
     ]
 
-    game.rebuild_player_menu(current)
+    game.refresh_menus(current)
+    game.flush_menus()
 
     assert [(card.rank, card.suit) for card in current.hand] == [
         (3, 4),
@@ -514,7 +518,8 @@ def test_out_of_turn_southern_chop_can_override_current_two() -> None:
         c(5, 7, 4), c(6, 7, 2),
     ]
     player3.selected_cards = {card.id for card in player3.hand}
-    game.rebuild_player_menu(player3)
+    game.refresh_menus(player3)
+    game.flush_menus()
 
     game.execute_action(player3, "play_selected")
 

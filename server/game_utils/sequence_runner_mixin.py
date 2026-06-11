@@ -149,7 +149,7 @@ class SequenceRunnerMixin:
             self._process_sequence(sequence_id, current_tick=current_tick)
         after_signature = self._sequence_state_signature()
         if after_signature != before_signature:
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def cancel_sequence(self, sequence_id: str) -> None:
         self.active_sequences = [

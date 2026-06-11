@@ -866,7 +866,7 @@ class ScopaGame(Game):
             BotHelper.jolt_bot(player, ticks=random.randint(15, 25))
 
         self._update_all_card_actions()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _execute_capture(
         self, player: ScopaPlayer, played_card: Card, captured: list[Card]
@@ -1004,7 +1004,7 @@ class ScopaGame(Game):
             # Start timer for next round
             self._round_timer.start()
             self._update_all_card_actions()
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     # ==========================================================================
     # Game Result

@@ -1,11 +1,14 @@
-"""Tests for the sealed menu orchestrators and focus-intent APIs.
+"""Tests for the sealed menu orchestrators and the record/flush contract.
 
 The menu orchestrators in MenuManagementMixin are sealed: a game subclass
 that overrides one must fail loudly at class-creation (i.e. import) time
 with a message that names the offender and points at the sanctioned hooks.
-These tests pin that contract, plus the semantics of the focus-intent APIs
-that replaced the per-game plumbing (sorry's pending-focus dict and
-deadmanspoker's deferred-refresh flag).
+
+These tests also pin the recording contract: game code records intent with
+``refresh_menus()`` / ``request_menu_focus()`` and nothing is built or sent
+until the framework flush (``flush_menus()``, called at the end of every
+``handle_event`` and once per server tick). Focus intents are one-shot,
+per-player, last-writer-wins.
 """
 
 from pathlib import Path
@@ -35,8 +38,7 @@ def turn_menu_messages(user: MockUser) -> list:
     return [
         m
         for m in user.messages
-        if m.type in ("show_menu", "update_menu")
-        and m.data.get("menu_id") == "turn_menu"
+        if m.type == "show_menu" and m.data.get("menu_id") == "turn_menu"
     ]
 
 
@@ -64,6 +66,93 @@ class TestSealedOrchestrators:
         )
         assert issubclass(cls, PigGame)
 
+    def test_old_orchestrator_names_are_gone(self) -> None:
+        # The phase-1 names were deleted, not aliased: a game calling them
+        # must fail loudly, not silently repaint with stale semantics.
+        game = make_game()
+        for name in (
+            "rebuild_player_menu",
+            "update_player_menu",
+            "rebuild_all_menus",
+            "update_all_menus",
+            "defer_next_rebuild_to_update",
+        ):
+            assert not hasattr(game, name)
+
+
+class TestRecordAndFlush:
+    def test_refresh_records_without_painting(self) -> None:
+        game = make_game()
+        user1 = game.get_user(game.players[0])
+
+        game.refresh_menus()
+        assert turn_menu_messages(user1) == []
+
+        game.flush_menus()
+        assert len(turn_menu_messages(user1)) == 1
+
+    def test_flush_without_refresh_paints_nothing(self) -> None:
+        game = make_game()
+        user1 = game.get_user(game.players[0])
+
+        game.flush_menus()
+        assert turn_menu_messages(user1) == []
+
+    def test_per_player_refresh_scopes_the_paint(self) -> None:
+        game = make_game()
+        p1, p2 = game.players
+        user1 = game.get_user(p1)
+        user2 = game.get_user(p2)
+
+        game.refresh_menus(p1)
+        game.flush_menus()
+        assert len(turn_menu_messages(user1)) == 1
+        assert turn_menu_messages(user2) == []
+
+    def test_flush_is_consumed(self) -> None:
+        game = make_game()
+        user1 = game.get_user(game.players[0])
+
+        game.refresh_menus()
+        game.flush_menus()
+        game.flush_menus()
+        assert len(turn_menu_messages(user1)) == 1
+
+    def test_paint_always_uses_show_form(self) -> None:
+        game = make_game()
+        user1 = game.get_user(game.players[0])
+
+        game.refresh_menus()
+        game.flush_menus()
+        game.refresh_menus()
+        game.flush_menus()
+        types = {m.type for m in user1.messages if m.data.get("menu_id") == "turn_menu"}
+        assert types == {"show_menu"}
+
+    def test_destroyed_game_flush_paints_nothing_and_clears(self) -> None:
+        game = make_game()
+        user1 = game.get_user(game.players[0])
+
+        game.refresh_menus()
+        game._destroyed = True
+        game.flush_menus()
+        assert turn_menu_messages(user1) == []
+        assert not game._menu_dirty_all
+        assert not game._menu_dirty
+
+    def test_handle_event_flushes_synchronously(self) -> None:
+        game = make_game()
+        p1 = game.players[0]
+        user1 = game.get_user(p1)
+
+        # An executed action must leave the repainted menu visible without
+        # any explicit flush: handle_event owns the flush.
+        game.handle_event(
+            p1,
+            {"type": "menu", "menu_id": "turn_menu", "selection_id": "whos_at_table"},
+        )
+        assert len(turn_menu_messages(user1)) >= 1
+
 
 class TestFocusIntent:
     def test_request_menu_focus_lands_once_and_only_for_target(self) -> None:
@@ -73,61 +162,39 @@ class TestFocusIntent:
         user2 = game.get_user(p2)
 
         game.request_menu_focus(p1, "some_item")
-        game.rebuild_all_menus()
+        game.refresh_menus()
+        game.flush_menus()
         assert turn_menu_messages(user1)[-1].data["selection_id"] == "some_item"
         assert turn_menu_messages(user2)[-1].data["selection_id"] is None
 
-        # Consumed: the next rebuild must not jump the cursor again.
-        game.rebuild_all_menus()
+        # Consumed: the next flush must not jump the cursor again.
+        game.refresh_menus()
+        game.flush_menus()
         assert turn_menu_messages(user1)[-1].data["selection_id"] is None
 
-    def test_explicit_focus_supersedes_pending_intent(self) -> None:
-        game = make_game()
-        p1 = game.players[0]
-        user1 = game.get_user(p1)
-
-        game.request_menu_focus(p1, "stale_item")
-        game.rebuild_all_menus(focus="fresh_item", focus_player=p1)
-        assert turn_menu_messages(user1)[-1].data["selection_id"] == "fresh_item"
-
-        # The superseded intent is discarded, not deferred to fire stale.
-        game.rebuild_all_menus()
-        assert turn_menu_messages(user1)[-1].data["selection_id"] is None
-
-    def test_focus_player_scopes_explicit_focus(self) -> None:
+    def test_request_menu_focus_marks_player_dirty(self) -> None:
         game = make_game()
         p1, p2 = game.players
         user1 = game.get_user(p1)
         user2 = game.get_user(p2)
 
-        game.rebuild_all_menus(focus="target_item", focus_player=p1)
-        assert turn_menu_messages(user1)[-1].data["selection_id"] == "target_item"
-        assert turn_menu_messages(user2)[-1].data["selection_id"] is None
+        # No separate refresh_menus call: requesting focus implies repaint.
+        game.request_menu_focus(p1, "some_item")
+        game.flush_menus()
+        assert turn_menu_messages(user1)[-1].data["selection_id"] == "some_item"
+        assert turn_menu_messages(user2) == []
 
-
-class TestDeferredRebuild:
-    def test_next_plain_rebuild_becomes_update(self) -> None:
-        game = make_game()
-        user1 = game.get_user(game.players[0])
-        # Establish a painted menu so updates are meaningful.
-        game.rebuild_all_menus()
-
-        game.defer_next_rebuild_to_update()
-        game.rebuild_all_menus()
-        assert turn_menu_messages(user1)[-1].type == "update_menu"
-
-        # Consumed: the rebuild after that is a real rebuild again.
-        game.rebuild_all_menus()
-        assert turn_menu_messages(user1)[-1].type == "show_menu"
-
-    def test_focused_rebuild_is_not_deferred(self) -> None:
+    def test_last_focus_writer_wins(self) -> None:
         game = make_game()
         p1 = game.players[0]
         user1 = game.get_user(p1)
-        game.rebuild_all_menus()
 
-        game.defer_next_rebuild_to_update()
-        game.rebuild_all_menus(focus="some_item", focus_player=p1)
-        last = turn_menu_messages(user1)[-1]
-        assert last.type == "show_menu"
-        assert last.data["selection_id"] == "some_item"
+        game.request_menu_focus(p1, "stale_item")
+        game.request_menu_focus(p1, "fresh_item")
+        game.flush_menus()
+        assert turn_menu_messages(user1)[-1].data["selection_id"] == "fresh_item"
+
+        # The superseded intent is discarded, not deferred to fire stale.
+        game.refresh_menus()
+        game.flush_menus()
+        assert turn_menu_messages(user1)[-1].data["selection_id"] is None

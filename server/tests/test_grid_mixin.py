@@ -78,7 +78,8 @@ class GridTestGame(GridGameMixin, Game):
         self.set_turn_players(self.get_active_players())
         for player in self.get_active_players():
             self._sync_grid_turn_actions(player)
-        self.rebuild_all_menus()
+        self.refresh_menus()
+        self.flush_menus()
 
     def on_tick(self) -> None:
         super().on_tick()
@@ -152,6 +153,7 @@ def make_game(rows: int = 5, cols: int = 5, player_count: int = 2, start: bool =
     game.host = "Player1"
     if start:
         game.on_start()
+        game.flush_menus()
     return game
 
 
@@ -205,6 +207,7 @@ class TestGridInit:
         game.add_player("P1", MockUser("P1", uuid="p1"))
         game.host = "P1"
         game.on_start()
+        game.flush_menus()
         assert game.grid_row_labels == ["X", "Y"]
         assert game.grid_col_labels == ["M", "N"]
 
@@ -548,7 +551,8 @@ class TestGridMenuKwargs:
         user = game.get_user(player)
         assert user is not None
 
-        game.rebuild_player_menu(player)
+        game.refresh_menus(player)
+        game.flush_menus()
 
         menu_data = user.menus.get("turn_menu")
         assert menu_data is not None
@@ -556,7 +560,9 @@ class TestGridMenuKwargs:
         assert menu_data.get("grid_height") == 4
         assert menu_data.get("grid_width") == 6
 
-    def test_grid_params_reach_update_menu_after_cursor_move(self) -> None:
+    def test_grid_params_reach_the_paint_after_cursor_move(self) -> None:
+        # A cursor move queues a focus intent; the flush must deliver the
+        # focus and keep the grid layout kwargs on the repaint.
         game = make_game(rows=4, cols=6, start=True)
         player = game.get_active_players()[0]
         user = game.get_user(player)
@@ -564,15 +570,17 @@ class TestGridMenuKwargs:
 
         user.messages.clear()
         game._action_grid_move(player, "grid_move_right")
+        game.flush_menus()
 
-        update_message = next(
+        paint = next(
             message for message in reversed(user.messages)
-            if message.type == "update_menu"
+            if message.type == "show_menu"
+            and message.data.get("menu_id") == "turn_menu"
         )
-        assert update_message.data["grid_enabled"] is True
-        assert update_message.data["grid_height"] == 4
-        assert update_message.data["grid_width"] == 6
-        assert update_message.data["selection_id"] == grid_cell_id(0, 1)
+        assert paint.data["grid_enabled"] is True
+        assert paint.data["grid_height"] == 4
+        assert paint.data["grid_width"] == 6
+        assert paint.data["selection_id"] == grid_cell_id(0, 1)
         assert user.menus["turn_menu"]["grid_enabled"] is True
         assert user.menus["turn_menu"]["grid_height"] == 4
         assert user.menus["turn_menu"]["grid_width"] == 6
@@ -583,7 +591,8 @@ class TestGridMenuKwargs:
         game = make_game(rows=4, cols=6, start=False)
         # Manually add a player and rebuild
         player = game.get_active_players()[0]
-        game.rebuild_player_menu(player)
+        game.refresh_menus(player)
+        game.flush_menus()
         user = game.get_user(player)
         if user and "turn_menu" in user.menus:
             menu_data = user.menus["turn_menu"]
@@ -633,7 +642,8 @@ class TestTurnMenuIntegration:
         player = game.get_active_players()[0]
         game.hidden_cells.add((0, 0))
         game.hidden_cells.add((1, 1))
-        game.rebuild_player_menu(player)
+        game.refresh_menus(player)
+        game.flush_menus()
 
         user = game.get_user(player)
         visible = game.get_all_visible_actions(player)
@@ -725,6 +735,7 @@ class TestSerialization:
         game.add_player("Player2", MockUser("Player2", uuid="p2"))
         game.host = "Player1"
         game.on_start()
+        game.flush_menus()
 
         player = game.get_active_players()[0]
         game.grid_cursors[player.id] = GridCursor(row=4, col=5)

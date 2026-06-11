@@ -273,7 +273,8 @@ def test_draw_button_does_not_remove_hand_tiles_from_turn_menu() -> None:
         DominoTile(id=2, left=4, right=4),
     ]
     game.boneyard = [DominoTile(id=3, left=0, right=0)]
-    game.rebuild_player_menu(player1)
+    game.refresh_menus(player1)
+    game.flush_menus()
 
     menu_ids = [item.id for item in game.get_user(player1).menus["turn_menu"]["items"]]
 
@@ -308,7 +309,8 @@ def test_out_of_turn_multi_side_tile_does_not_open_side_selection_menu() -> None
     game.current_player = player2
     set_linear_chain(game, 5, 5)
     player1.hand = [DominoTile(id=1, left=5, right=2)]
-    game.rebuild_player_menu(player1)
+    game.refresh_menus(player1)
+    game.flush_menus()
     user1.clear_messages()
 
     game.execute_action(player1, "play_tile_1")
@@ -421,7 +423,8 @@ def test_tile_actions_are_hidden_from_global_action_menu_and_info_actions_are_la
         DominoTile(id=1, left=1, right=4),
         DominoTile(id=2, left=6, right=6),
     ]
-    game.rebuild_player_menu(player1)
+    game.refresh_menus(player1)
+    game.flush_menus()
 
     enabled_action_ids = [action.action.id for action in game.get_all_enabled_actions(player1)]
 
@@ -479,7 +482,8 @@ def test_hand_tiles_remain_visible_when_not_players_turn() -> None:
         DominoTile(id=1, left=1, right=4),
         DominoTile(id=2, left=6, right=6),
     ]
-    game.rebuild_player_menu(player1)
+    game.refresh_menus(player1)
+    game.flush_menus()
 
     menu_ids = [item.id for item in game.get_user(player1).menus["turn_menu"]["items"]]
 
@@ -522,7 +526,8 @@ def test_web_turn_menu_shows_info_actions_and_orders_score_above_turn_and_table(
     player1, _player2 = game.get_active_players()
     set_web_client(game, player1)
     game.on_start()
-    game.rebuild_player_menu(player1)
+    game.refresh_menus(player1)
+    game.flush_menus()
 
     menu_ids = [item.id for item in game.get_user(player1).menus["turn_menu"]["items"]]
 

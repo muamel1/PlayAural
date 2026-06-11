@@ -294,7 +294,7 @@ class ColorGameGame(Game):
             seconds=self.options.betting_timer_seconds,
         )
         self._queue_betting_bots()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _start_roll_sequence(self) -> None:
         if self.phase != PHASE_BETTING:
@@ -327,7 +327,7 @@ class ColorGameGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _finalize_roll(self, rolled: list[str]) -> None:
         self.phase = PHASE_RESOLVING
@@ -487,7 +487,7 @@ class ColorGameGame(Game):
                 continue
             player.current_bets = self._choose_bot_bets(player)
             self._lock_player_bets(player)
-            self.rebuild_all_menus()
+            self.refresh_menus()
             if self._all_betting_players_locked():
                 self._start_roll_sequence()
             break
@@ -865,7 +865,7 @@ class ColorGameGame(Game):
     def _action_confirm_bets(self, player: ColorGamePlayer, action_id: str) -> None:
         _ = action_id
         self._lock_player_bets(player)
-        self.rebuild_all_menus()
+        self.refresh_menus()
         if self._all_betting_players_locked():
             self._start_roll_sequence()
 

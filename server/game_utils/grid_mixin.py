@@ -60,8 +60,8 @@ class GridGameMixin:
         - ``self.status``
         - ``self.get_user(player) -> User | None``
         - ``self.get_active_players() -> list[Player]``
-        - ``self.rebuild_all_menus()``
-        - ``self.update_player_menu(player, selection_id=...)``
+        - ``self.refresh_menus()``
+        - ``self.request_menu_focus(player, ...)``
 
     Serialised fields (add to your Game dataclass):
         grid_rows: int
@@ -214,9 +214,7 @@ class GridGameMixin:
             locale = user.locale
             label = self.get_cell_label(cursor.row, cursor.col, player, locale)
             user.speak(label, buffer="game")
-        self.update_player_menu(
-            player, selection_id=self._cursor_cell_id(cursor)
-        )
+        self.request_menu_focus(player, self._cursor_cell_id(cursor))
 
     def _action_grid_select(
         self, player: "Player", action_id: str

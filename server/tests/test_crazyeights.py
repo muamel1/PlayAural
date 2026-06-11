@@ -36,6 +36,7 @@ def test_spectator_is_excluded_from_crazyeights_scores_after_start():
     watcher.is_spectator = True
 
     game.on_start()
+    game.flush_menus()
     alice.score = 12
     bob.score = 4
     game._sync_team_scores()
@@ -56,11 +57,13 @@ def test_crazyeights_bot_game_completes():
         bot = Bot(f"Bot{i}")
         game.add_player(f"Bot{i}", bot)
     game.on_start()
+    game.flush_menus()
 
     for _ in range(40000):
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
 
     assert game.status == "finished"
 
@@ -159,7 +162,8 @@ def test_playing_eight_locks_turn_until_turn_advance():
     second.hand = [Card(suit=4, rank=7, id=3)]
     game.set_turn_players([first, second])
     game.current_suit = game.top_card.suit
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     game.execute_action(first, "play_card_1")
 
@@ -197,7 +201,8 @@ def test_non_current_player_turn_menu_still_shows_hand_cards():
     game.set_turn_players([first, second])
     game.current_suit = game.top_card.suit
 
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     bob_menu_ids = [item.id for item in bob.menus["turn_menu"]["items"]]
     assert "play_card_2" in bob_menu_ids
@@ -218,7 +223,8 @@ def test_out_of_turn_visible_card_is_rejected_without_changing_state():
     second.hand = [Card(id=2, rank=9, suit=1)]
     game.set_turn_players([first, second])
     game.current_suit = game.top_card.suit
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     discard_ids_before = [card.id for card in game.discard_pile]
     game.execute_action(second, "play_card_2")

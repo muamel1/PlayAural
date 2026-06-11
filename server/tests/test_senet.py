@@ -167,8 +167,10 @@ def test_senet_refresh_does_not_overwrite_global_menus() -> None:
     game._table = SimpleNamespace(_server=server)
 
     user.clear_messages()
-    game.rebuild_all_menus()
-    game.update_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     assert not any(
         message.type in {"show_menu", "update_menu"}

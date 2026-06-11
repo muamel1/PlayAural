@@ -612,7 +612,7 @@ class FiveCardDrawGame(Game, TurnTimerMixin):
         if p.is_bot:
             BotHelper.jolt_bot(p, ticks=random.randint(30, 50))
         self.start_turn_timer()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _advance_turn(self) -> None:
         if not self.betting:
@@ -818,7 +818,7 @@ class FiveCardDrawGame(Game, TurnTimerMixin):
         if idx < 0 or idx >= len(p.hand):
             return
         self._set_discard(p, idx, discard=idx not in p.to_discard)
-        self.update_player_menu(p)
+        self.refresh_menus(p)
 
     # ==========================================================================
     # Action helpers
@@ -1233,7 +1233,7 @@ class FiveCardDrawGame(Game, TurnTimerMixin):
         if idx < 0 or idx >= len(p.hand):
             return
         self._set_discard(p, idx, discard=idx not in p.to_discard)
-        self.update_player_menu(p)
+        self.refresh_menus(p)
 
     def _is_check_enabled(self, player: Player) -> str | None:
         if self.status != "playing":

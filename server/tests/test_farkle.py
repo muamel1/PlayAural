@@ -13,6 +13,7 @@ def farkle_game(mock_users):
     game.add_player("player2", mock_users[1])
 
     game.on_start()
+    game.flush_menus()
     return game
 
 def test_farkle_game_initialization(farkle_game):
@@ -112,6 +113,7 @@ def test_roll_focuses_first_scoring_action(farkle_game, monkeypatch):
     monkeypatch.setattr(player.dice, "roll", fixed_roll)
 
     farkle_game._action_roll(player, "roll")
+    farkle_game.flush_menus()
 
     menu = user.menus["turn_menu"]
     score_ids = [

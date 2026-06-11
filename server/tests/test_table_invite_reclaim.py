@@ -64,7 +64,8 @@ class TestTableInviteReclaim:
         game.initialize_lobby(host.username, host)
         table.add_member(guest.username, guest, as_spectator=False)
         game.add_player(guest.username, guest)
-        game.rebuild_all_menus()
+        game.refresh_menus()
+        game.flush_menus()
         return table, game
 
     def _get_menu_action_ids(self, user: MockUser, menu_id: str) -> list[str]:

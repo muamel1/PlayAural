@@ -350,7 +350,8 @@ def test_hand_is_sorted_king_to_ace_with_jokers_last() -> None:
         DeadMansDeckCard(id=5, rank="king"),
     ]
 
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
     turn_set = game.get_action_set(player, "turn")
     assert turn_set is not None
 
@@ -379,7 +380,8 @@ def test_card_buttons_stay_visible_out_of_turn_and_speak_error() -> None:
     game.set_turn_players(game.players)
     other = next(player for player in game.players if player != game.current_player)
     other.hand = [DeadMansDeckCard(id=21, rank="king")]
-    game.rebuild_player_menu(other)
+    game.refresh_menus(other)
+    game.flush_menus()
 
     assert "select_card_21" in visible_action_ids(game, other)
 
@@ -404,7 +406,8 @@ def test_card_buttons_stay_visible_across_non_transition_phases() -> None:
 
     for phase in [PHASE_PLAYING, PHASE_CLAIM, PHASE_CHALLENGE, PHASE_ROULETTE]:
         game.phase = phase
-        game.rebuild_player_menu(player)
+        game.refresh_menus(player)
+        game.flush_menus()
         visible_ids = visible_action_ids(game, player)
         assert "select_card_22" in visible_ids
         assert "select_card_23" in visible_ids
@@ -425,7 +428,8 @@ def test_round_transition_clears_old_cards_until_new_hand_is_dealt() -> None:
     game.game_active = True
     for index, player in enumerate(game.players):
         player.hand = [DeadMansDeckCard(id=40 + index, rank="king")]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     assert any(
         action_id.startswith("select_card_")
         for action_id in visible_action_ids(game, game.players[0])
@@ -461,7 +465,8 @@ def test_selected_cards_stay_visible_at_limit_and_fourth_card_speaks_error() -> 
         DeadMansDeckCard(id=34, rank="joker"),
     ]
     player.selected_card_ids = [31, 32, 33]
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
 
     visible_ids = visible_action_ids(game, player)
     assert all(f"select_card_{card.id}" in visible_ids for card in player.hand)

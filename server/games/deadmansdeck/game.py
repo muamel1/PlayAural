@@ -458,7 +458,7 @@ class DeadMansDeckGame(Game):
         self.round_order_ids = [p.id for p in ordered_players]
         self.set_turn_players(ordered_players)
         self._clear_round_hands()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         shuffle_sound = self._random_shuffle_sound()
         self.start_sequence(
@@ -566,7 +566,7 @@ class DeadMansDeckGame(Game):
         self.announce_turn()
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(12, 24))
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _advance_after_claim(self) -> None:
         if self._check_game_end():
@@ -970,7 +970,7 @@ class DeadMansDeckGame(Game):
 
         if user:
             user.speak_l(key, buffer="game", card=self._card_name(card, user.locale))
-        self.update_player_menu(player, selection_id=action_id)
+        self.request_menu_focus(player, action_id)
 
     def _action_clear_selection(self, player: Player, action_id: str) -> None:
         dmd_player: DeadMansDeckPlayer = player  # type: ignore[assignment]
@@ -978,7 +978,7 @@ class DeadMansDeckGame(Game):
         user = self.get_user(player)
         if user:
             user.speak_l("deadmansdeck-selection-cleared", buffer="game")
-        self.update_player_menu(player)
+        self.refresh_menus(player)
 
     def _action_play_selected(self, player: Player, action_id: str) -> None:
         dmd_player: DeadMansDeckPlayer = player  # type: ignore[assignment]
@@ -1001,7 +1001,7 @@ class DeadMansDeckGame(Game):
             target_rank=self.target_rank,
         )
         self.phase = PHASE_CLAIM
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         play_sound = self._random_play_sound()
         self.start_sequence(
@@ -1214,7 +1214,7 @@ class DeadMansDeckGame(Game):
             self.last_claim.player_id if not truthful else challenger.id
         )
         self.phase = PHASE_CHALLENGE
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         result_sound = (
             SOUND_CHALLENGE_SUCCESS
@@ -1325,7 +1325,7 @@ class DeadMansDeckGame(Game):
             buffer="game",
             player=player.name,
         )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
         if lethal:
             body_fall = self._random_body_fall_sound()

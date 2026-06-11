@@ -34,7 +34,7 @@ class LobbyActionsMixin:
         - self.get_user(player) -> User | None
         - self.broadcast_l(), self.broadcast_sound()
         - self.prestart_validate(), self.on_start()
-        - self.attach_user(), self.rebuild_all_menus()
+        - self.attach_user(), self.refresh_menus()
         - self.get_all_enabled_actions()
         - self._get_keybind_for_action()
         - self.setup_keybinds(), self.setup_player_actions()
@@ -159,7 +159,7 @@ class LobbyActionsMixin:
 
         self.broadcast_l("team-arrangement-started", buffer="system")
         self._broadcast_team_arrangement()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _clear_team_arrangement_state(self) -> None:
         """Clear transient team-arrangement UI state."""
@@ -176,7 +176,7 @@ class LobbyActionsMixin:
         self._team_manager._player_to_team = {}
         if message_key:
             self.broadcast_l(message_key, buffer="system")
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _cancel_team_arrangement_for_roster_change(self) -> None:
         """Cancel arrangement when active players change before confirmation."""
@@ -471,7 +471,7 @@ class LobbyActionsMixin:
                 player=selected.name,
                 team=team_name,
             )
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_swap_team_member(
         self, player: "Player", target_id: str, action_id: str
@@ -489,7 +489,7 @@ class LobbyActionsMixin:
             if user:
                 user.speak_l("team-arrangement-player-missing", buffer="system")
             self.team_arrangement_selected_player_id = ""
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         selected_team = self._team_manager.get_team(selected.name)
@@ -513,7 +513,7 @@ class LobbyActionsMixin:
             second=target.name,
         )
         self._broadcast_team_arrangement()
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _bot_input_add_bot(self, player: "Player") -> str | None:
         """Get bot name for add_bot action."""
@@ -611,7 +611,7 @@ class LobbyActionsMixin:
         self.setup_player_actions(bot_player)
         self.broadcast_l("table-joined", buffer="system", player=bot_name)
         self.play_table_join_sound(bot_player, is_bot=True)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_remove_bot(self, player: "Player", action_id: str) -> None:
         """Remove the last bot from the game."""
@@ -627,7 +627,7 @@ class LobbyActionsMixin:
                 self.broadcast_l("table-left", buffer="system", player=bot.name)
                 self.play_table_leave_sound(bot, is_bot=True)
                 break
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_toggle_spectator(self, player: "Player", action_id: str) -> None:
         """Toggle spectator mode for a player."""
@@ -661,7 +661,7 @@ class LobbyActionsMixin:
             self.broadcast_l("now-playing", buffer="system", player=player.name)
             self.broadcast_sound("leave_spectator.ogg")
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_leave_game(self, player: "Player", action_id: str) -> None:
         """Prompt for confirmation before leaving the game."""
@@ -694,7 +694,7 @@ class LobbyActionsMixin:
                 self._table.remove_member(player.name)
                 
             self.play_table_leave_sound(player, is_spectator=True)
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         if self.status == "playing" and not player.is_bot:
@@ -711,7 +711,7 @@ class LobbyActionsMixin:
                         is_bot=was_bot,
                         is_spectator=False,
                     )
-                self.rebuild_all_menus()
+                self.refresh_menus()
                 return
 
             # If no other humans, fall through to full removal logic below
@@ -742,7 +742,7 @@ class LobbyActionsMixin:
             if self._table:
                 self._table.remove_member(player.name)
 
-            self.rebuild_all_menus()
+            self.refresh_menus()
 
     def _action_show_actions_menu(self, player: "Player", action_id: str) -> None:
         """Show the actions menu."""
@@ -780,7 +780,7 @@ class LobbyActionsMixin:
             return
         server = self._table._server
         if server and hasattr(server, "_show_host_management_menu"):
-            # Mark actions menu as open so rebuild_all_menus won't overwrite this menu
+            # Mark actions menu as open so the menu flush won't overwrite this menu
             self._actions_menu_open.add(player.id)
             server._show_host_management_menu(user, self._table)
 
@@ -808,7 +808,7 @@ class LobbyActionsMixin:
         self.status = "waiting"
         self.setup_keybinds()
         self.add_player(host_name, host_user)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # Player management
 

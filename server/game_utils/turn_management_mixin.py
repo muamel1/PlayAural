@@ -18,7 +18,7 @@ class TurnManagementMixin:
         - self.get_player_by_id(player_id) -> Player | None
         - self.get_user(player) -> User | None
         - self.broadcast_l(message_id, **kwargs)
-        - self.rebuild_all_menus()
+        - self.refresh_menus()
     """
 
     @property
@@ -77,7 +77,7 @@ class TurnManagementMixin:
         self.turn_index = (self.turn_index + self.turn_direction) % len(self.turn_player_ids)
         if announce:
             self.announce_turn()
-        self.rebuild_all_menus()
+        self.refresh_menus()
         return self.current_player
 
     def skip_next_players(self, count: int = 1) -> None:

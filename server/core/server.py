@@ -410,6 +410,9 @@ PlayAural Server
         # Tick all tables
         self._tables.on_tick()
 
+        # Build and send menus for players marked dirty during this tick
+        self._tables.flush_menus()
+
         # Flush queued messages for all users
         self._flush_user_messages()
 
@@ -916,10 +919,10 @@ PlayAural Server
                                 table.attach_user(username, user)
                                 table.game.attach_user(player.id, user)
 
-                                # Immediately push the turn menu so the player sees their
-                                # options without waiting for the next game tick.
-                                if hasattr(table.game, "rebuild_player_menu"):
-                                    table.game.rebuild_player_menu(player)
+                                # Mark the turn menu for repaint; the per-tick
+                                # flush sends it within the same tick as today.
+                                if hasattr(table.game, "refresh_menus"):
+                                    table.game.refresh_menus(player)
                         else:
                             table.attach_user(username, user)
                     else:
@@ -3273,8 +3276,8 @@ PlayAural Server
         # When any game-level status_box is dismissed, always delegate to the
         # game regardless of what _user_states says — a game may push a
         # status_box (e.g. score summary, hand view) while a GLOBAL_SYSTEM_MENU
-        # is active.  The game clears _status_box_open and calls
-        # rebuild_player_menu, which short-circuits safely when
+        # is active.  The game clears _status_box_open and refreshes the
+        # player's menu; the flush guards short-circuit safely when
         # _actions_menu_open is still set.
         if menu_id == "status_box":
             table = self._tables.find_user_table(username)
@@ -4665,7 +4668,7 @@ PlayAural Server
                 table.game = game
                 game._table = table  # Enable game to call table.destroy()
                 # Set in_game state BEFORE initialize_lobby so the universal
-                # GLOBAL_SYSTEM_MENUS guard in rebuild_player_menu lets the
+                # GLOBAL_SYSTEM_MENUS guard in the menu flush lets the
                 # initial turn_menu through (otherwise "tables_menu" blocks it).
                 self._set_in_game_state(user, table.table_id)
                 game.initialize_lobby(user.username, user)
@@ -4838,7 +4841,7 @@ PlayAural Server
                 self._set_in_game_state(user, table_id)
                 game.broadcast_l("table-joined", buffer="system", player=user.username)
                 game.play_table_join_sound(joined_player, is_spectator=False)
-                game.rebuild_all_menus()
+                game.refresh_menus()
             else:
                 # Join as spectator
                 if not table.add_member(user.username, user, as_spectator=True):
@@ -4849,7 +4852,7 @@ PlayAural Server
                 user.speak_l("spectator-joined", buffer="system", host=table.host)
                 game.broadcast_l("now-spectating", buffer="system", player=user.username)
                 game.play_table_join_sound(joined_player, is_spectator=True)
-                game.rebuild_all_menus()
+                game.refresh_menus()
 
     def _find_reclaimable_bot_player(self, game: Any, user: NetworkUser) -> Any | None:
         """Find the bot-held seat that belongs to this user's UUID, if any."""
@@ -4963,7 +4966,7 @@ PlayAural Server
             game.broadcast_sound(sound_name)
         if hasattr(game, "_on_replacement_slot_reclaimed"):
             game._on_replacement_slot_reclaimed(bot_name, human_name)
-        game.rebuild_all_menus()
+        game.refresh_menus()
 
     def _leave_current_table_for_transfer(
         self, user: NetworkUser, current_table: "Table"
@@ -5002,11 +5005,11 @@ PlayAural Server
         if table and table.game:
             self._set_in_game_state(user, table.table_id)
             player = table.game.get_player_by_id(user.uuid)
-            if player and hasattr(table.game, "rebuild_player_menu"):
-                # Clear the actions-menu-open guard set before rebuilding, so the
+            if player and hasattr(table.game, "refresh_menus"):
+                # Clear the actions-menu-open guard set before refreshing, so the
                 # turn menu is actually pushed (we set it in _action_host_management).
                 table.game._actions_menu_open.discard(player.id)
-                table.game.rebuild_player_menu(player)
+                table.game.refresh_menus(player)
         else:
             self._show_main_menu(user)
 
@@ -5024,9 +5027,9 @@ PlayAural Server
             table = self._tables.get_table(table_id)
             if table and table.game:
                 player = table.game.get_player_by_id(user.uuid)
-                if player and hasattr(table.game, "rebuild_player_menu"):
+                if player and hasattr(table.game, "refresh_menus"):
                     self._user_states[user.username] = state
-                    table.game.rebuild_player_menu(player)
+                    table.game.refresh_menus(player)
                     return
         elif menu and menu != "table_invite_prompt":
             # Delegate to _restore_frame so any known GLOBAL_SYSTEM_MENU or
@@ -5184,7 +5187,7 @@ PlayAural Server
             buffer="system",
             player=user.username,
         )
-        game.rebuild_all_menus()
+        game.refresh_menus()
 
     # --- Invite ---
 
@@ -5475,7 +5478,7 @@ PlayAural Server
                     table.host = new_host_name
                     table.game.host = new_host_name
                     table.game.broadcast_l("host-passed", buffer="system", player=new_host_name)
-                    table.game.rebuild_all_menus()
+                    table.game.refresh_menus()
                     self.on_tables_changed()
                     self._return_to_game(user, table)
                     return
@@ -5603,7 +5606,7 @@ PlayAural Server
         if invite and invite.get("table_id") == table_id:
             self._cancel_invite(target_name)
 
-        table.game.rebuild_all_menus()
+        table.game.refresh_menus()
         self.on_tables_changed()
 
         # Redisplay updated kick menu so host can act on remaining players
@@ -5659,7 +5662,7 @@ PlayAural Server
                     user.speak_l("spectator-joined", buffer="system", host=table.host)
                     game.broadcast_l("now-spectating", buffer="system", player=user.username)
                     game.play_table_join_sound(joined_player, is_spectator=True)
-                    game.rebuild_all_menus()
+                    game.refresh_menus()
                     self._set_in_game_state(user, table_id)
                     return
 
@@ -5682,7 +5685,7 @@ PlayAural Server
             joined_player = game.add_player(user.username, user)
             game.broadcast_l("table-joined", buffer="system", player=user.username)
             game.play_table_join_sound(joined_player, is_spectator=False)
-            game.rebuild_all_menus()
+            game.refresh_menus()
             self._set_in_game_state(user, table_id)
 
         elif selection_id == "join_spectator":
@@ -5698,7 +5701,7 @@ PlayAural Server
             user.speak_l("spectator-joined", buffer="system", host=table.host)
             game.broadcast_l("now-spectating", buffer="system", player=user.username)
             game.play_table_join_sound(joined_player, is_spectator=True)
-            game.rebuild_all_menus()
+            game.refresh_menus()
             self._set_in_game_state(user, table_id)
 
         elif selection_id == "back":
@@ -5833,7 +5836,7 @@ PlayAural Server
         game.setup_keybinds()
 
         # Rebuild menus for all players
-        game.rebuild_all_menus()
+        game.refresh_menus()
 
         # Notify all players
         game.broadcast_l("table-restored", buffer="system")

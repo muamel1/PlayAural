@@ -312,7 +312,7 @@ class LeftRightCenterGame(Game):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(5, 10))
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_turn(self) -> None:
         if self._check_for_winner():

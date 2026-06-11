@@ -39,6 +39,7 @@ def make_game(start: bool = False, *, bot_white: bool = False, bot_black: bool =
     game.host = game.players[0].name
     if start:
         game.on_start()
+        game.flush_menus()
     return game
 
 
@@ -62,6 +63,7 @@ def make_game_with_options(
     game.host = game.players[0].name
     if start:
         game.on_start()
+        game.flush_menus()
     return game
 
 
@@ -70,6 +72,7 @@ def advance_until(game: ChessGame, condition, max_ticks: int = 500) -> bool:
         if condition():
             return True
         game.on_tick()
+        game.flush_menus()
     return condition()
 
 
@@ -133,6 +136,7 @@ def test_initialize_lobby_does_not_crash_before_board_setup() -> None:
     game = ChessGame(options=ChessOptions())
     user = MockUser("Alice", uuid="p1")
     game.initialize_lobby("Alice", user)
+    game.flush_menus()
 
     assert game.status == "waiting"
     assert len(game.board) == 64
@@ -360,7 +364,8 @@ def test_web_standard_actions_are_ordered_and_visible_once() -> None:
     assert order.index("whose_turn") < order.index("whos_at_table")
     assert order[-2:] == ["whose_turn", "whos_at_table"]
 
-    game.rebuild_player_menu(player)
+    game.refresh_menus(player)
+    game.flush_menus()
     visible_ids = [item.id for item in user.menus["turn_menu"]["items"] if getattr(item, "id", None)]
     for action_id in ("read_board", "check_status", "flip_board", "check_clock"):
         assert action_id in visible_ids
@@ -401,6 +406,7 @@ def test_master_bot_finishes_forced_mate_position() -> None:
     game.add_player("Bob", MockUser("Bob", uuid="p2"))
     game.host = game.players[0].name
     game.on_start()
+    game.flush_menus()
     clear_board(game)
     white = game.players[0]
     black = game.players[1]
@@ -417,7 +423,8 @@ def test_master_bot_finishes_forced_mate_position() -> None:
     game.board_flipped[white.id] = False
     game.board_flipped[black.id] = True
     game.position_history = [game._get_position_hash()]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
     game._queue_bot_turn()
 
     assert advance_until(game, lambda: game.status == "finished", max_ticks=200)
@@ -431,6 +438,7 @@ def test_bot_returns_action_in_simple_position() -> None:
     game.add_player("Bob", MockUser("Bob", uuid="p2"))
     game.host = game.players[0].name
     game.on_start()
+    game.flush_menus()
     clear_board(game)
     white = game.players[0]
     black = game.players[1]
@@ -455,6 +463,7 @@ def test_time_control_initializes_and_increment_applies() -> None:
 
     for _ in range(10):
         game.on_tick()
+        game.flush_menus()
 
     select_square(game, white, "e2")
     select_square(game, white, "e4")
@@ -481,6 +490,7 @@ def test_timeout_ends_game_with_opponent_win() -> None:
     game.black_clock_ticks = 100
 
     game.on_tick()
+    game.flush_menus()
 
     assert game.status == "finished"
     assert game.winner_color == COLOR_BLACK
@@ -497,6 +507,7 @@ def test_timeout_with_insufficient_material_is_draw() -> None:
     game.black_clock_ticks = 100
 
     game.on_tick()
+    game.flush_menus()
 
     assert game.status == "finished"
     assert game.winner_color == ""

@@ -86,11 +86,13 @@ def advance_until(game: DeadMansPokerGame, condition, max_ticks: int = 3000) -> 
         if condition():
             return True
         game.on_tick()
+        game.flush_menus()
     return condition()
 
 
 def start_to_decision(game: DeadMansPokerGame) -> None:
     game.on_start()
+    game.flush_menus()
     assert advance_until(
         game,
         lambda: game.phase == PHASE_DECISION and not game.active_sequences,
@@ -179,6 +181,7 @@ def test_bot_game_completes_without_deadlock() -> None:
     random.seed(12345)
     game = make_bot_game(2)
     game.on_start()
+    game.flush_menus()
 
     assert advance_until(game, lambda: game.status == "finished", max_ticks=60000)
 
@@ -638,19 +641,20 @@ def test_switch_replacement_flow_keeps_turn_available() -> None:
     other_user.clear_messages()
 
     game.execute_action(player, "switch_card", input_value="0")
+    game.flush_menus()
     assert game.phase == PHASE_SWITCH
     assert len(game.pending_switch_candidates) == 3
     assert turn_menu_updates(other_user) == []
 
     player_user.clear_messages()
     game.execute_action(player, "choose_switch_1")
+    game.flush_menus()
     assert turn_menu_updates(other_user) == []
     assert [
         message.data.get("selection_id")
         for message in turn_menu_updates(player_user)
         if message.data.get("selection_id") == "call"
     ] == ["call"]
-    assert player_user.menus["turn_menu"]["selection_id"] == "call"
     assert advance_until(game, lambda: not game.active_sequences)
 
     assert game.phase == PHASE_DECISION
@@ -658,16 +662,18 @@ def test_switch_replacement_flow_keeps_turn_available() -> None:
     assert player.used_switch
     assert len(player.hand) == 2
     assert player.hand != old_hand
+    # The focus jump to "call" fired exactly once; the delayed sequence
+    # repaints carry no focus directive, so the client keeps the cursor on
+    # "call" by item identity instead of being jumped a second time.
     assert [
         message.data.get("selection_id")
         for message in turn_menu_updates(player_user)
         if message.data.get("selection_id") == "call"
     ] == ["call"]
     assert any(
-        message.type == "update_menu" and message.data.get("selection_id") is None
+        message.data.get("selection_id") is None
         for message in turn_menu_updates(player_user)
     )
-    assert player_user.menus["turn_menu"]["selection_id"] == "call"
     assert any(card_name(discarded, "en") in text for text in speech_texts(other_user))
 
 
@@ -696,28 +702,27 @@ def test_human_switch_choice_does_not_pull_other_player_focus_to_call() -> None:
         },
     )
 
+    # The regression this test pins: the other player's repaints must never
+    # carry the actor's "call" focus. With no focus directive on their
+    # paints, their client keeps its cursor anchored by item identity.
     other_updates = turn_menu_updates(other_user)
     assert other_updates
-    assert {message.type for message in other_updates} == {"update_menu"}
     assert all(message.data.get("selection_id") is None for message in other_updates)
     assert [
         message.data.get("selection_id")
         for message in turn_menu_updates(player_user)
         if message.data.get("selection_id") == "call"
     ] == ["call"]
-    assert player_user.menus["turn_menu"]["selection_id"] == "call"
     assert advance_until(game, lambda: not game.active_sequences)
 
     other_updates = turn_menu_updates(other_user)
     assert other_updates
-    assert {message.type for message in other_updates} == {"update_menu"}
     assert all(message.data.get("selection_id") is None for message in other_updates)
     assert [
         message.data.get("selection_id")
         for message in turn_menu_updates(player_user)
         if message.data.get("selection_id") == "call"
     ] == ["call"]
-    assert player_user.menus["turn_menu"]["selection_id"] == "call"
 
 
 def test_switch_card_resets_each_hand() -> None:

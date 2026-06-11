@@ -230,10 +230,10 @@ class MidnightGame(Game, DiceGameMixin):
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(10, 20))
 
-        self.rebuild_player_menu(
-            midnight_player,
-            focus=self._first_visible_dice_toggle_action_id(midnight_player),
-        )
+        focus = self._first_visible_dice_toggle_action_id(midnight_player)
+        if focus:
+            self.request_menu_focus(midnight_player, focus)
+        self.refresh_menus(midnight_player)
 
     # ==========================================================================
     # Bank action
@@ -455,7 +455,7 @@ class MidnightGame(Game, DiceGameMixin):
             BotHelper.set_target(player, 24)
 
         # Rebuild menus to reflect new turn
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def on_tick(self) -> None:
         """Called every tick. Handle bot AI."""

@@ -66,7 +66,7 @@ class _TargetTableGame:
     def play_table_join_sound(self, *args, **kwargs) -> None:
         return None
 
-    def rebuild_all_menus(self) -> None:
+    def refresh_menus(self) -> None:
         return None
 
 
