@@ -1825,16 +1825,25 @@ class BattleGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        self.status_box(player, self._battle_status_lines(user.locale, detailed=True, viewer=player))
+        self.live_status_box(
+            player,
+            "battle_status",
+            lambda viewer, live_user: self._battle_status_lines(
+                live_user.locale,
+                detailed=True,
+                viewer=viewer,
+            ),
+        )
 
     def _action_battle_read_roster(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)
         if not user:
             return
-        lines = [Localization.get(user.locale, "battle-roster-header")]
-        for fighter in self.fighters:
-            lines.append(self._fighter_summary_line(user.locale, fighter, player))
-        self.status_box(player, lines)
+        self.live_status_box(
+            player,
+            "battle_roster",
+            lambda viewer, live_user: self._roster_lines(viewer, live_user.locale),
+        )
 
     def _team_filtered_roster(self, player: Player, *, allies: bool) -> list[BattleFighter]:
         player_team_ids = self._team_ids_for_player(player)
@@ -1854,13 +1863,37 @@ class BattleGame(Game):
         user = self.get_user(player)
         if not user:
             return
+        box_id = "battle_allied_fighters" if allies else "battle_enemy_fighters"
+        self.live_status_box(
+            player,
+            box_id,
+            lambda viewer, live_user: self._team_filtered_roster_lines(
+                viewer,
+                live_user.locale,
+                allies=allies,
+            ),
+        )
+
+    def _roster_lines(self, player: Player, locale: str) -> list[str]:
+        lines = [Localization.get(locale, "battle-roster-header")]
+        for fighter in self.fighters:
+            lines.append(self._fighter_summary_line(locale, fighter, player))
+        return lines
+
+    def _team_filtered_roster_lines(
+        self,
+        player: Player,
+        locale: str,
+        *,
+        allies: bool,
+    ) -> list[str]:
         header = "battle-allied-roster-header" if allies else "battle-enemy-roster-header"
-        lines = [Localization.get(user.locale, header)]
+        lines = [Localization.get(locale, header)]
         for fighter in self._team_filtered_roster(player, allies=allies):
-            lines.append(self._fighter_summary_line(user.locale, fighter, player))
+            lines.append(self._fighter_summary_line(locale, fighter, player))
         if len(lines) == 1:
-            lines.append(Localization.get(user.locale, "battle-no-fighters-in-list"))
-        self.status_box(player, lines)
+            lines.append(Localization.get(locale, "battle-no-fighters-in-list"))
+        return lines
 
     def _action_battle_read_allied_fighters(self, player: Player, action_id: str) -> None:
         self._show_team_filtered_roster(player, allies=True)

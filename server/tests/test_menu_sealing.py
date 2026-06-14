@@ -16,6 +16,7 @@ from pathlib import Path
 import pytest
 
 from ..game_utils.menu_management_mixin import SEALED_MENU_ORCHESTRATORS
+from ..users.base import MenuItem
 from ..games.pig.game import PigGame
 from ..messages.localization import Localization
 from ..users.test_user import MockUser
@@ -39,6 +40,14 @@ def turn_menu_messages(user: MockUser) -> list:
         m
         for m in user.messages
         if m.type == "show_menu" and m.data.get("menu_id") == "turn_menu"
+    ]
+
+
+def status_box_messages(user: MockUser) -> list:
+    return [
+        m
+        for m in user.messages
+        if m.type == "show_menu" and m.data.get("menu_id") == "status_box"
     ]
 
 
@@ -198,3 +207,72 @@ class TestFocusIntent:
         game.refresh_menus()
         game.flush_menus()
         assert turn_menu_messages(user1)[-1].data["selection_id"] is None
+
+
+class TestStatusBoxes:
+    def test_static_status_box_assigns_unique_line_ids(self) -> None:
+        game = make_game()
+        p1 = game.players[0]
+        user1 = game.get_user(p1)
+
+        game.status_box(p1, ["First", "Second", "Third"])
+
+        items = user1.menus["status_box"]["items"]
+        assert [item.id for item in items] == [
+            "status_box:line:0",
+            "status_box:line:1",
+            "status_box:line:2",
+        ]
+
+    def test_live_status_box_refreshes_open_box_through_menu_flush(self) -> None:
+        game = make_game()
+        p1 = game.players[0]
+        user1 = game.get_user(p1)
+        value = {"count": 1}
+
+        def build_status(player, user):
+            return [
+                MenuItem(
+                    text=f"Count: {value['count']}",
+                    id="count",
+                )
+            ]
+
+        game.live_status_box(p1, "counter", build_status, focus_id="count")
+        assert user1.menus["status_box"]["items"][0].text == "Count: 1"
+        assert status_box_messages(user1)[-1].data["selection_id"] == "count"
+
+        value["count"] = 2
+        game.refresh_menus(p1)
+        game.flush_menus()
+
+        assert user1.menus["status_box"]["items"][0].text == "Count: 2"
+        assert status_box_messages(user1)[-1].data["selection_id"] is None
+        assert turn_menu_messages(user1) == []
+
+    def test_live_status_box_close_clears_builder_and_restores_turn_menu(self) -> None:
+        game = make_game()
+        p1 = game.players[0]
+        user1 = game.get_user(p1)
+
+        game.live_status_box(
+            p1,
+            "single",
+            lambda player, user: [MenuItem(text="Open", id="open")],
+        )
+        assert p1.id in game._status_box_open
+        assert p1.id in game._live_status_boxes
+
+        game.handle_event(
+            p1,
+            {
+                "type": "menu",
+                "menu_id": "status_box",
+                "selection_id": "open",
+            },
+        )
+
+        assert p1.id not in game._status_box_open
+        assert p1.id not in game._live_status_boxes
+        assert "status_box" not in user1.menus
+        assert turn_menu_messages(user1)

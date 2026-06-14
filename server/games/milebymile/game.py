@@ -1225,11 +1225,16 @@ class MileByMileGame(Game):
         if not user:
             return
 
+        self.live_status_box(
+            player,
+            "milebymile_status",
+            lambda _player, live_user: self._detailed_status_lines(live_user.locale),
+        )
 
-
-        locale = user.locale
-        none_str = Localization.get(locale, "milebymile-none")
+    def _detailed_status_lines(self, locale: str) -> list[str]:
         lines = []
+
+        none_str = Localization.get(locale, "milebymile-none")
 
         for team_idx, race_state in self.iter_teams():
             name = self.get_team_name(team_idx, locale)
@@ -1266,7 +1271,7 @@ class MileByMileGame(Game):
             )
             lines.append(line)
 
-        self.status_box(player, lines)
+        return lines
 
     def _action_dirty_trick(self, player: Player, action_id: str) -> None:
         """Handle dirty trick (Coup Fourré) attempt."""

@@ -1266,17 +1266,22 @@ class HumanityCardsGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        locale = user.locale
+        self.live_status_box(
+            player,
+            "humanitycards_scores",
+            lambda _player, live_user: self._score_lines(live_user.locale),
+        )
+
+    def _score_lines(self, locale: str) -> list[str]:
         sorted_players = sorted(
             self.get_active_players(),
             key=lambda p: p.score,  # type: ignore
             reverse=True,
         )
-        lines = [
+        return [
             Localization.get(locale, "hc-score-line", player=p.name, score=p.score)  # type: ignore
             for p in sorted_players
         ]
-        self.status_box(player, lines)
 
     # ==========================================================================
     # Game lifecycle

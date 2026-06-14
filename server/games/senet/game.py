@@ -777,7 +777,11 @@ class SenetGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        self.status_box(player, self._score_lines(user.locale))
+        self.live_status_box(
+            player,
+            "senet_scores",
+            lambda _player, live_user: self._score_lines(live_user.locale),
+        )
 
     # ======================================================================
     # Score actions: Senet uses standard score action IDs with custom output.

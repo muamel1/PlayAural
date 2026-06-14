@@ -9,7 +9,7 @@ import sys
 import unicodedata
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from .tick import TickScheduler
 from ..administration.manager import AdministrationManager
@@ -207,6 +207,12 @@ class Server:
         self._pending_disconnects: dict[str, asyncio.Task] = {} # username -> broadcast task
         # Pending table invites: invitee_username -> {table_id, host_username, task, deferred, game_name}
         self._pending_invites: dict[str, dict] = {}
+        # One deferred forward navigation per user while a read-only game
+        # status box owns the UI. Last request wins.
+        self._deferred_navigation: dict[
+            str,
+            tuple[Callable[..., None], tuple[Any, ...], dict[str, Any]],
+        ] = {}
         # Active shutdown/reboot countdown task (None when idle)
         self._shutdown_task: asyncio.Task | None = None
         self._voice = VoiceService.from_env()
@@ -484,6 +490,7 @@ PlayAural Server
             if user and user.connection == client:
                 self._users.pop(client.username, None)
                 self._user_states.pop(client.username, None)
+                self._deferred_navigation.pop(client.username, None)
 
             # Schedule delayed offline broadcast to prevent spam on quick reconnects
             # Only broadcast if this client was actually the active one AND not banned
@@ -659,6 +666,7 @@ PlayAural Server
 
             user = self._users.get(client.username)
             if user:
+                self._maybe_run_deferred_navigation(user)
                 self._maybe_show_deferred_table_invite(user)
 
     async def _handle_authorize(self, client: ClientConnection, packet: dict) -> None:
@@ -3285,6 +3293,8 @@ PlayAural Server
                 player = table.game.get_player_by_id(user.uuid)
                 if player:
                     table.game.handle_event(player, packet)
+                    self._maybe_run_deferred_navigation(user)
+                    self._maybe_show_deferred_table_invite(user)
             return
 
         # Check if user is in a table - delegate to game ONLY if it's a table-specific menu
@@ -5006,8 +5016,8 @@ PlayAural Server
             self._set_in_game_state(user, table.table_id)
             player = table.game.get_player_by_id(user.uuid)
             if player and hasattr(table.game, "refresh_menus"):
-                # Clear the actions-menu-open guard set before refreshing, so the
-                # turn menu is actually pushed (we set it in _action_host_management).
+                # Clear any actions-menu-open guard before refreshing, so the
+                # turn menu is actually pushed after returning from overlays.
                 table.game._actions_menu_open.discard(player.id)
                 table.game.refresh_menus(player)
         else:
@@ -5065,6 +5075,10 @@ PlayAural Server
 
     def _show_host_management_menu(self, user: NetworkUser, table: "Table") -> None:
         """Show the host management menu."""
+        active_table = self._tables.get_table(table.table_id)
+        if active_table is not table:
+            self._return_to_game(user, active_table)
+            return
         items = self._get_host_management_menu_items(user, table)
         user.show_menu(
             "host_management_menu",
@@ -5076,6 +5090,10 @@ PlayAural Server
             "menu": "host_management_menu",
             "table_id": table.table_id,
         }
+
+    def _open_host_management_from_game(self, user: NetworkUser, table: "Table") -> None:
+        """Open host management through the modal-safe navigation stack."""
+        self._nav_push(user, self._show_host_management_menu, table)
 
     async def _handle_host_management_selection(
         self, user: NetworkUser, selection_id: str, state: dict
@@ -7480,8 +7498,8 @@ PlayAural Server
         self._user_states[username] = {**parent_frame, "_stack": stack}
         self._restore_frame(user, parent_frame, stack)
 
-    def _user_has_blocking_modal_state(self, username: str) -> bool:
-        """Return True if forward navigation must be blocked for the user.
+    def _blocking_modal_reason(self, username: str) -> str | None:
+        """Return the current modal blocker for forward navigation, if any.
 
         Three disjoint cases are covered:
 
@@ -7500,12 +7518,15 @@ PlayAural Server
            the game's status-box-open flag uncleared, so returning to the game
            later can no longer rebuild the turn menu.
 
-        In all three cases, processing a forward nav push would desync the
-        server's menu state from what the client can safely restore.
+        Processing a forward nav push while any of these is active would
+        desync the server's menu state from what the client can safely
+        restore. Read-only status boxes may defer one forward nav request;
+        active editbox/input states do not queue navigation because the user
+        may complete or cancel them with different intent.
         """
         # Server-side editbox (set by _enter_input_state)
         if self._user_states.get(username, {}).get("_transient"):
-            return True
+            return "server_input"
         # Game-side editbox or status box
         table = self._tables.find_user_table(username)
         if table and table.game:
@@ -7514,10 +7535,37 @@ PlayAural Server
                 player = table.game.get_player_by_id(user.uuid)
                 if player:
                     if player.id in table.game._pending_actions:
-                        return True
+                        return "game_input"
                     if player.id in table.game._status_box_open:
-                        return True
-        return False
+                        return "game_status_box"
+        return None
+
+    def _user_has_blocking_modal_state(self, username: str) -> bool:
+        """Return True if forward navigation must be blocked for the user."""
+        return self._blocking_modal_reason(username) is not None
+
+    def _defer_navigation(
+        self,
+        user: NetworkUser,
+        show_fn: Callable[..., None],
+        *args,
+        **kwargs,
+    ) -> None:
+        """Queue one safe forward navigation until a status box closes."""
+        self._deferred_navigation[user.username] = (show_fn, args, kwargs)
+
+    def _maybe_run_deferred_navigation(self, user: NetworkUser) -> bool:
+        """Run a pending status-box navigation once no modal blocker remains."""
+        username = user.username
+        pending = self._deferred_navigation.get(username)
+        if not pending:
+            return False
+        if self._blocking_modal_reason(username) is not None:
+            return False
+
+        show_fn, args, kwargs = self._deferred_navigation.pop(username)
+        self._nav_push(user, show_fn, *args, **kwargs)
+        return True
 
     def _nav_push(self, user: NetworkUser, show_fn, *args, **kwargs) -> None:
         """Push current state onto the return stack and navigate to a new menu.
@@ -7538,7 +7586,10 @@ PlayAural Server
         editbox states cannot be re-rendered by _restore_frame.
         """
         username = user.username
-        if self._user_has_blocking_modal_state(username):
+        blocker = self._blocking_modal_reason(username)
+        if blocker is not None:
+            if blocker == "game_status_box":
+                self._defer_navigation(user, show_fn, *args, **kwargs)
             return
         current = self._user_states.get(username, {})
         stack = list(current.get("_stack", []))

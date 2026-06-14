@@ -998,9 +998,16 @@ class ColorGameGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        lines = [Localization.get(user.locale, "colorgame-standings-header")]
-        lines.extend(self._standings_lines(user.locale))
-        self.status_box(player, lines)
+        self.live_status_box(
+            player,
+            "colorgame_standings",
+            lambda _player, live_user: self._detailed_standings_lines(live_user.locale),
+        )
+
+    def _detailed_standings_lines(self, locale: str) -> list[str]:
+        lines = [Localization.get(locale, "colorgame-standings-header")]
+        lines.extend(self._standings_lines(locale))
+        return lines
 
     def _bot_input_bet_amount(self, player: ColorGamePlayer) -> str:
         if player.current_bets:

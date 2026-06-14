@@ -18,6 +18,7 @@ from ...game_utils.options import GameOptions, IntOption, BoolOption, option_fie
 from ...game_utils.sequence_runner_mixin import SequenceBeat, SequenceOperation
 from ...messages.localization import Localization
 from ...ui.keybinds import KeybindState
+from ...users.base import MenuItem
 from .bot import bot_think
 
 
@@ -858,25 +859,44 @@ class LudoGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        locale = user.locale
 
-        lines: list[str] = []
+        self.live_status_box(
+            player,
+            "ludo_board",
+            lambda _player, live_user: self._board_status_items(live_user.locale),
+        )
+
+    def _board_status_items(self, locale: str) -> list[MenuItem]:
+        items: list[MenuItem] = []
         for p in self.get_active_players():
-            lines.append(
-                Localization.get(
-                    locale,
-                    "ludo-board-player",
-                    player=p.name,
-                    color=p.color,
-                    finished=p.finished_count,
+            items.append(
+                MenuItem(
+                    text=Localization.get(
+                        locale,
+                        "ludo-board-player",
+                        player=p.name,
+                        color=p.color,
+                        finished=p.finished_count,
+                    ),
+                    id=f"player:{p.id}",
                 )
             )
             for token in p.tokens:
-                lines.append(self._describe_token(token, locale, p))
+                items.append(
+                    MenuItem(
+                        text=self._describe_token(token, locale, p),
+                        id=f"token:{p.id}:{token.token_number}",
+                    )
+                )
         if self.last_roll > 0:
-            lines.append(Localization.get(locale, "ludo-last-roll", roll=self.last_roll))
+            items.append(
+                MenuItem(
+                    text=Localization.get(locale, "ludo-last-roll", roll=self.last_roll),
+                    id="last_roll",
+                )
+            )
 
-        self.status_box(player, lines)
+        return items
 
     # ======================================================================
     # Movement / resolution

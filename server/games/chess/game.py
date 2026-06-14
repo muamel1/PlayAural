@@ -1824,6 +1824,13 @@ class ChessGame(GridGameMixin, Game):
         user = self.get_user(player)
         if not user:
             return
+        self.live_status_box(
+            player,
+            "chess_board",
+            lambda viewer, live_user: self._board_lines(viewer, live_user.locale),
+        )
+
+    def _board_lines(self, player: Player, locale: str) -> list[str]:
         lines: list[str] = []
         for row in range(8):
             labels: list[str] = []
@@ -1831,58 +1838,65 @@ class ChessGame(GridGameMixin, Game):
                 square = self._view_to_square(player, row, col)
                 piece = self.board[square]
                 if piece is None:
-                    labels.append(Localization.get(user.locale, "chess-empty"))
+                    labels.append(Localization.get(locale, "chess-empty"))
                 else:
-                    labels.append(self._piece_name(piece, user.locale))
+                    labels.append(self._piece_name(piece, locale))
             lines.append(
                 Localization.get(
-                    user.locale,
+                    locale,
                     "chess-board-rank-line",
                     rank=index_to_notation(self._view_to_square(player, row, 0))[1],
                     pieces=", ".join(labels),
                 )
             )
-        self.status_box(player, lines)
+        return lines
 
     def _action_check_status(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)
         if not user:
             return
+        self.live_status_box(
+            player,
+            "chess_status",
+            lambda _player, live_user: self._status_lines(live_user.locale),
+        )
+
+    def _status_lines(self, locale: str) -> list[str]:
         white_player = self._get_player_by_color(COLOR_WHITE)
         black_player = self._get_player_by_color(COLOR_BLACK)
         current_player = self._get_player_by_color(self.current_color)
         lines = [
-            Localization.get(user.locale, "chess-status-white", player=white_player.name if white_player else "?"),
-            Localization.get(user.locale, "chess-status-black", player=black_player.name if black_player else "?"),
+            Localization.get(locale, "chess-status-white", player=white_player.name if white_player else "?"),
+            Localization.get(locale, "chess-status-black", player=black_player.name if black_player else "?"),
             Localization.get(
-                user.locale,
+                locale,
                 "chess-status-turn",
-                color=Localization.get(user.locale, f"chess-color-{self.current_color}"),
+                color=Localization.get(locale, f"chess-color-{self.current_color}"),
                 player=current_player.name if current_player else "?",
             ),
-            Localization.get(user.locale, "chess-status-move-count", count=len(self.move_history)),
-            self._get_clock_label(user.locale, COLOR_WHITE),
-            self._get_clock_label(user.locale, COLOR_BLACK),
+            Localization.get(locale, "chess-status-move-count", count=len(self.move_history)),
+            self._get_clock_label(locale, COLOR_WHITE),
+            self._get_clock_label(locale, COLOR_BLACK),
             Localization.get(
-                user.locale,
+                locale,
                 "chess-status-time-control",
-                control=Localization.get(user.locale, TIME_CONTROL_LABELS[self.options.time_control]),
+                control=Localization.get(locale, TIME_CONTROL_LABELS[self.options.time_control]),
             ),
         ]
         if self.promotion_pending:
-            lines.append(Localization.get(user.locale, "chess-status-promotion-pending"))
+            lines.append(Localization.get(locale, "chess-status-promotion-pending"))
         elif self.is_in_check(self.current_color):
-            lines.append(Localization.get(user.locale, "chess-status-check"))
+            lines.append(Localization.get(locale, "chess-status-check"))
         claim_reason = self._can_claim_draw_reason()
         if claim_reason == "fifty_move_rule":
-            lines.append(Localization.get(user.locale, "chess-claim-available-fifty-move"))
+            lines.append(Localization.get(locale, "chess-claim-available-fifty-move"))
         elif claim_reason == "threefold_repetition":
-            lines.append(Localization.get(user.locale, "chess-claim-available-threefold"))
+            lines.append(Localization.get(locale, "chess-claim-available-threefold"))
         if self.draw_offer_from:
             requester = self.get_player_by_id(self.draw_offer_from)
             lines.append(
                 Localization.get(
-                    user.locale,
+                    locale,
                     "chess-status-draw-offer",
                     player=requester.name if requester else "?",
                 )
@@ -1891,12 +1905,12 @@ class ChessGame(GridGameMixin, Game):
             requester = self.get_player_by_id(self.undo_request_from)
             lines.append(
                 Localization.get(
-                    user.locale,
+                    locale,
                     "chess-status-undo-request",
                     player=requester.name if requester else "?",
                 )
             )
-        self.status_box(player, lines)
+        return lines
 
     def _action_check_clock(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)

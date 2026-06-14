@@ -662,8 +662,13 @@ class NineGame(Game):
         if not user:
             return
 
-        locale = user.locale
-        none_str = Localization.get(locale, "nine-none")
+        self.live_status_box(
+            player,
+            "nine_sequences",
+            lambda _player, live_user: self._sequence_status_lines(live_user.locale),
+        )
+
+    def _sequence_status_lines(self, locale: str) -> list[str]:
         lines = []
 
         # Only Sequences on the table
@@ -684,7 +689,7 @@ class NineGame(Game):
             else:
                 lines.append(Localization.get(locale, "nine-status-no-sequence", suit=suit_name))
 
-        self.status_box(player, lines)
+        return lines
 
     def _get_localized_check_hand_counts_label(self, player: Player, action_id: str) -> str:
         """Get localized label for the 'Check Hand Counts' action."""

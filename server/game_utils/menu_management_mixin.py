@@ -1,6 +1,7 @@
 """Mixin providing menu management functionality for games.
 
-Game code never paints menus. It RECORDS intent through two calls:
+Game code never paints turn menus directly. It RECORDS turn-menu intent through
+two calls:
 
 - ``refresh_menus(player=None)`` — mark one player (or everyone) as needing
   a repaint.
@@ -17,6 +18,10 @@ copies of that logic were the root cause of a long line of focus-stealing
 bugs, so the orchestrators are **sealed**: a game class that overrides one
 fails at import time.
 
+Status overlays are the sanctioned exception: ``status_box(...)`` shows static
+snapshots, while ``live_status_box(...)`` opens dynamic state panels that
+refresh through the same sealed flush path.
+
 Games customize what gets painted through these hooks:
 
 - ``before_menu_build(player)`` — sync dynamic action sets (e.g. per-card
@@ -31,6 +36,7 @@ focus-preserving; focus only moves when an intent says so, and each intent
 fires at most once.
 """
 
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -67,6 +73,31 @@ class MenuBuild:
     grid_kwargs: dict = field(default_factory=dict)
 
 
+@dataclass
+class StatusBoxBuild:
+    """Result of a static or live status-box builder.
+
+    ``items`` may contain strings or ``MenuItem`` instances. Strings and items
+    without ids are assigned stable fallback ids from the status-box id prefix.
+    Builders for live boxes should prefer semantic item ids whenever rows can
+    reorder, appear, or disappear.
+    """
+
+    items: Sequence[str | MenuItem]
+    grid_kwargs: dict = field(default_factory=dict)
+
+
+StatusBoxBuilder = Callable[["Player", "User"], StatusBoxBuild | Sequence[str | MenuItem]]
+
+
+@dataclass
+class LiveStatusBoxState:
+    """Runtime-only state for a player's open live status box."""
+
+    box_id: str
+    builder: StatusBoxBuilder
+
+
 class MenuManagementMixin:
     """Mixin providing menu refresh recording, flushing, and status boxes.
 
@@ -80,6 +111,7 @@ class MenuManagementMixin:
         - self._pending_menu_focus: dict[str, str]
         - self._menu_dirty: set[str]
         - self._menu_dirty_all: bool
+        - self._live_status_boxes: dict[str, LiveStatusBoxState]
         - self.get_user(player) -> User | None
         - self.get_all_visible_actions(player) -> list[ResolvedAction]
     """
@@ -276,6 +308,10 @@ class MenuManagementMixin:
         if not user:
             return
 
+        if player.id in self._status_box_open and player.id in self._live_status_boxes:
+            self._paint_live_status_box(player, focus_id=None)
+            return
+
         if self._is_menu_refresh_blocked(player, user):
             return
 
@@ -293,6 +329,44 @@ class MenuManagementMixin:
     # Status boxes
     # ------------------------------------------------------------------
 
+    def _normalize_status_box_content(
+        self,
+        content: StatusBoxBuild | Sequence[str | MenuItem],
+        *,
+        fallback_id_prefix: str,
+    ) -> tuple[list[MenuItem], dict]:
+        """Normalize status-box content into uniquely identified menu items."""
+        if isinstance(content, StatusBoxBuild):
+            raw_items = content.items
+            grid_kwargs = dict(content.grid_kwargs)
+        else:
+            raw_items = content
+            grid_kwargs = {}
+
+        items: list[MenuItem] = []
+        seen_ids: dict[str, int] = {}
+        for index, raw_item in enumerate(raw_items):
+            if isinstance(raw_item, MenuItem):
+                item = MenuItem(
+                    text=raw_item.text,
+                    id=raw_item.id or f"{fallback_id_prefix}:line:{index}",
+                    sound=raw_item.sound,
+                )
+            else:
+                item = MenuItem(
+                    text=str(raw_item),
+                    id=f"{fallback_id_prefix}:line:{index}",
+                )
+
+            if item.id is not None:
+                seen_count = seen_ids.get(item.id, 0)
+                seen_ids[item.id] = seen_count + 1
+                if seen_count:
+                    item.id = f"{item.id}:duplicate:{seen_count}"
+            items.append(item)
+
+        return items, grid_kwargs
+
     def status_box(self, player: "Player", lines: list[str]) -> None:
         """Show a status box (menu with text items) to a player.
 
@@ -301,11 +375,69 @@ class MenuManagementMixin:
         """
         user = self.get_user(player)
         if user:
-            items = [MenuItem(text=line, id="status_line") for line in lines]
+            self._live_status_boxes.pop(player.id, None)
+            items, grid_kwargs = self._normalize_status_box_content(
+                lines,
+                fallback_id_prefix="status_box",
+            )
             user.show_menu(
                 "status_box",
                 items,
                 multiletter=False,
                 escape_behavior=EscapeBehavior.SELECT_LAST,
+                **grid_kwargs,
             )
             self._status_box_open.add(player.id)
+
+    def live_status_box(
+        self,
+        player: "Player",
+        box_id: str,
+        builder: StatusBoxBuilder,
+        *,
+        focus_id: str | None = None,
+    ) -> None:
+        """Open a live status box that refreshes through the sealed menu flush.
+
+        Live boxes are opt-in overlays for dynamic state views such as boards,
+        standings, and round status. They use the same ``status_box`` menu id
+        so all clients apply the normal same-menu content diff. Passive
+        refreshes never send a focus directive; ``focus_id`` is only for the
+        initial, action-driven opening.
+        """
+        user = self.get_user(player)
+        if not user:
+            return
+
+        self._live_status_boxes[player.id] = LiveStatusBoxState(
+            box_id=box_id,
+            builder=builder,
+        )
+        self._status_box_open.add(player.id)
+        self._paint_live_status_box(player, focus_id=focus_id)
+
+    def _paint_live_status_box(
+        self,
+        player: "Player",
+        *,
+        focus_id: str | None,
+    ) -> None:
+        """Repaint one open live status box without changing focus by default."""
+        state = self._live_status_boxes.get(player.id)
+        user = self.get_user(player)
+        if not state or not user:
+            return
+
+        content = state.builder(player, user)
+        items, grid_kwargs = self._normalize_status_box_content(
+            content,
+            fallback_id_prefix=f"live_status:{state.box_id}",
+        )
+        user.show_menu(
+            "status_box",
+            items,
+            multiletter=False,
+            escape_behavior=EscapeBehavior.SELECT_LAST,
+            selection_id=focus_id,
+            **grid_kwargs,
+        )

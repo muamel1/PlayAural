@@ -1096,20 +1096,27 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
         user = self.get_user(player)
         if not user:
             return
-        lines = [Localization.get(user.locale, "battleship-fleet-header")]
-        for ship in bp.ships:
-            ship_name = Localization.get(user.locale, f"battleship-ship-{ship.type_key}")
+        self.live_status_box(
+            bp,
+            "battleship_fleet",
+            lambda _player, live_user: self._fleet_lines(bp, live_user.locale),
+        )
+
+    def _fleet_lines(self, player: "BattleshipPlayer", locale: str) -> list[str]:
+        lines = [Localization.get(locale, "battleship-fleet-header")]
+        for ship in player.ships:
+            ship_name = Localization.get(locale, f"battleship-ship-{ship.type_key}")
             if ship.sunk:
-                status = Localization.get(user.locale, "battleship-status-sunk")
+                status = Localization.get(locale, "battleship-status-sunk")
             elif ship.hits > 0:
                 status = Localization.get(
-                    user.locale, "battleship-status-damaged",
+                    locale, "battleship-status-damaged",
                     hits=str(ship.hits), size=str(ship.size),
                 )
             else:
-                status = Localization.get(user.locale, "battleship-status-intact")
+                status = Localization.get(locale, "battleship-status-intact")
             lines.append(f"{ship_name}: {status}")
-        self.status_box(bp, lines)
+        return lines
 
     def _is_read_fleet_enabled(self, player: "Player") -> str | None:
         if self.status != "playing":
@@ -1147,23 +1154,34 @@ class BattleshipGame(GridGameMixin, TurnTimerMixin, Game):
         if not opponent:
             return
 
-        lines = [Localization.get(user.locale, "battleship-enemy-fleet-header")]
+        self.live_status_box(
+            player,
+            "battleship_enemy_fleet",
+            lambda _player, live_user: self._enemy_fleet_lines(opponent, live_user.locale),
+        )
+
+    def _enemy_fleet_lines(
+        self,
+        opponent: "BattleshipPlayer",
+        locale: str,
+    ) -> list[str]:
+        lines = [Localization.get(locale, "battleship-enemy-fleet-header")]
         sunk_count = sum(1 for s in opponent.ships if s.sunk)
         total = len(opponent.ships)
         lines.append(Localization.get(
-            user.locale, "battleship-enemy-fleet-summary",
+            locale, "battleship-enemy-fleet-summary",
             sunk=str(sunk_count), total=str(total),
         ))
         for ship in opponent.ships:
             if ship.sunk:
                 ship_name = Localization.get(
-                    user.locale, f"battleship-ship-{ship.type_key}",
+                    locale, f"battleship-ship-{ship.type_key}",
                 )
                 lines.append(Localization.get(
-                    user.locale, "battleship-enemy-ship-sunk",
+                    locale, "battleship-enemy-ship-sunk",
                     ship=ship_name, size=str(ship.size),
                 ))
-        self.status_box(player, lines)
+        return lines
 
     def _is_read_enemy_fleet_enabled(self, player: "Player") -> str | None:
         if self.status != "playing":

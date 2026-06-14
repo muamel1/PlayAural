@@ -968,9 +968,13 @@ class PiratesGame(Game):
         if not isinstance(player, PiratesPlayer) and not player.is_spectator:
             return
 
-        user = self.get_user(player)
-        locale = user.locale if user else "en"
+        self.live_status_box(
+            player,
+            "pirates_status",
+            lambda _player, live_user: self._detailed_status_lines(live_user.locale),
+        )
 
+    def _detailed_status_lines(self, locale: str) -> list[str]:
         lines = []
         for p in self.get_active_players():
             gem_str = gems.format_gem_list(p.gems, locale)
@@ -986,7 +990,7 @@ class PiratesGame(Game):
             )
             lines.append(status_line)
 
-        self.status_box(player, lines)
+        return lines
 
     def _action_check_position(self, player: Player, action_id: str) -> None:
         """Announce player's current position."""

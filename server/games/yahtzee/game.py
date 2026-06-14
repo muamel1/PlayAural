@@ -564,13 +564,19 @@ class YahtzeeGame(Game, DiceGameMixin):
         if not user:
             return
 
+        self.live_status_box(
+            player,
+            "yahtzee_scoresheet",
+            lambda _player, live_user: self._scoresheet_lines(live_user.locale),
+        )
+
+    def _scoresheet_lines(self, locale: str) -> list[str]:
         # Show the current player's scoresheet (always the active turn player)
         current = self.current_player
         if not current:
-            return
+            return []
 
         ytz_current: YahtzeePlayer = current  # type: ignore
-        locale = user.locale
 
         lines = [Localization.get(locale, "yahtzee-scoresheet-header", player=current.name)]
         lines.append(Localization.get(locale, "yahtzee-scoresheet-upper"))
@@ -629,7 +635,7 @@ class YahtzeeGame(Game, DiceGameMixin):
             )
         )
 
-        self.status_box(player, lines)
+        return lines
 
     # ==========================================================================
     # Game flow

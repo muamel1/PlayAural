@@ -15,6 +15,7 @@ class EventHandlingMixin:
         - self._actions_menu_open: set[str]
         - self._pending_actions: dict[str, str]
         - self._status_box_open: set[str]
+        - self._live_status_boxes: dict[str, LiveStatusBoxState]
         - self._keybinds: dict[str, list[Keybind]]
         - self.get_user(player) -> User | None
         - self.find_action(player, action_id) -> Action | None
@@ -143,6 +144,7 @@ class EventHandlingMixin:
                 user.remove_menu("status_box")
                 user.speak_l("status-box-closed", buffer="game")
                 self._status_box_open.discard(player.id)
+                self._live_status_boxes.pop(player.id, None)
                 self.refresh_menus(player)
 
         elif menu_id == "game_over":

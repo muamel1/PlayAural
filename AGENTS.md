@@ -106,10 +106,18 @@ Action sets resolve in this order: `turn -> lobby -> options -> standard`.
 - Public information may use `include_spectators=True`; private or mutating
   gameplay actions normally must not.
 
-Game code does not paint menus directly. It records intent only with:
+Game code does not paint turn menus directly. It records turn-menu intent with:
 
 - `refresh_menus(player=None)`: mark one player or everyone dirty.
 - `request_menu_focus(player, action_id)`: one-shot focus jump for one player.
+
+Status overlays are the sanctioned exception: use `status_box(...)` for static
+snapshots and `live_status_box(...)` for dynamic state panels. Games still must
+not call `user.show_menu()` / `user.update_menu()` directly.
+Server navigation requested while a status box is open is deferred and replayed
+after the box closes; active editbox/action-input states block navigation
+without queuing it. In-game overlays such as Host Management must enter through
+modal-aware server navigation, not direct show calls from game actions.
 
 `flush_menus()` is sealed and framework-owned. Games must not override or call
 menu flush internals except tests calling `flush_menus()` at production
@@ -129,6 +137,12 @@ Client focus doctrine:
   changes, or `selection_id` explicitly jumps focus.
 - Keep disabled-but-visible persistent controls when they anchor touch or screen
   reader focus. Use `request_menu_focus` only for deliberate action-driven jumps.
+- Use `status_box(player, lines)` for static snapshots/help/limited reveals.
+  Use `live_status_box(player, box_id, builder, focus_id=None)` for dynamic
+  state panels such as boards, standings, clocks, rosters, and detailed scores.
+  Live builders return strings or `MenuItem`s, refresh only through the sealed
+  flush after `refresh_menus()`, and must use stable semantic item ids whenever
+  rows can reorder, appear, or disappear.
 
 ## Touch Clients
 
@@ -208,8 +222,8 @@ players.
 - Non-point units need a localized `score_unit_key` in shared `games.ftl` or the
   game locale when unique. Units are display only; stored stats remain numeric.
 - Brief score checks speak one line per player/team in the `game` buffer.
-- Detailed score checks normally use `status_box(player, lines)` with one line
-  per player/team.
+- Detailed score checks normally use `live_status_box(...)` with one line per
+  player/team.
 - Team games use shared team arrangement. Call
   `_setup_team_manager_for_start(...)`; use `_get_team_turn_players(...)` when
   seating affects turn order. Do not build per-game team selection UI.

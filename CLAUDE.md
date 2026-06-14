@@ -233,8 +233,8 @@ Rules:
 - use `get_active_players()` for gameplay logic, results, and winner calculations
 
 #### Menu Refresh and Focus (Mandatory)
-Game code never paints menus. It records intent through exactly two calls on
-`MenuManagementMixin`:
+Game code never paints turn menus directly. It records turn-menu intent through
+exactly two calls on `MenuManagementMixin`:
 
 - `refresh_menus(player=None)` — mark one player (or everyone) as needing a
   repaint. Recording only; nothing is built or sent here. Over-marking costs
@@ -274,6 +274,10 @@ Games customize what gets painted through the hooks:
   and grid layout (`MenuBuild(items=..., grid_kwargs=...)`); this is how the
   backgammon and senet boards arrange their grids.
 
+Status overlays are the sanctioned exception: use `status_box(...)` or
+`live_status_box(...)` as described below. Games still must not call
+`user.show_menu()` / `user.update_menu()` directly.
+
 #### How Clients Treat Menu Packets (Why Plain Refreshes Are Safe)
 All three first-party clients treat a menu packet for the menu they are
 already displaying as an in-place diff: the cursor follows the focused item
@@ -303,6 +307,43 @@ Consequences that still matter when designing a menu:
   collapses same-tick duplicates. Bandwidth is not a reason to avoid
   `refresh_menus()`.
 
+#### Static vs. Live Status Boxes
+Use the right status-box helper for the job:
+
+- `status_box(player, lines)` is for static snapshots: rules/help text,
+  one-shot action results, limited-use private reveals, and information that
+  should not change while the player is reading it.
+- `live_status_box(player, box_id, builder, focus_id=None)` is for dynamic
+  state views that should stay current while open: boards, scoreboards,
+  standings, city/hand summaries, battle rosters, clocks, and similar
+  gameplay status panels.
+
+Live status boxes are still game overlays using the `status_box` menu id, so
+all clients apply the normal same-menu content diff. They repaint only through
+the sealed flush path when `refresh_menus()` records a dirty player/all-player
+update; identical content is skipped by `NetworkUser`, and passive refreshes
+must not pass `selection_id` or `position`. Use `focus_id` only for the initial
+direct user action that opens the box.
+
+Global or in-game overlay navigation requested while a status box is open is
+deferred by the server and replayed after the status box closes. Active inputs
+(`_transient` server editboxes and game `_pending_actions`) still block forward
+navigation without queuing it, because completing or cancelling an input can
+change the user's intent. In-game overlays such as Host Management must enter
+through `_nav_push` or another modal-aware server helper, never by calling a
+show function directly from a game action.
+
+Builder rules:
+- A live builder receives `(player, user)` and returns `list[str | MenuItem]`
+  or `StatusBoxBuild`.
+- Prefer `MenuItem` rows with stable semantic ids (`player:<id>`,
+  `token:<id>`, `square:<n>`, `score:<team>`) whenever rows can reorder,
+  appear, or disappear. String rows get stable fallback ids by line index,
+  which is only appropriate for fixed-layout panels.
+- Never directly call `user.show_menu()` from games to refresh a status box.
+  Update game state, call `refresh_menus()`, and let the framework repaint any
+  open live boxes without clobbering turn menus or touch-client focus.
+
 #### Score Management and Units
 Shared score display is handled by `GameScoresMixin` and `TeamManager`.
 
@@ -315,7 +356,7 @@ Rules:
 - games with custom non-`TeamManager` scoring should override `supports_score_actions()`, `_action_check_scores`, and `_action_check_scores_detailed` as one coherent set
 - scoreless games should not claim score support; their score buttons stay hidden and `s` / `shift+s` are silently ignored
 - brief score checks speak one TTS message per player/team in the `game` buffer instead of one combined sentence
-- detailed score checks use a status box with one line per player/team unless the game has a stronger custom detail view
+- detailed score checks use a live status box with one line per player/team unless the game has a stronger custom detail view
 - score units are display text only; leaderboards, ratings, personal statistics, and `GameResult.custom_data` continue to store numeric values in their established schema
 
 #### Team Management and Arrangement

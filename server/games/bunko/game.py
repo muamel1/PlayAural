@@ -530,16 +530,23 @@ class BunkoGame(Game):
         if not user:
             return
 
+        self.live_status_box(
+            player,
+            "bunko_standings",
+            lambda _player, live_user: self._detailed_standings_lines(live_user.locale),
+        )
+
+    def _detailed_standings_lines(self, locale: str) -> list[str]:
         mode_key = f"bunko-winning-mode-{self.options.winning_mode.replace('_', '-')}"
         lines = [
             Localization.get(
-                user.locale,
+                locale,
                 "bunko-standings-header",
-                mode=Localization.get(user.locale, mode_key),
+                mode=Localization.get(locale, mode_key),
             )
         ]
-        lines.extend(self._standings_lines(user.locale))
-        self.status_box(player, lines)
+        lines.extend(self._standings_lines(locale))
+        return lines
 
     # ======================================================================
     # Game flow

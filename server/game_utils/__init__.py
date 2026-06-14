@@ -13,7 +13,7 @@ from .game_result_mixin import GameResultMixin
 from .game_scores_mixin import GameScoresMixin
 from .game_prediction_mixin import GamePredictionMixin
 from .turn_management_mixin import TurnManagementMixin
-from .menu_management_mixin import MenuManagementMixin
+from .menu_management_mixin import MenuManagementMixin, StatusBoxBuild
 from .action_visibility_mixin import ActionVisibilityMixin
 from .lobby_actions_mixin import LobbyActionsMixin
 from .event_handling_mixin import EventHandlingMixin
@@ -47,6 +47,7 @@ __all__ = [
     "GamePredictionMixin",
     "TurnManagementMixin",
     "MenuManagementMixin",
+    "StatusBoxBuild",
     "ActionVisibilityMixin",
     "LobbyActionsMixin",
     "EventHandlingMixin",

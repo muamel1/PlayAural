@@ -18,6 +18,7 @@ from ...game_utils.actions import Action, ActionSet, Visibility
 from ...game_utils.sequence_runner_mixin import SequenceBeat, SequenceOperation
 from ...ui.keybinds import KeybindState
 from ...messages.localization import Localization
+from ...users.base import MenuItem
 
 
 @dataclass
@@ -831,25 +832,43 @@ class ChaosBearGame(Game):
 
     def _status_lines(self, locale: str) -> list[str]:
         """Build localized status lines for the readable status box."""
+        return [item.text for item in self._status_items(locale)]
+
+    def _status_items(self, locale: str) -> list[MenuItem]:
+        """Build stable-id status items for the live status box."""
         lines = [
-            Localization.get(locale, "chaosbear-status-header"),
-            Localization.get(
-                locale, "chaosbear-status-round", round=self.round_number
+            MenuItem(
+                text=Localization.get(locale, "chaosbear-status-header"),
+                id="header",
+            ),
+            MenuItem(
+                text=Localization.get(
+                    locale, "chaosbear-status-round", round=self.round_number
+                ),
+                id="round",
             ),
         ]
         current = self.current_player
         if isinstance(current, ChaosBearPlayer) and current.alive:
             lines.append(
-                Localization.get(
-                    locale,
-                    "chaosbear-status-turn",
-                    player=current.name,
-                    position=current.position,
-                    gap=self._gap_to_bear(current.position),
+                MenuItem(
+                    text=Localization.get(
+                        locale,
+                        "chaosbear-status-turn",
+                        player=current.name,
+                        position=current.position,
+                        gap=self._gap_to_bear(current.position),
+                    ),
+                    id="turn",
                 )
             )
         else:
-            lines.append(Localization.get(locale, "chaosbear-status-no-turn"))
+            lines.append(
+                MenuItem(
+                    text=Localization.get(locale, "chaosbear-status-no-turn"),
+                    id="turn",
+                )
+            )
 
         active = sorted(
             self._active_runners(), key=lambda p: (p.position, p.name), reverse=True
@@ -857,30 +876,39 @@ class ChaosBearGame(Game):
         for runner in active:
             if runner.alive:
                 lines.append(
-                    Localization.get(
-                        locale,
-                        "chaosbear-status-player-alive",
-                        player=runner.name,
-                        position=runner.position,
-                        gap=self._gap_to_bear(runner.position),
+                    MenuItem(
+                        text=Localization.get(
+                            locale,
+                            "chaosbear-status-player-alive",
+                            player=runner.name,
+                            position=runner.position,
+                            gap=self._gap_to_bear(runner.position),
+                        ),
+                        id=f"runner:{runner.id}",
                     )
                 )
             else:
                 lines.append(
-                    Localization.get(
-                        locale,
-                        "chaosbear-status-player-caught",
-                        player=runner.name,
-                        position=runner.position,
+                    MenuItem(
+                        text=Localization.get(
+                            locale,
+                            "chaosbear-status-player-caught",
+                            player=runner.name,
+                            position=runner.position,
+                        ),
+                        id=f"runner:{runner.id}",
                     )
                 )
 
         lines.append(
-            Localization.get(
-                locale,
-                "chaosbear-status-bear",
-                position=self.bear_position,
-                energy=self.bear_energy,
+            MenuItem(
+                text=Localization.get(
+                    locale,
+                    "chaosbear-status-bear",
+                    position=self.bear_position,
+                    energy=self.bear_energy,
+                ),
+                id="bear",
             )
         )
         return lines
@@ -1173,5 +1201,9 @@ class ChaosBearGame(Game):
         if not user:
             return
 
-        self.status_box(player, self._status_lines(user.locale))
+        self.live_status_box(
+            player,
+            "chaosbear_status",
+            lambda _player, live_user: self._status_items(live_user.locale),
+        )
 

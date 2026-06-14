@@ -2125,28 +2125,45 @@ class CitadelsGame(Game):
         user = self.get_user(player)
         if not cit_player or not user:
             return
-        lines = [Localization.get(user.locale, "citadels-hand-header", count=len(cit_player.hand))]
+        self.live_status_box(
+            player,
+            "citadels_hand",
+            lambda viewer, live_user: self._hand_lines(viewer, live_user.locale),
+        )
+
+    def _hand_lines(self, player: Player, locale: str) -> list[str]:
+        cit_player = self._as_citadels_player(player)
+        if not cit_player:
+            return []
+        lines = [Localization.get(locale, "citadels-hand-header", count=len(cit_player.hand))]
         if cit_player.hand:
             for card in sorted(cit_player.hand, key=lambda c: (c.cost, c.name)):
-                lines.append(self._district_line(card, user.locale))
+                lines.append(self._district_line(card, locale))
         else:
-            lines.append(Localization.get(user.locale, "citadels-hand-empty"))
-        self.status_box(player, lines)
+            lines.append(Localization.get(locale, "citadels-hand-empty"))
+        return lines
 
     def _action_read_cities(self, player: Player, action_id: str) -> None:
         _ = action_id
         user = self.get_user(player)
         if not user:
             return
-        lines = [Localization.get(user.locale, "citadels-cities-header")]
+        self.live_status_box(
+            player,
+            "citadels_cities",
+            lambda _viewer, live_user: self._city_lines(live_user.locale),
+        )
+
+    def _city_lines(self, locale: str) -> list[str]:
+        lines = [Localization.get(locale, "citadels-cities-header")]
         for cit_player in self.get_active_players():
             city_names = (
-                ", ".join(self._district_name(card, user.locale) for card in cit_player.city)
-                or Localization.get(user.locale, "citadels-city-empty")
+                ", ".join(self._district_name(card, locale) for card in cit_player.city)
+                or Localization.get(locale, "citadels-city-empty")
             )
             lines.append(
                 Localization.get(
-                    user.locale,
+                    locale,
                     "citadels-city-line",
                     player=cit_player.name,
                     count=len(cit_player.city),
@@ -2155,7 +2172,7 @@ class CitadelsGame(Game):
                     districts=city_names,
                 )
             )
-        self.status_box(player, lines)
+        return lines
 
     def _action_read_character(self, player: Player, action_id: str) -> None:
         _ = action_id
@@ -2202,9 +2219,14 @@ class CitadelsGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        self.status_box(
+        self.live_status_box(
             player,
-            self._status_lines(user.locale, detailed=True, brief=self._brief_arm(user)),
+            "citadels_status",
+            lambda _viewer, live_user: self._status_lines(
+                live_user.locale,
+                detailed=True,
+                brief=self._brief_arm(live_user),
+            ),
         )
 
     def _action_check_scores(self, player: Player, action_id: str) -> None:
@@ -2221,9 +2243,16 @@ class CitadelsGame(Game):
         user = self.get_user(player)
         if not user:
             return
-        lines = [Localization.get(user.locale, "citadels-standings-header")]
-        lines.extend(self._standings_lines(user.locale))
-        self.status_box(player, lines)
+        self.live_status_box(
+            player,
+            "citadels_standings",
+            lambda _viewer, live_user: self._detailed_standings_lines(live_user.locale),
+        )
+
+    def _detailed_standings_lines(self, locale: str) -> list[str]:
+        lines = [Localization.get(locale, "citadels-standings-header")]
+        lines.extend(self._standings_lines(locale))
+        return lines
 
     def on_sequence_callback(
         self, sequence_id: str, callback_id: str, payload: dict

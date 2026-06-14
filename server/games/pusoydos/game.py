@@ -1798,7 +1798,13 @@ class PusoyDosGame(Game, TurnTimerMixin):
         user = self.get_user(player)
         if not user:
             return
-        locale = user.locale
+        self.live_status_box(
+            player,
+            "pusoydos_scores",
+            lambda _player, live_user: self._detailed_score_lines(live_user.locale),
+        )
+
+    def _detailed_score_lines(self, locale: str) -> list[str]:
         lines = []
         if self.options.game_mode == "elimination":
             for p in self._playing_players():
@@ -1834,10 +1840,7 @@ class PusoyDosGame(Game, TurnTimerMixin):
                         locale, "pusoydos-score-points", player=p.name, score=p.score
                     )
                 )
-        self.status_box(
-            player,
-            lines if lines else [Localization.get(locale, "pusoydos-score-no-scores")],
-        )
+        return lines if lines else [Localization.get(locale, "pusoydos-score-no-scores")]
 
     def _sync_team_scores(self) -> None:
         for team in self._team_manager.teams:

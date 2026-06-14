@@ -121,7 +121,7 @@ async def test_open_options_is_idempotent_inside_options_flow() -> None:
 
 
 @pytest.mark.asyncio
-async def test_open_options_blocked_while_status_box_open() -> None:
+async def test_open_options_defers_while_status_box_open() -> None:
     server, host, _guest, _table, game, host_player = _make_playing_game_server()
     try:
         host.clear_messages()
@@ -134,14 +134,17 @@ async def test_open_options_blocked_while_status_box_open() -> None:
         assert "options_menu" not in host.menus
         assert "status_box" in host.menus
 
-        game.handle_event(host_player, {"type": "menu", "menu_id": "status_box", "selection_id": "status_line"})
+        await server._handle_menu(
+            SimpleNamespace(username=host.username),
+            {
+                "type": "menu",
+                "menu_id": "status_box",
+                "selection_id": "status_box:line:0",
+            },
+        )
 
         assert host_player.id not in game._status_box_open
         assert "status_box" not in host.menus
-        assert "turn_menu" in host.menus
-
-        await server._handle_open_options(SimpleNamespace(username=host.username))
-
         assert server._user_states[host.username]["menu"] == "options_menu"
         assert "options_menu" in host.menus
     finally:
@@ -149,7 +152,7 @@ async def test_open_options_blocked_while_status_box_open() -> None:
 
 
 @pytest.mark.asyncio
-async def test_open_friends_blocked_while_status_box_open() -> None:
+async def test_open_friends_defers_while_status_box_open() -> None:
     server, host, _guest, _table, game, host_player = _make_playing_game_server()
     try:
         host.clear_messages()
@@ -162,14 +165,74 @@ async def test_open_friends_blocked_while_status_box_open() -> None:
         assert "friends_hub_menu" not in host.menus
         assert "status_box" in host.menus
 
-        game.handle_event(host_player, {"type": "menu", "menu_id": "status_box", "selection_id": "status_line"})
+        await server._handle_menu(
+            SimpleNamespace(username=host.username),
+            {
+                "type": "menu",
+                "menu_id": "status_box",
+                "selection_id": "status_box:line:0",
+            },
+        )
 
         assert host_player.id not in game._status_box_open
-
-        await server._handle_open_friends_hub(SimpleNamespace(username=host.username))
-
         assert server._user_states[host.username]["menu"] == "friends_hub_menu"
         assert "friends_hub_menu" in host.menus
+    finally:
+        server._db.close()
+
+
+@pytest.mark.asyncio
+async def test_host_management_keybind_defers_while_status_box_open() -> None:
+    server, host, _guest, _table, game, host_player = _make_playing_game_server()
+    try:
+        host.clear_messages()
+        game.status_box(host_player, ["Table summary"])
+        assert host_player.id in game._status_box_open
+
+        await server._handle_keybind(
+            SimpleNamespace(username=host.username),
+            {"type": "keybind", "key": "ctrl+m"},
+        )
+
+        assert server._user_states[host.username]["menu"] == "in_game"
+        assert "host_management_menu" not in host.menus
+        assert "status_box" in host.menus
+
+        await server._handle_menu(
+            SimpleNamespace(username=host.username),
+            {
+                "type": "menu",
+                "menu_id": "status_box",
+                "selection_id": "status_box:line:0",
+            },
+        )
+
+        assert host_player.id not in game._status_box_open
+        assert "status_box" not in host.menus
+        assert server._user_states[host.username]["menu"] == "host_management_menu"
+        assert "host_management_menu" in host.menus
+    finally:
+        server._db.close()
+
+
+@pytest.mark.asyncio
+async def test_active_game_input_blocks_navigation_without_deferring() -> None:
+    server, host, _guest, _table, game, host_player = _make_playing_game_server()
+    try:
+        game._pending_actions[host_player.id] = "roll"
+
+        await server._handle_open_options(SimpleNamespace(username=host.username))
+
+        assert server._user_states[host.username]["menu"] == "in_game"
+        assert "options_menu" not in host.menus
+        assert host.username not in server._deferred_navigation
+
+        game._pending_actions.pop(host_player.id, None)
+        game.refresh_menus(host_player)
+        game.flush_menus()
+
+        assert server._user_states[host.username]["menu"] == "in_game"
+        assert "options_menu" not in host.menus
     finally:
         server._db.close()
 

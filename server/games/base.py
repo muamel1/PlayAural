@@ -137,6 +137,7 @@ class Game(
             str, ActionContext
         ] = {}  # player_id -> context during action execution
         self._status_box_open: set[str] = set()  # player_ids with status box open
+        self._live_status_boxes: dict[str, Any] = {}  # player_id -> live status state
         self._actions_menu_open: set[str] = set()  # player_ids with actions menu open
         # Menu refresh recording (runtime-only). refresh_menus() and
         # request_menu_focus() mark intent here; the framework-driven

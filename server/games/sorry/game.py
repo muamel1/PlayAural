@@ -1229,7 +1229,13 @@ class SorryGame(Game):
 
     def _action_check_board(self, player: Player, action_id: str) -> None:
         _ = action_id
-        locale = self._player_locale(player)
+        self.live_status_box(
+            player,
+            "sorry_board",
+            lambda viewer, live_user: self._board_status_lines(viewer, live_user.locale),
+        )
+
+    def _board_status_lines(self, player: Player, locale: str) -> list[str]:
         lines: list[str] = []
         if isinstance(player, SorryPlayer) and not player.is_spectator and player.color:
             lines.append(
@@ -1333,7 +1339,7 @@ class SorryGame(Game):
                     ),
                 )
             )
-        self.status_box(player, lines)
+        return lines
 
     def _board_square_tokens(self, locale: str, square: int) -> list[str]:
         tokens: list[str] = []

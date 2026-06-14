@@ -837,7 +837,11 @@ class DominosGame(Game):
         if not user:
             return
         user.play_sound(SOUND_VIEW_CHAIN)
-        self.status_box(player, self._build_chain_lines(user.locale))
+        self.live_status_box(
+            player,
+            "dominos_chain",
+            lambda _player, live_user: self._build_chain_lines(live_user.locale),
+        )
 
     def _action_read_ends(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)

@@ -20,6 +20,7 @@ class GameScoresMixin:
         - self.players: list[Player]
         - self.get_user(player) -> User | None
         - self.status_box(player, lines)
+        - self.live_status_box(player, box_id, builder)
     """
 
     def get_score_unit_key(self) -> str:
@@ -149,17 +150,24 @@ class GameScoresMixin:
 
         self._sync_score_display_names()
         if self.supports_score_actions():
-            lines = self.team_manager.format_scores_detailed(
-                user.locale,
-                self.get_score_target(),
-                score_unit_key=self.get_score_unit_key(),
+            self.live_status_box(
+                player,
+                "detailed_scores",
+                lambda _player, live_user: self._detailed_score_lines(live_user.locale),
             )
-            self.status_box(player, lines)
         else:
             self.status_box(
                 player,
                 [Localization.get(user.locale, "no-scores-available")],
             )
+
+    def _detailed_score_lines(self, locale: str) -> list[str]:
+        self._sync_score_display_names()
+        return self.team_manager.format_scores_detailed(
+            locale,
+            self.get_score_target(),
+            score_unit_key=self.get_score_unit_key(),
+        )
 
     def _action_game_info(self, player: "Player", action_id: str) -> None:
         """Show current game settings/options to the player."""
