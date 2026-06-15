@@ -26,8 +26,8 @@ uno-option-changed-scoring-mode = Scoring set to { $mode }.
 uno-scoring-first = First to limit wins
 uno-scoring-elimination = Elimination
 
-uno-set-skip-after-draw = Skip turn after drawing: { $enabled }
-uno-option-changed-skip-after-draw = Skip turn after drawing { $enabled }.
+uno-set-skip-after-draw = Draw penalties skip turn: { $enabled }
+uno-option-changed-skip-after-draw = Draw penalties skip turn { $enabled }.
 
 uno-set-responses = Stacking responses: { $enabled }
 uno-option-changed-responses = Stacking responses { $enabled }.
@@ -38,8 +38,8 @@ uno-option-changed-advanced-responses = Advanced responses { $enabled }.
 uno-set-wait-for-draw-responses = Wait for draw responses: { $enabled }
 uno-option-changed-wait-for-draw-responses = Wait for draw responses { $enabled }.
 
-uno-set-bluff = Bluffs: { $enabled }
-uno-option-changed-bluff = Bluffs { $enabled }.
+uno-set-bluff = Wild Draw Four challenges: { $enabled }
+uno-option-changed-bluff = Wild Draw Four challenges { $enabled }.
 
 uno-set-straights = Straights: { $enabled }
 uno-option-changed-straights = Straights { $enabled }.
@@ -90,19 +90,45 @@ uno-you-cant-play = You can't play.
 uno-you-skipped = You are skipped.
 uno-says-uno = { $player } says UNO!
 uno-you-say-uno = You say UNO!
-uno-callout = { $caller } calls out { $player } for not saying UNO! { $player } draws four.
-uno-you-callout = You call out { $player } for not saying UNO! { $player } draws four.
-uno-callout-you = { $caller } calls you out for not saying UNO! You draw four.
-uno-cannot-play-that = You can't play that card.
+uno-callout = { $caller } calls out { $player } for not saying UNO! { $player } draws { $count } { $count ->
+    [one] card
+   *[other] cards
+}.
+uno-you-callout = You call out { $player } for not saying UNO! { $player } draws { $count } { $count ->
+    [one] card
+   *[other] cards
+}.
+uno-callout-you = { $caller } calls you out for not saying UNO! You draw { $count } { $count ->
+    [one] card
+   *[other] cards
+}.
+uno-cannot-play-that = You cannot play { $card }. { $reason }
 uno-reshuffle = Reshuffling the discard pile.
 uno-hand-blocked = No one can play. The round ends.
+uno-error-choose-color-first = Choose a color for your Wild card before playing another card.
+uno-error-wait-color-choice = Wait for the Wild card's player to choose a color before playing.
+uno-error-wild-transition = Wait for the chosen color to take effect before playing another card.
+uno-error-choose-swap-first = Choose a hand-swap target or decline before taking another action.
+uno-error-wait-swap-choice = Wait for the seven hand-swap choice to finish before playing.
+uno-error-wait-next-hand = Wait for the next round to begin before playing a card.
+uno-error-wait-intro = Wait for the round setup to finish before playing a card.
+uno-reason-draw-stack-response = There is a draw stack of { $count } { $count ->
+    [one] card
+   *[other] cards
+} against you; play a valid response card or draw the penalty.
+uno-reason-draw-stack-no-response = There is a draw penalty of { $count } { $count ->
+    [one] card
+   *[other] cards
+} against you, and stacking responses are off; draw the penalty instead.
+uno-reason-match-required = The top card is { $top }, and the active color is { $color }; match the color, match the number or action symbol, or play a Wild card.
+uno-reason-card-not-available = That card is not available in the current state.
 
 # Bluff challenge
-uno-bluff-challenge = Call bluff
-uno-bluff-caught = { $player } was bluffing and draws { $count } cards!
-uno-you-bluff-caught = You were bluffing and draw { $count } cards!
-uno-bluff-wrong = { $player } challenged wrongly and draws { $count } cards!
-uno-you-bluff-wrong = You challenged wrongly and draw { $count } cards!
+uno-bluff-challenge = Challenge Wild Draw Four
+uno-bluff-caught = { $player } played an illegal Wild Draw Four and draws { $count } cards!
+uno-you-bluff-caught = You played an illegal Wild Draw Four and draw { $count } cards!
+uno-bluff-wrong = { $player } challenged the Wild Draw Four incorrectly and draws { $count } cards!
+uno-you-bluff-wrong = You challenged the Wild Draw Four incorrectly and draw { $count } cards!
 
 # Zero / seven rule
 uno-rotate-hands = Everyone passes their hand!

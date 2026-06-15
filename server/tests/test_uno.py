@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from ..games.uno.game import UnoGame, UnoOptions
 from ..games.uno import cards
 from ..games.uno.cards import UnoCard
@@ -5,9 +7,19 @@ from ..ui.keybinds import KeybindState
 from ..users.bot import Bot
 from ..users.test_user import MockUser
 
+ROOT = Path(__file__).resolve().parents[2]
+
 
 def _card(cid, color, ctype, value=None):
     return UnoCard(id=cid, color=color, type=ctype, value=value)
+
+
+def _locale_keys(path: Path) -> set[str]:
+    return {
+        line.split("=", 1)[0].strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#") and "=" in line and not line[0].isspace()
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -30,6 +42,7 @@ def test_uno_options_defaults():
     assert game.options.winning_score == 300
     assert game.options.scoring_mode == "first_to_limit"
     assert game.options.bluff is True
+    assert game.options.skip_after_draw is True
     assert game.options.free_draws == 0
     assert game.options.interceptions is False
 
@@ -50,6 +63,16 @@ def test_uno_blocks_dependent_option_conflicts():
         "uno-error-wait-responses-require-responses",
         "uno-error-super-interceptions-require-interceptions",
     ]
+
+
+def test_uno_localization_and_documentation_are_present():
+    en_file = ROOT / "server" / "locales" / "en" / "uno.ftl"
+    vi_file = ROOT / "server" / "locales" / "vi" / "uno.ftl"
+    assert en_file.exists()
+    assert vi_file.exists()
+    assert _locale_keys(en_file) == _locale_keys(vi_file)
+    assert (ROOT / "server" / "documentation" / "content" / "en" / "games" / "uno.md").exists()
+    assert (ROOT / "server" / "documentation" / "content" / "vi" / "games" / "uno.md").exists()
 
 
 def test_uno_blue_color_keybind_shares_b_by_game_state():
@@ -243,9 +266,8 @@ def _three_player_game(options=None):
 
 
 def test_draw_two_keeps_turn_when_skip_after_draw_off():
-    # Default rule: a forced draw-two makes the next player draw, but they keep
-    # their turn unless skip-after-draw is enabled.
-    game, (a, b, c) = _three_player_game()
+    # House rule: forced draw penalties can allow the target to keep their turn.
+    game, (a, b, c) = _three_player_game(UnoOptions(skip_after_draw=False))
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
@@ -260,7 +282,7 @@ def test_draw_two_keeps_turn_when_skip_after_draw_off():
 
 
 def test_draw_two_skips_when_skip_after_draw_on():
-    game, (a, b, c) = _three_player_game(UnoOptions(skip_after_draw=True))
+    game, (a, b, c) = _three_player_game()
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
@@ -270,10 +292,10 @@ def test_draw_two_skips_when_skip_after_draw_on():
     game.execute_action(a, "play_card_1")
 
     assert len(b.hand) == 3  # drew two
-    assert game.current_player is c  # B skipped because skip-after-draw is on
+    assert game.current_player is c  # official draw penalty skips B's turn
 
 
-def test_callout_forces_silent_player_to_draw_four():
+def test_callout_forces_silent_player_to_draw_two():
     game, first, second = _two_player_game()
     game.deck = cards.build_deck()
     game.discard_pile = [_card(100, cards.RED, cards.NUMBER, 5)]
@@ -292,7 +314,7 @@ def test_callout_forces_silent_player_to_draw_four():
 
     game.execute_action(second, "uno")  # call out
 
-    assert len(first.hand) == 5  # 1 + 4 penalty
+    assert len(first.hand) == 3  # 1 + official 2-card penalty
 
 
 def test_say_uno_protects_from_callout():
@@ -372,6 +394,8 @@ def test_draw_hidden_during_wild_transition():
 
 def test_wild_color_transition_blocks_fast_followup_play():
     game, first, second = _two_player_game()
+    first_user = game.get_user(first)
+    assert first_user is not None
     game.deck = cards.build_deck()
     game.discard_pile = [_card(100, cards.RED, cards.NUMBER, 5)]
     game.current_color = cards.RED
@@ -389,11 +413,55 @@ def test_wild_color_transition_blocks_fast_followup_play():
     assert game.wild_wait_ticks > 0
 
     discard_ids_before = [card.id for card in game.discard_pile]
+    first_user.clear_messages()
     game.execute_action(first, "play_card_2")
 
     assert [card.id for card in first.hand] == [2]
     assert [card.id for card in game.discard_pile] == discard_ids_before
     assert game.current_player is first
+    assert "Wait for the chosen color to take effect" in first_user.get_spoken_messages()[-1]
+
+
+def test_unplayable_card_reports_match_context():
+    game, first, second = _two_player_game()
+    first_user = game.get_user(first)
+    assert first_user is not None
+    game.discard_pile = [_card(100, cards.RED, cards.NUMBER, 5)]
+    game.current_color = cards.RED
+    first.hand = [_card(1, cards.BLUE, cards.NUMBER, 9)]
+    second.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
+    game.set_turn_players([first, second])
+    game.refresh_menus()
+    game.flush_menus()
+    first_user.clear_messages()
+
+    game.execute_action(first, "play_card_1")
+
+    spoken = first_user.get_spoken_messages()
+    assert any("You cannot play Blue 9." in message for message in spoken)
+    assert any("The top card is Red 5" in message for message in spoken)
+    assert [card.id for card in first.hand] == [1]
+
+
+def test_pending_draw_stack_reports_response_context():
+    game, (a, b) = _n_player_game(["A", "B"], UnoOptions(responses=True))
+    user_b = game.get_user(b)
+    assert user_b is not None
+    a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
+    b.hand = [
+        _card(3, cards.GREEN, cards.NUMBER, 7),
+        _card(4, cards.RED, cards.DRAW_TWO),
+    ]
+    game.refresh_menus()
+    game.flush_menus()
+
+    game.execute_action(a, "play_card_1")
+    user_b.clear_messages()
+    game.execute_action(b, "play_card_3")
+
+    spoken = user_b.get_spoken_messages()
+    assert any("draw stack of 2 cards" in message for message in spoken)
+    assert [card.id for card in b.hand] == [3, 4]
 
 
 def test_bot_play_announced_before_uno(monkeypatch):
@@ -505,7 +573,9 @@ def test_draw_two_stacking_accumulates():
 
 
 def test_draw_two_auto_accept_when_no_response():
-    game, (a, b, c) = _n_player_game(["A", "B", "C"], UnoOptions(responses=True, bluff=False))
+    game, (a, b, c) = _n_player_game(
+        ["A", "B", "C"], UnoOptions(responses=True, bluff=False, skip_after_draw=False)
+    )
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]  # no response
     c.hand = [_card(4, cards.YELLOW, cards.NUMBER, 3)]
@@ -514,7 +584,7 @@ def test_draw_two_auto_accept_when_no_response():
 
     game.execute_action(a, "play_card_1")
     assert len(b.hand) == 3  # auto-drew 2
-    assert game.current_player is b  # keeps turn (skip-after-draw off)
+    assert game.current_player is b  # house rule keeps the target's turn
     assert game.cards_to_draw == 0
 
 
@@ -565,7 +635,12 @@ def test_reverse_response_passes_obligation_in_two_player():
 
 def test_skip_response_passes_obligation_in_three_player():
     # The obligation still moves to the immediate next player with three players.
-    opts = UnoOptions(responses=True, advanced_responses=True, bluff=False)
+    opts = UnoOptions(
+        responses=True,
+        advanced_responses=True,
+        bluff=False,
+        skip_after_draw=False,
+    )
     game, (a, b, c) = _n_player_game(["A", "B", "C"], opts)
     a.hand = [_card(1, cards.RED, cards.DRAW_TWO), _card(2, cards.BLUE, cards.NUMBER, 9)]
     b.hand = [_card(3, cards.RED, cards.SKIP), _card(5, cards.GREEN, cards.NUMBER, 8)]
@@ -606,8 +681,9 @@ def test_bluff_challenge_catches_bluffer():
     assert game.bluff_challenge_available is True
 
     game.execute_action(b, "bluff_challenge")
-    assert len(a.hand) == 1 + 6  # red 5 + (4 stack + 2 penalty)
+    assert len(a.hand) == 1 + 4  # red 5 + the illegal Wild Draw Four penalty
     assert game.cards_to_draw == 0
+    assert game.current_player is b  # successful challenger keeps the turn
 
 
 def test_bluff_challenge_wrong_punishes_challenger():
@@ -851,16 +927,17 @@ def test_draw_unplayable_card_auto_skips_turn():
     assert game.current_player is b  # turn auto-skipped (no pass action)
 
 
-def test_skip_after_draw_passes_turn():
+def test_official_penalty_skip_does_not_skip_playable_ordinary_draw():
     game, (a, b) = _n_player_game(["A", "B"], UnoOptions(skip_after_draw=True))
     a.hand = [_card(1, cards.BLUE, cards.NUMBER, 9)]  # not playable on red top
+    game.deck = [_card(50, cards.RED, cards.NUMBER, 3)]  # playable after drawing
     b.hand = [_card(3, cards.GREEN, cards.NUMBER, 7)]
     game.refresh_menus()
     game.flush_menus()
 
     game.execute_action(a, "draw")
     assert len(a.hand) == 2
-    assert game.current_player is b  # turn skipped after drawing
+    assert game.current_player is a  # ordinary draws still follow official UNO
 
 
 # ---------------------------------------------------------------------------
@@ -887,8 +964,11 @@ def test_interception_steals_play_and_turn():
 
 def test_draw_two_interception_plays_as_own_turn():
     # Action-card interceptions resolve as if played on the interceptor's turn:
-    # the player to their left draws two and is skipped, then play advances.
-    game, (a, b, c) = _n_player_game(["A", "B", "C"], UnoOptions(interceptions=True))
+    # the player to their left draws two, and this house-rule setup lets that
+    # target keep the turn afterward.
+    game, (a, b, c) = _n_player_game(
+        ["A", "B", "C"], UnoOptions(interceptions=True, skip_after_draw=False)
+    )
     game.discard_pile = [_card(900, cards.RED, cards.DRAW_TWO)]
     game.current_color = cards.RED
     a.hand = [_card(1, cards.BLUE, cards.NUMBER, 9)]

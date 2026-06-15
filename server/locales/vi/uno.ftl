@@ -29,20 +29,20 @@ uno-option-changed-scoring-mode = Cách tính điểm đã được đặt là {
 uno-scoring-first = Ai đạt giới hạn trước thì thắng
 uno-scoring-elimination = Loại trực tiếp
 
-uno-set-skip-after-draw = Bỏ lượt sau khi rút: { $enabled }
-uno-option-changed-skip-after-draw = Bỏ lượt sau khi rút { $enabled }.
+uno-set-skip-after-draw = Hình phạt rút bài làm mất lượt: { $enabled }
+uno-option-changed-skip-after-draw = Hình phạt rút bài làm mất lượt { $enabled }.
 
-uno-set-responses = Chồng lá phản đòn: { $enabled }
-uno-option-changed-responses = Chồng lá phản đòn { $enabled }.
+uno-set-responses = Chồng lá rút: { $enabled }
+uno-option-changed-responses = Chồng lá rút { $enabled }.
 
 uno-set-advanced-responses = Phản đòn nâng cao: { $enabled }
 uno-option-changed-advanced-responses = Phản đòn nâng cao { $enabled }.
 
-uno-set-wait-for-draw-responses = Chờ phản đòn rút bài: { $enabled }
-uno-option-changed-wait-for-draw-responses = Chờ phản đòn rút bài { $enabled }.
+uno-set-wait-for-draw-responses = Chờ phản đòn khi hết bài: { $enabled }
+uno-option-changed-wait-for-draw-responses = Chờ phản đòn khi hết bài { $enabled }.
 
-uno-set-bluff = Tố điêu: { $enabled }
-uno-option-changed-bluff = Tố điêu { $enabled }.
+uno-set-bluff = Thách thức Đổi màu Rút Bốn: { $enabled }
+uno-option-changed-bluff = Thách thức Đổi màu Rút Bốn { $enabled }.
 
 uno-set-straights = Đánh liên tiếp: { $enabled }
 uno-option-changed-straights = Đánh liên tiếp { $enabled }.
@@ -61,8 +61,8 @@ uno-enter-free-draws = Nhập số lần rút tự do mỗi lượt
 uno-option-changed-free-draws = Số lần rút tự do mỗi lượt đã được đặt là { $count }.
 
 # Option validation
-uno-error-advanced-responses-require-responses = Muốn bật Phản đòn nâng cao thì trước hết phải bật Chồng lá phản đòn.
-uno-error-wait-responses-require-responses = Muốn bật Chờ phản đòn rút bài thì trước hết phải bật Chồng lá phản đòn.
+uno-error-advanced-responses-require-responses = Muốn bật Phản đòn nâng cao thì trước hết phải bật Chồng lá rút.
+uno-error-wait-responses-require-responses = Muốn bật Chờ phản đòn khi hết bài thì trước hết phải bật Chồng lá rút.
 uno-error-super-interceptions-require-interceptions = Muốn bật Cướp lượt nâng cao thì trước hết phải bật Cướp lượt.
 
 # Actions
@@ -93,19 +93,30 @@ uno-you-cant-play = Bạn không đánh được.
 uno-you-skipped = Bạn bị mất lượt.
 uno-says-uno = { $player } hô UNO!
 uno-you-say-uno = Bạn hô UNO!
-uno-callout = { $caller } bắt lỗi { $player } vì không hô UNO! { $player } rút bốn lá.
-uno-you-callout = Bạn bắt lỗi { $player } vì không hô UNO! { $player } rút bốn lá.
-uno-callout-you = { $caller } bắt lỗi bạn vì không hô UNO! Bạn rút bốn lá.
-uno-cannot-play-that = Bạn không thể đánh lá đó.
+uno-callout = { $caller } bắt lỗi { $player } vì không hô UNO! { $player } rút { $count } lá.
+uno-you-callout = Bạn bắt lỗi { $player } vì không hô UNO! { $player } rút { $count } lá.
+uno-callout-you = { $caller } bắt lỗi bạn vì không hô UNO! Bạn rút { $count } lá.
+uno-cannot-play-that = Bạn không thể đánh { $card }. { $reason }
 uno-reshuffle = Đang xáo lại chồng bài đã đánh.
 uno-hand-blocked = Không ai đánh được. Vòng này kết thúc.
+uno-error-choose-color-first = Hãy chọn màu cho lá Đổi màu trước khi đánh lá khác.
+uno-error-wait-color-choice = Hãy chờ người vừa đánh lá Đổi màu chọn màu trước khi đánh tiếp.
+uno-error-wild-transition = Hãy chờ màu vừa chọn có hiệu lực rồi mới đánh lá tiếp theo.
+uno-error-choose-swap-first = Hãy chọn người để đổi bài, hoặc từ chối, trước khi làm hành động khác.
+uno-error-wait-swap-choice = Hãy chờ lựa chọn đổi bài của lá số 7 kết thúc trước khi đánh tiếp.
+uno-error-wait-next-hand = Hãy chờ vòng tiếp theo bắt đầu rồi mới đánh bài.
+uno-error-wait-intro = Hãy chờ phần chuẩn bị vòng chơi kết thúc rồi mới đánh bài.
+uno-reason-draw-stack-response = Bạn đang chịu chồng lá rút { $count } lá; hãy đánh một lá phản đòn hợp lệ hoặc rút hình phạt.
+uno-reason-draw-stack-no-response = Bạn đang chịu hình phạt rút { $count } lá, và Chồng lá rút đang tắt; hãy rút hình phạt.
+uno-reason-match-required = Lá trên cùng là { $top }, màu hiện tại là { $color }; hãy đánh đúng màu, đúng số hoặc biểu tượng chức năng, hoặc đánh một lá Đổi màu.
+uno-reason-card-not-available = Lá này không dùng được trong trạng thái hiện tại.
 
 # Bluff challenge
-uno-bluff-challenge = Bắt tố điêu
-uno-bluff-caught = { $player } đã tố điêu và phải rút { $count } lá!
-uno-you-bluff-caught = Bạn đã tố điêu và phải rút { $count } lá!
-uno-bluff-wrong = { $player } thách thức sai và phải rút { $count } lá!
-uno-you-bluff-wrong = Bạn thách thức sai và phải rút { $count } lá!
+uno-bluff-challenge = Thách thức Đổi màu Rút Bốn
+uno-bluff-caught = { $player } đã đánh lá Đổi màu Rút Bốn không hợp lệ và phải rút { $count } lá!
+uno-you-bluff-caught = Bạn đã đánh lá Đổi màu Rút Bốn không hợp lệ và phải rút { $count } lá!
+uno-bluff-wrong = { $player } thách thức lá Đổi màu Rút Bốn sai và phải rút { $count } lá!
+uno-you-bluff-wrong = Bạn thách thức lá Đổi màu Rút Bốn sai và phải rút { $count } lá!
 
 # Zero / seven rule
 uno-rotate-hands = Mọi người chuyền bài trên tay!

@@ -23,6 +23,7 @@ HAND_END_TICKS = 5 * 20
 WILD_TRANSITION_TICKS = 15
 UNO_GRACE_TICKS = 60  # 3s before others may call out
 UNO_WINDOW_TICKS = 40  # 2s window in which a call-out is valid
+UNO_CALLOUT_PENALTY = 2
 
 SCORING_FIRST = "first_to_limit"
 SCORING_ELIMINATION = "elimination"
@@ -62,7 +63,7 @@ class UnoOptions(GameOptions):
     )
     skip_after_draw: bool = option_field(
         BoolOption(
-            default=False,
+            default=True,
             label="uno-set-skip-after-draw",
             change_msg="uno-option-changed-skip-after-draw",
         )
@@ -505,7 +506,8 @@ class UnoGame(Game):
         )
 
         # Draw (current player only). There is no pass: drawing an unplayable
-        # card skips the turn automatically.
+        # card skips the turn automatically. Draw-penalty skip behavior is
+        # resolved separately in _accept_draw_obligation.
         if (
             self.current_player == player
             and not self._is_wild_locked()
@@ -712,8 +714,8 @@ class UnoGame(Game):
         player.bot_pending_action = None
 
         # A draw obligation the player cannot respond to (and cannot challenge)
-        # is resolved automatically. When it also costs the turn (skip-after-draw),
-        # resolve it without first announcing a turn that is never taken.
+        # is resolved automatically. When draw penalties skip the target, resolve
+        # it without first announcing a turn that is never taken.
         forced_draw = (
             self.cards_to_draw > 0
             and not self.bluff_challenge_available
@@ -782,6 +784,9 @@ class UnoGame(Game):
             or self.hand_wait_ticks > 0
             or self.intro_wait_ticks > 0
         ):
+            user = self.get_user(player)
+            if user:
+                user.speak_l(self._blocked_action_reason(player), buffer="game")
             return
         try:
             card_id = int(action_id.split("_")[-1])
@@ -799,7 +804,12 @@ class UnoGame(Game):
         if not self._is_card_playable(card):
             user = self.get_user(player)
             if user:
-                user.speak_l("uno-cannot-play-that", buffer="game")
+                user.speak_l(
+                    "uno-cannot-play-that",
+                    buffer="game",
+                    card=cards.format_card(card, user.locale),
+                    reason=self._card_unplayable_reason(card, user.locale),
+                )
             return
 
         self._place_card(player, card)
@@ -1135,8 +1145,10 @@ class UnoGame(Game):
     def _accept_draw_obligation(self, player: UnoPlayer) -> None:
         """Player takes the accumulated draw penalty.
 
-        Losing the turn after drawing is governed by skip_after_draw: with it on
-        the turn ends; with it off the player continues and may play a card.
+        The legacy field name is ``skip_after_draw``; the option now represents
+        the official draw-penalty rule. With it on, Draw Two / Wild Draw Four
+        penalties skip the target. Ordinary one-card draws are handled by
+        _action_draw and still allow a playable drawn card to be played.
         """
         self.bluff_challenge_available = False
         count = self.cards_to_draw
@@ -1236,23 +1248,42 @@ class UnoGame(Game):
             return
         self.bluff_challenge_available = False
         bluffer = self.get_player_by_id(self.last_player_id)
-        penalty = self.cards_to_draw + 2
+        draw_penalty = self.cards_to_draw
         # The bluff message states the draw, so suppress the separate draw line.
-        if self.is_bluff and isinstance(bluffer, UnoPlayer):
-            self._draw_for_player(bluffer, penalty, announce=False)
+        challenge_succeeded = self.is_bluff and isinstance(bluffer, UnoPlayer)
+        if challenge_succeeded:
+            self._draw_for_player(bluffer, draw_penalty, announce=False)
             self._broadcast_actor(
-                bluffer, "uno-you-bluff-caught", "uno-bluff-caught", count=penalty
+                bluffer, "uno-you-bluff-caught", "uno-bluff-caught", count=draw_penalty
             )
         else:
-            self._draw_for_player(p, penalty, announce=False)
+            challenger_penalty = draw_penalty + 2
+            self._draw_for_player(p, challenger_penalty, announce=False)
             self._broadcast_actor(
-                p, "uno-you-bluff-wrong", "uno-bluff-wrong", count=penalty
+                p, "uno-you-bluff-wrong", "uno-bluff-wrong", count=challenger_penalty
             )
         self.cards_to_draw = 0
         self.draw_type = ""
         self.is_bluff = False
         if self.pending_round_winner_id:
+            if challenge_succeeded:
+                self.pending_round_winner_id = ""
+                if self._has_playable(p) or self._can_draw(p):
+                    if p.is_bot:
+                        BotHelper.jolt_bot(p, ticks=random.randint(10, 20))
+                    self.refresh_menus()
+                else:
+                    self._auto_skip(p)
+                return
             self._finish_pending_round()
+            return
+        if challenge_succeeded:
+            if self._has_playable(p) or self._can_draw(p):
+                if p.is_bot:
+                    BotHelper.jolt_bot(p, ticks=random.randint(10, 20))
+                self.refresh_menus()
+            else:
+                self._auto_skip(p)
             return
         self._advance_turn()
 
@@ -1317,10 +1348,6 @@ class UnoGame(Game):
             self.play_sound(f"game_cards/draw{random.randint(1, 4)}.ogg")
         self._broadcast_draw(p, 1)
 
-        if self.options.skip_after_draw:
-            self._advance_turn()
-            return
-
         # Jump focus to the card just drawn, whether or not it can be played, so
         # the player always lands on what they drew.
         self.request_menu_focus(p, f"play_card_{card.id}")
@@ -1361,18 +1388,32 @@ class UnoGame(Game):
         target = self._callable_target(player)
         if target:
             # The call-out message states the draw, so draw silently.
-            self._draw_for_player(target, 4, announce=False)
+            self._draw_for_player(target, UNO_CALLOUT_PENALTY, announce=False)
             for q in self.players:
                 user = self.get_user(q)
                 if not user:
                     continue
                 if q.id == player.id:
-                    user.speak_l("uno-you-callout", buffer="game", player=target.name)
+                    user.speak_l(
+                        "uno-you-callout",
+                        buffer="game",
+                        player=target.name,
+                        count=UNO_CALLOUT_PENALTY,
+                    )
                 elif q.id == target.id:
-                    user.speak_l("uno-callout-you", buffer="game", caller=player.name)
+                    user.speak_l(
+                        "uno-callout-you",
+                        buffer="game",
+                        caller=player.name,
+                        count=UNO_CALLOUT_PENALTY,
+                    )
                 else:
                     user.speak_l(
-                        "uno-callout", buffer="game", caller=player.name, player=target.name
+                        "uno-callout",
+                        buffer="game",
+                        caller=player.name,
+                        player=target.name,
+                        count=UNO_CALLOUT_PENALTY,
                     )
             target.uno_grace_ticks = 0
             target.uno_window_ticks = 0
@@ -1449,6 +1490,23 @@ class UnoGame(Game):
         if self.current_player != player:
             return None
         return player
+
+    def _blocked_action_reason(self, player: Player) -> str:
+        if self.awaiting_wild_color:
+            if isinstance(player, UnoPlayer) and player.id == self.wild_color_player_id:
+                return "uno-error-choose-color-first"
+            return "uno-error-wait-color-choice"
+        if self.wild_wait_ticks > 0:
+            return "uno-error-wild-transition"
+        if self.awaiting_swap_target:
+            if isinstance(player, UnoPlayer) and player.id == self.swap_player_id:
+                return "uno-error-choose-swap-first"
+            return "uno-error-wait-swap-choice"
+        if self.hand_wait_ticks > 0:
+            return "uno-error-wait-next-hand"
+        if self.intro_wait_ticks > 0:
+            return "uno-error-wait-intro"
+        return "action-not-available"
 
     def _is_play_card_enabled(self, player: Player, *, action_id: str | None = None) -> str | None:
         if self.status != "playing":
@@ -1703,6 +1761,29 @@ class UnoGame(Game):
         if card.type != cards.NUMBER and card.type == top.type:
             return True
         return False
+
+    def _card_unplayable_reason(self, card: UnoCard, locale: str) -> str:
+        if self.cards_to_draw > 0:
+            if self._stacking_on():
+                return Localization.get(
+                    locale,
+                    "uno-reason-draw-stack-response",
+                    count=self.cards_to_draw,
+                )
+            return Localization.get(
+                locale,
+                "uno-reason-draw-stack-no-response",
+                count=self.cards_to_draw,
+            )
+        top = self.top_card
+        if top:
+            return Localization.get(
+                locale,
+                "uno-reason-match-required",
+                top=cards.format_card(top, locale),
+                color=cards.color_name(self.current_color or top.color, locale),
+            )
+        return Localization.get(locale, "uno-reason-card-not-available")
 
     def _has_playable(self, player: UnoPlayer) -> bool:
         return any(self._is_card_playable(c) for c in player.hand)
