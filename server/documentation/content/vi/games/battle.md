@@ -16,7 +16,8 @@
 
 \* \*\*Chọn đội hình:\*\* màn chọn đấu sĩ hoạt động như một danh sách đánh dấu. Chọn một đấu sĩ để đánh dấu, chọn lại để bỏ dấu, rồi dùng \*\*Gửi lựa chọn\*\* hoặc \*\*Xác nhận lựa chọn\*\* để chốt đội hình cuối cùng.
 \* \*\*Các chế độ số lượng cố định:\*\* trong các chế độ như \*\*Mỗi người 1 đấu sĩ\*\*, \*\*Mỗi người 2 đấu sĩ\*\*, và \*\*Mỗi người 3 đấu sĩ\*\*, mỗi người phải chọn đúng số đấu sĩ mà chế độ yêu cầu.
-\* \*\*Các chế độ chọn tự do:\*\* trong các chế độ như \*\*Tự do hỗn chiến\*\*, \*\*Đấu trường\*\*, \*\*Sinh tồn\*\*, và \*\*Đợt sóng\*\*, chủ bàn đặt ra số đấu sĩ tối đa mà mỗi người được mang vào trận.
+\* \*\*Các chế độ chọn tự do:\*\* trong các chế độ như \*\*Hỗn Chiến Loạn Đấu\*\*, \*\*Đấu trường\*\*, \*\*Sinh tồn\*\*, và \*\*Đợt sóng\*\*, chủ bàn đặt ra số đấu sĩ tối đa mà mỗi người được mang vào trận.
+\* \*\*Đấu đội:\*\* khi chủ bàn chọn cách chia đội chung như \*\*2 đội, mỗi đội 2 người\*\* hoặc \*\*2 đội, mỗi đội 3 người\*\*, màn hình sắp xếp đội chuẩn sẽ mở trước giai đoạn chọn đấu sĩ để chủ bàn xác nhận hoặc đổi người giữa các đội.
 \* \*\*Thứ tự ra tay:\*\* nếu bàn dùng \*\*Tranh quyền ra tay\*\*, người ra đòn tiếp theo được chọn theo lượt tung sáng kiến có tính đến tốc độ. Nếu bàn dùng \*\*Lần lượt theo vòng\*\*, các đấu sĩ sẽ đi theo thứ tự lặp lại.
 \* \*\*Chỉ số rất quan trọng:\*\* tấn công giúp đòn đánh mạnh hơn, phòng thủ giúp giảm sát thương nhận vào, còn tốc độ ảnh hưởng đến nhịp ra tay và cũng có thể quyết định một đấu sĩ còn đủ khả năng chiến đấu hay không.
 \* \*\*Giao chiến một mục tiêu:\*\* trong luật hiện tại, mỗi chiêu thức chỉ tác động lên một mục tiêu tại một thời điểm. Không có chiêu đánh lan toàn nhóm.
@@ -24,8 +25,9 @@
 
 \*\*Các Chế Độ\*\*
 
-\* \*\*Tự do hỗn chiến:\*\* mỗi đấu sĩ là một phe riêng. Nếu bạn chọn nhiều đấu sĩ, chính bạn có thể phải điều khiển những đấu sĩ đối đầu lẫn nhau.
+\* \*\*Hỗn Chiến Loạn Đấu:\*\* mỗi đấu sĩ là một phe riêng. Nếu bạn chọn nhiều đấu sĩ, chính bạn có thể phải điều khiển những đấu sĩ đối đầu lẫn nhau.
 \* \*\*Mỗi người 1 / 2 / 3 đấu sĩ:\*\* mỗi người mang vào trận 1, 2, hoặc 3 đấu sĩ. Các đấu sĩ do cùng một người chọn sẽ đứng chung một phe.
+\* \*\*Đấu đội:\*\* người chơi được chia vào các đội chung trước trận. Sau đó mỗi người chọn tối đa số đấu sĩ mà chủ bàn đã đặt, và toàn bộ đấu sĩ của cùng một đội sẽ chiến đấu cùng phe.
 \* \*\*Ảnh Gương:\*\* người chơi chọn đội hình đồng minh trước, rồi trò chơi tạo ra phía đối địch bằng các bản sao đúng từ những đấu sĩ đó.
 \* \*\*Đấu trường cổ điển:\*\* phe người chơi chiến đấu với kẻ địch được tạo từ một mẫu đấu sĩ cố định do chủ bàn chọn.
 \* \*\*Đấu trường hỗn hợp:\*\* phe người chơi chiến đấu với kẻ địch được rút ngẫu nhiên từ toàn bộ kho đấu sĩ.
@@ -48,10 +50,11 @@
 
 \*\*Tùy Chỉnh Tại Bàn Chơi\*\*
 
-\* \*\*Chế độ chơi:\*\* Mặc định: `Mỗi người 1 đấu sĩ`. Lựa chọn: `Tự do hỗn chiến`, `Mỗi người 1 đấu sĩ`, `Mỗi người 2 đấu sĩ`, `Mỗi người 3 đấu sĩ`, `Ảnh Gương`, `Đấu trường cổ điển`, `Đấu trường hỗn hợp`, `Sinh tồn cổ điển`, `Sinh tồn hỗn hợp`, `Đợt sóng cổ điển`, `Đợt sóng hỗn hợp`.
+\* \*\*Chế độ chơi:\*\* Mặc định: `Mỗi người 1 đấu sĩ`. Lựa chọn: `Hỗn Chiến Loạn Đấu`, `Mỗi người 1 đấu sĩ`, `Mỗi người 2 đấu sĩ`, `Mỗi người 3 đấu sĩ`, `Đấu đội`, `Ảnh Gương`, `Đấu trường cổ điển`, `Đấu trường hỗn hợp`, `Sinh tồn cổ điển`, `Sinh tồn hỗn hợp`, `Đợt sóng cổ điển`, `Đợt sóng hỗn hợp`.
+\* \*\*Chế độ đội:\*\* Mặc định: `Cá nhân`. Các lựa chọn phụ thuộc số người chơi, gồm `2 đội, mỗi đội 2 người`, `3 đội, mỗi đội 2 người`, và `2 đội, mỗi đội 3 người` khi hợp lệ. Tùy chọn này chỉ dùng cho `Đấu đội`; muốn bắt đầu `Đấu đội`, chủ bàn phải chọn một cách chia đội không phải `Cá nhân` và phù hợp với số người chơi hiện tại.
 \* \*\*Chế độ lượt:\*\* Mặc định: `Tranh quyền ra tay`. Lựa chọn: `Tranh quyền ra tay`, `Lần lượt theo vòng`.
 \* \*\*Chế độ cân bằng:\*\* Mặc định: `Tắt`. Lựa chọn: `Bật` hoặc `Tắt`. Khi bật, bất kỳ mẫu đấu sĩ nào có bộ chỉ số vượt khỏi mốc cân bằng sẽ bị đưa về `50 máu`, `0 tấn công`, `0 phòng thủ`, và `100 tốc độ`.
-\* \*\*Giới hạn đấu sĩ trong chế độ tự do:\*\* Mặc định: `3`. Khoảng: `1` đến `6`. Chỉ dùng cho `Tự do hỗn chiến`, `Ảnh Gương`, `Đấu trường cổ điển`, `Đấu trường hỗn hợp`, `Sinh tồn cổ điển`, `Sinh tồn hỗn hợp`, `Đợt sóng cổ điển`, và `Đợt sóng hỗn hợp`.
+\* \*\*Giới hạn đấu sĩ trong chế độ tự do:\*\* Mặc định: `3`. Khoảng: `1` đến `6`. Dùng cho `Hỗn Chiến Loạn Đấu`, `Đấu đội`, `Ảnh Gương`, `Đấu trường cổ điển`, `Đấu trường hỗn hợp`, `Sinh tồn cổ điển`, `Sinh tồn hỗn hợp`, `Đợt sóng cổ điển`, và `Đợt sóng hỗn hợp`.
 \* \*\*Mẫu địch cổ điển:\*\* Mặc định: `Võ sĩ tập sự`. Lựa chọn: toàn bộ 12 mẫu dựng sẵn gồm `Võ sĩ tập sự`, `Võ sĩ quyền Anh`, `Đại đấu sĩ`, `Chiến đấu cơ`, `Binh sĩ cấp thấp`, `Binh sĩ cấp cao`, `Đấu sĩ ma ảnh`, `Sói đầu đàn`, `Sư tử hỏa diệm`, `Đại pháp sư`, `Chiến binh pháp thuật`, `Chúa tể bão giông`. Chỉ dùng cho `Đấu trường cổ điển`, `Sinh tồn cổ điển`, và `Đợt sóng cổ điển`.
 \* \*\*Độ khó đấu trường:\*\* Mặc định: `Thường`. Lựa chọn: `Dễ`, `Thường`, `Khó`, `Điên cuồng`, `Chuyên nghiệp`, `Tối thượng`. Chỉ dùng khi trò chơi sinh địch cho đấu trường, sinh tồn, hoặc đợt sóng.
 \* \*\*Mục tiêu sinh tồn:\*\* Mặc định: `0`. Khoảng: `0` đến `10000`. Chỉ dùng cho `Sinh tồn cổ điển`, `Sinh tồn hỗn hợp`, `Đợt sóng cổ điển`, và `Đợt sóng hỗn hợp`. Giá trị `0` có nghĩa là vô tận.
@@ -59,164 +62,165 @@
 
 \*\*Đội Hình Dựng Sẵn\*\*
 
-\* \*\*Võ sĩ tập sự:\*\* Máu 52, tấn công 1, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Đấm thẳng nhẹ, Đấm thẳng trái, Đấm thẳng phải, Móc trái, Móc phải, Vả ngược, Đấm móc lên, Đá chớp, Gạt chân, Đòn chỏ, Lên gối.
-\* \*\*Võ sĩ quyền Anh:\*\* Máu 50, tấn công 1, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Đấm thẳng nhẹ, Đấm thẳng phải, Đấm thẳng trái, Đấm mũi, Đấm hàm, Đấm xoay, Đấm choáng, Đấm vỡ bụng, Đòn hạ đo ván, Đấm lén, Liên hoàn quyền, Mưa quyền, Linh quyền, Thạch quyền, Liên hoàn cước, Đá xoay, Phi cước, Cuồng cước, Bão quyền, Vật toàn thân, Quăng, Nện dồn dập, Loạn đả.
-\* \*\*Đại đấu sĩ:\*\* Máu 60, tấn công 2, phòng thủ 1, tốc độ 100. Bộ chiêu thức: Kiếm thép, Hỏa kiếm, Băng kiếm, Điện kiếm, Kiếm nguyền, Kiếm linh, Tốc trảm, Toàn phong trảm, Roi đầu thép, Búa chiến núi lửa, Búa chiến cổ đại, Búa chiến thép, Hỏa chiến phủ, Ném rìu, Dao găm đẫm máu, Hỏa đao, Băng dao găm, Dao băng, Ảnh đao, Phi tiêu Kunai, Dao phay, Dùi cui.
-\* \*\*Chiến đấu cơ:\*\* Máu 72, tấn công 2, phòng thủ 1, tốc độ 95. Bộ chiêu thức: Pháo máy bay, Pháo plasma, Đại liên máy bay, Súng la-de, Nhãn quang, Súng máy, Súng săn, Súng bắn tỉa, Lựu đạn, Điện kích hạng nặng, Điện kích, Bộc lôi, Lựu đạn phá trận, Bom phân rã, Bom độc.
-\* \*\*Binh sĩ cấp thấp:\*\* Máu 50, tấn công 1, phòng thủ 1, tốc độ 100. Bộ chiêu thức: Móc phải, Súng máy, Súng săn, Gạt chân, Lăn né, Dùi cui, Dao phay, Phi tiêu Kunai, Trói buộc, Xông vào, Thoát thân, Rút máu, Vả ngược, Đòn chỏ, Lên gối, Lao mình cảm tử.
-\* \*\*Binh sĩ cấp cao:\*\* Máu 64, tấn công 1, phòng thủ 1, tốc độ 100. Bộ chiêu thức: Súng bắn tỉa, Súng máy, Súng la-de, Lựu đạn, Pháo plasma, Lăn né, Chiến giáp, Rèn trận, Cuồng nộ, Tăng ga, Gia tốc, Khóa giao chiến, Hiến sinh lực, Hiến sinh thủ, Hiến sinh tốc, Ma ước, Uy hiếp.
-\* \*\*Đấu sĩ ma ảnh:\*\* Máu 50, tấn công 2, phòng thủ 0, tốc độ 105. Bộ chiêu thức: Hỏa kiếm, Búa chiến cổ đại, Roi đầu thép, Ma thét, Hồn biến, Gầm, Quỷ tiếu, Ăn não, Ảnh bộc, Tử linh xoáy, Hấp huyết, Tiểu hấp huyết, Hấp thủ, Hấp lực, Hấp tốc, Đại hấp huyết, Huyết nha, Suy nhược, Uy hiếp, Khiên phép.
-\* \*\*Sói đầu đàn:\*\* Máu 55, tấn công 3, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Tru, Vờn quanh, Cắn, Cắn hung bạo, Ghì chặt, Hàm ngoạm, Vuốt, Cào xước, Sư trảo, Vồ xé, Húc Rugby, Ôm vật, Khóa đầu, Khóa tay, Khóa chân, Đè đánh, Gầm, Trói buộc.
-\* \*\*Sư tử hỏa diệm:\*\* Máu 60, tấn công 2, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Hỏa cầu, Hỏa tiễn, Liệt hỏa cầu, Tàn hỏa, Cắn hung bạo, Gầm, Vuốt, Bột cháy, Loạt hỏa cầu, Hỏa đao, Hỏa chiến phủ, Hỏa kiếm, Mưa tia điện.
-\* \*\*Đại pháp sư:\*\* Máu 46, tấn công 4, phòng thủ 0, tốc độ 105. Bộ chiêu thức: Hỏa cầu, Băng đạn, Liệt hỏa cầu, Tia sét, Hỏa tiễn, Lôi tiễn, Băng cầu, Lôi cầu, Trường cung tiên tộc, Khối băng, Mưa băng, Tuyết lở, Pháp cầu, Cường lực thuật, Khiên phép, Hồi phục, Đại hồi phục, Thánh cầu, Địa chấn bộc.
-\* \*\*Chiến binh pháp thuật:\*\* Máu 60, tấn công 2, phòng thủ 2, tốc độ 100. Bộ chiêu thức: Kiếm thép, Búa chiến cổ đại, Tia sét, Hỏa tiễn, Vật toàn thân, Gầm, Hỏa chiến phủ, Điện kiếm, Kiếm nguyền, Kiếm linh, Cường lực thuật, Chiến giáp, Sét giáng, Tốc trảm.
-\* \*\*Chúa tể bão giông:\*\* Máu 50, tấn công 4, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Mây sấm, Sét giáng, Sóng sấm, Lôi cầu, Điện kích, Lôi tiễn, Mưa tia điện, Tia sét, Bộc lôi, Địa chấn bộc, Tuyết lở, Băng đạn, Băng cầu, Điện kích hạng nặng.
+\* \*\*Võ sĩ tập sự:\*\* Máu 52, tấn công 1, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Khinh Trực Quyền, Tả Trực Quyền, Hữu Trực Quyền, Tả Câu Quyền, Hữu Câu Quyền, Nghịch Chưởng, Thăng Long Quyền, Chớp Cước, Quét Chân, Thiết Chỏ, Thiết Tất.
+\* \*\*Võ sĩ quyền Anh:\*\* Máu 50, tấn công 1, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Khinh Trực Quyền, Hữu Trực Quyền, Tả Trực Quyền, Phá Tỵ Quyền, Toái Hàm Quyền, Toàn Quyền, Choáng Quyền, Phá Phúc Quyền, Nhất Kích Hạ Gục, Ám Quyền, Liên Hoàn Quyền, Quyền Vũ Bão, Linh Quyền, Thạch Quyền, Liên Hoàn Cước, Toàn Cước, Phi Thiên Cước, Cuồng Cước Loạn Vũ, Bão Kích Liên Quyền, Thiết Thân Trấn Áp, Quăng Ném, Liên Đả Dồn Dập, Loạn Chiến Cuồng Quyền.
+\* \*\*Đại đấu sĩ:\*\* Máu 60, tấn công 2, phòng thủ 1, tốc độ 100. Bộ chiêu thức: Cương Kiếm, Liệt Hỏa Kiếm, Băng Kiếm, Lôi Kiếm, Nguyền Kiếm, Linh Kiếm Vũ, Tốc Trảm, Toàn Phong Trảm, Thiết Đầu Tiên, Hỏa Sơn Chiến Chùy, Cổ Chùy Khai Sơn, Cương Chùy, Hỏa Chiến Phủ, Phi Phủ Đoạt Mệnh, Huyết Chủy, Hỏa Nhận, Băng Chủy, Băng Châm Đao, Ảnh Nhận, Ảnh Phi Tiêu, Huyết Phay Đao, Thiết Côn.
+\* \*\*Chiến đấu cơ:\*\* Máu 72, tấn công 2, phòng thủ 1, tốc độ 95. Bộ chiêu thức: Long Pháo Không Kích, Plasma Đại Pháo, Bão Đạn Không Kích, Quang Tuyến Thương, Nhãn Quang Xạ, Bão Đạn, Tán Đạn, Súng Bắn Tỉa, Lựu Đạn Bộc Phá, Trọng Lôi Kích, Lôi Kích, Lôi Bộc, Phá Trận Lựu, Phân Rã Bộc, Độc Bộc.
+\* \*\*Binh sĩ cấp thấp:\*\* Máu 50, tấn công 1, phòng thủ 1, tốc độ 100. Bộ chiêu thức: Hữu Câu Quyền, Bão Đạn, Tán Đạn, Quét Chân, Lăn Né Phản Kích, Thiết Côn, Huyết Phay Đao, Ảnh Phi Tiêu, Tỏa Thân, Xung Phong, Thoát Ảnh, Khai Huyết, Nghịch Chưởng, Thiết Chỏ, Thiết Tất, Cảm Tử Phi Thân.
+\* \*\*Binh sĩ cấp cao:\*\* Máu 64, tấn công 1, phòng thủ 1, tốc độ 100. Bộ chiêu thức: Súng Bắn Tỉa, Bão Đạn, Quang Tuyến Thương, Lựu Đạn Bộc Phá, Plasma Đại Pháo, Lăn Né Phản Kích, Chiến Giáp Hộ Thân, Chiến Lò Rèn Hồn, Cuồng Huyết, Cuồng Tốc Khởi Động, Thần Tốc, Tử Chiến Khóa, Hiến Sinh Cuồng Lực, Hiến Sinh Hộ Thủ, Hiến Sinh Thần Tốc, Ma Ước, Uy Áp.
+\* \*\*Đấu sĩ ma ảnh:\*\* Máu 50, tấn công 2, phòng thủ 0, tốc độ 105. Bộ chiêu thức: Liệt Hỏa Kiếm, Cổ Chùy Khai Sơn, Thiết Đầu Tiên, Ma Âm Gào Thét, Hồn Biến, Chiến Hống, Quỷ Tiếu Kinh Hồn, Phệ Não, Ảnh Bộc Sát, Tử Linh Vòng Xoáy, Hấp Huyết, Tiểu Hấp Huyết, Hấp Thủ, Hấp Lực, Hấp Tốc, Đại Hấp Huyết, Huyết Nha, Suy Nhược Chú, Uy Áp, Pháp Thuẫn.
+\* \*\*Sói đầu đàn:\*\* Máu 55, tấn công 3, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Lang Hống, Vờn Mồi, Nanh Cắn, Hung Nha, Trấn Áp, Hàm Nanh Chớp, Liệt Trảo, Liệt Cào, Sư Vương Trảo, Mãnh Thú Xé, Cuồng Ngưu Húc, Hùng Ôm Khóa, Tỏa Hầu, Tỏa Tí Công, Tỏa Cước, Địa Kích Liên Hoàn, Chiến Hống, Tỏa Thân.
+\* \*\*Sư tử hỏa diệm:\*\* Máu 60, tấn công 2, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Hỏa Cầu, Hỏa Tiễn, Liệt Hỏa Cầu, Tàn Hỏa Kích, Hung Nha, Chiến Hống, Liệt Trảo, Hỏa Phấn Bạo Liệt, Hỏa Cầu Liên Châu, Hỏa Nhận, Hỏa Chiến Phủ, Liệt Hỏa Kiếm, Lôi Hoa Vũ.
+\* \*\*Đại pháp sư:\*\* Máu 46, tấn công 4, phòng thủ 0, tốc độ 105. Bộ chiêu thức: Hỏa Cầu, Băng Đạn, Liệt Hỏa Cầu, Thiên Lôi Kích, Hỏa Tiễn, Lôi Tiễn, Băng Ngục Cầu, Lôi Cầu, Trường Cung Tiên Tộc, Băng Khối Hộ Lực, Băng Vũ, Thiên Tuyết Sụp Sơn, Pháp Cầu, Cường Lực Pháp, Pháp Thuẫn, Trị Thương, Đại Trị Thương, Thánh Quang Cầu, Địa Chấn Bạo Kích.
+\* \*\*Chiến binh pháp thuật:\*\* Máu 58, tấn công 2, phòng thủ 2, tốc độ 100. Bộ chiêu thức: Cương Kiếm, Cổ Chùy Khai Sơn, Thiên Lôi Kích, Hỏa Tiễn, Thiết Thân Trấn Áp, Chiến Hống, Hỏa Chiến Phủ, Lôi Kiếm, Nguyền Kiếm, Linh Kiếm Vũ, Hộ Pháp Kiếm Ấn, Cường Lực Pháp, Chiến Giáp Hộ Thân, Sét Giáng, Tốc Trảm.
+\* \*\*Chúa tể bão giông:\*\* Máu 50, tấn công 4, phòng thủ 0, tốc độ 100. Bộ chiêu thức: Lôi Vân, Sét Giáng, Lôi Ba, Lôi Cầu, Lôi Kích, Lôi Tiễn, Lôi Hoa Vũ, Thiên Lôi Kích, Lôi Bộc, Địa Chấn Bạo Kích, Thiên Tuyết Sụp Sơn, Băng Đạn, Băng Ngục Cầu, Trọng Lôi Kích.
 
 \*\*Danh Mục Chiêu Thức\*\*
 
 \* Mỗi chiêu thức dưới đây đều dùng đúng tên dựng sẵn trong bộ dữ liệu của trò chơi.
-\* \*\*Pháo máy bay:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Chiến đấu cơ.
-\* \*\*Đại liên máy bay:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-8 sát thương; tăng chỉ số tốc độ của người dùng thêm 5; tăng chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Chiến đấu cơ.
-\* \*\*Búa chiến cổ đại:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương; tăng chỉ số tấn công của người dùng thêm 4; giảm chỉ số tốc độ của người dùng thêm 4. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ, Đấu sĩ ma ảnh.
-\* \*\*Kiếm linh:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-9 sát thương; tăng chỉ số tấn công của người dùng thêm 3. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
-\* \*\*Khóa tay:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-9 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Sói đầu đàn.
-\* \*\*Tuyết lở:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-20 sát thương; giảm chỉ số tấn công của người dùng thêm 4; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Chúa tể bão giông, Đại pháp sư.
-\* \*\*Ném rìu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-10 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Đại đấu sĩ.
-\* \*\*Vả ngược:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
-\* \*\*Chiến giáp:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: tăng chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 2. Được gán cho: Binh sĩ cấp cao, Chiến binh pháp thuật.
-\* \*\*Rèn trận:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: tăng chỉ số tấn công của mục tiêu thêm 2; tăng chỉ số phòng thủ của mục tiêu thêm 1. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Cuồng nộ:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Cắn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương. Được gán cho: Sói đầu đàn.
-\* \*\*Dao găm đẫm máu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương; giảm chỉ số tấn công của mục tiêu thêm 1. Được gán cho: Đại đấu sĩ.
-\* \*\*Vật toàn thân:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Chiến binh pháp thuật, Võ sĩ quyền Anh.
-\* \*\*Ăn não:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 15. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Loạn đả:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; tăng chỉ số tấn công của người dùng thêm 2; tăng chỉ số phòng thủ của người dùng thêm 2; tăng chỉ số tốc độ của người dùng thêm 10; tăng chỉ số tấn công của mục tiêu thêm 2; tăng chỉ số phòng thủ của mục tiêu thêm 2; tăng chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Bột cháy:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 12. Được gán cho: Sư tử hỏa diệm.
-\* \*\*Vờn quanh:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; tăng chỉ số tấn công của mục tiêu thêm 3. Được gán cho: Sói đầu đàn.
-\* \*\*Vuốt:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 1. Được gán cho: Sói đầu đàn, Sư tử hỏa diệm.
-\* \*\*Lăn né:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 1-5 sát thương; tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 4; tăng chỉ số tốc độ của người dùng thêm 12. Được gán cho: Binh sĩ cấp cao, Binh sĩ cấp thấp.
-\* \*\*Liên hoàn cước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-16 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số tốc độ của người dùng thêm 2. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Liên hoàn quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tấn công của người dùng thêm 1. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Băng cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-10 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 25. Được gán cho: Chúa tể bão giông, Đại pháp sư.
-\* \*\*Kiếm nguyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-13 sát thương; tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 5. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
-\* \*\*Lựu đạn phá trận:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-13 sát thương; giảm chỉ số tấn công của mục tiêu thêm 3; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tấn công của người dùng thêm 1. Được gán cho: Chiến đấu cơ.
-\* \*\*Bom phân rã:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-10 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 4. Được gán cho: Chiến đấu cơ.
-\* \*\*Thánh cầu:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: hồi 5-9 máu; tăng chỉ số phòng thủ của mục tiêu thêm 2; tăng chỉ số tốc độ của mục tiêu thêm 3. Được gán cho: Đại pháp sư.
-\* \*\*Đấm choáng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Hấp huyết:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-12 sát thương và hồi cho người dùng 33% lượng sát thương đã gây ra. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Rút máu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 1-1 sát thương; giảm chỉ số tốc độ của người dùng thêm 8; giảm chỉ số phòng thủ của mục tiêu thêm 4. Được gán cho: Binh sĩ cấp thấp.
-\* \*\*Đòn chỏ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-8 sát thương. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
-\* \*\*Điện kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-6 sát thương; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 20. Được gán cho: Chiến đấu cơ, Chúa tể bão giông.
-\* \*\*Lôi cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 6. Được gán cho: Chúa tể bão giông, Đại pháp sư.
-\* \*\*Bộc lôi:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 14-28 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Chiến đấu cơ, Chúa tể bão giông.
-\* \*\*Điện kiếm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-10 sát thương. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
-\* \*\*Trường cung tiên tộc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-12 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Đại pháp sư.
-\* \*\*Tàn hỏa:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-5 sát thương; giảm chỉ số tấn công của mục tiêu thêm 1; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Sư tử hỏa diệm.
-\* \*\*Ảnh bộc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 18-26 sát thương; giảm chỉ số tốc độ của người dùng thêm 35. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Nhãn quang:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-14 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 4; giảm chỉ số tốc độ của người dùng thêm 4. Được gán cho: Chiến đấu cơ.
-\* \*\*Cắn hung bạo:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Sói đầu đàn, Sư tử hỏa diệm.
-\* \*\*Hỏa chiến phủ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; tăng chỉ số tấn công của người dùng thêm 2. Được gán cho: Chiến binh pháp thuật, Sư tử hỏa diệm, Đại đấu sĩ.
-\* \*\*Hỏa đao:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-14 sát thương; giảm chỉ số phòng thủ của người dùng thêm 1; tăng chỉ số tốc độ của người dùng thêm 6; giảm chỉ số phòng thủ của mục tiêu thêm 1. Được gán cho: Sư tử hỏa diệm, Đại đấu sĩ.
-\* \*\*Hỏa cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Sư tử hỏa diệm, Đại pháp sư.
-\* \*\*Mưa quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-18 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 1; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Hỏa tiễn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-15 sát thương; giảm chỉ số tấn công của người dùng thêm 4; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Chiến binh pháp thuật, Sư tử hỏa diệm, Đại pháp sư.
-\* \*\*Hỏa kiếm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số tốc độ của người dùng thêm 7; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Sư tử hỏa diệm, Đại đấu sĩ, Đấu sĩ ma ảnh.
-\* \*\*Liệt hỏa cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-11 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2. Được gán cho: Sư tử hỏa diệm, Đại pháp sư.
-\* \*\*Bão quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 11-15 sát thương; giảm chỉ số tấn công của người dùng thêm 1; giảm chỉ số phòng thủ của người dùng thêm 1; giảm chỉ số tốc độ của người dùng thêm 5. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Phi cước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số phòng thủ của người dùng thêm 3; tăng chỉ số tốc độ của người dùng thêm 8; giảm chỉ số phòng thủ của mục tiêu thêm 2; tăng chỉ số tốc độ của mục tiêu thêm 2. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Cuồng cước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-12 sát thương; giảm chỉ số phòng thủ của người dùng thêm 6; tăng chỉ số tốc độ của người dùng thêm 20. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Quỷ tiếu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số phòng thủ của người dùng thêm 1; tăng chỉ số tốc độ của người dùng thêm 3; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Băng dao găm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-9 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Đại đấu sĩ.
-\* \*\*Ma thét:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tấn công của mục tiêu thêm 3; tăng chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Ôm vật:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-8 sát thương; giảm chỉ số tốc độ của người dùng thêm 10; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Sói đầu đàn.
-\* \*\*Đại hồi phục:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: hồi 12-18 máu; tăng chỉ số tốc độ của mục tiêu thêm 2. Được gán cho: Đại pháp sư.
-\* \*\*Đè đánh:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-15 sát thương; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Sói đầu đàn.
-\* \*\*Hấp thủ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Đấm vỡ bụng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-14 sát thương; giảm chỉ số tấn công của mục tiêu thêm 4; giảm chỉ số phòng thủ của người dùng thêm 1. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Lựu đạn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-13 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Binh sĩ cấp cao, Chiến đấu cơ.
-\* \*\*Gia tốc:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tốc độ của người dùng thêm 12. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Khóa đầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-13 sát thương; tăng chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 1; giảm chỉ số phòng thủ của mục tiêu thêm 4; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Sói đầu đàn.
-\* \*\*Hồi phục:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: hồi 8-14 máu. Được gán cho: Đại pháp sư.
-\* \*\*Điện kích hạng nặng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-11 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 12; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của người dùng thêm 3. Được gán cho: Chiến đấu cơ, Chúa tể bão giông.
-\* \*\*Tru:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Sói đầu đàn.
-\* \*\*Băng đạn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương. Được gán cho: Chúa tể bão giông, Đại pháp sư.
-\* \*\*Khối băng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-8 sát thương; tăng chỉ số tấn công của người dùng thêm 3; tăng chỉ số phòng thủ của người dùng thêm 3. Được gán cho: Đại pháp sư.
-\* \*\*Dao băng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-5 sát thương; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Đại đấu sĩ.
-\* \*\*Băng kiếm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số tấn công của người dùng thêm 1; giảm chỉ số tốc độ của mục tiêu thêm 7. Được gán cho: Đại đấu sĩ.
-\* \*\*Uy hiếp:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tấn công của mục tiêu thêm 3. Được gán cho: Binh sĩ cấp cao, Đấu sĩ ma ảnh.
-\* \*\*Đấm hàm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-12 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Lên gối:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 3-6 sát thương; giảm chỉ số tấn công của mục tiêu thêm 2. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
-\* \*\*Đòn hạ đo ván:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-30 sát thương; giảm chỉ số tấn công của người dùng thêm 5; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 30. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Phi tiêu Kunai:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-9 sát thương; tăng chỉ số tốc độ của người dùng thêm 4; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Binh sĩ cấp thấp, Đại đấu sĩ.
-\* \*\*Súng la-de:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-18 sát thương; giảm chỉ số tốc độ của người dùng thêm 6. Được gán cho: Binh sĩ cấp cao, Chiến đấu cơ.
-\* \*\*Móc trái:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Võ sĩ tập sự.
-\* \*\*Đấm thẳng trái:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Võ sĩ quyền Anh, Võ sĩ tập sự.
-\* \*\*Khóa chân:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-10 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 4. Được gán cho: Sói đầu đàn.
-\* \*\*Đấm thẳng nhẹ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 3-8 sát thương. Được gán cho: Võ sĩ quyền Anh, Võ sĩ tập sự.
-\* \*\*Lôi tiễn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 1. Được gán cho: Chúa tể bão giông, Đại pháp sư.
-\* \*\*Tia sét:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-15 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Chiến binh pháp thuật, Chúa tể bão giông, Đại pháp sư.
-\* \*\*Sư trảo:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-13 sát thương; tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 4. Được gán cho: Sói đầu đàn.
-\* \*\*Khóa giao chiến:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-6 sát thương; tăng chỉ số tấn công của người dùng thêm 3; tăng chỉ số tốc độ của người dùng thêm 10; tăng chỉ số tấn công của mục tiêu thêm 3; tăng chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Súng máy:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; tăng chỉ số tốc độ của người dùng thêm 5. Được gán cho: Binh sĩ cấp cao, Binh sĩ cấp thấp, Chiến đấu cơ.
-\* \*\*Ma ước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; tăng chỉ số tấn công của mục tiêu thêm 3. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Khiên phép:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số phòng thủ của người dùng thêm 4. Được gán cho: Đại pháp sư, Đấu sĩ ma ảnh.
-\* \*\*Pháp cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-9 sát thương. Được gán cho: Đại pháp sư.
-\* \*\*Cường lực thuật:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 4. Được gán cho: Chiến binh pháp thuật, Đại pháp sư.
-\* \*\*Vồ xé:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; giảm chỉ số tốc độ của người dùng thêm 12; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Sói đầu đàn.
-\* \*\*Dao phay:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương và hồi cho người dùng 30% lượng sát thương đã gây ra. Được gán cho: Binh sĩ cấp thấp, Đại đấu sĩ.
-\* \*\*Tiểu hấp huyết:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-15 sát thương và hồi cho người dùng 25% lượng sát thương đã gây ra. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Dùi cui:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-10 sát thương; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Binh sĩ cấp thấp, Đại đấu sĩ.
-\* \*\*Đấm mũi:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-12 sát thương. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Ghì chặt:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-13 sát thương; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 20. Được gán cho: Sói đầu đàn.
-\* \*\*Pháo plasma:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 16-24 sát thương; giảm chỉ số phòng thủ của người dùng thêm 6. Được gán cho: Binh sĩ cấp cao, Chiến đấu cơ.
-\* \*\*Bom độc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 1-10 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 12. Được gán cho: Chiến đấu cơ.
-\* \*\*Hấp lực:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số tấn công của mục tiêu thêm 3. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Nện dồn dập:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-13 sát thương; tăng chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 5; giảm chỉ số phòng thủ của mục tiêu thêm 3; tăng chỉ số tốc độ của mục tiêu thêm 3. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Tốc trảm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 1-7 sát thương; tăng chỉ số tốc độ của người dùng thêm 8. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
-\* \*\*Mưa băng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 3. Được gán cho: Đại pháp sư.
-\* \*\*Mưa tia điện:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-16 sát thương; giảm chỉ số tấn công của người dùng thêm 4. Được gán cho: Chúa tể bão giông, Sư tử hỏa diệm.
-\* \*\*Trói buộc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-7 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 12. Được gán cho: Binh sĩ cấp thấp, Sói đầu đàn.
-\* \*\*Tăng ga:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 2; tăng chỉ số tốc độ của người dùng thêm 5. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Móc phải:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
-\* \*\*Đấm thẳng phải:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Võ sĩ quyền Anh, Võ sĩ tập sự.
-\* \*\*Gầm:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 5. Được gán cho: Chiến binh pháp thuật, Sói đầu đàn, Sư tử hỏa diệm, Đấu sĩ ma ảnh.
-\* \*\*Húc Rugby:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-13 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 5; tăng chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Sói đầu đàn.
-\* \*\*Thoát thân:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: giảm chỉ số tấn công của người dùng thêm 5; giảm chỉ số phòng thủ của người dùng thêm 5; tăng chỉ số tốc độ của người dùng thêm 20. Được gán cho: Binh sĩ cấp thấp.
-\* \*\*Xông vào:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 4; giảm chỉ số phòng thủ của người dùng thêm 5; tăng chỉ số tốc độ của người dùng thêm 15. Được gán cho: Binh sĩ cấp thấp.
-\* \*\*Hiến sinh thủ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; tăng chỉ số phòng thủ của người dùng thêm 5; tăng chỉ số phòng thủ của mục tiêu thêm 5. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Hiến sinh lực:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; tăng chỉ số tấn công của người dùng thêm 5; tăng chỉ số tấn công của mục tiêu thêm 5. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Hiến sinh tốc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; tăng chỉ số tốc độ của người dùng thêm 20; tăng chỉ số tốc độ của mục tiêu thêm 20. Được gán cho: Binh sĩ cấp cao.
-\* \*\*Cào xước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 3-9 sát thương. Được gán cho: Sói đầu đàn.
-\* \*\*Địa chấn bộc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 18-22 sát thương; giảm chỉ số tốc độ của người dùng thêm 10; giảm chỉ số phòng thủ của mục tiêu thêm 4. Được gán cho: Chúa tể bão giông, Đại pháp sư.
-\* \*\*Ảnh đao:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-13 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 6. Được gán cho: Đại đấu sĩ.
-\* \*\*Súng săn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-16 sát thương; giảm chỉ số tấn công của người dùng thêm 2. Được gán cho: Binh sĩ cấp thấp, Chiến đấu cơ.
-\* \*\*Đá chớp:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tốc độ của người dùng thêm 12; giảm chỉ số phòng thủ của mục tiêu thêm 4; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Võ sĩ tập sự.
-\* \*\*Hàm ngoạm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-12 sát thương; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 3. Được gán cho: Sói đầu đàn.
-\* \*\*Súng bắn tỉa:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-15 sát thương; giảm chỉ số tốc độ của người dùng thêm 8. Được gán cho: Binh sĩ cấp cao, Chiến đấu cơ.
-\* \*\*Hồn biến:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-10 sát thương; tăng chỉ số tấn công của người dùng thêm 4; tăng chỉ số tốc độ của người dùng thêm 4; tăng chỉ số tấn công của mục tiêu thêm 4; tăng chỉ số tốc độ của mục tiêu thêm 4. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Hấp tốc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tốc độ của người dùng thêm 12; giảm chỉ số tốc độ của mục tiêu thêm 12. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Toàn phong trảm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-14 sát thương; giảm chỉ số tấn công của người dùng thêm 1; tăng chỉ số tốc độ của người dùng thêm 5. Được gán cho: Đại đấu sĩ.
-\* \*\*Đá xoay:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 13-16 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 5. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Đấm xoay:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 15-18 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 2; tăng chỉ số tốc độ của người dùng thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 6. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Linh quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; tăng chỉ số tấn công của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 4. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Kiếm thép:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; tăng chỉ số tấn công của người dùng thêm 2; tăng chỉ số tấn công của mục tiêu thêm 2. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
-\* \*\*Búa chiến thép:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-13 sát thương. Được gán cho: Đại đấu sĩ.
-\* \*\*Roi đầu thép:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-12 sát thương; tăng chỉ số tấn công của người dùng thêm 1; giảm chỉ số phòng thủ của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Đại đấu sĩ, Đấu sĩ ma ảnh.
-\* \*\*Thạch quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 11-15 sát thương; tăng chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tốc độ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 3. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Đấm lén:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-12 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Lao mình cảm tử:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 20-30 sát thương; giảm chỉ số tấn công của người dùng thêm 4; giảm chỉ số phòng thủ của người dùng thêm 4; giảm chỉ số tốc độ của mục tiêu thêm 30. Được gán cho: Binh sĩ cấp thấp.
-\* \*\*Đại hấp huyết:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-8 sát thương và hồi cho người dùng 50% lượng sát thương đã gây ra. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Quăng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số tấn công của mục tiêu thêm 3; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Võ sĩ quyền Anh.
-\* \*\*Mây sấm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 10; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 20. Được gán cho: Chúa tể bão giông.
-\* \*\*Sóng sấm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 10; giảm chỉ số tốc độ của mục tiêu thêm 30. Được gán cho: Chúa tể bão giông.
-\* \*\*Sét giáng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-9 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Chiến binh pháp thuật, Chúa tể bão giông.
-\* \*\*Gạt chân:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-9 sát thương; giảm chỉ số tấn công của người dùng thêm 2; tăng chỉ số tốc độ của người dùng thêm 4; tăng chỉ số tấn công của mục tiêu thêm 2; tăng chỉ số tốc độ của mục tiêu thêm 1. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
-\* \*\*Đấm móc lên:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-14 sát thương; tăng chỉ số tấn công của người dùng thêm 2; tăng chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Võ sĩ tập sự.
-\* \*\*Huyết nha:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-10 sát thương và hồi cho người dùng 60% lượng sát thương đã gây ra. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Búa chiến núi lửa:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 5. Được gán cho: Đại đấu sĩ.
-\* \*\*Loạt hỏa cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-16 sát thương; tăng chỉ số tấn công của người dùng thêm 2. Được gán cho: Sư tử hỏa diệm.
-\* \*\*Tử linh xoáy:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-15 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tốc độ của người dùng thêm 2. Được gán cho: Đấu sĩ ma ảnh.
-\* \*\*Suy nhược:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: giảm chỉ số tấn công của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Long Pháo Không Kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Chiến đấu cơ.
+\* \*\*Bão Đạn Không Kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-8 sát thương; tăng chỉ số tốc độ của người dùng thêm 5; tăng chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Chiến đấu cơ.
+\* \*\*Cổ Chùy Khai Sơn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương; tăng chỉ số tấn công của người dùng thêm 4; giảm chỉ số tốc độ của người dùng thêm 4. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ, Đấu sĩ ma ảnh.
+\* \*\*Linh Kiếm Vũ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-9 sát thương; tăng chỉ số tấn công của người dùng thêm 3. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
+\* \*\*Tỏa Tí Công:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-9 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Sói đầu đàn.
+\* \*\*Thiên Tuyết Sụp Sơn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-20 sát thương; giảm chỉ số tấn công của người dùng thêm 4; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Chúa tể bão giông, Đại pháp sư.
+\* \*\*Phi Phủ Đoạt Mệnh:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-10 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Đại đấu sĩ.
+\* \*\*Nghịch Chưởng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
+\* \*\*Chiến Giáp Hộ Thân:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: tăng chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 2. Được gán cho: Binh sĩ cấp cao, Chiến binh pháp thuật.
+\* \*\*Chiến Lò Rèn Hồn:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: tăng chỉ số tấn công của mục tiêu thêm 2; tăng chỉ số phòng thủ của mục tiêu thêm 1. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Cuồng Huyết:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Nanh Cắn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương. Được gán cho: Sói đầu đàn.
+\* \*\*Huyết Chủy:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương; giảm chỉ số tấn công của mục tiêu thêm 1. Được gán cho: Đại đấu sĩ.
+\* \*\*Thiết Thân Trấn Áp:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Chiến binh pháp thuật, Võ sĩ quyền Anh.
+\* \*\*Phệ Não:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 15. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Loạn Chiến Cuồng Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; tăng chỉ số tấn công của người dùng thêm 2; tăng chỉ số phòng thủ của người dùng thêm 2; tăng chỉ số tốc độ của người dùng thêm 10; tăng chỉ số tấn công của mục tiêu thêm 2; tăng chỉ số phòng thủ của mục tiêu thêm 2; tăng chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Hỏa Phấn Bạo Liệt:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 12. Được gán cho: Sư tử hỏa diệm.
+\* \*\*Vờn Mồi:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; tăng chỉ số tấn công của mục tiêu thêm 3. Được gán cho: Sói đầu đàn.
+\* \*\*Liệt Trảo:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 1. Được gán cho: Sói đầu đàn, Sư tử hỏa diệm.
+\* \*\*Lăn Né Phản Kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 1-5 sát thương; tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 4; tăng chỉ số tốc độ của người dùng thêm 12. Được gán cho: Binh sĩ cấp cao, Binh sĩ cấp thấp.
+\* \*\*Liên Hoàn Cước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-16 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số tốc độ của người dùng thêm 2. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Liên Hoàn Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tấn công của người dùng thêm 1. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Băng Ngục Cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-10 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 25. Được gán cho: Chúa tể bão giông, Đại pháp sư.
+\* \*\*Nguyền Kiếm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-13 sát thương; tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 5. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
+\* \*\*Phá Trận Lựu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-13 sát thương; giảm chỉ số tấn công của mục tiêu thêm 3; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tấn công của người dùng thêm 1. Được gán cho: Chiến đấu cơ.
+\* \*\*Phân Rã Bộc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-10 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 4. Được gán cho: Chiến đấu cơ.
+\* \*\*Thánh Quang Cầu:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: hồi 5-9 máu; tăng chỉ số phòng thủ của mục tiêu thêm 2; tăng chỉ số tốc độ của mục tiêu thêm 3. Được gán cho: Đại pháp sư.
+\* \*\*Choáng Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Hấp Huyết:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-12 sát thương và hồi cho người dùng 33% lượng sát thương đã gây ra. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Khai Huyết:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 1-1 sát thương; giảm chỉ số tốc độ của người dùng thêm 8; giảm chỉ số phòng thủ của mục tiêu thêm 4. Được gán cho: Binh sĩ cấp thấp.
+\* \*\*Thiết Chỏ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-8 sát thương. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
+\* \*\*Lôi Kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-6 sát thương; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 20. Được gán cho: Chiến đấu cơ, Chúa tể bão giông.
+\* \*\*Lôi Cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 6. Được gán cho: Chúa tể bão giông, Đại pháp sư.
+\* \*\*Lôi Bộc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 14-28 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Chiến đấu cơ, Chúa tể bão giông.
+\* \*\*Lôi Kiếm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-10 sát thương. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
+\* \*\*Trường Cung Tiên Tộc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-12 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Đại pháp sư.
+\* \*\*Tàn Hỏa Kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-5 sát thương; giảm chỉ số tấn công của mục tiêu thêm 1; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Sư tử hỏa diệm.
+\* \*\*Ảnh Bộc Sát:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 18-26 sát thương; giảm chỉ số tốc độ của người dùng thêm 35. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Nhãn Quang Xạ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-14 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 4; giảm chỉ số tốc độ của người dùng thêm 4. Được gán cho: Chiến đấu cơ.
+\* \*\*Hung Nha:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Sói đầu đàn, Sư tử hỏa diệm.
+\* \*\*Hỏa Chiến Phủ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; tăng chỉ số tấn công của người dùng thêm 2. Được gán cho: Chiến binh pháp thuật, Sư tử hỏa diệm, Đại đấu sĩ.
+\* \*\*Hỏa Nhận:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-14 sát thương; giảm chỉ số phòng thủ của người dùng thêm 1; tăng chỉ số tốc độ của người dùng thêm 6; giảm chỉ số phòng thủ của mục tiêu thêm 1. Được gán cho: Sư tử hỏa diệm, Đại đấu sĩ.
+\* \*\*Hỏa Cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Sư tử hỏa diệm, Đại pháp sư.
+\* \*\*Quyền Vũ Bão:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-18 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 1; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Hỏa Tiễn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-15 sát thương; giảm chỉ số tấn công của người dùng thêm 4; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Chiến binh pháp thuật, Sư tử hỏa diệm, Đại pháp sư.
+\* \*\*Liệt Hỏa Kiếm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số tốc độ của người dùng thêm 7; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Sư tử hỏa diệm, Đại đấu sĩ, Đấu sĩ ma ảnh.
+\* \*\*Liệt Hỏa Cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-11 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2. Được gán cho: Sư tử hỏa diệm, Đại pháp sư.
+\* \*\*Bão Kích Liên Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 11-15 sát thương; giảm chỉ số tấn công của người dùng thêm 1; giảm chỉ số phòng thủ của người dùng thêm 1; giảm chỉ số tốc độ của người dùng thêm 5. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Phi Thiên Cước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số phòng thủ của người dùng thêm 3; tăng chỉ số tốc độ của người dùng thêm 8; giảm chỉ số phòng thủ của mục tiêu thêm 2; tăng chỉ số tốc độ của mục tiêu thêm 2. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Cuồng Cước Loạn Vũ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-12 sát thương; giảm chỉ số phòng thủ của người dùng thêm 6; tăng chỉ số tốc độ của người dùng thêm 20. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Quỷ Tiếu Kinh Hồn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số phòng thủ của người dùng thêm 1; tăng chỉ số tốc độ của người dùng thêm 3; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Băng Chủy:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-9 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Đại đấu sĩ.
+\* \*\*Ma Âm Gào Thét:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tấn công của mục tiêu thêm 3; tăng chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Hùng Ôm Khóa:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-8 sát thương; giảm chỉ số tốc độ của người dùng thêm 10; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Sói đầu đàn.
+\* \*\*Đại Trị Thương:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: hồi 12-18 máu; tăng chỉ số tốc độ của mục tiêu thêm 2. Được gán cho: Đại pháp sư.
+\* \*\*Địa Kích Liên Hoàn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-15 sát thương; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Sói đầu đàn.
+\* \*\*Hấp Thủ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Phá Phúc Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-14 sát thương; giảm chỉ số tấn công của mục tiêu thêm 4; giảm chỉ số phòng thủ của người dùng thêm 1. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Lựu Đạn Bộc Phá:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-13 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Binh sĩ cấp cao, Chiến đấu cơ.
+\* \*\*Thần Tốc:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tốc độ của người dùng thêm 12. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Tỏa Hầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-13 sát thương; tăng chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 1; giảm chỉ số phòng thủ của mục tiêu thêm 4; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Sói đầu đàn.
+\* \*\*Trị Thương:\*\* Nhắm vào một đấu sĩ đồng minh, kể cả bản thân. Hiệu ứng: hồi 8-14 máu. Được gán cho: Đại pháp sư.
+\* \*\*Trọng Lôi Kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-11 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 12; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của người dùng thêm 3. Được gán cho: Chiến đấu cơ, Chúa tể bão giông.
+\* \*\*Lang Hống:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Sói đầu đàn.
+\* \*\*Băng Đạn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương. Được gán cho: Chúa tể bão giông, Đại pháp sư.
+\* \*\*Băng Khối Hộ Lực:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-8 sát thương; tăng chỉ số tấn công của người dùng thêm 3; tăng chỉ số phòng thủ của người dùng thêm 3. Được gán cho: Đại pháp sư.
+\* \*\*Băng Châm Đao:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 2-5 sát thương; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Đại đấu sĩ.
+\* \*\*Băng Kiếm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; giảm chỉ số tấn công của người dùng thêm 1; giảm chỉ số tốc độ của mục tiêu thêm 7. Được gán cho: Đại đấu sĩ.
+\* \*\*Uy Áp:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tấn công của mục tiêu thêm 3. Được gán cho: Binh sĩ cấp cao, Đấu sĩ ma ảnh.
+\* \*\*Toái Hàm Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-12 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Thiết Tất:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 3-6 sát thương; giảm chỉ số tấn công của mục tiêu thêm 2. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
+\* \*\*Nhất Kích Hạ Gục:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-30 sát thương; giảm chỉ số tấn công của người dùng thêm 5; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 30. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Ảnh Phi Tiêu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-9 sát thương; tăng chỉ số tốc độ của người dùng thêm 4; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Binh sĩ cấp thấp, Đại đấu sĩ.
+\* \*\*Quang Tuyến Thương:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-18 sát thương; giảm chỉ số tốc độ của người dùng thêm 6. Được gán cho: Binh sĩ cấp cao, Chiến đấu cơ.
+\* \*\*Tả Câu Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Võ sĩ tập sự.
+\* \*\*Tả Trực Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Võ sĩ quyền Anh, Võ sĩ tập sự.
+\* \*\*Tỏa Cước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-10 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 4. Được gán cho: Sói đầu đàn.
+\* \*\*Khinh Trực Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 3-8 sát thương. Được gán cho: Võ sĩ quyền Anh, Võ sĩ tập sự.
+\* \*\*Lôi Tiễn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-8 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 1. Được gán cho: Chúa tể bão giông, Đại pháp sư.
+\* \*\*Thiên Lôi Kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-15 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Chiến binh pháp thuật, Chúa tể bão giông, Đại pháp sư.
+\* \*\*Sư Vương Trảo:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-13 sát thương; tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 4. Được gán cho: Sói đầu đàn.
+\* \*\*Tử Chiến Khóa:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-6 sát thương; tăng chỉ số tấn công của người dùng thêm 3; tăng chỉ số tốc độ của người dùng thêm 10; tăng chỉ số tấn công của mục tiêu thêm 3; tăng chỉ số tốc độ của mục tiêu thêm 10. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Bão Đạn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; tăng chỉ số tốc độ của người dùng thêm 5. Được gán cho: Binh sĩ cấp cao, Binh sĩ cấp thấp, Chiến đấu cơ.
+\* \*\*Ma Ước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; tăng chỉ số tấn công của mục tiêu thêm 3. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Pháp Thuẫn:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số phòng thủ của người dùng thêm 4. Được gán cho: Đại pháp sư, Đấu sĩ ma ảnh.
+\* \*\*Pháp Cầu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-9 sát thương. Được gán cho: Đại pháp sư.
+\* \*\*Cường Lực Pháp:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 4. Được gán cho: Chiến binh pháp thuật, Đại pháp sư.
+\* \*\*Mãnh Thú Xé:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; giảm chỉ số tốc độ của người dùng thêm 12; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Sói đầu đàn.
+\* \*\*Huyết Phay Đao:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương và hồi cho người dùng 30% lượng sát thương đã gây ra. Được gán cho: Binh sĩ cấp thấp, Đại đấu sĩ.
+\* \*\*Tiểu Hấp Huyết:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-15 sát thương và hồi cho người dùng 25% lượng sát thương đã gây ra. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Thiết Côn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-10 sát thương; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Binh sĩ cấp thấp, Đại đấu sĩ.
+\* \*\*Phá Tỵ Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-12 sát thương. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Trấn Áp:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-13 sát thương; giảm chỉ số phòng thủ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 20. Được gán cho: Sói đầu đàn.
+\* \*\*Plasma Đại Pháo:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 16-24 sát thương; giảm chỉ số phòng thủ của người dùng thêm 6. Được gán cho: Binh sĩ cấp cao, Chiến đấu cơ.
+\* \*\*Độc Bộc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 1-10 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 12. Được gán cho: Chiến đấu cơ.
+\* \*\*Hấp Lực:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số tấn công của mục tiêu thêm 3. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Liên Đả Dồn Dập:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-13 sát thương; tăng chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 5; giảm chỉ số phòng thủ của mục tiêu thêm 3; tăng chỉ số tốc độ của mục tiêu thêm 3. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Tốc Trảm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 1-7 sát thương; tăng chỉ số tốc độ của người dùng thêm 8. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
+\* \*\*Băng Vũ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 3. Được gán cho: Đại pháp sư.
+\* \*\*Lôi Hoa Vũ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-16 sát thương; giảm chỉ số tấn công của người dùng thêm 4. Được gán cho: Chúa tể bão giông, Sư tử hỏa diệm.
+\* \*\*Tỏa Thân:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-7 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 12. Được gán cho: Binh sĩ cấp thấp, Sói đầu đàn.
+\* \*\*Cuồng Tốc Khởi Động:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 2; tăng chỉ số tốc độ của người dùng thêm 5. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Hữu Câu Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
+\* \*\*Hữu Trực Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương. Được gán cho: Võ sĩ quyền Anh, Võ sĩ tập sự.
+\* \*\*Chiến Hống:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 5. Được gán cho: Chiến binh pháp thuật, Sói đầu đàn, Sư tử hỏa diệm, Đấu sĩ ma ảnh.
+\* \*\*Cuồng Ngưu Húc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-13 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 5; tăng chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Sói đầu đàn.
+\* \*\*Thoát Ảnh:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: giảm chỉ số tấn công của người dùng thêm 5; giảm chỉ số phòng thủ của người dùng thêm 5; tăng chỉ số tốc độ của người dùng thêm 20. Được gán cho: Binh sĩ cấp thấp.
+\* \*\*Xung Phong:\*\* Chỉ nhắm vào bản thân. Hiệu ứng: tăng chỉ số tấn công của người dùng thêm 4; giảm chỉ số phòng thủ của người dùng thêm 5; tăng chỉ số tốc độ của người dùng thêm 15. Được gán cho: Binh sĩ cấp thấp.
+\* \*\*Hiến Sinh Hộ Thủ:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; tăng chỉ số phòng thủ của người dùng thêm 5; tăng chỉ số phòng thủ của mục tiêu thêm 5. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Hiến Sinh Cuồng Lực:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; tăng chỉ số tấn công của người dùng thêm 5; tăng chỉ số tấn công của mục tiêu thêm 5. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Hiến Sinh Thần Tốc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; tăng chỉ số tốc độ của người dùng thêm 20; tăng chỉ số tốc độ của mục tiêu thêm 20. Được gán cho: Binh sĩ cấp cao.
+\* \*\*Liệt Cào:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 3-9 sát thương. Được gán cho: Sói đầu đàn.
+\* \*\*Địa Chấn Bạo Kích:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 18-22 sát thương; giảm chỉ số tốc độ của người dùng thêm 10; giảm chỉ số phòng thủ của mục tiêu thêm 4. Được gán cho: Chúa tể bão giông, Đại pháp sư.
+\* \*\*Ảnh Nhận:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-13 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 6. Được gán cho: Đại đấu sĩ.
+\* \*\*Tán Đạn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-16 sát thương; giảm chỉ số tấn công của người dùng thêm 2. Được gán cho: Binh sĩ cấp thấp, Chiến đấu cơ.
+\* \*\*Chớp Cước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; giảm chỉ số tốc độ của người dùng thêm 12; giảm chỉ số phòng thủ của mục tiêu thêm 4; giảm chỉ số tốc độ của mục tiêu thêm 8. Được gán cho: Võ sĩ tập sự.
+\* \*\*Hàm Nanh Chớp:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-12 sát thương; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 3. Được gán cho: Sói đầu đàn.
+\* \*\*Súng Bắn Tỉa:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-15 sát thương; giảm chỉ số tốc độ của người dùng thêm 8. Được gán cho: Binh sĩ cấp cao, Chiến đấu cơ.
+\* \*\*Hồn Biến:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-10 sát thương; tăng chỉ số tấn công của người dùng thêm 4; tăng chỉ số tốc độ của người dùng thêm 4; tăng chỉ số tấn công của mục tiêu thêm 4; tăng chỉ số tốc độ của mục tiêu thêm 4. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Hấp Tốc:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: tăng chỉ số tốc độ của người dùng thêm 12; giảm chỉ số tốc độ của mục tiêu thêm 12. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Toàn Phong Trảm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-14 sát thương; giảm chỉ số tấn công của người dùng thêm 1; tăng chỉ số tốc độ của người dùng thêm 5. Được gán cho: Đại đấu sĩ.
+\* \*\*Toàn Cước:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 13-16 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 5. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Toàn Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 15-18 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 2; tăng chỉ số tốc độ của người dùng thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 6. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Linh Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-12 sát thương; tăng chỉ số tấn công của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 4. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Cương Kiếm:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-9 sát thương; tăng chỉ số tấn công của người dùng thêm 2; tăng chỉ số tấn công của mục tiêu thêm 2. Được gán cho: Chiến binh pháp thuật, Đại đấu sĩ.
+\* \*\*Cương Chùy:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-13 sát thương. Được gán cho: Đại đấu sĩ.
+\* \*\*Thiết Đầu Tiên:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-12 sát thương; tăng chỉ số tấn công của người dùng thêm 1; giảm chỉ số phòng thủ của mục tiêu thêm 2; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Đại đấu sĩ, Đấu sĩ ma ảnh.
+\* \*\*Thạch Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 11-15 sát thương; tăng chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tốc độ của người dùng thêm 5; giảm chỉ số tốc độ của mục tiêu thêm 3. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Ám Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-12 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Cảm Tử Phi Thân:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 20-30 sát thương; giảm chỉ số tấn công của người dùng thêm 4; giảm chỉ số phòng thủ của người dùng thêm 4; giảm chỉ số tốc độ của mục tiêu thêm 30. Được gán cho: Binh sĩ cấp thấp.
+\* \*\*Đại Hấp Huyết:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-8 sát thương và hồi cho người dùng 50% lượng sát thương đã gây ra. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Quăng Ném:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 5-10 sát thương; giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số tấn công của mục tiêu thêm 3; giảm chỉ số phòng thủ của mục tiêu thêm 3. Được gán cho: Võ sĩ quyền Anh.
+\* \*\*Lôi Vân:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 10; giảm chỉ số phòng thủ của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 20. Được gán cho: Chúa tể bão giông.
+\* \*\*Lôi Ba:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: giảm chỉ số tấn công của người dùng thêm 3; giảm chỉ số phòng thủ của người dùng thêm 3; giảm chỉ số tốc độ của người dùng thêm 10; giảm chỉ số tốc độ của mục tiêu thêm 30. Được gán cho: Chúa tể bão giông.
+\* \*\*Sét Giáng:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-9 sát thương; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Chiến binh pháp thuật, Chúa tể bão giông.
+\* \*\*Quét Chân:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 4-9 sát thương; giảm chỉ số tấn công của người dùng thêm 2; tăng chỉ số tốc độ của người dùng thêm 4; tăng chỉ số tấn công của mục tiêu thêm 2; tăng chỉ số tốc độ của mục tiêu thêm 1. Được gán cho: Binh sĩ cấp thấp, Võ sĩ tập sự.
+\* \*\*Thăng Long Quyền:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 8-14 sát thương; tăng chỉ số tấn công của người dùng thêm 2; tăng chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tấn công của mục tiêu thêm 2; giảm chỉ số phòng thủ của mục tiêu thêm 2. Được gán cho: Võ sĩ tập sự.
+\* \*\*Huyết Nha:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 7-10 sát thương và hồi cho người dùng 60% lượng sát thương đã gây ra. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Hỏa Sơn Chiến Chùy:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 10-15 sát thương; giảm chỉ số phòng thủ của mục tiêu thêm 5. Được gán cho: Đại đấu sĩ.
+\* \*\*Hỏa Cầu Liên Châu:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 12-16 sát thương; tăng chỉ số tấn công của người dùng thêm 2. Được gán cho: Sư tử hỏa diệm.
+\* \*\*Tử Linh Vòng Xoáy:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 9-15 sát thương; giảm chỉ số tấn công của người dùng thêm 2; giảm chỉ số phòng thủ của người dùng thêm 2; giảm chỉ số tốc độ của người dùng thêm 2. Được gán cho: Đấu sĩ ma ảnh.
+\* \*\*Hộ Pháp Kiếm Ấn:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: gây 6-10 sát thương; tăng chỉ số phòng thủ của người dùng thêm 1; giảm chỉ số tấn công của mục tiêu thêm 1. Được gán cho: Chiến binh pháp thuật.
+\* \*\*Suy Nhược Chú:\*\* Nhắm vào một đấu sĩ đối phương. Hiệu ứng: giảm chỉ số tấn công của mục tiêu thêm 3; giảm chỉ số tốc độ của mục tiêu thêm 5. Được gán cho: Đấu sĩ ma ảnh.
 
 \*\*Phím Tắt\*\*
 

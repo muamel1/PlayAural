@@ -1,5 +1,6 @@
 """Tests for Battle."""
 
+from collections import Counter
 from pathlib import Path
 import random
 
@@ -13,6 +14,7 @@ from ..games.battle.game import (
     MODE_CLASSIC_SURVIVAL,
     MODE_CLASSIC_WAVES,
     MODE_ONE_EACH,
+    MODE_TEAM_BATTLE,
     MODE_TWO_EACH,
     PHASE_COMBAT,
     PHASE_SELECTION,
@@ -82,6 +84,7 @@ def test_game_registered_and_defaults() -> None:
     leaderboard_ids = [entry["id"] for entry in game.get_leaderboard_types()]
     assert leaderboard_ids == ["most_enemies_defeated", "deepest_wave_reached"]
     assert game.options.game_mode == MODE_ONE_EACH
+    assert game.options.team_mode == "individual"
     assert game.options.unlimited_selection_limit == 3
 
 
@@ -92,6 +95,29 @@ def test_prestart_validation_checks_mode_and_survival_conflicts() -> None:
 
     game = make_game(player_count=2, game_mode=MODE_ONE_EACH, survival_target=5)
     assert "battle-error-survival-target-mode" in game.prestart_validate()
+
+    game = make_game(player_count=4, game_mode=MODE_ONE_EACH, team_mode="2v2")
+    assert "battle-error-team-mode-only-team-battle" in game.prestart_validate()
+
+    game = make_game(player_count=4, game_mode=MODE_TEAM_BATTLE)
+    assert "battle-error-team-battle-needs-team-mode" in game.prestart_validate()
+
+    game = make_game(player_count=3, game_mode=MODE_TEAM_BATTLE, team_mode="2v2")
+    assert "game-error-invalid-team-mode" in game.prestart_validate()
+
+
+def test_team_mode_option_only_appears_for_team_battle() -> None:
+    standard_game = make_game()
+    player = standard_game.players[0]
+    standard_actions = standard_game.options.create_options_action_set(standard_game, player).get_visible_actions(standard_game, player)
+    assert "set_team_mode" not in [entry.action.id for entry in standard_actions]
+    assert not any(line.startswith("Team mode:") for line in standard_game.options.format_options_summary("en"))
+
+    team_game = make_game(game_mode=MODE_TEAM_BATTLE)
+    player = team_game.players[0]
+    team_actions = team_game.options.create_options_action_set(team_game, player).get_visible_actions(team_game, player)
+    assert "set_team_mode" in [entry.action.id for entry in team_actions]
+    assert any(line.startswith("Team mode:") for line in team_game.options.format_options_summary("en"))
 
 
 def test_on_start_enters_selection_phase() -> None:
@@ -169,6 +195,23 @@ def test_unlimited_selection_limit_is_enforced() -> None:
     assert player.selected_preset_ids == ["novice_boxer", "boxer"]
 
 
+def test_chaos_mode_uses_distinct_start_and_status_context() -> None:
+    game = make_game(player_count=1, start=True, game_mode=MODE_FREE_FOR_ALL, unlimited_selection_limit=2)
+    player = game.players[0]
+
+    assert game.get_user(player).get_spoken_messages()[0] == (
+        "Chaos selection has begun. Every fighter you choose will enter as its own side, even if you control more than one."
+    )
+    status_lines = game._battle_status_lines("en", detailed=False, viewer=player)
+    assert "Mode: Chaos Free For All. Turn mode: Initiative." in status_lines
+    assert "Chaos rule: every selected fighter is its own side, so your own fighters may become enemies." in status_lines
+
+    game.get_user(player).clear_messages()
+    select_and_submit(game, player, "novice_boxer", "boxer")
+    assert advance_until(game, lambda: game.phase == PHASE_COMBAT, max_ticks=200)
+    assert any("Chaos battle begins. Every active fighter now fights for itself." == message for message in game.get_user(player).get_spoken_messages())
+
+
 def test_selection_uses_checklist_with_submit_at_bottom() -> None:
     game = make_game(start=True)
     player = game.players[0]
@@ -241,8 +284,28 @@ def test_selection_announces_fighter_and_uses_appear_sound() -> None:
 
     spoken = game.get_user(p1).get_spoken_messages()
     sounds = game.get_user(p1).get_sounds_played()
-    assert any("Player1 selected Novice Boxer." == message for message in spoken)
+    assert any("You selected Novice Boxer." == message for message in spoken)
     assert any(sound.startswith("battle/appear") for sound in sounds)
+
+
+def test_multi_selection_submit_uses_one_roster_announcement_and_sound() -> None:
+    random.seed(10)
+    game = make_game(start=True, game_mode=MODE_TWO_EACH)
+    p1 = game.players[0]
+    user = game.get_user(p1)
+
+    game.execute_action(p1, "battle_toggle_preset_novice_boxer")
+    game.execute_action(p1, "battle_toggle_preset_boxer")
+    user.clear_messages()
+
+    game.execute_action(p1, "battle_submit_selection")
+
+    spoken = user.get_spoken_messages()
+    sounds = user.get_sounds_played()
+    assert [message for message in spoken if message.startswith("You selected")] == [
+        "You selected Novice Boxer and Boxer."
+    ]
+    assert len([sound for sound in sounds if sound.startswith("battle/appear")]) == 1
 
 
 def test_bot_selection_announces_choices_to_room() -> None:
@@ -416,6 +479,36 @@ def test_team_roster_actions_only_show_active_fighters() -> None:
     assert not any(game._fighter_name(defeated_enemy, "en") in text for text in enemy_texts)
 
 
+def test_team_battle_uses_arranged_team_assignments() -> None:
+    game = make_game(
+        player_count=4,
+        start=True,
+        game_mode=MODE_TEAM_BATTLE,
+        team_mode="2v2",
+        turn_mode=TURN_MODE_ROUND_ROBIN,
+    )
+    p1, p2, p3, p4 = game.players
+    select_and_submit(game, p1, "novice_boxer")
+    select_and_submit(game, p2, "boxer")
+    select_and_submit(game, p3, "master_mage")
+    select_and_submit(game, p4, "the_alpha_wolf")
+    assert advance_until(game, lambda: game.phase == PHASE_COMBAT and len(game.fighters) == 4, max_ticks=200)
+
+    team_by_owner = {fighter.owner_player_id: fighter.team_id for fighter in game.fighters}
+    assert team_by_owner[p1.id] == team_by_owner[p3.id]
+    assert team_by_owner[p2.id] == team_by_owner[p4.id]
+    assert team_by_owner[p1.id] != team_by_owner[p2.id]
+
+    attacker = next(fighter for fighter in game.fighters if fighter.owner_player_id == p1.id)
+    attack_move = next(get_move_map()[move_id] for move_id in attacker.move_ids if get_move_map()[move_id].targeting == "enemies_only")
+    target_owner_ids = {target.owner_player_id for target in game._valid_targets(attacker, attack_move)}
+    assert target_owner_ids == {p2.id, p4.id}
+
+    game.winning_team_id = team_by_owner[p1.id]
+    end_screen = game.format_end_screen(game.build_game_result(), "en")
+    assert "Winning team: Team 1" in end_screen
+
+
 def test_roster_view_is_blocked_during_selection() -> None:
     game = make_game(start=True)
     player = game.players[0]
@@ -478,6 +571,33 @@ def test_spectator_status_and_move_announcements_use_neutral_team_names() -> Non
     game.winning_team_id = "ally"
     end_screen = game.format_end_screen(game.build_game_result(), "en")
     assert "Winning team: Contestant Side" in end_screen
+
+
+def test_combat_announcements_use_personal_and_public_perspectives() -> None:
+    random.seed(4)
+    game = make_game(start=True, turn_mode=TURN_MODE_ROUND_ROBIN)
+    p1, p2 = game.players
+    select_and_submit(game, p1, "novice_boxer")
+    select_and_submit(game, p2, "boxer")
+    assert advance_until(game, lambda: game.phase == PHASE_COMBAT and len(game.fighters) == 2, max_ticks=200)
+
+    attacker = next(fighter for fighter in game.fighters if fighter.owner_player_id == p1.id)
+    defender = next(fighter for fighter in game.fighters if fighter.owner_player_id == p2.id)
+    move = get_move_map()["light_jab"]
+    for player in (p1, p2):
+        game.get_user(player).clear_messages()
+
+    game._announce_move(attacker, defender, move)
+
+    assert game.get_user(p1).get_last_spoken() == "Your Novice Boxer from Player1's Team used Light Jab on Boxer from Player2's Team."
+    assert game.get_user(p2).get_last_spoken() == "Novice Boxer from Player1's Team used Light Jab on Boxer from Player2's Team."
+
+    for player in (p1, p2):
+        game.get_user(player).clear_messages()
+    game._resolve_damage(attacker, defender, move.blocks[0])
+
+    assert any(message.startswith("Boxer took ") for message in game.get_user(p1).get_spoken_messages())
+    assert any(message.startswith("Your Boxer took ") for message in game.get_user(p2).get_spoken_messages())
 
 
 def test_free_for_all_winner_uses_fighter_name_not_raw_team_id() -> None:
@@ -796,6 +916,54 @@ def test_registry_content_is_fully_localized() -> None:
         assert Localization.get("vi", key) != Localization.get("en", key)
     assert Localization.get("vi", "game-name-battle") == "Đấu Trường Chiến Kỹ"
     assert {move.id for move in registry.moves} == assigned_move_ids
+
+
+def test_battle_registry_has_complete_functioning_loadouts() -> None:
+    registry = load_battle_registry()
+    move_map = {move.id: move for move in registry.moves}
+    assigned_counts: Counter[str] = Counter()
+
+    for preset in registry.presets:
+        assert preset.move_ids, preset.id
+        missing_move_ids = [move_id for move_id in preset.move_ids if move_id not in move_map]
+        assert missing_move_ids == []
+        assigned_counts.update(preset.move_ids)
+
+    unassigned_move_ids = sorted(set(move_map) - set(assigned_counts))
+    assert unassigned_move_ids == []
+    for move in registry.moves:
+        assert move.blocks, move.id
+        assert move.targeting in {
+            "self_only",
+            "team_only",
+            "team_except_self",
+            "all_except_self",
+            "enemies_only",
+            "all",
+        }
+        assert all(block.type for block in move.blocks)
+        assert move.sound_path
+
+    unique_moves_by_preset = {
+        preset.id: [move_id for move_id in preset.move_ids if assigned_counts[move_id] == 1]
+        for preset in registry.presets
+    }
+    assert all(unique_moves for unique_moves in unique_moves_by_preset.values())
+
+
+def test_wizardly_warrior_has_unique_balanced_skill() -> None:
+    registry = load_battle_registry()
+    presets = {preset.id: preset for preset in registry.presets}
+    moves = {move.id: move for move in registry.moves}
+
+    wizard = presets["the_wizardly_warrior"]
+    warding_spellblade = moves["warding_spellblade"]
+
+    assert wizard.health == 58
+    assert "warding_spellblade" in wizard.move_ids
+    assert warding_spellblade.name.vi == "Hộ Pháp Kiếm Ấn"
+    assert warding_spellblade.targeting == "enemies_only"
+    assert [block.type for block in warding_spellblade.blocks] == ["damage", "launcher_defense", "target_attack"]
 
 
 def test_bot_game_completes_or_progresses() -> None:

@@ -10,8 +10,9 @@ from ..base import Game, Player, GameOptions
 from ..registry import register_game
 from ...game_utils.actions import Action, ActionSet, MenuInput, Visibility
 from ...game_utils.game_result import GameResult, PlayerResult
-from ...game_utils.options import BoolOption, IntOption, MenuOption, option_field
+from ...game_utils.options import BoolOption, IntOption, MenuOption, TeamModeOption, option_field
 from ...game_utils.sequence_runner_mixin import SequenceBeat, SequenceOperation
+from ...game_utils.teams import TeamManager
 from ...messages.localization import Localization
 from ...ui.keybinds import KeybindState
 
@@ -36,6 +37,7 @@ MODE_FREE_FOR_ALL = "free_for_all"
 MODE_ONE_EACH = "one_each"
 MODE_TWO_EACH = "two_each"
 MODE_THREE_EACH = "three_each"
+MODE_TEAM_BATTLE = "team_battle"
 MODE_SPITTING_IMAGE = "spitting_image"
 MODE_CLASSIC_ARENA = "classic_arena"
 MODE_MIXED_ARENA = "mixed_arena"
@@ -106,6 +108,7 @@ GAME_MODE_CHOICE_LABELS = {
     MODE_ONE_EACH: "battle-mode-one-each",
     MODE_TWO_EACH: "battle-mode-two-each",
     MODE_THREE_EACH: "battle-mode-three-each",
+    MODE_TEAM_BATTLE: "battle-mode-team-battle",
     MODE_SPITTING_IMAGE: "battle-mode-spitting-image",
     MODE_CLASSIC_ARENA: "battle-mode-classic-arena",
     MODE_MIXED_ARENA: "battle-mode-mixed-arena",
@@ -184,6 +187,7 @@ class BattleOptions(GameOptions):
                 MODE_ONE_EACH,
                 MODE_TWO_EACH,
                 MODE_THREE_EACH,
+                MODE_TEAM_BATTLE,
                 MODE_SPITTING_IMAGE,
                 MODE_CLASSIC_ARENA,
                 MODE_MIXED_ARENA,
@@ -198,6 +202,17 @@ class BattleOptions(GameOptions):
             change_msg="battle-option-changed-game-mode",
             choice_labels=GAME_MODE_CHOICE_LABELS,
         )
+    )
+    team_mode: str = option_field(
+        TeamModeOption(
+            default="individual",
+            choices=lambda game, player: TeamManager.get_all_team_modes(2, 6),
+            value_key="mode",
+            label="game-set-team-mode",
+            prompt="game-select-team-mode",
+            change_msg="game-option-changed-team",
+        ),
+        visible_when=("game_mode", lambda value: value == MODE_TEAM_BATTLE),
     )
     turn_mode: str = option_field(
         MenuOption(
@@ -460,8 +475,14 @@ class BattleGame(Game):
     def _is_classic_enemy_mode(self) -> bool:
         return self.options.game_mode in {MODE_CLASSIC_ARENA, MODE_CLASSIC_SURVIVAL, MODE_CLASSIC_WAVES}
 
+    def _is_team_battle_mode(self) -> bool:
+        return self.options.game_mode == MODE_TEAM_BATTLE
+
+    def _is_chaos_mode(self) -> bool:
+        return self.options.game_mode == MODE_FREE_FOR_ALL
+
     def _mode_requires_multiple_players(self) -> bool:
-        return self.options.game_mode in {MODE_ONE_EACH, MODE_TWO_EACH, MODE_THREE_EACH}
+        return self.options.game_mode in {MODE_ONE_EACH, MODE_TWO_EACH, MODE_THREE_EACH, MODE_TEAM_BATTLE}
 
     def _selection_limit_for_mode(self) -> int:
         if self.options.game_mode == MODE_ONE_EACH:
@@ -475,6 +496,7 @@ class BattleGame(Game):
     def _mode_allows_manual_done(self) -> bool:
         return self.options.game_mode in {
             MODE_FREE_FOR_ALL,
+            MODE_TEAM_BATTLE,
             MODE_SPITTING_IMAGE,
             MODE_CLASSIC_ARENA,
             MODE_MIXED_ARENA,
@@ -520,6 +542,18 @@ class BattleGame(Game):
     def _alive_team_ids(self) -> list[str]:
         return sorted({fighter.team_id for fighter in self._alive_fighters()})
 
+    def _team_id_for_manager_team(self, team_index: int) -> str:
+        return f"team_{team_index}"
+
+    def _manager_team_for_id(self, team_id: str):
+        if not team_id.startswith("team_"):
+            return None
+        try:
+            team_index = int(team_id.removeprefix("team_"))
+        except ValueError:
+            return None
+        return next((team for team in self._team_manager.teams if team.index == team_index), None)
+
     def _team_display_name(self, locale: str, team_id: str, viewer: Player | None = None) -> str:
         if viewer and viewer.is_spectator:
             if team_id == "ally":
@@ -530,6 +564,9 @@ class BattleGame(Game):
             return Localization.get(locale, "battle-team-allies")
         if team_id == "enemy":
             return Localization.get(locale, "battle-team-enemies")
+        manager_team = self._manager_team_for_id(team_id)
+        if manager_team:
+            return self._team_manager.get_team_name(manager_team, locale)
         team_fighter = next((fighter for fighter in self.fighters if fighter.team_id == team_id), None)
         if team_fighter:
             owner = self._fighter_owner(team_fighter)
@@ -622,6 +659,9 @@ class BattleGame(Game):
     def _arena_difficulty_label(self, locale: str) -> str:
         return Localization.get(locale, ARENA_DIFFICULTY_CHOICE_LABELS[self.options.arena_difficulty])
 
+    def _team_mode_label(self, locale: str) -> str:
+        return TeamManager.format_team_mode_for_display(self.options.team_mode, locale)
+
     def _mode_status_lines(self, locale: str) -> list[str]:
         lines = [
             Localization.get(
@@ -637,6 +677,16 @@ class BattleGame(Game):
                     locale,
                     "battle-status-selection-limit-line",
                     limit=self._selection_limit_for_mode(),
+                )
+            )
+        if self._is_chaos_mode():
+            lines.append(Localization.get(locale, "battle-status-chaos-line"))
+        if self._is_team_battle_mode():
+            lines.append(
+                Localization.get(
+                    locale,
+                    "battle-status-team-mode-line",
+                    mode=self._team_mode_label(locale),
                 )
             )
         if self._is_classic_enemy_mode():
@@ -676,11 +726,44 @@ class BattleGame(Game):
             user = self.get_user(player)
             if not user:
                 continue
-            locale = user.locale
-            kwargs = {
-                name: value(locale) if callable(value) else value
-                for name, value in builder_kwargs.items()
-            }
+            kwargs = self._localized_kwargs(user.locale, builder_kwargs)
+            user.speak_l(key, buffer="game", **kwargs)
+
+    def _localized_kwargs(self, locale: str, builder_kwargs: dict) -> dict:
+        return {
+            name: value(locale) if callable(value) else value
+            for name, value in builder_kwargs.items()
+        }
+
+    def _broadcast_actor_localized(
+        self,
+        actor: Player | None,
+        personal_key: str,
+        public_key: str,
+        **builder_kwargs,
+    ) -> None:
+        actor_id = actor.id if actor else ""
+        for recipient in self.players:
+            user = self.get_user(recipient)
+            if not user:
+                continue
+            key = personal_key if actor_id and recipient.id == actor_id else public_key
+            kwargs = self._localized_kwargs(user.locale, builder_kwargs)
+            user.speak_l(key, buffer="game", **kwargs)
+
+    def _broadcast_fighter_localized(
+        self,
+        subject: BattleFighter,
+        personal_key: str,
+        public_key: str,
+        **builder_kwargs,
+    ) -> None:
+        for recipient in self.players:
+            user = self.get_user(recipient)
+            if not user:
+                continue
+            key = personal_key if subject.owner_player_id and recipient.id == subject.owner_player_id else public_key
+            kwargs = self._localized_kwargs(user.locale, builder_kwargs)
             user.speak_l(key, buffer="game", **kwargs)
 
     def prestart_validate(self) -> list[str | tuple[str, dict]]:
@@ -696,6 +779,15 @@ class BattleGame(Game):
                 errors.append("battle-error-survival-target-mode")
             if self.options.survival_heal_percent > 0:
                 errors.append("battle-error-survival-heal-mode")
+        if self.options.team_mode != "individual" and not self._is_team_battle_mode():
+            errors.append("battle-error-team-mode-only-team-battle")
+        if self._is_team_battle_mode():
+            if self.options.team_mode == "individual":
+                errors.append("battle-error-team-battle-needs-team-mode")
+            else:
+                team_mode_error = self._validate_team_mode(self.options.team_mode)
+                if team_mode_error:
+                    errors.append(team_mode_error)
         if self.options.unlimited_selection_limit < 1:
             errors.append("battle-error-selection-limit")
         if self._is_classic_enemy_mode() and self.options.classic_enemy_preset not in get_preset_map():
@@ -703,6 +795,13 @@ class BattleGame(Game):
         return errors
 
     def on_start(self) -> None:
+        active_players = self.get_active_players()
+        if self._is_team_battle_mode():
+            self._setup_team_manager_for_start(self.options.team_mode, active_players)
+        else:
+            self._team_manager.team_mode = "individual"
+            self._team_manager.teams = []
+            self._team_manager._player_to_team = {}
         self.status = "playing"
         self.phase = PHASE_SELECTION
         self.game_active = True
@@ -721,14 +820,15 @@ class BattleGame(Game):
         self.winning_team_id = ""
         self.last_action_message_key = ""
         self.last_action_payload = {}
-        for player in self.get_active_players():
+        for player in active_players:
             battle_player = self._as_battle_player(player)
             if battle_player:
                 battle_player.selected_preset_ids = []
                 battle_player.selection_locked = False
         self.play_music("battle/fightmus.ogg")
         self.play_ambience("battle/crowds/ambience_reserves_selections.ogg")
-        self.broadcast_l("battle-selection-start", buffer="game")
+        selection_start_key = "battle-selection-start-chaos" if self._is_chaos_mode() else "battle-selection-start"
+        self.broadcast_l(selection_start_key, buffer="game")
         self._auto_select_for_bots()
         self.refresh_menus()
 
@@ -745,9 +845,13 @@ class BattleGame(Game):
         selection_count = limit if not self._mode_allows_manual_done() else random.randint(1, limit)
         player.selected_preset_ids = random.sample(preset_ids, k=min(selection_count, len(preset_ids)))
         player.selection_locked = True
-        for preset_id in player.selected_preset_ids:
-            self._announce_selected_fighter(player, preset_id)
-        self.broadcast_l("battle-selection-locked", buffer="game", player=player.name)
+        self._announce_selected_fighters(player, player.selected_preset_ids)
+        self._broadcast_actor_localized(
+            player,
+            "battle-selection-locked-you",
+            "battle-selection-locked-player",
+            player=player.name,
+        )
 
     def _all_selection_locked(self) -> bool:
         active = [self._as_battle_player(player) for player in self.get_active_players()]
@@ -787,6 +891,11 @@ class BattleGame(Game):
     def _team_for_player_fighter(self, player: BattlePlayer, preset_id: str, fighter_index: int) -> str:
         if self.options.game_mode == MODE_FREE_FOR_ALL:
             return f"{player.id}:{preset_id}:{fighter_index}"
+        if self._is_team_battle_mode():
+            manager_team = self._team_manager.get_team(player.name)
+            if manager_team:
+                return self._team_id_for_manager_team(manager_team.index)
+            return player.id
         if self.options.game_mode == MODE_SPITTING_IMAGE or self._is_arena_mode():
             return "ally"
         return player.id
@@ -1039,8 +1148,10 @@ class BattleGame(Game):
             self.broadcast_l("battle-critical-hit", buffer="game")
         health_before = target.health
         target.health = max(0, target.health - damage)
-        self._broadcast_game_localized(
-            "battle-damage",
+        self._broadcast_fighter_localized(
+            target,
+            "battle-damage-you",
+            "battle-damage-player",
             target=lambda locale: self._fighter_name(target, locale),
             amount=damage,
         )
@@ -1053,8 +1164,10 @@ class BattleGame(Game):
     def _resolve_healing(self, target: BattleFighter, block: BattleEffectBlock) -> None:
         healing = random.randint(block.min or 0, block.max or 0)
         target.health = min(target.max_health, target.health + healing)
-        self._broadcast_game_localized(
-            "battle-healing",
+        self._broadcast_fighter_localized(
+            target,
+            "battle-healing-you",
+            "battle-healing-player",
             target=lambda locale: self._fighter_name(target, locale),
             amount=healing,
         )
@@ -1064,8 +1177,10 @@ class BattleGame(Game):
         healing = (damage * (block.percent or 50)) // 100
         if healing > 0:
             launcher.health = min(launcher.max_health, launcher.health + healing)
-            self._broadcast_game_localized(
-                "battle-healing",
+            self._broadcast_fighter_localized(
+                launcher,
+                "battle-healing-you",
+                "battle-healing-player",
                 target=lambda locale: self._fighter_name(launcher, locale),
                 amount=healing,
             )
@@ -1075,8 +1190,10 @@ class BattleGame(Game):
             return
         setattr(fighter, stat, getattr(fighter, stat) + change)
         self.play_sound("battle/statup.ogg" if change > 0 else "battle/statdown.ogg", volume=70)
-        self._broadcast_game_localized(
-            "battle-stat-change",
+        self._broadcast_fighter_localized(
+            announce_target,
+            "battle-stat-change-you",
+            "battle-stat-change-player",
             target=lambda locale: self._fighter_name(announce_target, locale),
             stat=lambda locale: Localization.get(locale, f"battle-stat-{stat}"),
             amount=change,
@@ -1183,8 +1300,10 @@ class BattleGame(Game):
                 }
             )
             message_key = "battle-fighter-defeated" if fighter.elimination_reason == "health" else "battle-fighter-incapacitated"
-            self._broadcast_game_localized(
-                message_key,
+            self._broadcast_fighter_localized(
+                fighter,
+                f"{message_key}-you",
+                f"{message_key}-player",
                 fighter=lambda locale, defeated=fighter: self._fighter_name(defeated, locale),
             )
             if fighter.is_arena_enemy:
@@ -1225,8 +1344,10 @@ class BattleGame(Game):
             amount = min(missing, (fighter.max_health * self.options.survival_heal_percent) // 100)
             if amount > 0:
                 fighter.health += amount
-                self._broadcast_game_localized(
-                    "battle-healing",
+                self._broadcast_fighter_localized(
+                    fighter,
+                    "battle-healing-you",
+                    "battle-healing-player",
                     target=lambda locale, healed=fighter: self._fighter_name(healed, locale),
                     amount=amount,
                 )
@@ -1297,7 +1418,8 @@ class BattleGame(Game):
 
     def on_sequence_callback(self, sequence_id: str, callback_id: str, payload: dict) -> None:
         if callback_id == "battle_intro_announce":
-            self.broadcast_l("battle-combat-start", buffer="game")
+            combat_start_key = "battle-combat-start-chaos" if self._is_chaos_mode() else "battle-combat-start"
+            self.broadcast_l(combat_start_key, buffer="game")
         elif callback_id == "battle_begin_next_turn":
             self._begin_next_turn()
         elif callback_id == "battle_announce_turn":
@@ -1332,14 +1454,17 @@ class BattleGame(Game):
             self.broadcast_l("battle-enemies-arrive", buffer="game", count=int(payload.get("count", 0)))
 
     def _announce_current_turn(self, fighter: BattleFighter) -> None:
-        locale_fighter_names = {player.id: self._fighter_name(fighter, self._player_locale(player)) for player in self.players}
         for player in self.players:
             user = self.get_user(player)
             if not user:
                 continue
             if player.id == fighter.owner_player_id and user.preferences.play_turn_sound:
                 user.play_sound("turn.ogg")
-            user.speak_l("battle-turn-start", buffer="game", fighter=locale_fighter_names[player.id])
+            user.speak_l(
+                "battle-turn-start-you" if player.id == fighter.owner_player_id else "battle-turn-start-player",
+                buffer="game",
+                fighter=self._fighter_name(fighter, user.locale),
+            )
         self._queue_bot_turn_if_needed()
 
     def _announce_move(self, fighter: BattleFighter, target: BattleFighter, move: BattleMove) -> None:
@@ -1347,9 +1472,10 @@ class BattleGame(Game):
             user = self.get_user(player)
             if not user:
                 continue
+            personal = player.id == fighter.owner_player_id
             if self._uses_team_context():
                 user.speak_l(
-                    "battle-used-move-with-teams",
+                    "battle-used-move-with-teams-you" if personal else "battle-used-move-with-teams-player",
                     buffer="game",
                     fighter=self._fighter_name(fighter, user.locale),
                     fighter_team=self._team_display_name(user.locale, fighter.team_id, player),
@@ -1359,7 +1485,7 @@ class BattleGame(Game):
                 )
             else:
                 user.speak_l(
-                    "battle-used-move",
+                    "battle-used-move-you" if personal else "battle-used-move-player",
                     buffer="game",
                     fighter=self._fighter_name(fighter, user.locale),
                     move=self._locale_name(move.name, user.locale),
@@ -1645,13 +1771,31 @@ class BattleGame(Game):
             return Visibility.VISIBLE
         return Visibility.HIDDEN
 
-    def _announce_selected_fighter(self, player: Player, preset_id: str) -> None:
+    def _preset_list_label(self, locale: str, preset_ids: list[str]) -> str:
+        labels = [
+            self._preset_label(locale, preset_id)
+            for preset_id in preset_ids
+            if preset_id in get_preset_map()
+        ]
+        if not labels:
+            return Localization.get(locale, "battle-selection-none")
+        return Localization.format_list_and(locale, labels)
+
+    def _announce_selected_fighters(self, player: Player, preset_ids: list[str]) -> None:
+        if not preset_ids:
+            return
         self.play_sound(f"battle/appear{random.randint(1, 4)}.ogg", volume=70)
-        self._broadcast_game_localized(
-            "battle-selected-fighter",
+        selected_ids = list(preset_ids)
+        self._broadcast_actor_localized(
+            player,
+            "battle-selected-fighters-you",
+            "battle-selected-fighters-player",
             player=player.name,
-            fighter=lambda locale: self._preset_label(locale, preset_id),
+            fighters=lambda locale: self._preset_list_label(locale, selected_ids),
         )
+
+    def _announce_selected_fighter(self, player: Player, preset_id: str) -> None:
+        self._announce_selected_fighters(player, [preset_id])
 
     def _action_battle_toggle_preset(self, player: Player, action_id: str) -> None:
         battle_player = self._as_battle_player(player)
@@ -1690,10 +1834,14 @@ class BattleGame(Game):
                 user.speak_l(error_key, buffer="game")
             return
         if not battle_player.is_bot:
-            for preset_id in battle_player.selected_preset_ids:
-                self._announce_selected_fighter(player, preset_id)
+            self._announce_selected_fighters(player, battle_player.selected_preset_ids)
         battle_player.selection_locked = True
-        self.broadcast_l("battle-selection-locked", buffer="game", player=player.name)
+        self._broadcast_actor_localized(
+            player,
+            "battle-selection-locked-you",
+            "battle-selection-locked-player",
+            player=player.name,
+        )
         self.refresh_menus()
 
     def _target_option_label(self, locale: str, target: BattleFighter) -> str:

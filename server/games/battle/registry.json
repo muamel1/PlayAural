@@ -4,7 +4,7 @@
       "id": "aircraft_cannon",
       "name": {
         "en": "Aircraft Cannon",
-        "vi": "Pháo máy bay"
+        "vi": "Long Pháo Không Kích"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/aircraft cannon.ogg",
@@ -24,7 +24,7 @@
       "id": "aircraft_machine_gun",
       "name": {
         "en": "Aircraft Machine Gun",
-        "vi": "Đại liên máy bay"
+        "vi": "Bão Đạn Không Kích"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/aircraft machine gun.ogg",
@@ -48,7 +48,7 @@
       "id": "ancient_warhammer",
       "name": {
         "en": "Ancient Warhammer",
-        "vi": "Búa chiến cổ đại"
+        "vi": "Cổ Chùy Khai Sơn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/ancient warhammer.ogg",
@@ -72,7 +72,7 @@
       "id": "animated_sword",
       "name": {
         "en": "Animated Sword",
-        "vi": "Kiếm linh"
+        "vi": "Linh Kiếm Vũ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/animated sword.ogg",
@@ -92,7 +92,7 @@
       "id": "armlock",
       "name": {
         "en": "Armlock",
-        "vi": "Khóa tay"
+        "vi": "Tỏa Tí Công"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/armlock.ogg",
@@ -112,7 +112,7 @@
       "id": "avalanche",
       "name": {
         "en": "Avalanche",
-        "vi": "Tuyết lở"
+        "vi": "Thiên Tuyết Sụp Sơn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/avalanche.ogg",
@@ -136,7 +136,7 @@
       "id": "axe_throw",
       "name": {
         "en": "Axe Throw",
-        "vi": "Ném rìu"
+        "vi": "Phi Phủ Đoạt Mệnh"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/axe throw.ogg",
@@ -160,7 +160,7 @@
       "id": "backhand",
       "name": {
         "en": "Backhand",
-        "vi": "Vả ngược"
+        "vi": "Nghịch Chưởng"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/backhand.ogg",
@@ -184,7 +184,7 @@
       "id": "battle_armor",
       "name": {
         "en": "Battle Armor",
-        "vi": "Chiến giáp"
+        "vi": "Chiến Giáp Hộ Thân"
       },
       "targeting": "team_only",
       "sound_path": "battle/mvsounds_named/battle armor.ogg",
@@ -203,7 +203,7 @@
       "id": "battleforge",
       "name": {
         "en": "Battleforge",
-        "vi": "Rèn trận"
+        "vi": "Chiến Lò Rèn Hồn"
       },
       "targeting": "team_only",
       "sound_path": "battle/mvsounds_named/battleforge.ogg",
@@ -222,7 +222,7 @@
       "id": "berserk",
       "name": {
         "en": "Berserk",
-        "vi": "Cuồng nộ"
+        "vi": "Cuồng Huyết"
       },
       "targeting": "self_only",
       "sound_path": "battle/mvsounds_named/berserk.ogg",
@@ -241,7 +241,7 @@
       "id": "bite",
       "name": {
         "en": "Bite",
-        "vi": "Cắn"
+        "vi": "Nanh Cắn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/bite.ogg",
@@ -257,7 +257,7 @@
       "id": "bloody_dagger",
       "name": {
         "en": "Bloody Dagger",
-        "vi": "Dao găm đẫm máu"
+        "vi": "Huyết Chủy"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/bloody dagger.ogg",
@@ -277,7 +277,7 @@
       "id": "body_slam",
       "name": {
         "en": "Body Slam",
-        "vi": "Vật toàn thân"
+        "vi": "Thiết Thân Trấn Áp"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/body slam.ogg",
@@ -297,7 +297,7 @@
       "id": "brain_eat",
       "name": {
         "en": "Brain Eat",
-        "vi": "Ăn não"
+        "vi": "Phệ Não"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/brain eat.ogg",
@@ -325,7 +325,7 @@
       "id": "brawl",
       "name": {
         "en": "Brawl",
-        "vi": "Loạn đả"
+        "vi": "Loạn Chiến Cuồng Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/brawl.ogg",
@@ -365,7 +365,7 @@
       "id": "burning_powder",
       "name": {
         "en": "Burning Powder",
-        "vi": "Bột cháy"
+        "vi": "Hỏa Phấn Bạo Liệt"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/burning powder.ogg",
@@ -389,7 +389,7 @@
       "id": "circle",
       "name": {
         "en": "Circle",
-        "vi": "Vờn quanh"
+        "vi": "Vờn Mồi"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/circle.ogg",
@@ -408,7 +408,7 @@
       "id": "claw",
       "name": {
         "en": "Claw",
-        "vi": "Vuốt"
+        "vi": "Liệt Trảo"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/claw.ogg",
@@ -428,7 +428,7 @@
       "id": "combat_roll",
       "name": {
         "en": "Combat Roll",
-        "vi": "Lăn né"
+        "vi": "Lăn Né Phản Kích"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/combat roll.ogg",
@@ -456,7 +456,7 @@
       "id": "combo_kick",
       "name": {
         "en": "Combo Kick",
-        "vi": "Liên hoàn cước"
+        "vi": "Liên Hoàn Cước"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/combo kick.ogg",
@@ -480,7 +480,7 @@
       "id": "combo_punch",
       "name": {
         "en": "Combo Punch",
-        "vi": "Liên hoàn quyền"
+        "vi": "Liên Hoàn Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/combo punch.ogg",
@@ -500,7 +500,7 @@
       "id": "cryosphere",
       "name": {
         "en": "Cryosphere",
-        "vi": "Băng cầu"
+        "vi": "Băng Ngục Cầu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/cryosphere.ogg",
@@ -528,7 +528,7 @@
       "id": "cursed_sword",
       "name": {
         "en": "Cursed Sword",
-        "vi": "Kiếm nguyền"
+        "vi": "Nguyền Kiếm"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/cursed sword.ogg",
@@ -556,7 +556,7 @@
       "id": "disruptor_grenade",
       "name": {
         "en": "Disruptor Grenade",
-        "vi": "Lựu đạn phá trận"
+        "vi": "Phá Trận Lựu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/disruptor grenade.ogg",
@@ -584,7 +584,7 @@
       "id": "dissolving_bomb",
       "name": {
         "en": "Dissolving Bomb",
-        "vi": "Bom phân rã"
+        "vi": "Phân Rã Bộc"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/dissolving bomb.ogg",
@@ -608,7 +608,7 @@
       "id": "divine_sphere",
       "name": {
         "en": "Divine Sphere",
-        "vi": "Thánh cầu"
+        "vi": "Thánh Quang Cầu"
       },
       "targeting": "team_only",
       "sound_path": "battle/mvsounds_named/divine sphere.ogg",
@@ -632,7 +632,7 @@
       "id": "dizzying_punch",
       "name": {
         "en": "Dizzying Punch",
-        "vi": "Đấm choáng"
+        "vi": "Choáng Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/dizzying punch.ogg",
@@ -652,7 +652,7 @@
       "id": "drain",
       "name": {
         "en": "Drain",
-        "vi": "Hấp huyết"
+        "vi": "Hấp Huyết"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/drain.ogg",
@@ -669,7 +669,7 @@
       "id": "draw_blood",
       "name": {
         "en": "Draw Blood",
-        "vi": "Rút máu"
+        "vi": "Khai Huyết"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/draw blood.ogg",
@@ -693,7 +693,7 @@
       "id": "elbow",
       "name": {
         "en": "Elbow",
-        "vi": "Đòn chỏ"
+        "vi": "Thiết Chỏ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/elbow.ogg",
@@ -709,7 +709,7 @@
       "id": "electric_shock",
       "name": {
         "en": "Electric Shock",
-        "vi": "Điện kích"
+        "vi": "Lôi Kích"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/electric shock.ogg",
@@ -733,7 +733,7 @@
       "id": "electric_sphere",
       "name": {
         "en": "Electric Sphere",
-        "vi": "Lôi cầu"
+        "vi": "Lôi Cầu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/electric sphere.ogg",
@@ -753,7 +753,7 @@
       "id": "electrical_explosion",
       "name": {
         "en": "Electrical Explosion",
-        "vi": "Bộc lôi"
+        "vi": "Lôi Bộc"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/electrical explosion.ogg",
@@ -781,7 +781,7 @@
       "id": "electrified_sword",
       "name": {
         "en": "Electrified Sword",
-        "vi": "Điện kiếm"
+        "vi": "Lôi Kiếm"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/electrified sword.ogg",
@@ -797,7 +797,7 @@
       "id": "elven_longbow",
       "name": {
         "en": "Elven Longbow",
-        "vi": "Trường cung tiên tộc"
+        "vi": "Trường Cung Tiên Tộc"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/elven longbow.ogg",
@@ -817,7 +817,7 @@
       "id": "ember",
       "name": {
         "en": "Ember",
-        "vi": "Tàn hỏa"
+        "vi": "Tàn Hỏa Kích"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/ember.ogg",
@@ -841,7 +841,7 @@
       "id": "explode_from_the_shadows",
       "name": {
         "en": "Explode From The Shadows",
-        "vi": "Ảnh bộc"
+        "vi": "Ảnh Bộc Sát"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/explode from the shadows.ogg",
@@ -861,7 +861,7 @@
       "id": "eye_laser",
       "name": {
         "en": "Eye Laser",
-        "vi": "Nhãn quang"
+        "vi": "Nhãn Quang Xạ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/eye_laser.ogg",
@@ -885,7 +885,7 @@
       "id": "ferocious_bite",
       "name": {
         "en": "Ferocious Bite",
-        "vi": "Cắn hung bạo"
+        "vi": "Hung Nha"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/ferocious bite.ogg",
@@ -901,7 +901,7 @@
       "id": "fiery_war_axe",
       "name": {
         "en": "Fiery War Axe",
-        "vi": "Hỏa chiến phủ"
+        "vi": "Hỏa Chiến Phủ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/fiery war axe.ogg",
@@ -921,7 +921,7 @@
       "id": "fire_knife",
       "name": {
         "en": "Fire Knife",
-        "vi": "Hỏa đao"
+        "vi": "Hỏa Nhận"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/fire knife.ogg",
@@ -949,7 +949,7 @@
       "id": "fireball",
       "name": {
         "en": "Fireball",
-        "vi": "Hỏa cầu"
+        "vi": "Hỏa Cầu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/fireball.ogg",
@@ -973,7 +973,7 @@
       "id": "fist_barrage",
       "name": {
         "en": "Fist Barrage",
-        "vi": "Mưa quyền"
+        "vi": "Quyền Vũ Bão"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/fist barrage.ogg",
@@ -1001,7 +1001,7 @@
       "id": "flame_arrow",
       "name": {
         "en": "Flame Arrow",
-        "vi": "Hỏa tiễn"
+        "vi": "Hỏa Tiễn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/flame arrow.ogg",
@@ -1025,7 +1025,7 @@
       "id": "flame_sword",
       "name": {
         "en": "Flame Sword",
-        "vi": "Hỏa kiếm"
+        "vi": "Liệt Hỏa Kiếm"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/flame sword.ogg",
@@ -1049,7 +1049,7 @@
       "id": "flaming_sphere",
       "name": {
         "en": "Flaming Sphere",
-        "vi": "Liệt hỏa cầu"
+        "vi": "Liệt Hỏa Cầu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/flaming sphere.ogg",
@@ -1073,7 +1073,7 @@
       "id": "flurry_of_blows",
       "name": {
         "en": "Flurry Of Blows",
-        "vi": "Bão quyền"
+        "vi": "Bão Kích Liên Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/flurry of blows.ogg",
@@ -1101,7 +1101,7 @@
       "id": "flying_kick",
       "name": {
         "en": "Flying Kick",
-        "vi": "Phi cước"
+        "vi": "Phi Thiên Cước"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/flying kick.ogg",
@@ -1133,7 +1133,7 @@
       "id": "frantic_kicking",
       "name": {
         "en": "Frantic Kicking",
-        "vi": "Cuồng cước"
+        "vi": "Cuồng Cước Loạn Vũ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/frantic kicking.ogg",
@@ -1157,7 +1157,7 @@
       "id": "frightening_laugh",
       "name": {
         "en": "Frightening Laugh",
-        "vi": "Quỷ tiếu"
+        "vi": "Quỷ Tiếu Kinh Hồn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/frightening laugh.ogg",
@@ -1184,7 +1184,7 @@
       "id": "frozen_dagger",
       "name": {
         "en": "Frozen Dagger",
-        "vi": "Băng dao găm"
+        "vi": "Băng Chủy"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/frozen dagger.ogg",
@@ -1204,7 +1204,7 @@
       "id": "ghostly_scream",
       "name": {
         "en": "Ghostly Scream",
-        "vi": "Ma thét"
+        "vi": "Ma Âm Gào Thét"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/ghostly scream.ogg",
@@ -1236,7 +1236,7 @@
       "id": "grapple",
       "name": {
         "en": "Grapple",
-        "vi": "Ôm vật"
+        "vi": "Hùng Ôm Khóa"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/grapple.ogg",
@@ -1260,7 +1260,7 @@
       "id": "greater_heal",
       "name": {
         "en": "Greater Heal",
-        "vi": "Đại hồi phục"
+        "vi": "Đại Trị Thương"
       },
       "targeting": "team_only",
       "sound_path": "battle/mvsounds_named/greater heal.ogg",
@@ -1280,7 +1280,7 @@
       "id": "groundnpound",
       "name": {
         "en": "Ground'n'pound",
-        "vi": "Đè đánh"
+        "vi": "Địa Kích Liên Hoàn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/ground'n'pound.ogg",
@@ -1308,7 +1308,7 @@
       "id": "guard_drain",
       "name": {
         "en": "Guard Drain",
-        "vi": "Hấp thủ"
+        "vi": "Hấp Thủ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/guard drain.ogg",
@@ -1327,7 +1327,7 @@
       "id": "gutbuster_punch",
       "name": {
         "en": "Gutbuster Punch",
-        "vi": "Đấm vỡ bụng"
+        "vi": "Phá Phúc Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/gutbuster punch.ogg",
@@ -1351,7 +1351,7 @@
       "id": "hand_grenade",
       "name": {
         "en": "Hand Grenade",
-        "vi": "Lựu đạn"
+        "vi": "Lựu Đạn Bộc Phá"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/hand grenade.ogg",
@@ -1379,7 +1379,7 @@
       "id": "haste",
       "name": {
         "en": "Haste",
-        "vi": "Gia tốc"
+        "vi": "Thần Tốc"
       },
       "targeting": "self_only",
       "sound_path": "battle/mvsounds_named/haste.ogg",
@@ -1394,7 +1394,7 @@
       "id": "headlock",
       "name": {
         "en": "Headlock",
-        "vi": "Khóa đầu"
+        "vi": "Tỏa Hầu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/headlock.ogg",
@@ -1426,7 +1426,7 @@
       "id": "heal",
       "name": {
         "en": "Heal",
-        "vi": "Hồi phục"
+        "vi": "Trị Thương"
       },
       "targeting": "team_only",
       "sound_path": "battle/mvsounds_named/heal.ogg",
@@ -1442,7 +1442,7 @@
       "id": "heavy_taser",
       "name": {
         "en": "Heavy Taser",
-        "vi": "Điện kích hạng nặng"
+        "vi": "Trọng Lôi Kích"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/heavy taser.ogg",
@@ -1470,7 +1470,7 @@
       "id": "howl",
       "name": {
         "en": "Howl",
-        "vi": "Tru"
+        "vi": "Lang Hống"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/howl.ogg",
@@ -1493,7 +1493,7 @@
       "id": "ice_ball",
       "name": {
         "en": "Ice Ball",
-        "vi": "Băng đạn"
+        "vi": "Băng Đạn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/ice ball.ogg",
@@ -1509,7 +1509,7 @@
       "id": "ice_cube",
       "name": {
         "en": "Ice Cube",
-        "vi": "Khối băng"
+        "vi": "Băng Khối Hộ Lực"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/ice cube.ogg",
@@ -1533,7 +1533,7 @@
       "id": "icicle_knife",
       "name": {
         "en": "Icicle Knife",
-        "vi": "Dao băng"
+        "vi": "Băng Châm Đao"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/icicle knife.ogg",
@@ -1557,7 +1557,7 @@
       "id": "icicle_sword",
       "name": {
         "en": "Icicle Sword",
-        "vi": "Băng kiếm"
+        "vi": "Băng Kiếm"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/icicle sword.ogg",
@@ -1581,7 +1581,7 @@
       "id": "intimidate",
       "name": {
         "en": "Intimidate",
-        "vi": "Uy hiếp"
+        "vi": "Uy Áp"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/intimidate.ogg",
@@ -1604,7 +1604,7 @@
       "id": "jaw_punch",
       "name": {
         "en": "Jaw Punch",
-        "vi": "Đấm hàm"
+        "vi": "Toái Hàm Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/jaw punch.ogg",
@@ -1624,7 +1624,7 @@
       "id": "knee",
       "name": {
         "en": "Knee",
-        "vi": "Lên gối"
+        "vi": "Thiết Tất"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/knee.ogg",
@@ -1644,7 +1644,7 @@
       "id": "knockout_hit",
       "name": {
         "en": "Knockout Hit",
-        "vi": "Đòn hạ đo ván"
+        "vi": "Nhất Kích Hạ Gục"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/knockout hit.ogg",
@@ -1672,7 +1672,7 @@
       "id": "kunai",
       "name": {
         "en": "Kunai",
-        "vi": "Phi tiêu Kunai"
+        "vi": "Ảnh Phi Tiêu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/kunai.ogg",
@@ -1696,7 +1696,7 @@
       "id": "laser_gun",
       "name": {
         "en": "Laser Gun",
-        "vi": "Súng la-de"
+        "vi": "Quang Tuyến Thương"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/laser gun.ogg",
@@ -1716,7 +1716,7 @@
       "id": "left_hook",
       "name": {
         "en": "Left Hook",
-        "vi": "Móc trái"
+        "vi": "Tả Câu Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/left hook.ogg",
@@ -1732,7 +1732,7 @@
       "id": "left_jab",
       "name": {
         "en": "Left Jab",
-        "vi": "Đấm thẳng trái"
+        "vi": "Tả Trực Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/left jab.ogg",
@@ -1748,7 +1748,7 @@
       "id": "leglock",
       "name": {
         "en": "Leglock",
-        "vi": "Khóa chân"
+        "vi": "Tỏa Cước"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/leglock.ogg",
@@ -1768,7 +1768,7 @@
       "id": "light_jab",
       "name": {
         "en": "Light Jab",
-        "vi": "Đấm thẳng nhẹ"
+        "vi": "Khinh Trực Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/light jab.ogg",
@@ -1784,7 +1784,7 @@
       "id": "lightning_arrow",
       "name": {
         "en": "Lightning Arrow",
-        "vi": "Lôi tiễn"
+        "vi": "Lôi Tiễn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/lightning arrow.ogg",
@@ -1804,7 +1804,7 @@
       "id": "lightning_bolt",
       "name": {
         "en": "Lightning Bolt",
-        "vi": "Tia sét"
+        "vi": "Thiên Lôi Kích"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/lightning bolt.ogg",
@@ -1828,7 +1828,7 @@
       "id": "lions_claw",
       "name": {
         "en": "Lions Claw",
-        "vi": "Sư trảo"
+        "vi": "Sư Vương Trảo"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/lions claw.ogg",
@@ -1852,7 +1852,7 @@
       "id": "locked_in_combat",
       "name": {
         "en": "Locked In Combat",
-        "vi": "Khóa giao chiến"
+        "vi": "Tử Chiến Khóa"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/locked in combat.ogg",
@@ -1884,7 +1884,7 @@
       "id": "machine_gun",
       "name": {
         "en": "Machine Gun",
-        "vi": "Súng máy"
+        "vi": "Bão Đạn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/machine gun.ogg",
@@ -1904,7 +1904,7 @@
       "id": "magic_deal",
       "name": {
         "en": "Magic Deal",
-        "vi": "Ma ước"
+        "vi": "Ma Ước"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/magic deal.ogg",
@@ -1923,7 +1923,7 @@
       "id": "magic_shield",
       "name": {
         "en": "Magic Shield",
-        "vi": "Khiên phép"
+        "vi": "Pháp Thuẫn"
       },
       "targeting": "self_only",
       "sound_path": "battle/mvsounds_named/magic shield.ogg",
@@ -1938,7 +1938,7 @@
       "id": "magic_sphere",
       "name": {
         "en": "Magic Sphere",
-        "vi": "Pháp cầu"
+        "vi": "Pháp Cầu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/magic sphere.ogg",
@@ -1954,7 +1954,7 @@
       "id": "magic_strength",
       "name": {
         "en": "Magic Strength",
-        "vi": "Cường lực thuật"
+        "vi": "Cường Lực Pháp"
       },
       "targeting": "self_only",
       "sound_path": "battle/mvsounds_named/magic strength.ogg",
@@ -1969,7 +1969,7 @@
       "id": "maul",
       "name": {
         "en": "Maul",
-        "vi": "Vồ xé"
+        "vi": "Mãnh Thú Xé"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/maul.ogg",
@@ -1997,7 +1997,7 @@
       "id": "meat_cleaver",
       "name": {
         "en": "Meat Cleaver",
-        "vi": "Dao phay"
+        "vi": "Huyết Phay Đao"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/meat cleaver.ogg",
@@ -2014,7 +2014,7 @@
       "id": "mini_drain",
       "name": {
         "en": "Mini Drain",
-        "vi": "Tiểu hấp huyết"
+        "vi": "Tiểu Hấp Huyết"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/mini drain.ogg",
@@ -2031,7 +2031,7 @@
       "id": "nightstick",
       "name": {
         "en": "Nightstick",
-        "vi": "Dùi cui"
+        "vi": "Thiết Côn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/nightstick.ogg",
@@ -2055,7 +2055,7 @@
       "id": "nose_punch",
       "name": {
         "en": "Nose Punch",
-        "vi": "Đấm mũi"
+        "vi": "Phá Tỵ Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/nose punch.ogg",
@@ -2071,7 +2071,7 @@
       "id": "pin_down",
       "name": {
         "en": "Pin Down",
-        "vi": "Ghì chặt"
+        "vi": "Trấn Áp"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/pin down.ogg",
@@ -2095,7 +2095,7 @@
       "id": "plasma_cannon",
       "name": {
         "en": "Plasma Cannon",
-        "vi": "Pháo plasma"
+        "vi": "Plasma Đại Pháo"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/plasma cannon.ogg",
@@ -2115,7 +2115,7 @@
       "id": "poison_bomb",
       "name": {
         "en": "Poison Bomb",
-        "vi": "Bom độc"
+        "vi": "Độc Bộc"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/poison bomb.ogg",
@@ -2139,7 +2139,7 @@
       "id": "power_drain",
       "name": {
         "en": "Power Drain",
-        "vi": "Hấp lực"
+        "vi": "Hấp Lực"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/power drain.ogg",
@@ -2158,7 +2158,7 @@
       "id": "pummel",
       "name": {
         "en": "Pummel",
-        "vi": "Nện dồn dập"
+        "vi": "Liên Đả Dồn Dập"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/pummel.ogg",
@@ -2190,7 +2190,7 @@
       "id": "quick_slash",
       "name": {
         "en": "Quick Slash",
-        "vi": "Tốc trảm"
+        "vi": "Tốc Trảm"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/quick slash.ogg",
@@ -2210,7 +2210,7 @@
       "id": "rain_of_ice",
       "name": {
         "en": "Rain Of Ice",
-        "vi": "Mưa băng"
+        "vi": "Băng Vũ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/rain of ice.ogg",
@@ -2238,7 +2238,7 @@
       "id": "rain_of_sparks",
       "name": {
         "en": "Rain Of Sparks",
-        "vi": "Mưa tia điện"
+        "vi": "Lôi Hoa Vũ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/rain of sparks.ogg",
@@ -2258,7 +2258,7 @@
       "id": "restrain",
       "name": {
         "en": "Restrain",
-        "vi": "Trói buộc"
+        "vi": "Tỏa Thân"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/restrain.ogg",
@@ -2278,7 +2278,7 @@
       "id": "rev_up",
       "name": {
         "en": "Rev Up",
-        "vi": "Tăng ga"
+        "vi": "Cuồng Tốc Khởi Động"
       },
       "targeting": "self_only",
       "sound_path": "battle/mvsounds_named/rev up.ogg",
@@ -2301,7 +2301,7 @@
       "id": "right_hook",
       "name": {
         "en": "Right Hook",
-        "vi": "Móc phải"
+        "vi": "Hữu Câu Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/right hook.ogg",
@@ -2317,7 +2317,7 @@
       "id": "right_jab",
       "name": {
         "en": "Right Jab",
-        "vi": "Đấm thẳng phải"
+        "vi": "Hữu Trực Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/right jab.ogg",
@@ -2333,7 +2333,7 @@
       "id": "roar",
       "name": {
         "en": "Roar",
-        "vi": "Gầm"
+        "vi": "Chiến Hống"
       },
       "targeting": "self_only",
       "sound_path": "battle/mvsounds_named/roar.ogg",
@@ -2352,7 +2352,7 @@
       "id": "rugby_tackle",
       "name": {
         "en": "Rugby Tackle",
-        "vi": "Húc Rugby"
+        "vi": "Cuồng Ngưu Húc"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/rugby tackle.ogg",
@@ -2376,7 +2376,7 @@
       "id": "run_away",
       "name": {
         "en": "Run Away",
-        "vi": "Thoát thân"
+        "vi": "Thoát Ảnh"
       },
       "targeting": "self_only",
       "sound_path": "battle/mvsounds_named/run away.ogg",
@@ -2399,7 +2399,7 @@
       "id": "rush_in",
       "name": {
         "en": "Rush In",
-        "vi": "Xông vào"
+        "vi": "Xung Phong"
       },
       "targeting": "self_only",
       "sound_path": "battle/mvsounds_named/rush in.ogg",
@@ -2422,7 +2422,7 @@
       "id": "sacrifice_for_guard",
       "name": {
         "en": "Sacrifice For Guard",
-        "vi": "Hiến sinh thủ"
+        "vi": "Hiến Sinh Hộ Thủ"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/sacrifice for guard.ogg",
@@ -2446,7 +2446,7 @@
       "id": "sacrifice_for_power",
       "name": {
         "en": "Sacrifice For Power",
-        "vi": "Hiến sinh lực"
+        "vi": "Hiến Sinh Cuồng Lực"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/sacrifice for power.ogg",
@@ -2470,7 +2470,7 @@
       "id": "sacrifice_for_speed",
       "name": {
         "en": "Sacrifice For Speed",
-        "vi": "Hiến sinh tốc"
+        "vi": "Hiến Sinh Thần Tốc"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/sacrifice for speed.ogg",
@@ -2494,7 +2494,7 @@
       "id": "scratch",
       "name": {
         "en": "Scratch",
-        "vi": "Cào xước"
+        "vi": "Liệt Cào"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/scratch.ogg",
@@ -2510,7 +2510,7 @@
       "id": "seismic_blast",
       "name": {
         "en": "Seismic Blast",
-        "vi": "Địa chấn bộc"
+        "vi": "Địa Chấn Bạo Kích"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/seismic blast.ogg",
@@ -2534,7 +2534,7 @@
       "id": "shadowknife",
       "name": {
         "en": "Shadowknife",
-        "vi": "Ảnh đao"
+        "vi": "Ảnh Nhận"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/shadowknife.ogg",
@@ -2558,7 +2558,7 @@
       "id": "shotgun",
       "name": {
         "en": "Shotgun",
-        "vi": "Súng săn"
+        "vi": "Tán Đạn"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/shotgun.ogg",
@@ -2578,7 +2578,7 @@
       "id": "snap_kick",
       "name": {
         "en": "Snap Kick",
-        "vi": "Đá chớp"
+        "vi": "Chớp Cước"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/snap kick.ogg",
@@ -2606,7 +2606,7 @@
       "id": "snapping_jaw",
       "name": {
         "en": "Snapping Jaw",
-        "vi": "Hàm ngoạm"
+        "vi": "Hàm Nanh Chớp"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/snapping jaw.ogg",
@@ -2630,7 +2630,7 @@
       "id": "sniper_rifle",
       "name": {
         "en": "Sniper Rifle",
-        "vi": "Súng bắn tỉa"
+        "vi": "Súng Bắn Tỉa"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/sniper rifle.ogg",
@@ -2650,7 +2650,7 @@
       "id": "spectral_alteration",
       "name": {
         "en": "Spectral Alteration",
-        "vi": "Hồn biến"
+        "vi": "Hồn Biến"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/spectral alteration.ogg",
@@ -2682,7 +2682,7 @@
       "id": "speed_drain",
       "name": {
         "en": "Speed Drain",
-        "vi": "Hấp tốc"
+        "vi": "Hấp Tốc"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/speed drain.ogg",
@@ -2701,7 +2701,7 @@
       "id": "spinning_cut",
       "name": {
         "en": "Spinning Cut",
-        "vi": "Toàn phong trảm"
+        "vi": "Toàn Phong Trảm"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/spinning cut.ogg",
@@ -2725,7 +2725,7 @@
       "id": "spinning_kick",
       "name": {
         "en": "Spinning Kick",
-        "vi": "Đá xoay"
+        "vi": "Toàn Cước"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/spinning kick.ogg",
@@ -2757,7 +2757,7 @@
       "id": "spinning_punch",
       "name": {
         "en": "Spinning Punch",
-        "vi": "Đấm xoay"
+        "vi": "Toàn Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/spinning punch.ogg",
@@ -2789,7 +2789,7 @@
       "id": "spirit_punch",
       "name": {
         "en": "Spirit Punch",
-        "vi": "Linh quyền"
+        "vi": "Linh Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/spirit punch.ogg",
@@ -2817,7 +2817,7 @@
       "id": "steel_sword",
       "name": {
         "en": "Steel Sword",
-        "vi": "Kiếm thép"
+        "vi": "Cương Kiếm"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/steel sword.ogg",
@@ -2841,7 +2841,7 @@
       "id": "steel_warhammer",
       "name": {
         "en": "Steel Warhammer",
-        "vi": "Búa chiến thép"
+        "vi": "Cương Chùy"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/steel warhammer.ogg",
@@ -2857,7 +2857,7 @@
       "id": "steel_tipped_whip",
       "name": {
         "en": "Steel-tipped Whip",
-        "vi": "Roi đầu thép"
+        "vi": "Thiết Đầu Tiên"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/steel-tipped whip.ogg",
@@ -2885,7 +2885,7 @@
       "id": "stone_punch",
       "name": {
         "en": "Stone Punch",
-        "vi": "Thạch quyền"
+        "vi": "Thạch Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/stone_punch.ogg",
@@ -2913,7 +2913,7 @@
       "id": "sucker_punch",
       "name": {
         "en": "Sucker Punch",
-        "vi": "Đấm lén"
+        "vi": "Ám Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/sucker punch.ogg",
@@ -2933,7 +2933,7 @@
       "id": "suicide_dive",
       "name": {
         "en": "Suicide Dive",
-        "vi": "Lao mình cảm tử"
+        "vi": "Cảm Tử Phi Thân"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/suicide dive.ogg",
@@ -2961,7 +2961,7 @@
       "id": "super_drain",
       "name": {
         "en": "Super Drain",
-        "vi": "Đại hấp huyết"
+        "vi": "Đại Hấp Huyết"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/super drain.ogg",
@@ -2978,7 +2978,7 @@
       "id": "throw",
       "name": {
         "en": "Throw",
-        "vi": "Quăng"
+        "vi": "Quăng Ném"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/throw.ogg",
@@ -3006,7 +3006,7 @@
       "id": "thunder_cloud",
       "name": {
         "en": "Thunder Cloud",
-        "vi": "Mây sấm"
+        "vi": "Lôi Vân"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/thunder cloud.ogg",
@@ -3033,7 +3033,7 @@
       "id": "thunder_wave",
       "name": {
         "en": "Thunder Wave",
-        "vi": "Sóng sấm"
+        "vi": "Lôi Ba"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/thunder wave.ogg",
@@ -3060,7 +3060,7 @@
       "id": "thunderbolt",
       "name": {
         "en": "Thunderbolt",
-        "vi": "Sét giáng"
+        "vi": "Sét Giáng"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/thunderbolt.ogg",
@@ -3080,7 +3080,7 @@
       "id": "trip",
       "name": {
         "en": "Trip",
-        "vi": "Gạt chân"
+        "vi": "Quét Chân"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/trip.ogg",
@@ -3112,7 +3112,7 @@
       "id": "uppercut",
       "name": {
         "en": "Uppercut",
-        "vi": "Đấm móc lên"
+        "vi": "Thăng Long Quyền"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/uppercut.ogg",
@@ -3144,7 +3144,7 @@
       "id": "vampiric_bite",
       "name": {
         "en": "Vampiric Bite",
-        "vi": "Huyết nha"
+        "vi": "Huyết Nha"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/vampiric bite.ogg",
@@ -3161,7 +3161,7 @@
       "id": "volcanic_warhammer",
       "name": {
         "en": "Volcanic Warhammer",
-        "vi": "Búa chiến núi lửa"
+        "vi": "Hỏa Sơn Chiến Chùy"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/volcanic warhammer.ogg",
@@ -3181,7 +3181,7 @@
       "id": "volley_of_fireballs",
       "name": {
         "en": "Volley Of Fireballs",
-        "vi": "Loạt hỏa cầu"
+        "vi": "Hỏa Cầu Liên Châu"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/volley of fireballs.ogg",
@@ -3201,7 +3201,7 @@
       "id": "vortex_of_the_deceased",
       "name": {
         "en": "Vortex Of The Deceased",
-        "vi": "Tử linh xoáy"
+        "vi": "Tử Linh Vòng Xoáy"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/vortex of the deceased.ogg",
@@ -3226,10 +3226,34 @@
       ]
     },
     {
+      "id": "warding_spellblade",
+      "name": {
+        "en": "Warding Spellblade",
+        "vi": "Hộ Pháp Kiếm Ấn"
+      },
+      "targeting": "enemies_only",
+      "sound_path": "battle/mvsounds_named/animated sword.ogg",
+      "blocks": [
+        {
+          "max": 10,
+          "min": 6,
+          "type": "damage"
+        },
+        {
+          "change": 1,
+          "type": "launcher_defense"
+        },
+        {
+          "change": -1,
+          "type": "target_attack"
+        }
+      ]
+    },
+    {
       "id": "weaken",
       "name": {
         "en": "Weaken",
-        "vi": "Suy nhược"
+        "vi": "Suy Nhược Chú"
       },
       "targeting": "enemies_only",
       "sound_path": "battle/mvsounds_named/weaken.ogg",
@@ -3556,7 +3580,7 @@
         "en": "The Wizardly Warrior",
         "vi": "Chiến binh pháp thuật"
       },
-      "health": 60,
+      "health": 58,
       "attack": 2,
       "defense": 2,
       "speed": 100,
@@ -3571,6 +3595,7 @@
         "electrified_sword",
         "cursed_sword",
         "animated_sword",
+        "warding_spellblade",
         "magic_strength",
         "battle_armor",
         "thunderbolt",

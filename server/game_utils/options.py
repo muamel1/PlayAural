@@ -535,6 +535,8 @@ class GameOptions(DataClassJSONMixin):
         """Return a list of localized label strings for all current option values."""
         lines = []
         for name, meta in self.get_option_metas().items():
+            if not self.is_option_visible(name):
+                continue
             current_value = getattr(self, name)
             lines.append(meta.get_label(locale, current_value))
         return lines

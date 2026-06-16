@@ -16,7 +16,8 @@ Battle is a turn-based combat game where you build a small roster of preset figh
 
 \* \*\*Fighter selection:\*\* the selection screen works like a checklist. Choose a preset to mark it, choose it again to unmark it, then use \*\*Submit selection\*\* or \*\*Done selecting\*\* to lock in your final roster.
 \* \*\*Fixed-count modes:\*\* in modes such as \*\*1 Each\*\*, \*\*2 Each\*\*, and \*\*3 Each\*\*, every player must choose exactly that many fighters.
-\* \*\*Unlimited modes:\*\* in modes such as \*\*Free For All\*\*, \*\*Arena\*\*, \*\*Survival\*\*, and \*\*Waves\*\*, the host sets the maximum number of fighters each player may bring.
+\* \*\*Unlimited modes:\*\* in modes such as \*\*Chaos Free For All\*\*, \*\*Arena\*\*, \*\*Survival\*\*, and \*\*Waves\*\*, the host sets the maximum number of fighters each player may bring.
+\* \*\*Team Battle:\*\* when the host chooses a shared team mode such as \*\*2 teams of 2\*\* or \*\*2 teams of 3\*\*, the standard team-arrangement screen opens before fighter selection so the host can confirm or swap team members.
 \* \*\*Turn order:\*\* if the table uses \*\*Initiative\*\*, the next fighter is chosen through a speed-weighted initiative roll. If the table uses \*\*Round Robin\*\*, fighters take turns in a repeating order.
 \* \*\*Stats matter:\*\* attack makes offensive skills stronger, defense softens incoming damage, and speed helps determine turn flow and can also decide whether a fighter stays active.
 \* \*\*Single-target combat:\*\* every skill in the current ruleset affects one target at a time. There are no area-of-effect skills.
@@ -24,8 +25,9 @@ Battle is a turn-based combat game where you build a small roster of preset figh
 
 \*\*Modes\*\*
 
-\* \*\*Free For All:\*\* every fighter becomes its own side. If you selected more than one fighter, you may end up controlling fighters that are trying to defeat each other.
+\* \*\*Chaos Free For All:\*\* every fighter becomes its own side. If you selected more than one fighter, you may end up controlling fighters that are trying to defeat each other.
 \* \*\*1 Each / 2 Each / 3 Each:\*\* each player brings 1, 2, or 3 fighters. All fighters chosen by the same player belong to the same side.
+\* \*\*Team Battle:\*\* players are assigned to shared teams before the match. Each player then chooses up to the configured fighter limit, and all fighters from the same arranged team fight together.
 \* \*\*Spitting Image:\*\* players first choose the allied roster, then the game creates matching enemy clones from those same presets.
 \* \*\*Classic Arena:\*\* the allied side fights enemies built from one specific preset chosen by the host.
 \* \*\*Mixed Arena:\*\* the allied side fights enemies drawn at random from the full preset roster.
@@ -48,10 +50,11 @@ Battle is a turn-based combat game where you build a small roster of preset figh
 
 \*\*Customizable Options\*\*
 
-\* \*\*Game Mode:\*\* Default: `1 Each`. Choices: `Free For All`, `1 Each`, `2 Each`, `3 Each`, `Spitting Image`, `Classic Arena`, `Mixed Arena`, `Classic Survival`, `Mixed Survival`, `Classic Waves`, `Mixed Waves`.
+\* \*\*Game Mode:\*\* Default: `1 Each`. Choices: `Chaos Free For All`, `1 Each`, `2 Each`, `3 Each`, `Team Battle`, `Spitting Image`, `Classic Arena`, `Mixed Arena`, `Classic Survival`, `Mixed Survival`, `Classic Waves`, `Mixed Waves`.
+\* \*\*Team Mode:\*\* Default: `Individual`. Choices depend on player count, including `2 teams of 2`, `3 teams of 2`, and `2 teams of 3` where valid. This option is used only by `Team Battle`; starting `Team Battle` requires a non-individual team mode that fits the current number of players.
 \* \*\*Turn Mode:\*\* Default: `Initiative`. Choices: `Initiative`, `Round Robin`.
 \* \*\*Balance Mode:\*\* Default: `Off`. Choices: `On` or `Off`. When enabled, any preset whose stat line is outside the balanced baseline is reset to `50 health`, `0 attack`, `0 defense`, and `100 speed`.
-\* \*\*Unlimited-mode Fighter Limit:\*\* Default: `3`. Range: `1` to `6`. Used only by `Free For All`, `Spitting Image`, `Classic Arena`, `Mixed Arena`, `Classic Survival`, `Mixed Survival`, `Classic Waves`, and `Mixed Waves`.
+\* \*\*Unlimited-mode Fighter Limit:\*\* Default: `3`. Range: `1` to `6`. Used by `Chaos Free For All`, `Team Battle`, `Spitting Image`, `Classic Arena`, `Mixed Arena`, `Classic Survival`, `Mixed Survival`, `Classic Waves`, and `Mixed Waves`.
 \* \*\*Classic Enemy Preset:\*\* Default: `Novice Boxer`. Choices: every bundled preset: `Novice Boxer`, `Boxer`, `The Great Fighter`, `Fighter Plane`, `Low-Rank Soldier`, `High-Rank Soldier`, `Ghostly Fighter`, `The Alpha Wolf`, `The Fiery Lion`, `Master Mage`, `The Wizardly Warrior`, `Master of the Storm`. Used only by `Classic Arena`, `Classic Survival`, and `Classic Waves`.
 \* \*\*Arena Difficulty:\*\* Default: `Normal`. Choices: `Easy`, `Normal`, `Hard`, `Insane`, `Professional`, `Ultimate`. Used only when the game spawns arena, survival, or wave enemies.
 \* \*\*Survival Target:\*\* Default: `0`. Range: `0` to `10000`. Used only by `Classic Survival`, `Mixed Survival`, `Classic Waves`, and `Mixed Waves`. A value of `0` means endless.
@@ -69,7 +72,7 @@ Battle is a turn-based combat game where you build a small roster of preset figh
 \* \*\*The Alpha Wolf:\*\* Health 55, attack 3, defense 0, speed 100. Loadout: Howl, Circle, Bite, Ferocious Bite, Pin Down, Snapping Jaw, Claw, Scratch, Lions Claw, Maul, Rugby Tackle, Grapple, Headlock, Armlock, Leglock, Ground'n'pound, Roar, Restrain.
 \* \*\*The Fiery Lion:\*\* Health 60, attack 2, defense 0, speed 100. Loadout: Fireball, Flame Arrow, Flaming Sphere, Ember, Ferocious Bite, Roar, Claw, Burning Powder, Volley Of Fireballs, Fire Knife, Fiery War Axe, Flame Sword, Rain Of Sparks.
 \* \*\*Master Mage:\*\* Health 46, attack 4, defense 0, speed 105. Loadout: Fireball, Ice Ball, Flaming Sphere, Lightning Bolt, Flame Arrow, Lightning Arrow, Cryosphere, Electric Sphere, Elven Longbow, Ice Cube, Rain Of Ice, Avalanche, Magic Sphere, Magic Strength, Magic Shield, Heal, Greater Heal, Divine Sphere, Seismic Blast.
-\* \*\*The Wizardly Warrior:\*\* Health 60, attack 2, defense 2, speed 100. Loadout: Steel Sword, Ancient Warhammer, Lightning Bolt, Flame Arrow, Body Slam, Roar, Fiery War Axe, Electrified Sword, Cursed Sword, Animated Sword, Magic Strength, Battle Armor, Thunderbolt, Quick Slash.
+\* \*\*The Wizardly Warrior:\*\* Health 58, attack 2, defense 2, speed 100. Loadout: Steel Sword, Ancient Warhammer, Lightning Bolt, Flame Arrow, Body Slam, Roar, Fiery War Axe, Electrified Sword, Cursed Sword, Animated Sword, Warding Spellblade, Magic Strength, Battle Armor, Thunderbolt, Quick Slash.
 \* \*\*Master of the Storm:\*\* Health 50, attack 4, defense 0, speed 100. Loadout: Thunder Cloud, Thunderbolt, Thunder Wave, Electric Sphere, Electric Shock, Lightning Arrow, Rain Of Sparks, Lightning Bolt, Electrical Explosion, Seismic Blast, Avalanche, Ice Ball, Cryosphere, Heavy Taser.
 
 \*\*Skill Directory\*\*
@@ -216,6 +219,7 @@ Battle is a turn-based combat game where you build a small roster of preset figh
 \* \*\*Volcanic Warhammer:\*\* Targets one enemy fighter. Effects: deals 10-15 damage; lowers the target's defense by 5. Assigned to: The Great Fighter.
 \* \*\*Volley Of Fireballs:\*\* Targets one enemy fighter. Effects: deals 12-16 damage; raises the user's attack by 2. Assigned to: The Fiery Lion.
 \* \*\*Vortex Of The Deceased:\*\* Targets one enemy fighter. Effects: deals 9-15 damage; lowers the user's attack by 2; lowers the user's defense by 2; lowers the user's speed by 2. Assigned to: Ghostly Fighter.
+\* \*\*Warding Spellblade:\*\* Targets one enemy fighter. Effects: deals 6-10 damage; raises the user's defense by 1; lowers the target's attack by 1. Assigned to: The Wizardly Warrior.
 \* \*\*Weaken:\*\* Targets one enemy fighter. Effects: lowers the target's attack by 3; lowers the target's speed by 5. Assigned to: Ghostly Fighter.
 
 \*\*Keyboard Shortcuts\*\*
