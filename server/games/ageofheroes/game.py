@@ -9,11 +9,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import random
 
-from mashumaro.mixins.json import DataClassJSONMixin
-
 from ..base import Game, Player, GameOptions
 from ..registry import register_game
-from ...game_utils.actions import Action, ActionSet, MenuInput, Visibility
+from ...game_utils.actions import Action, ActionSet, Visibility
 from ...game_utils.bot_helper import BotHelper
 from ...game_utils.game_result import GameResult, PlayerResult
 from ...game_utils.options import IntOption, option_field
@@ -25,10 +23,7 @@ from .cards import (
     Deck,
     CardType,
     ResourceType,
-    SpecialResourceType,
     EventType,
-    MANDATORY_EVENTS,
-    DISASTER_EVENTS,
     get_card_name,
     read_cards,
 )
@@ -56,6 +51,7 @@ from .state import (
 )
 from .construction import (
     can_build,
+    format_build_label,
     get_affordable_buildings,
     get_road_targets,
     build_road,
@@ -66,12 +62,7 @@ from .construction import (
 from .trading import (
     create_offer,
     cancel_offer,
-    execute_trade,
     stop_trading,
-    is_trading_complete,
-    get_player_offers,
-    get_matching_offers,
-    can_accept_offer,
     announce_offer,
     check_and_execute_trades,
 )
@@ -81,14 +72,10 @@ from .combat import (
     get_valid_war_goals,
     declare_war,
     prepare_forces,
-    resolve_battle_round,
-    is_battle_over,
-    get_battle_winner,
-    apply_war_outcome,
-    jolt_war_bots,
+    check_olympics_defense,
+    use_olympics,
     resolve_war_round,
     execute_war_battle,
-    finish_war_battle,
 )
 from . import bot as bot_ai
 from . import events
@@ -122,6 +109,7 @@ class AgeOfHeroesPlayer(Player):
     # Current turn state
     current_action: str | None = None  # ActionType being performed
     pending_discard: int = 0  # Cards that must be discarded
+    do_nothing_confirm_ticks: int = 0
 
     # Trading state
     has_stopped_trading: bool = False  # Left the auction
@@ -189,6 +177,7 @@ class AgeOfHeroesGame(Game):
 
     players: list[AgeOfHeroesPlayer] = field(default_factory=list)
     options: AgeOfHeroesOptions = field(default_factory=AgeOfHeroesOptions)
+    relevant_preferences = ["brief_announcements", "confirm_destructive_actions"]
 
     # Game state
     deck: Deck = field(default_factory=Deck)
@@ -434,51 +423,54 @@ class AgeOfHeroesGame(Game):
             )
         )
 
-        # War force selection actions (cycling buttons)
+        # Olympic Games response actions
         action_set.add(
             Action(
-                id="war_armies_cycle",
-                label="",
-                handler="_action_cycle_war_armies",
-                is_enabled="_is_war_force_enabled",
-                is_hidden="_is_war_force_hidden",
-                get_label="_get_war_armies_cycle_label",
+                id="use_olympics",
+                label=Localization.get(locale, "ageofheroes-yes"),
+                handler="_action_use_olympics",
+                is_enabled="_is_olympics_response_enabled",
+                is_hidden="_is_olympics_response_hidden",
+                get_label="_get_use_olympics_label",
                 show_in_actions_menu=False,
             )
         )
         action_set.add(
             Action(
-                id="war_generals_cycle",
-                label="",
-                handler="_action_cycle_war_generals",
-                is_enabled="_is_war_force_enabled",
-                is_hidden="_is_war_force_hidden",
-                get_label="_get_war_generals_cycle_label",
+                id="decline_olympics",
+                label=Localization.get(locale, "ageofheroes-no"),
+                handler="_action_decline_olympics",
+                is_enabled="_is_olympics_response_enabled",
+                is_hidden="_is_olympics_response_hidden",
+                get_label="_get_decline_olympics_label",
                 show_in_actions_menu=False,
             )
         )
-        action_set.add(
-            Action(
-                id="war_heroes_armies_cycle",
-                label="",
-                handler="_action_cycle_war_heroes_armies",
-                is_enabled="_is_war_force_enabled",
-                is_hidden="_is_war_force_hidden",
-                get_label="_get_war_heroes_armies_cycle_label",
-                show_in_actions_menu=False,
+
+        # War force selection actions
+        for force_id in ("armies", "generals", "hero_armies", "hero_generals"):
+            action_set.add(
+                Action(
+                    id=f"war_{force_id}_add",
+                    label="",
+                    handler="_action_adjust_war_force",
+                    is_enabled="_is_war_force_adjust_enabled",
+                    is_hidden="_is_war_force_adjust_hidden",
+                    get_label="_get_war_force_adjust_label",
+                    show_in_actions_menu=False,
+                )
             )
-        )
-        action_set.add(
-            Action(
-                id="war_heroes_generals_cycle",
-                label="",
-                handler="_action_cycle_war_heroes_generals",
-                is_enabled="_is_war_force_enabled",
-                is_hidden="_is_war_force_hidden",
-                get_label="_get_war_heroes_generals_cycle_label",
-                show_in_actions_menu=False,
+            action_set.add(
+                Action(
+                    id=f"war_{force_id}_remove",
+                    label="",
+                    handler="_action_adjust_war_force",
+                    is_enabled="_is_war_force_adjust_enabled",
+                    is_hidden="_is_war_force_adjust_hidden",
+                    get_label="_get_war_force_adjust_label",
+                    show_in_actions_menu=False,
+                )
             )
-        )
         action_set.add(
             Action(
                 id="confirm_war_forces",
@@ -497,6 +489,7 @@ class AgeOfHeroesGame(Game):
                 handler="_action_cancel_war_forces",
                 is_enabled="_is_war_force_enabled",
                 is_hidden="_is_war_force_hidden",
+                get_label="_get_cancel_war_forces_label",
                 show_in_actions_menu=False,
             )
         )
@@ -738,6 +731,172 @@ class AgeOfHeroesGame(Game):
             include_spectators=False,
         )
 
+    def _wants_brief(self, user) -> bool:
+        return bool(
+            user
+            and user.preferences.get_effective(
+                "brief_announcements", game_type=self.get_type()
+            )
+        )
+
+    def _broadcast_actor_l(
+        self,
+        actor: AgeOfHeroesPlayer,
+        personal_key: str,
+        others_key: str,
+        *,
+        brief_personal_key: str | None = None,
+        brief_others_key: str | None = None,
+        **kwargs,
+    ) -> None:
+        """Broadcast a per-listener personal/other message with optional brief forms."""
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+
+            is_actor = listener is actor
+            key = personal_key if is_actor else others_key
+            if self._wants_brief(user):
+                if is_actor and brief_personal_key:
+                    key = brief_personal_key
+                elif not is_actor and brief_others_key:
+                    key = brief_others_key
+
+            payload = dict(kwargs)
+            if not is_actor:
+                payload["player"] = actor.name
+            user.speak_l(key, buffer="game", **payload)
+
+    def _broadcast_draw(self, actor: AgeOfHeroesPlayer, card: Card) -> None:
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+            if listener is actor:
+                card_name = get_card_name(card, user.locale)
+                key = (
+                    "ageofheroes-draw-card-you-brief"
+                    if self._wants_brief(user)
+                    else "ageofheroes-draw-card-you"
+                )
+                user.speak_l(key, card=card_name, buffer="game")
+            else:
+                key = (
+                    "ageofheroes-draw-card-brief"
+                    if self._wants_brief(user)
+                    else "ageofheroes-draw-card"
+                )
+                user.speak_l(key, player=actor.name, buffer="game")
+
+    def _broadcast_tax_exchange(self, actor: AgeOfHeroesPlayer, discarded: Card) -> None:
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+            if listener is actor:
+                card_name = get_card_name(discarded, user.locale)
+                user.speak_l(
+                    "ageofheroes-tax-no-city-done-you",
+                    card=card_name,
+                    buffer="game",
+                )
+            else:
+                user.speak_l(
+                    "ageofheroes-tax-no-city-done",
+                    player=actor.name,
+                    buffer="game",
+                )
+
+    def _request_first_visible_focus(
+        self,
+        player: AgeOfHeroesPlayer,
+        action_ids: list[str] | tuple[str, ...],
+    ) -> None:
+        """Focus the first currently visible action after an action-driven submenu change."""
+        if player.is_bot:
+            return
+        for action_id in action_ids:
+            action = self.find_action(player, action_id)
+            if not action:
+                continue
+            resolved = self.resolve_action(player, action)
+            if resolved.visible:
+                self.request_menu_focus(player, action_id)
+                return
+
+    def _construction_focus_candidates(self) -> list[str]:
+        return [f"build_{building.value}" for building in BuildingType] + ["stop_building"]
+
+    def _war_target_focus_candidates(self, player: AgeOfHeroesPlayer) -> list[str]:
+        return [f"war_target_{i}" for i in range(len(player.pending_war_targets))] + [
+            "cancel_war_target"
+        ]
+
+    def _war_goal_focus_candidates(self, player: AgeOfHeroesPlayer) -> list[str]:
+        return [f"war_goal_{goal}" for goal in player.pending_war_goals] + [
+            "cancel_war_goal"
+        ]
+
+    def _road_target_focus_candidates(self, player: AgeOfHeroesPlayer) -> list[str]:
+        return [f"road_target_{i}" for i in range(len(player.pending_road_targets))] + [
+            "cancel_road"
+        ]
+
+    def _war_force_focus_candidates(self) -> tuple[str, ...]:
+        return (
+            "war_armies_add",
+            "war_armies_remove",
+            "war_generals_add",
+            "war_generals_remove",
+            "war_hero_armies_add",
+            "war_hero_armies_remove",
+            "war_hero_generals_add",
+            "war_hero_generals_remove",
+            "confirm_war_forces",
+            "cancel_war_forces",
+        )
+
+    def _request_focus_candidates(self) -> list[str]:
+        request_events = [
+            EventType.FORTUNE,
+            EventType.OLYMPICS,
+            EventType.HERO,
+        ]
+        return (
+            ["request_any"]
+            + [f"request_resource_{i}" for i, _ in enumerate(ResourceType)]
+            + ["request_own_special"]
+            + [f"request_event_{event.value}" for event in request_events]
+            + ["cancel_offer_selection"]
+        )
+
+    def _disaster_target_focus_candidates(self, player: AgeOfHeroesPlayer) -> list[str]:
+        return [f"disaster_target_{i}" for i in range(len(player.pending_disaster_targets))] + [
+            "cancel_disaster"
+        ]
+
+    def _discard_focus_candidates(self, player: AgeOfHeroesPlayer) -> list[str]:
+        return [f"discard_card_{i}" for i in range(len(player.hand))]
+
+    def _should_confirm_do_nothing(self, player: AgeOfHeroesPlayer) -> bool:
+        """Return True when a risky pass should be confirmed instead of executed."""
+        if player.is_bot or player.do_nothing_confirm_ticks > 0:
+            player.do_nothing_confirm_ticks = 0
+            return False
+
+        user = self.get_user(player)
+        if not user:
+            return False
+        if not user.preferences.get_effective(
+            "confirm_destructive_actions", game_type=self.get_type()
+        ):
+            return False
+
+        player.do_nothing_confirm_ticks = 200
+        user.speak_l("ageofheroes-confirm-do-nothing", buffer="game")
+        return True
+
     # ==========================================================================
     # Action Callbacks - Visibility/Enabled
     # ==========================================================================
@@ -767,6 +926,126 @@ class AgeOfHeroesGame(Game):
         if self.status == "playing" and self.is_touch_client(user):
             return Visibility.VISIBLE
         return super()._is_whose_turn_hidden(player)
+
+    def _action_whose_turn(self, player: Player, action_id: str) -> None:
+        """Report Age of Heroes phases that do not have a single current player."""
+        user = self.get_user(player)
+        if not user:
+            return
+
+        locale = user.locale
+        if self.status != "playing":
+            super()._action_whose_turn(player, action_id)
+            return
+
+        if self.phase == GamePhase.SETUP:
+            pending = [
+                active.name
+                for active in self.get_active_players()
+                if active.id not in self.setup_rolls
+            ]
+            if pending:
+                user.speak_l(
+                    "ageofheroes-whose-turn-setup",
+                    players=Localization.format_list_and(locale, pending),
+                    buffer="game",
+                )
+            else:
+                user.speak_l("ageofheroes-whose-turn-setup-resolving", buffer="game")
+            return
+
+        if self.phase == GamePhase.PREPARE:
+            user.speak_l("ageofheroes-whose-turn-prepare", buffer="game")
+            return
+
+        if self.phase == GamePhase.FAIR:
+            traders = [
+                active.name
+                for active in self.get_active_players()
+                if isinstance(active, AgeOfHeroesPlayer) and not active.has_stopped_trading
+            ]
+            if traders:
+                user.speak_l(
+                    "ageofheroes-whose-turn-fair",
+                    players=Localization.format_list_and(locale, traders),
+                    buffer="game",
+                )
+            else:
+                user.speak_l("ageofheroes-whose-turn-fair-resolving", buffer="game")
+            return
+
+        if self.phase == GamePhase.PLAY:
+            if self.sub_phase == PlaySubPhase.ROAD_PERMISSION:
+                active_players = self.get_active_players()
+                if (
+                    0 <= self.road_request_from < len(active_players)
+                    and 0 <= self.road_request_to < len(active_players)
+                ):
+                    user.speak_l(
+                        "ageofheroes-whose-turn-road",
+                        requester=active_players[self.road_request_from].name,
+                        responder=active_players[self.road_request_to].name,
+                        buffer="game",
+                    )
+                    return
+
+            if self.sub_phase == PlaySubPhase.WAR_OLYMPICS:
+                participants = self._war_attacker_defender()
+                if participants:
+                    attacker, defender = participants
+                    user.speak_l(
+                        "ageofheroes-whose-turn-olympics",
+                        attacker=attacker.name,
+                        defender=defender.name,
+                        buffer="game",
+                    )
+                    return
+
+            if self.sub_phase == PlaySubPhase.WAR_PREPARE_ATTACKER:
+                participants = self._war_attacker_defender()
+                if participants:
+                    attacker, defender = participants
+                    user.speak_l(
+                        "ageofheroes-whose-turn-war-attack",
+                        attacker=attacker.name,
+                        defender=defender.name,
+                        buffer="game",
+                    )
+                    return
+
+            if self.sub_phase == PlaySubPhase.WAR_PREPARE_DEFENDER:
+                participants = self._war_attacker_defender()
+                if participants:
+                    attacker, defender = participants
+                    user.speak_l(
+                        "ageofheroes-whose-turn-war-defense",
+                        attacker=attacker.name,
+                        defender=defender.name,
+                        buffer="game",
+                    )
+                    return
+
+            if self.sub_phase == PlaySubPhase.WAR_BATTLE:
+                active_players = self.get_active_players()
+                pending_rolls = []
+                war = self.war_state
+                if 0 <= war.attacker_index < len(active_players) and war.attacker_roll == 0:
+                    pending_rolls.append(active_players[war.attacker_index].name)
+                if 0 <= war.defender_index < len(active_players) and war.defender_roll == 0:
+                    pending_rolls.append(active_players[war.defender_index].name)
+                if pending_rolls:
+                    user.speak_l(
+                        "ageofheroes-whose-turn-war-roll",
+                        players=Localization.format_list_and(locale, pending_rolls),
+                        buffer="game",
+                    )
+                    return
+
+        if self.phase == GamePhase.GAME_OVER:
+            user.speak_l("ageofheroes-whose-turn-game-over", buffer="game")
+            return
+
+        super()._action_whose_turn(player, action_id)
 
     def _is_whos_at_table_hidden(self, player: Player) -> Visibility:
         user = self.get_user(player)
@@ -1029,13 +1308,7 @@ class AgeOfHeroesGame(Game):
 
         # Extract building type from action_id
         building_type = action_id.replace("build_", "")
-        building_name = get_building_name(building_type, locale)
-
-        # Get cost string
-        cost_key = f"ageofheroes-cost-{building_type}"
-        cost_str = Localization.get(locale, cost_key)
-
-        return f"{building_name} ({cost_str})"
+        return format_build_label(building_type, locale)
 
     def _get_stop_building_label(self, player: Player, action_id: str) -> str:
         """Get label for stop building action."""
@@ -1115,7 +1388,13 @@ class AgeOfHeroesGame(Game):
         if isinstance(neighbor, AgeOfHeroesPlayer) and neighbor.tribe_state:
             tribe_name = get_tribe_name(neighbor.tribe_state.tribe, locale)
             direction_str = Localization.get(locale, f"ageofheroes-direction-{direction}")
-            return f"{neighbor.name} ({tribe_name}) - {direction_str}"
+            return Localization.get(
+                locale,
+                "ageofheroes-player-tribe-direction",
+                player=neighbor.name,
+                tribe=tribe_name,
+                direction=direction_str,
+            )
 
         return neighbor.name
 
@@ -1269,7 +1548,12 @@ class AgeOfHeroesGame(Game):
         enemy_index, enemy = player.pending_war_targets[target_index]
         if isinstance(enemy, AgeOfHeroesPlayer) and enemy.tribe_state:
             tribe_name = get_tribe_name(enemy.tribe_state.tribe, locale)
-            return f"{enemy.name} ({tribe_name})"
+            return Localization.get(
+                locale,
+                "ageofheroes-player-tribe",
+                player=enemy.name,
+                tribe=tribe_name,
+            )
 
         return enemy.name
 
@@ -1312,6 +1596,46 @@ class AgeOfHeroesGame(Game):
         user = self.get_user(player)
         locale = user.locale if user else "en"
         return Localization.get(locale, "ageofheroes-cancel")
+
+    def _is_olympics_response_enabled(self, player: Player) -> str | None:
+        """Olympic Games response is enabled only for the defender."""
+        if self.status != "playing":
+            return "ageofheroes-game-not-started"
+        if self.phase != GamePhase.PLAY:
+            return "ageofheroes-wrong-phase"
+        if self.sub_phase != PlaySubPhase.WAR_OLYMPICS:
+            return "ageofheroes-wrong-phase"
+        if not isinstance(player, AgeOfHeroesPlayer):
+            return "ageofheroes-invalid-player"
+        active_players = self.get_active_players()
+        if self.war_state.defender_index >= len(active_players):
+            return "ageofheroes-not-in-war"
+        if active_players[self.war_state.defender_index] != player:
+            return "ageofheroes-not-in-war"
+        return None
+
+    def _is_olympics_response_hidden(self, player: Player) -> Visibility:
+        """Show Olympic Games response actions only to the war defender."""
+        if self.phase != GamePhase.PLAY or self.sub_phase != PlaySubPhase.WAR_OLYMPICS:
+            return Visibility.HIDDEN
+        if not isinstance(player, AgeOfHeroesPlayer):
+            return Visibility.HIDDEN
+        active_players = self.get_active_players()
+        if self.war_state.defender_index >= len(active_players):
+            return Visibility.HIDDEN
+        if active_players[self.war_state.defender_index] != player:
+            return Visibility.HIDDEN
+        return Visibility.VISIBLE
+
+    def _get_use_olympics_label(self, player: Player, action_id: str) -> str:
+        user = self.get_user(player)
+        locale = user.locale if user else "en"
+        return Localization.get(locale, "ageofheroes-yes")
+
+    def _get_decline_olympics_label(self, player: Player, action_id: str) -> str:
+        user = self.get_user(player)
+        locale = user.locale if user else "en"
+        return Localization.get(locale, "ageofheroes-no")
 
     def _is_war_force_enabled(self, player: Player) -> str | None:
         """War force selection actions enabled during force selection."""
@@ -1361,44 +1685,104 @@ class AgeOfHeroesGame(Game):
                 return Visibility.HIDDEN
         return Visibility.VISIBLE
 
-    def _get_war_armies_cycle_label(self, player: Player, action_id: str) -> str:
-        """Get label for armies cycling action."""
-        user = self.get_user(player)
-        locale = user.locale if user else "en"
-        if not isinstance(player, AgeOfHeroesPlayer) or not player.tribe_state:
-            return Localization.get(locale, "ageofheroes-war-armies-count", count=0)
-        return Localization.get(locale, "ageofheroes-war-armies-count", count=player.pending_war_armies)
+    def _parse_war_force_action(self, action_id: str) -> tuple[str, str] | None:
+        """Return the selected force bucket and adjustment direction."""
+        if not action_id.startswith("war_"):
+            return None
+        body = action_id.removeprefix("war_")
+        if body.endswith("_add"):
+            return body[: -len("_add")], "add"
+        if body.endswith("_remove"):
+            return body[: -len("_remove")], "remove"
+        return None
 
-    def _get_war_generals_cycle_label(self, player: Player, action_id: str) -> str:
-        """Get label for generals cycling action."""
-        user = self.get_user(player)
-        locale = user.locale if user else "en"
-        if not isinstance(player, AgeOfHeroesPlayer) or not player.tribe_state:
-            return Localization.get(locale, "ageofheroes-war-generals-count", count=0)
-        return Localization.get(locale, "ageofheroes-war-generals-count", count=player.pending_war_generals)
-
-    def _get_war_heroes_armies_cycle_label(self, player: Player, action_id: str) -> str:
-        """Get label for heroes as armies cycling action."""
-        user = self.get_user(player)
-        locale = user.locale if user else "en"
-        if not isinstance(player, AgeOfHeroesPlayer):
-            return Localization.get(locale, "ageofheroes-war-hero-armies-count", count=0)
-        return Localization.get(
-            locale,
-            "ageofheroes-war-hero-armies-count",
-            count=player.pending_war_heroes_as_armies,
+    def _war_force_limits(self, player: AgeOfHeroesPlayer) -> dict[str, tuple[int, int]]:
+        hero_count = self._count_hero_cards(player)
+        army_limit = player.tribe_state.get_available_armies() if player.tribe_state else 0
+        general_limit = (
+            player.tribe_state.get_available_generals() if player.tribe_state else 0
         )
+        return {
+            "armies": (player.pending_war_armies, army_limit),
+            "generals": (player.pending_war_generals, general_limit),
+            "hero_armies": (
+                player.pending_war_heroes_as_armies,
+                max(0, hero_count - player.pending_war_heroes_as_generals),
+            ),
+            "hero_generals": (
+                player.pending_war_heroes_as_generals,
+                max(0, hero_count - player.pending_war_heroes_as_armies),
+            ),
+        }
 
-    def _get_war_heroes_generals_cycle_label(self, player: Player, action_id: str) -> str:
-        """Get label for heroes as generals cycling action."""
+    def _war_force_label_key(self, force_id: str, direction: str) -> str:
+        return f"ageofheroes-war-force-{direction}-{force_id.replace('_', '-')}"
+
+    def _war_force_unit_key(self, force_id: str) -> str:
+        return f"ageofheroes-war-force-unit-{force_id.replace('_', '-')}"
+
+    def _is_war_force_adjust_enabled(
+        self, player: Player, action_id: str
+    ) -> str | tuple[str, dict] | None:
+        base_error = self._is_war_force_enabled(player)
+        if base_error:
+            return base_error
+        if not isinstance(player, AgeOfHeroesPlayer):
+            return "ageofheroes-invalid-player"
+
+        parsed = self._parse_war_force_action(action_id)
+        if not parsed:
+            return "ageofheroes-wrong-phase"
+        force_id, direction = parsed
+        limits = self._war_force_limits(player)
+        if force_id not in limits:
+            return "ageofheroes-wrong-phase"
+
+        current, maximum = limits[force_id]
         user = self.get_user(player)
         locale = user.locale if user else "en"
+        unit = Localization.get(locale, self._war_force_unit_key(force_id))
+        if direction == "add" and current >= maximum:
+            return (
+                "ageofheroes-war-force-max",
+                {"unit": unit, "max": maximum},
+            )
+        if direction == "remove" and current <= 0:
+            return ("ageofheroes-war-force-min", {"unit": unit})
+        return None
+
+    def _is_war_force_adjust_hidden(self, player: Player, action_id: str) -> Visibility:
+        if self._is_war_force_hidden(player) == Visibility.HIDDEN:
+            return Visibility.HIDDEN
         if not isinstance(player, AgeOfHeroesPlayer):
-            return Localization.get(locale, "ageofheroes-war-hero-generals-count", count=0)
+            return Visibility.HIDDEN
+        parsed = self._parse_war_force_action(action_id)
+        if not parsed:
+            return Visibility.HIDDEN
+        force_id, direction = parsed
+        limits = self._war_force_limits(player)
+        if force_id not in limits:
+            return Visibility.HIDDEN
+        current, maximum = limits[force_id]
+        if direction == "add" and maximum <= 0:
+            return Visibility.HIDDEN
+        if direction == "remove" and current <= 0 and maximum <= 0:
+            return Visibility.HIDDEN
+        return Visibility.VISIBLE
+
+    def _get_war_force_adjust_label(self, player: Player, action_id: str) -> str:
+        user = self.get_user(player)
+        locale = user.locale if user else "en"
+        parsed = self._parse_war_force_action(action_id)
+        if not parsed or not isinstance(player, AgeOfHeroesPlayer):
+            return ""
+        force_id, direction = parsed
+        current, maximum = self._war_force_limits(player).get(force_id, (0, 0))
         return Localization.get(
             locale,
-            "ageofheroes-war-hero-generals-count",
-            count=player.pending_war_heroes_as_generals,
+            self._war_force_label_key(force_id, direction),
+            current=current,
+            max=maximum,
         )
 
     def _get_confirm_war_forces_label(self, player: Player, action_id: str) -> str:
@@ -1409,6 +1793,14 @@ class AgeOfHeroesGame(Game):
             return Localization.get(locale, "ageofheroes-war-attack")
         else:
             return Localization.get(locale, "ageofheroes-war-defend")
+
+    def _get_cancel_war_forces_label(self, player: Player, action_id: str) -> str:
+        """Get contextual label for cancel/clear forces."""
+        user = self.get_user(player)
+        locale = user.locale if user else "en"
+        if self.sub_phase == PlaySubPhase.WAR_PREPARE_DEFENDER:
+            return Localization.get(locale, "ageofheroes-war-clear-forces")
+        return Localization.get(locale, "ageofheroes-cancel")
 
     def _is_offer_card_enabled(self, player: Player) -> str | None:
         """Offer card is enabled during fair phase if card can be offered."""
@@ -1664,8 +2056,7 @@ class AgeOfHeroesGame(Game):
         user = self.get_user(player)
         locale = user.locale if user else "en"
         card_name = get_card_name(card, locale)
-        play_text = Localization.get(locale, "ageofheroes-play")
-        return f"{play_text} {card_name}"
+        return Localization.get(locale, "ageofheroes-play-card-label", card=card_name)
 
     def _is_disaster_target_enabled(self, player: Player) -> str | None:
         """Disaster target selection enabled during disaster target phase."""
@@ -1860,12 +2251,19 @@ class AgeOfHeroesGame(Game):
 
         # Extract action type from action_id
         action_type = action_id.replace("action_", "")
+
+        if action_type == ActionType.DO_NOTHING and self._should_confirm_do_nothing(player):
+            return
+
+        player.do_nothing_confirm_ticks = 0
         player.current_action = action_type
 
         if action_type == ActionType.TAX_COLLECTION:
             self._perform_tax_collection(player)
         elif action_type == ActionType.CONSTRUCTION:
             start_construction(self, player)
+            if self.sub_phase == PlaySubPhase.CONSTRUCTION:
+                self._request_first_visible_focus(player, self._construction_focus_candidates())
         elif action_type == ActionType.WAR:
             self._start_war_declaration(player)
         elif action_type == ActionType.DO_NOTHING:
@@ -1891,7 +2289,8 @@ class AgeOfHeroesGame(Game):
                 cities=ts.cities,
                 armies=ts.get_available_armies(),
                 monument=ts.monument_progress,
-            buffer="game")
+                buffer="game",
+            )
 
     def _action_check_hand(self, player: Player, action_id: str) -> None:
         """Show player's hand with grouped card counts."""
@@ -1922,12 +2321,24 @@ class AgeOfHeroesGame(Game):
             dummy_card = Card(id=-1, card_type=card_type, subtype=subtype)
             card_name = get_card_name(dummy_card, locale)
             if count > 1:
-                card_parts.append(f"{count} {card_name}")
+                card_parts.append(
+                    Localization.get(
+                        locale,
+                        "ageofheroes-card-count",
+                        count=count,
+                        card=card_name,
+                    )
+                )
             else:
                 card_parts.append(card_name)
 
-        hand_str = ", ".join(card_parts)
-        user.speak_l("ageofheroes-hand-contents", cards=hand_str, count=len(player.hand), buffer="game")
+        hand_str = Localization.format_list(locale, card_parts)
+        user.speak_l(
+            "ageofheroes-hand-contents",
+            cards=hand_str,
+            count=len(player.hand),
+            buffer="game",
+        )
 
     def _action_check_status_detailed(self, player: Player, action_id: str) -> None:
         """Show detailed status in a status box."""
@@ -2286,7 +2697,10 @@ class AgeOfHeroesGame(Game):
 
         # Announce
         self.broadcast_personal_l(
-            player, "ageofheroes-left-auction-you", "ageofheroes-left-auction"
+            player,
+            "ageofheroes-left-auction-you",
+            "ageofheroes-left-auction",
+            buffer="game",
         )
 
         # Check if trading is complete
@@ -2320,6 +2734,7 @@ class AgeOfHeroesGame(Game):
             user = self.get_user(player)
             if user:
                 user.speak_l("ageofheroes-road-select-neighbor", buffer="game")
+            self._request_first_visible_focus(player, self._road_target_focus_candidates(player))
             self.refresh_menus()
             return
 
@@ -2423,6 +2838,7 @@ class AgeOfHeroesGame(Game):
         user = self.get_user(player)
         if user:
             user.speak_l("ageofheroes-construction-menu", buffer="game")
+        self._request_first_visible_focus(player, self._construction_focus_candidates())
         self.refresh_menus()
 
     def _action_approve_road(self, player: Player, action_id: str) -> None:
@@ -2596,6 +3012,7 @@ class AgeOfHeroesGame(Game):
         user = self.get_user(player)
         if user:
             user.speak_l("ageofheroes-war-select-goal", buffer="game")
+        self._request_first_visible_focus(player, self._war_goal_focus_candidates(player))
         self.refresh_menus()
 
     def _action_select_war_goal(self, player: Player, action_id: str) -> None:
@@ -2639,26 +3056,10 @@ class AgeOfHeroesGame(Game):
             self.refresh_menus()
             return
 
-        # Initialize attacker's force selection with defaults (all available)
-        if player.tribe_state:
-            player.pending_war_armies = player.tribe_state.get_available_armies()
-            player.pending_war_generals = player.tribe_state.get_available_generals()
-            # Count hero cards
-            hero_count = sum(
-                1
-                for card in player.hand
-                if card.card_type == CardType.EVENT and card.subtype == EventType.HERO
-            )
-            # Default: use heroes as armies
-            player.pending_war_heroes_as_armies = hero_count
-            player.pending_war_heroes_as_generals = 0
+        if self._maybe_prompt_olympics(player, defender):
+            return
 
-        # Enter attacker force selection phase
-        self.sub_phase = PlaySubPhase.WAR_PREPARE_ATTACKER
-        user = self.get_user(player)
-        if user:
-            user.speak_l("ageofheroes-war-prepare-attack", buffer="game")
-        self.refresh_menus()
+        self._continue_war_after_olympics(player)
 
     def _action_cancel_war_target(self, player: Player, action_id: str) -> None:
         """Handle canceling war target selection."""
@@ -2700,76 +3101,241 @@ class AgeOfHeroesGame(Game):
         user = self.get_user(player)
         if user:
             user.speak_l("ageofheroes-war-select-target", buffer="game")
+        self._request_first_visible_focus(player, self._war_target_focus_candidates(player))
         self.refresh_menus()
 
-    def _action_cycle_war_armies(self, player: Player, action_id: str) -> None:
-        """Cycle number of armies to commit (wraps around)."""
-        if not isinstance(player, AgeOfHeroesPlayer) or not player.tribe_state:
-            return
-
-        max_armies = player.tribe_state.get_available_armies()
-
-        # Cycle: increment and wrap around to 0 if exceeds max
-        player.pending_war_armies += 1
-        if player.pending_war_armies > max_armies:
-            player.pending_war_armies = 0
-
-        self.refresh_menus()
-
-    def _action_cycle_war_generals(self, player: Player, action_id: str) -> None:
-        """Cycle number of generals to commit (wraps around)."""
-        if not isinstance(player, AgeOfHeroesPlayer) or not player.tribe_state:
-            return
-
-        max_generals = player.tribe_state.get_available_generals()
-
-        # Cycle: increment and wrap around to 0 if exceeds max
-        player.pending_war_generals += 1
-        if player.pending_war_generals > max_generals:
-            player.pending_war_generals = 0
-
-        self.refresh_menus()
-
-    def _action_cycle_war_heroes_armies(self, player: Player, action_id: str) -> None:
-        """Cycle number of heroes to use as armies (wraps around)."""
-        if not isinstance(player, AgeOfHeroesPlayer):
-            return
-
-        max_heroes = sum(
+    def _count_hero_cards(self, player: AgeOfHeroesPlayer) -> int:
+        return sum(
             1
             for card in player.hand
             if card.card_type == CardType.EVENT and card.subtype == EventType.HERO
         )
 
-        # Can't exceed total heroes minus those used as generals
-        max_as_armies = max_heroes - player.pending_war_heroes_as_generals
+    def _initialize_attacker_forces(self, attacker: AgeOfHeroesPlayer) -> None:
+        if not attacker.tribe_state:
+            return
+        attacker.pending_war_armies = attacker.tribe_state.get_available_armies()
+        attacker.pending_war_generals = attacker.tribe_state.get_available_generals()
+        attacker.pending_war_heroes_as_armies = self._count_hero_cards(attacker)
+        attacker.pending_war_heroes_as_generals = 0
 
-        # Cycle: increment and wrap around to 0 if exceeds max
-        player.pending_war_heroes_as_armies += 1
-        if player.pending_war_heroes_as_armies > max_as_armies:
-            player.pending_war_heroes_as_armies = 0
+    def _initialize_defender_forces(self, defender: AgeOfHeroesPlayer) -> None:
+        if not defender.tribe_state:
+            return
+        defender.pending_war_armies = defender.tribe_state.get_available_armies()
+        defender.pending_war_generals = defender.tribe_state.get_available_generals()
+        defender.pending_war_heroes_as_armies = 0
+        defender.pending_war_heroes_as_generals = self._count_hero_cards(defender)
 
+    def _war_attacker_defender(
+        self,
+    ) -> tuple[AgeOfHeroesPlayer, AgeOfHeroesPlayer] | None:
+        active_players = self.get_active_players()
+        if self.war_state.attacker_index < 0:
+            return None
+        if self.war_state.defender_index < 0:
+            return None
+        if self.war_state.attacker_index >= len(active_players):
+            return None
+        if self.war_state.defender_index >= len(active_players):
+            return None
+        attacker = active_players[self.war_state.attacker_index]
+        defender = active_players[self.war_state.defender_index]
+        if not isinstance(attacker, AgeOfHeroesPlayer):
+            return None
+        if not isinstance(defender, AgeOfHeroesPlayer):
+            return None
+        return attacker, defender
+
+    def _maybe_prompt_olympics(
+        self,
+        attacker: AgeOfHeroesPlayer,
+        defender: AgeOfHeroesPlayer,
+    ) -> bool:
+        olympics_holder = check_olympics_defense(self)
+        if olympics_holder != defender:
+            return False
+
+        if defender.is_bot:
+            if bot_ai.bot_should_use_olympics(self, defender):
+                use_olympics(self, defender)
+                self.war_state.reset()
+                self.sub_phase = PlaySubPhase.SELECT_ACTION
+                self.refresh_menus()
+                self._end_action(attacker)
+                return True
+            return False
+
+        self.sub_phase = PlaySubPhase.WAR_OLYMPICS
+        user = self.get_user(defender)
+        if user:
+            user.speak_l("ageofheroes-olympics-prompt", attacker=attacker.name, buffer="game")
+        self._request_first_visible_focus(defender, ("use_olympics", "decline_olympics"))
+        self.refresh_menus()
+        return True
+
+    def _continue_war_after_olympics(self, attacker: AgeOfHeroesPlayer) -> None:
+        participants = self._war_attacker_defender()
+        if not participants:
+            self.war_state.reset()
+            self.sub_phase = PlaySubPhase.SELECT_ACTION
+            self.refresh_menus()
+            self._end_action(attacker)
+            return
+
+        if attacker.is_bot:
+            att_armies, att_generals, att_heroes, att_hero_generals = bot_ai.bot_select_armies(
+                self,
+                attacker,
+                is_attacking=True,
+            )
+            prepared = prepare_forces(
+                self,
+                attacker,
+                att_armies,
+                att_generals,
+                att_heroes,
+                att_hero_generals,
+            )
+            if not prepared:
+                self.war_state.reset()
+                self.sub_phase = PlaySubPhase.SELECT_ACTION
+                self.refresh_menus()
+                self._end_action(attacker)
+                return
+            self._continue_war_after_attacker_prepared(attacker)
+            return
+
+        self._initialize_attacker_forces(attacker)
+        self.sub_phase = PlaySubPhase.WAR_PREPARE_ATTACKER
+        user = self.get_user(attacker)
+        if user:
+            user.speak_l("ageofheroes-war-prepare-attack", buffer="game")
+        self._request_first_visible_focus(attacker, self._war_force_focus_candidates())
         self.refresh_menus()
 
-    def _action_cycle_war_heroes_generals(self, player: Player, action_id: str) -> None:
-        """Cycle number of heroes to use as generals (wraps around)."""
+    def _continue_war_after_attacker_prepared(self, attacker: AgeOfHeroesPlayer) -> None:
+        participants = self._war_attacker_defender()
+        if not participants:
+            self.war_state.reset()
+            self.sub_phase = PlaySubPhase.SELECT_ACTION
+            self.refresh_menus()
+            self._end_action(attacker)
+            return
+
+        _, defender = participants
+        if defender.is_bot:
+            def_armies, def_generals, def_heroes, def_hero_generals = bot_ai.bot_select_armies(
+                self,
+                defender,
+                is_attacking=False,
+            )
+            prepared = prepare_forces(
+                self,
+                defender,
+                def_armies,
+                def_generals,
+                def_heroes,
+                def_hero_generals,
+            )
+            if not prepared:
+                self.war_state.reset()
+                self.sub_phase = PlaySubPhase.SELECT_ACTION
+                self.refresh_menus()
+                self._end_action(attacker)
+                return
+            execute_war_battle(self)
+            return
+
+        self._initialize_defender_forces(defender)
+        self.sub_phase = PlaySubPhase.WAR_PREPARE_DEFENDER
+        user = self.get_user(defender)
+        if user:
+            user.speak_l(
+                "ageofheroes-war-prepare-defense",
+                attacker=attacker.name,
+                buffer="game",
+            )
+        self._request_first_visible_focus(defender, self._war_force_focus_candidates())
+        self.refresh_menus()
+
+    def _action_use_olympics(self, player: Player, action_id: str) -> None:
+        """Use Olympic Games to cancel a declared war."""
+        if self.sub_phase != PlaySubPhase.WAR_OLYMPICS:
+            return
         if not isinstance(player, AgeOfHeroesPlayer):
             return
 
-        max_heroes = sum(
-            1
-            for card in player.hand
-            if card.card_type == CardType.EVENT and card.subtype == EventType.HERO
-        )
+        participants = self._war_attacker_defender()
+        if not participants:
+            return
+        attacker, defender = participants
+        if defender != player:
+            return
 
-        # Can't exceed total heroes minus those used as armies
-        max_as_generals = max_heroes - player.pending_war_heroes_as_armies
+        if use_olympics(self, player):
+            self.war_state.reset()
+            self.sub_phase = PlaySubPhase.SELECT_ACTION
+            self.refresh_menus()
+            self._end_action(attacker)
 
-        # Cycle: increment and wrap around to 0 if exceeds max
-        player.pending_war_heroes_as_generals += 1
-        if player.pending_war_heroes_as_generals > max_as_generals:
-            player.pending_war_heroes_as_generals = 0
+    def _action_decline_olympics(self, player: Player, action_id: str) -> None:
+        """Decline Olympic Games and continue the war declaration."""
+        if self.sub_phase != PlaySubPhase.WAR_OLYMPICS:
+            return
+        if not isinstance(player, AgeOfHeroesPlayer):
+            return
 
+        participants = self._war_attacker_defender()
+        if not participants:
+            return
+        attacker, defender = participants
+        if defender != player:
+            return
+
+        self._continue_war_after_olympics(attacker)
+
+    def _action_adjust_war_force(self, player: Player, action_id: str) -> None:
+        """Add or remove one committed force without changing menu shape."""
+        if not isinstance(player, AgeOfHeroesPlayer):
+            return
+
+        parsed = self._parse_war_force_action(action_id)
+        if not parsed:
+            return
+        force_id, direction = parsed
+
+        deltas = {
+            ("armies", "add"): ("pending_war_armies", 1),
+            ("armies", "remove"): ("pending_war_armies", -1),
+            ("generals", "add"): ("pending_war_generals", 1),
+            ("generals", "remove"): ("pending_war_generals", -1),
+            ("hero_armies", "add"): ("pending_war_heroes_as_armies", 1),
+            ("hero_armies", "remove"): ("pending_war_heroes_as_armies", -1),
+            ("hero_generals", "add"): ("pending_war_heroes_as_generals", 1),
+            ("hero_generals", "remove"): ("pending_war_heroes_as_generals", -1),
+        }
+        target = deltas.get((force_id, direction))
+        if not target:
+            return
+
+        attr, delta = target
+        current, maximum = self._war_force_limits(player).get(force_id, (0, 0))
+        updated = max(0, min(maximum, current + delta))
+        if updated == current:
+            return
+        setattr(player, attr, updated)
+
+        user = self.get_user(player)
+        if user:
+            user.speak_l(
+                "ageofheroes-war-force-updated",
+                armies=player.pending_war_armies,
+                generals=player.pending_war_generals,
+                hero_armies=player.pending_war_heroes_as_armies,
+                hero_generals=player.pending_war_heroes_as_generals,
+                buffer="game",
+            )
         self.refresh_menus()
 
     def _action_confirm_war_forces(self, player: Player, action_id: str) -> None:
@@ -2779,7 +3345,7 @@ class AgeOfHeroesGame(Game):
 
         if self.sub_phase == PlaySubPhase.WAR_PREPARE_ATTACKER:
             # Attacker has selected forces, prepare them
-            prepare_forces(
+            prepared = prepare_forces(
                 self,
                 player,
                 player.pending_war_armies,
@@ -2787,6 +3353,12 @@ class AgeOfHeroesGame(Game):
                 player.pending_war_heroes_as_armies,
                 player.pending_war_heroes_as_generals,
             )
+            if not prepared:
+                user = self.get_user(player)
+                if user:
+                    user.speak_l("ageofheroes-war-invalid-forces", buffer="game")
+                self.refresh_menus()
+                return
 
             # Reset attacker's pending values
             player.pending_war_armies = 0
@@ -2794,65 +3366,11 @@ class AgeOfHeroesGame(Game):
             player.pending_war_heroes_as_armies = 0
             player.pending_war_heroes_as_generals = 0
 
-            # Get defender
-            active_players = self.get_active_players()
-            if self.war_state.defender_index >= len(active_players):
-                self.war_state.reset()
-                self.sub_phase = PlaySubPhase.SELECT_ACTION
-                self.refresh_menus()
-                self._end_action(player)
-                return
-
-            defender = active_players[self.war_state.defender_index]
-
-            if isinstance(defender, AgeOfHeroesPlayer):
-                if defender.is_bot:
-                    # Bot defender auto-selects
-                    def_armies, def_generals, def_heroes, def_hero_generals = (
-                        bot_ai.bot_select_armies(self, defender, is_attacking=False)
-                    )
-                    prepare_forces(
-                        self, defender, def_armies, def_generals, def_heroes, def_hero_generals
-                    )
-
-                    # Proceed to battle
-                    execute_war_battle(self)
-                else:
-                    # Human defender needs to select forces
-                    # Initialize defender's force selection with defaults
-                    if defender.tribe_state:
-                        defender.pending_war_armies = defender.tribe_state.get_available_armies()
-                        defender.pending_war_generals = (
-                            defender.tribe_state.get_available_generals()
-                        )
-                        # Count hero cards
-                        hero_count = sum(
-                            1
-                            for card in defender.hand
-                            if card.card_type == CardType.EVENT and card.subtype == EventType.HERO
-                        )
-                        # Default: use heroes as generals for defense
-                        defender.pending_war_heroes_as_armies = 0
-                        defender.pending_war_heroes_as_generals = hero_count
-
-                    self.sub_phase = PlaySubPhase.WAR_PREPARE_DEFENDER
-                    user = self.get_user(defender)
-                    if user:
-                        attacker_name = (
-                            player.name if isinstance(player, AgeOfHeroesPlayer) else "Unknown"
-                        )
-                        user.speak_l("ageofheroes-war-prepare-defense", attacker=attacker_name, buffer="game")
-                    self.refresh_menus()
-            else:
-                # No valid defender
-                self.war_state.reset()
-                self.sub_phase = PlaySubPhase.SELECT_ACTION
-                self.refresh_menus()
-                self._end_action(player)
+            self._continue_war_after_attacker_prepared(player)
 
         elif self.sub_phase == PlaySubPhase.WAR_PREPARE_DEFENDER:
             # Defender has selected forces, prepare them
-            prepare_forces(
+            prepared = prepare_forces(
                 self,
                 player,
                 player.pending_war_armies,
@@ -2860,6 +3378,12 @@ class AgeOfHeroesGame(Game):
                 player.pending_war_heroes_as_armies,
                 player.pending_war_heroes_as_generals,
             )
+            if not prepared:
+                user = self.get_user(player)
+                if user:
+                    user.speak_l("ageofheroes-war-invalid-forces", buffer="game")
+                self.refresh_menus()
+                return
 
             # Reset defender's pending values
             player.pending_war_armies = 0
@@ -2923,6 +3447,7 @@ class AgeOfHeroesGame(Game):
             card_name = get_card_name(card, user.locale)
             user.speak_l("ageofheroes-select-request", card=card_name, buffer="game")
 
+        self._request_first_visible_focus(player, self._request_focus_candidates())
         self.refresh_menus()
 
     def _action_select_request(self, player: Player, action_id: str) -> None:
@@ -3044,7 +3569,8 @@ class AgeOfHeroesGame(Game):
                 user.speak_l(
                     "ageofheroes-discard-more",
                     count=player.pending_discard,
-                buffer="game")
+                    buffer="game",
+                )
             self.refresh_menus()
         else:
             # Done discarding, end turn
@@ -3114,6 +3640,7 @@ class AgeOfHeroesGame(Game):
             card_name = get_card_name(card, user.locale)
             user.speak_l("ageofheroes-select-disaster-target", card=card_name, buffer="game")
 
+        self._request_first_visible_focus(player, self._disaster_target_focus_candidates(player))
         self.refresh_menus()
 
     def _action_select_disaster_target(self, player: Player, action_id: str) -> None:
@@ -3200,13 +3727,28 @@ class AgeOfHeroesGame(Game):
 
     def _start_turn(self) -> None:
         """Start a player's turn."""
+        winner = self._check_victory()
+        if winner:
+            return
+
         player = self.current_player
         if not isinstance(player, AgeOfHeroesPlayer):
             return
 
         # Skip eliminated players
         if player.is_spectator or (player.tribe_state and player.tribe_state.is_eliminated()):
-            # Skip this player's turn and advance to next
+            remaining_players = [
+                p
+                for p in self.get_active_players()
+                if isinstance(p, AgeOfHeroesPlayer)
+                and p.tribe_state
+                and not p.tribe_state.is_eliminated()
+            ]
+            if not remaining_players:
+                self.phase = GamePhase.GAME_OVER
+                self.broadcast_l("ageofheroes-game-over", buffer="game")
+                self.finish_game()
+                return
             self.advance_turn(announce=False)
             self._start_turn()
             return
@@ -3216,11 +3758,17 @@ class AgeOfHeroesGame(Game):
             armies_back, generals_back, recovered = player.tribe_state.process_end_of_turn()
             if armies_back > 0 or generals_back > 0:
                 self.broadcast_personal_l(
-                    player, "ageofheroes-army-returned-you", "ageofheroes-army-returned"
+                    player,
+                    "ageofheroes-army-returned-you",
+                    "ageofheroes-army-returned",
+                    buffer="game",
                 )
             if recovered > 0:
                 self.broadcast_personal_l(
-                    player, "ageofheroes-army-recover-you", "ageofheroes-army-recover"
+                    player,
+                    "ageofheroes-army-recover-you",
+                    "ageofheroes-army-recover",
+                    buffer="game",
                 )
 
         # Draw a card
@@ -3228,17 +3776,7 @@ class AgeOfHeroesGame(Game):
         drawn = self._draw_one()
         if drawn:
             player.hand.append(drawn)
-            user = self.get_user(player)
-            if user:
-                card_name = get_card_name(drawn, user.locale)
-                user.speak_l("ageofheroes-draw-card-you", card=card_name, buffer="game")
-
-            # Announce to others
-            for p in self.players:
-                if p != player:
-                    other_user = self.get_user(p)
-                    if other_user:
-                        other_user.speak_l("ageofheroes-draw-card", player=player.name, buffer="game")
+            self._broadcast_draw(player, drawn)
 
             # Check for immediate event triggers (Hunger/Barbarians)
             events.check_drawn_card_event(self, player, drawn)
@@ -3250,7 +3788,12 @@ class AgeOfHeroesGame(Game):
         # Tell player their options
         user = self.get_user(player)
         if user:
-            user.speak_l("ageofheroes-your-action", buffer="game")
+            key = (
+                "ageofheroes-your-action-brief"
+                if self._wants_brief(user)
+                else "ageofheroes-your-action"
+            )
+            user.speak_l(key, buffer="game")
 
         if player.is_bot:
             BotHelper.jolt_bot(player, ticks=random.randint(30, 50))  # nosec B311
@@ -3283,6 +3826,7 @@ class AgeOfHeroesGame(Game):
                 player,
                 "ageofheroes-monument-progress-you",
                 "ageofheroes-monument-progress",
+                buffer="game",
                 percent=percent,
                 count=player.tribe_state.monument_progress,
             )
@@ -3309,19 +3853,17 @@ class AgeOfHeroesGame(Game):
                 drawn = self._draw_one()
                 if drawn:
                     player.hand.append(drawn)
-                self.broadcast_personal_l(
-                    player,
-                    "ageofheroes-tax-no-city-done-you",
-                    "ageofheroes-tax-no-city-done",
-                )
+                self._broadcast_tax_exchange(player, discarded)
         else:
             # Draw cards equal to cities
             drawn = self._draw_cards(cities)
             player.hand.extend(drawn)
-            self.broadcast_personal_l(
+            self._broadcast_actor_l(
                 player,
                 "ageofheroes-tax-collection-you",
                 "ageofheroes-tax-collection",
+                brief_personal_key="ageofheroes-tax-collection-you-brief",
+                brief_others_key="ageofheroes-tax-collection-brief",
                 cities=cities,
                 cards=len(drawn),
             )
@@ -3365,16 +3907,24 @@ class AgeOfHeroesGame(Game):
             user = self.get_user(player)
             if user:
                 user.speak_l("ageofheroes-war-select-target", buffer="game")
+            self._request_first_visible_focus(player, self._war_target_focus_candidates(player))
             self.refresh_menus()
 
     def _perform_do_nothing(self, player: AgeOfHeroesPlayer) -> None:
         """Perform do nothing action."""
-        self.broadcast_personal_l(player, "ageofheroes-do-nothing-you", "ageofheroes-do-nothing")
+        self._broadcast_actor_l(
+            player,
+            "ageofheroes-do-nothing-you",
+            "ageofheroes-do-nothing",
+            brief_personal_key="ageofheroes-do-nothing-you-brief",
+            brief_others_key="ageofheroes-do-nothing-brief",
+        )
         self._end_action(player)
 
     def _end_action(self, player: AgeOfHeroesPlayer) -> None:
         """End the current action and check for hand overflow."""
         player.current_action = None
+        player.do_nothing_confirm_ticks = 0
         # Clear declined road targets when action ends
         player.declined_road_targets = []
 
@@ -3388,12 +3938,14 @@ class AgeOfHeroesGame(Game):
                     "ageofheroes-discard-excess",
                     max=MAX_HAND_SIZE,
                     count=player.pending_discard,
-                buffer="game")
+                    buffer="game",
+                )
             # For bots, auto-discard
             if player.is_bot:
                 bot_ai.bot_execute_discard_excess(self, player)
             else:
                 # Rebuild menus to show discard options
+                self._request_first_visible_focus(player, self._discard_focus_candidates(player))
                 self.refresh_menus()
             return
 
@@ -3502,7 +4054,10 @@ class AgeOfHeroesGame(Game):
         if player.tribe_state.is_eliminated() and len(player.hand) == 0:
             player.is_spectator = True
             self.broadcast_personal_l(
-                player, "ageofheroes-eliminated-you", "ageofheroes-eliminated"
+                player,
+                "ageofheroes-eliminated-you",
+                "ageofheroes-eliminated",
+                buffer="game",
             )
 
     # ==========================================================================
@@ -3514,6 +4069,10 @@ class AgeOfHeroesGame(Game):
         super().on_tick()
         if not self.game_active:
             return
+
+        for player in self.players:
+            if isinstance(player, AgeOfHeroesPlayer) and player.do_nothing_confirm_ticks > 0:
+                player.do_nothing_confirm_ticks -= 1
 
         if self.phase == GamePhase.SETUP:
             self._tick_setup_bots()

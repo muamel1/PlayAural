@@ -50,6 +50,10 @@ ageofheroes-action-construction = Construction
 ageofheroes-action-war = War
 ageofheroes-action-do-nothing = Do Nothing
 ageofheroes-play = Play
+ageofheroes-play-card-label = Play { $card }
+ageofheroes-card-count = { $count } { $card }
+ageofheroes-player-tribe = { $player } ({ $tribe })
+ageofheroes-player-tribe-direction = { $player } ({ $tribe }) - { $direction }
 
 # War goals
 ageofheroes-war-conquest = Conquest
@@ -77,6 +81,17 @@ ageofheroes-dice-result-other = { $player } rolled { $total }.
 ageofheroes-dice-tie = Multiple players tied with { $total }. Rolling again...
 ageofheroes-first-player = { $player } rolled highest with { $total } and goes first.
 ageofheroes-first-player-you = With { $total } points, you go first.
+ageofheroes-whose-turn-setup = Setup phase. Waiting for { $players } to roll for turn order.
+ageofheroes-whose-turn-setup-resolving = Setup phase. All dice are in; turn order is resolving.
+ageofheroes-whose-turn-prepare = Preparation phase. Events and disasters are resolving.
+ageofheroes-whose-turn-fair = Marketplace phase. { $players } may still trade.
+ageofheroes-whose-turn-fair-resolving = Marketplace phase. Trades are resolving.
+ageofheroes-whose-turn-road = Road permission phase. { $responder } must answer { $requester }'s road request.
+ageofheroes-whose-turn-olympics = War declared. { $defender } must decide whether to use Olympic Games against { $attacker }.
+ageofheroes-whose-turn-war-attack = War preparation. { $attacker } is choosing forces against { $defender }.
+ageofheroes-whose-turn-war-defense = War preparation. { $defender } is choosing defending forces against { $attacker }.
+ageofheroes-whose-turn-war-roll = Battle phase. Waiting for { $players } to roll.
+ageofheroes-whose-turn-game-over = The game is over.
 
 # Preparation phase
 ageofheroes-prepare-start = Players must play event cards and discard disasters.
@@ -158,7 +173,10 @@ ageofheroes-play-start = Play phase.
 ageofheroes-day = Day { $day }
 ageofheroes-draw-card = { $player } draws a card from the deck.
 ageofheroes-draw-card-you = You draw { $card } from the deck.
+ageofheroes-draw-card-brief = { $player } draws.
+ageofheroes-draw-card-you-brief = Draw: { $card }.
 ageofheroes-your-action = What do you want to do?
+ageofheroes-your-action-brief = Action?
 
 # Tax Collection
 ageofheroes-tax-collection = { $player } chooses Tax Collection: { $cities } { $cities ->
@@ -175,14 +193,21 @@ ageofheroes-tax-collection-you = You choose Tax Collection: { $cities } { $citie
     [one] card
     *[other] cards
 }.
+ageofheroes-tax-collection-brief = { $player } tax: { $cards } from { $cities }.
+ageofheroes-tax-collection-you-brief = Tax: { $cards } from { $cities }.
 ageofheroes-tax-no-city = Tax Collection: You have no surviving cities. Discard a card to draw a new one.
 ageofheroes-tax-no-city-done = { $player } chooses Tax Collection but has no cities, so they exchange a card.
 ageofheroes-tax-no-city-done-you = Tax Collection: You exchanged { $card } for a new card.
 
 # Construction
 ageofheroes-construction-menu = What do you want to build?
-ageofheroes-construction-done = { $player } built { $article } { $building }.
-ageofheroes-construction-done-you = You built { $article } { $building }.
+ageofheroes-construction-done = { $player } built { $building }.
+ageofheroes-construction-done-you = You built { $building }.
+ageofheroes-build-cost-resource = { $count ->
+    [one] { $resource }
+    *[other] { $count }x { $resource }
+}
+ageofheroes-build-menu-label = { $building } ({ $cost })
 ageofheroes-construction-stop = Stop building
 ageofheroes-construction-stopped = You decided to stop building.
 ageofheroes-road-select-neighbor = Select which neighbor to build a road to.
@@ -201,26 +226,40 @@ ageofheroes-supply-exhausted = No more { $building } available to build.
 # Do Nothing
 ageofheroes-do-nothing = { $player } passes.
 ageofheroes-do-nothing-you = You pass...
+ageofheroes-do-nothing-brief = { $player } passes.
+ageofheroes-do-nothing-you-brief = Pass.
+ageofheroes-confirm-do-nothing = Passing skips your action for this turn. Press Do Nothing again to confirm.
 
 # War
 ageofheroes-war-declare = { $attacker } declares war on { $defender }. Goal: { $goal }.
 ageofheroes-war-prepare = Select your armies for { $action }.
 ageofheroes-war-no-army = You have no armies or hero cards available.
+ageofheroes-war-no-tribe = You do not have a tribe in this battle.
 ageofheroes-war-no-targets = No valid targets for war.
 ageofheroes-war-no-valid-goal = No valid war goals against this target.
+ageofheroes-war-invalid-forces = Those forces are no longer valid. Review your available armies, generals, and Hero cards.
 ageofheroes-war-select-target = Select which player to attack.
 ageofheroes-war-select-goal = Select your war goal.
 ageofheroes-war-prepare-attack = Select your attacking forces.
 ageofheroes-war-prepare-defense = { $attacker } is attacking you; Select your defending forces.
-ageofheroes-war-select-armies = Select armies: { $count }
-ageofheroes-war-select-generals = Select generals: { $count }
-ageofheroes-war-select-heroes = Select heroes: { $count }
-ageofheroes-war-armies-count = Armies: { $count }
-ageofheroes-war-generals-count = Generals: { $count }
-ageofheroes-war-hero-armies-count = Hero armies: { $count }
-ageofheroes-war-hero-generals-count = Hero generals: { $count }
+ageofheroes-war-force-add-armies = Add one army. Armies committed: { $current } of { $max }.
+ageofheroes-war-force-remove-armies = Remove one army. Armies committed: { $current } of { $max }.
+ageofheroes-war-force-add-generals = Add one general. Generals committed: { $current } of { $max }.
+ageofheroes-war-force-remove-generals = Remove one general. Generals committed: { $current } of { $max }.
+ageofheroes-war-force-add-hero-armies = Add one Hero as an army. Hero armies committed: { $current } of { $max }.
+ageofheroes-war-force-remove-hero-armies = Remove one Hero army. Hero armies committed: { $current } of { $max }.
+ageofheroes-war-force-add-hero-generals = Add one Hero as a general. Hero generals committed: { $current } of { $max }.
+ageofheroes-war-force-remove-hero-generals = Remove one Hero general. Hero generals committed: { $current } of { $max }.
+ageofheroes-war-force-unit-armies = armies
+ageofheroes-war-force-unit-generals = generals
+ageofheroes-war-force-unit-hero-armies = Hero armies
+ageofheroes-war-force-unit-hero-generals = Hero generals
+ageofheroes-war-force-max = Already at the maximum: { $unit } ({ $max }).
+ageofheroes-war-force-min = None committed: { $unit }.
+ageofheroes-war-force-updated = Forces committed: { $armies } armies, { $generals } generals, { $hero_armies } Hero armies, { $hero_generals } Hero generals.
 ageofheroes-war-attack = Attack...
 ageofheroes-war-defend = Defend...
+ageofheroes-war-clear-forces = Clear forces
 ageofheroes-war-prepared = Your forces: { $armies } { $armies ->
     [one] army
     *[other] armies
@@ -259,6 +298,8 @@ ageofheroes-war-bonuses-other = { $general ->
         *[other] { $player }: +{ $general } from general, +{ $fortress } from fortresses = { $total } total
     }
 }
+ageofheroes-war-bonuses-you-brief = Bonus +{ $bonus } = { $total }.
+ageofheroes-war-bonuses-other-brief = { $player } bonus +{ $bonus } = { $total }.
 
 # Battle
 ageofheroes-battle-start = Battle begins. { $attacker }'s { $att_armies } { $att_armies ->
@@ -268,6 +309,7 @@ ageofheroes-battle-start = Battle begins. { $attacker }'s { $att_armies } { $att
     [one] army
     *[other] armies
 }.
+ageofheroes-battle-start-brief = Battle: { $attacker } { $att_armies } vs { $defender } { $def_armies }.
 ageofheroes-dice-roll-detailed = { $name } rolls { $dice }{ $general ->
     [0] {""}
     *[other] { " + { $general } from general" }
@@ -287,6 +329,9 @@ ageofheroes-dice-roll-detailed-you = You roll { $dice }{ $general ->
 ageofheroes-round-attacker-wins = { $attacker } wins the round ({ $att_total } vs { $def_total }). { $defender } loses an army.
 ageofheroes-round-defender-wins = { $defender } defends successfully ({ $def_total } vs { $att_total }). { $attacker } loses an army.
 ageofheroes-round-draw = Both sides tie at { $total }. No armies lost.
+ageofheroes-round-attacker-wins-brief = { $attacker } { $att_total } beats { $defender } { $def_total }. { $defender } -1 army.
+ageofheroes-round-defender-wins-brief = { $defender } { $def_total } beats { $attacker } { $att_total }. { $attacker } -1 army.
+ageofheroes-round-draw-brief = Tie { $total }. No loss.
 ageofheroes-battle-victory-attacker = { $attacker } defeats { $defender }.
 ageofheroes-battle-victory-defender = { $defender } defends successfully against { $attacker }.
 ageofheroes-battle-mutual-defeat = Both { $attacker } and { $defender } lose all armies.
@@ -313,6 +358,18 @@ ageofheroes-destruction-success = { $attacker } destroys { $count } of { $defend
     [one] resource
     *[other] resources
 }.
+ageofheroes-conquest-success-brief = { $attacker } takes { $count } { $count ->
+    [one] city
+    *[other] cities
+} from { $defender }.
+ageofheroes-plunder-success-brief = { $attacker } takes { $count } { $count ->
+    [one] card
+    *[other] cards
+} from { $defender }.
+ageofheroes-destruction-success-brief = { $attacker } destroys { $count } monument { $count ->
+    [one] resource
+    *[other] resources
+} from { $defender }.
 ageofheroes-army-losses = { $player } loses { $count } { $count ->
     [one] army
     *[other] armies
@@ -456,10 +513,18 @@ ageofheroes-wrong-phase = This action is not available in the current phase.
 ageofheroes-invalid-player = This action is not available to you.
 ageofheroes-not-in-game = You are not in this game.
 ageofheroes-not-in-war = You are not involved in this war.
+ageofheroes-already-rolled = You have already rolled.
+ageofheroes-invalid-card-index = That card is no longer available.
 ageofheroes-no-card-selected = Select a card first.
 ageofheroes-no-cards-to-discard = You have no cards to discard.
 ageofheroes-disaster-too-early = Disaster cards can only be played from day 2 onward.
 ageofheroes-no-resources = You don't have the required resources.
+ageofheroes-cannot-accept-own-offer = You cannot accept your own trade offer.
+ageofheroes-offerer-unavailable = That trade offer is no longer available.
+ageofheroes-offered-card-unavailable = The offered card is no longer available.
+ageofheroes-trade-card-type-mismatch = Your selected card does not match the requested card type.
+ageofheroes-trade-card-subtype-mismatch = Your selected card does not match the requested card.
+ageofheroes-trade-offer-label = { $player }: { $offered } for { $wanted }
 
 # Building costs (for display)
 ageofheroes-cost-army = 2 Grain, Iron

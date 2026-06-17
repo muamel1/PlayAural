@@ -110,6 +110,7 @@ def _apply_population_growth(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) -
         player,
         "ageofheroes-population-growth-you",
         "ageofheroes-population-growth",
+        buffer="game",
     )
     game.play_sound("game_ageofheroes/build.ogg")
 
@@ -153,7 +154,8 @@ def discard_player_card(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer, event_
                             "ageofheroes-block-with-card",
                             player=player.name,
                             card=card_name,
-                        buffer="game")
+                            buffer="game",
+                        )
             return True
     return False
 
@@ -201,7 +203,10 @@ def apply_barbarians_effect(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) ->
         return
 
     game.broadcast_personal_l(
-        player, "ageofheroes-barbarians-attack-you", "ageofheroes-barbarians-attack"
+        player,
+        "ageofheroes-barbarians-attack-you",
+        "ageofheroes-barbarians-attack",
+        buffer="game",
     )
     game.play_sound("game_ageofheroes/disaster.ogg")
 
@@ -278,6 +283,7 @@ def apply_earthquake_effect(
         target_player,
         "ageofheroes-earthquake-strikes-you",
         "ageofheroes-earthquake-strikes",
+        buffer="game",
         attacker=source_player.name,
     )
     game.play_sound("game_ageofheroes/disaster.ogg")
@@ -311,6 +317,7 @@ def apply_eruption_effect(
         target_player,
         "ageofheroes-eruption-strikes-you",
         "ageofheroes-eruption-strikes",
+        buffer="game",
         attacker=source_player.name,
     )
     game.play_sound("game_ageofheroes/disaster.ogg")

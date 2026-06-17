@@ -10,6 +10,7 @@ from .state import (
     PlaySubPhase,
     get_building_name,
 )
+from ...messages.localization import Localization
 
 if TYPE_CHECKING:
     from .game import AgeOfHeroesGame, AgeOfHeroesPlayer
@@ -78,28 +79,27 @@ def has_resources(player: AgeOfHeroesPlayer, required: list[str]) -> bool:
         if card.card_type == CardType.RESOURCE:
             resource_counts[card.subtype] = resource_counts.get(card.subtype, 0) + 1
 
-    # Check if we have enough of each required resource
     required_counts: dict[str, int] = {}
     for resource in required:
         required_counts[resource] = required_counts.get(resource, 0) + 1
 
-    # Track how much gold we need to use as wildcard
-    gold_needed = 0
     gold_available = resource_counts.get(ResourceType.GOLD, 0)
+    explicit_gold_required = required_counts.get(ResourceType.GOLD, 0)
 
-    for resource, count in required_counts.items():
-        available = resource_counts.get(resource, 0)
-        if available < count:
-            # Need to use gold to make up the difference
-            shortfall = count - available
-            gold_needed += shortfall
-
-    # Check if we have enough gold to cover shortfalls
-    # (but don't double-count gold if gold itself is required)
-    if gold_needed > gold_available:
+    if gold_available < explicit_gold_required:
         return False
 
-    return True
+    gold_remaining = gold_available - explicit_gold_required
+    wildcard_gold_needed = 0
+
+    for resource, count in required_counts.items():
+        if resource == ResourceType.GOLD:
+            continue
+        available = resource_counts.get(resource, 0)
+        if available < count:
+            wildcard_gold_needed += count - available
+
+    return wildcard_gold_needed <= gold_remaining
 
 
 def has_road_target(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) -> bool:
@@ -181,33 +181,77 @@ def spend_resources(
 
     Gold acts as a wildcard and can substitute for any other resource.
     """
-    spent = []
+    if not has_resources(player, required):
+        return []
+
+    spent: list[Card] = []
     required_counts: dict[str, int] = {}
     for resource in required:
         required_counts[resource] = required_counts.get(resource, 0) + 1
 
-    for resource, count in required_counts.items():
-        for _ in range(count):
-            # First, try to find the exact resource
-            found = False
-            for i, card in enumerate(player.hand):
-                if card.card_type == CardType.RESOURCE and card.subtype == resource:
-                    removed = player.hand.pop(i)
-                    spent.append(removed)
-                    discard_pile.append(removed)
-                    found = True
-                    break
+    def pop_resource(subtype: str) -> Card | None:
+        for i, card in enumerate(player.hand):
+            if card.card_type == CardType.RESOURCE and card.subtype == subtype:
+                return player.hand.pop(i)
+        return None
 
-            # If not found, use Gold as wildcard
-            if not found:
-                for i, card in enumerate(player.hand):
-                    if card.card_type == CardType.RESOURCE and card.subtype == ResourceType.GOLD:
-                        removed = player.hand.pop(i)
-                        spent.append(removed)
-                        discard_pile.append(removed)
-                        break
+    def spend(card: Card | None) -> None:
+        if card:
+            spent.append(card)
+            discard_pile.append(card)
+
+    wildcard_shortfall = 0
+
+    # Spend exact non-gold resources first, tracking what Gold must cover.
+    for resource, count in required_counts.items():
+        if resource == ResourceType.GOLD:
+            continue
+        for _ in range(count):
+            exact = pop_resource(resource)
+            if exact:
+                spend(exact)
+            else:
+                wildcard_shortfall += 1
+
+    # Explicit Gold costs must be paid before Gold is used as a wildcard.
+    for _ in range(required_counts.get(ResourceType.GOLD, 0)):
+        spend(pop_resource(ResourceType.GOLD))
+
+    for _ in range(wildcard_shortfall):
+        spend(pop_resource(ResourceType.GOLD))
 
     return spent
+
+
+def format_build_cost(building_type: str, locale: str) -> str:
+    """Format a localized build cost for a menu label."""
+    required = BUILDING_COSTS.get(building_type, [])
+    cost_parts = []
+    for resource in dict.fromkeys(required):
+        count = required.count(resource)
+        resource_value = resource.value if hasattr(resource, "value") else resource
+        resource_name = Localization.get(locale, f"ageofheroes-resource-{resource_value}")
+        cost_parts.append(
+            Localization.get(
+                locale,
+                "ageofheroes-build-cost-resource",
+                count=count,
+                resource=resource_name,
+            )
+        )
+    return Localization.format_list(locale, cost_parts)
+
+
+def format_build_label(building_type: str, locale: str) -> str:
+    """Format the localized construction menu label for a building."""
+    building_name = get_building_name(building_type, locale)
+    cost_str = format_build_cost(building_type, locale)
+    return Localization.get(
+        locale,
+        "ageofheroes-build-menu-label",
+        building=building_name,
+        cost=cost_str,
+    )
 
 
 def build(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer, building_type: str) -> bool:
@@ -248,21 +292,23 @@ def build(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer, building_type: str) 
     user = game.get_user(player)
     if user:
         building_name = get_building_name(building_type, user.locale)
-        article = "an" if building_type == BuildingType.ARMY else "a"
-        user.speak_l("ageofheroes-construction-done-you", building=building_name, article=article, buffer="game")
+        user.speak_l(
+            "ageofheroes-construction-done-you",
+            building=building_name,
+            buffer="game",
+        )
 
     for p in game.players:
         if p != player:
             other_user = game.get_user(p)
             if other_user:
                 building_name = get_building_name(building_type, other_user.locale)
-                article = "an" if building_type == BuildingType.ARMY else "a"
                 other_user.speak_l(
                     "ageofheroes-construction-done",
                     player=player.name,
                     building=building_name,
-                    article=article,
-                buffer="game")
+                    buffer="game",
+                )
 
     return True
 
@@ -296,9 +342,6 @@ def build_road(
     # Announce
     game.play_sound("game_ageofheroes/build.ogg")
 
-    builder_tribe = get_building_name(builder.tribe_state.tribe, "en")
-    target_tribe = get_building_name(target.tribe_state.tribe, "en")
-
     game.broadcast_l("ageofheroes-road-built", tribe1=builder.name, tribe2=target.name, buffer="game")
 
     return True
@@ -315,24 +358,7 @@ def get_construction_menu_items(
 
     for building_type in BuildingType:
         if can_build(game, player, building_type):
-            building_name = get_building_name(building_type, locale)
-
-            # Add cost info
-            required = BUILDING_COSTS.get(building_type, [])
-            cost_parts = []
-            for resource in set(required):
-                count = required.count(resource)
-                from ...messages.localization import Localization
-
-                resource_name = Localization.get(locale, f"ageofheroes-resource-{resource}")
-                if count > 1:
-                    cost_parts.append(f"{count}x {resource_name}")
-                else:
-                    cost_parts.append(resource_name)
-
-            cost_str = " + ".join(cost_parts)
-            label = f"{building_name} ({cost_str})"
-            items.append((building_type, label))
+            items.append((building_type, format_build_label(building_type, locale)))
 
     return items
 

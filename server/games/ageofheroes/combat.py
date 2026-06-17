@@ -16,10 +16,29 @@ if TYPE_CHECKING:
     from .game import AgeOfHeroesGame, AgeOfHeroesPlayer
 
 
+def _brief_enabled(game: AgeOfHeroesGame, user) -> bool:
+    brief_checker = getattr(game, "_wants_brief", None)
+    return bool(brief_checker(user)) if brief_checker else False
+
+
+def _broadcast_l_with_brief(
+    game: AgeOfHeroesGame,
+    full_key: str,
+    brief_key: str,
+    **kwargs,
+) -> None:
+    for player in game.players:
+        user = game.get_user(player)
+        if not user:
+            continue
+        key = brief_key if _brief_enabled(game, user) else full_key
+        user.speak_l(key, buffer="game", **kwargs)
+
+
 def can_declare_war(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) -> str | None:
     """Check if a player can declare war. Returns error message or None."""
     if not player.tribe_state:
-        return "No tribe state"
+        return "ageofheroes-war-no-tribe"
 
     # Need at least one available army OR a hero card (heroes can substitute for armies)
     available_armies = player.tribe_state.get_available_armies()
@@ -34,7 +53,7 @@ def can_declare_war(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) -> str | N
 
     # Need at least one valid target
     if not get_valid_war_targets(game, player):
-        return "No valid targets"
+        return "ageofheroes-war-no-targets"
 
     return None
 
@@ -126,7 +145,8 @@ def declare_war(
                 attacker=attacker.name,
                 defender=defender.name,
                 goal=goal_name,
-            buffer="game")
+                buffer="game",
+            )
 
     return True
 
@@ -163,7 +183,7 @@ def use_olympics(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) -> bool:
             game.war_state.cancelled_by_olympics = True
             game.play_sound("game_ageofheroes/olympics.ogg")
 
-            game.broadcast_l("ageofheroes-olympics-cancel", name=player.name, buffer="game")
+            game.broadcast_l("ageofheroes-olympics-cancel", player=player.name, buffer="game")
             return True
 
     return False
@@ -237,7 +257,8 @@ def prepare_forces(
             armies=armies + heroes,
             generals=generals + hero_generals,
             heroes=0,  # Heroes already counted in armies/generals
-        buffer="game")
+            buffer="game",
+        )
 
     return True
 
@@ -276,7 +297,8 @@ def player_roll_war_dice(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) -> in
                     "ageofheroes-war-roll-other",
                     player=player.name,
                     roll=die_roll,
-                buffer="game")
+                    buffer="game",
+                )
 
     return die_roll
 
@@ -419,13 +441,25 @@ def _announce_war_bonus_for_side(
         user = game.get_user(p)
         if not user:
             continue
+        if _brief_enabled(game, user):
+            key = (
+                "ageofheroes-war-bonuses-you-brief"
+                if p == participant
+                else "ageofheroes-war-bonuses-other-brief"
+            )
+            kwargs = {"bonus": gen_bonus + fort_bonus, "total": total}
+            if p != participant:
+                kwargs["player"] = participant.name
+            user.speak_l(key, buffer="game", **kwargs)
+            continue
         if p == participant:
             user.speak_l(
                 "ageofheroes-war-bonuses-you",
                 general=gen_bonus,
                 fortress=fort_bonus,
                 total=total,
-            buffer="game")
+                buffer="game",
+            )
         else:
             user.speak_l(
                 "ageofheroes-war-bonuses-other",
@@ -433,7 +467,8 @@ def _announce_war_bonus_for_side(
                 general=gen_bonus,
                 fortress=fort_bonus,
                 total=total,
-            buffer="game")
+                buffer="game",
+            )
 
 
 def _resolve_war_outcome(
@@ -446,32 +481,38 @@ def _resolve_war_outcome(
     """Determine winner, announce outcome, and return losses."""
     if attacker_total > defender_total:
         game.play_sound("game_ageofheroes/attack_win.ogg")
-        game.broadcast_l(
+        _broadcast_l_with_brief(
+            game,
             "ageofheroes-round-attacker-wins",
+            "ageofheroes-round-attacker-wins-brief",
             attacker=attacker.name if attacker else "Attacker",
             defender=defender.name if defender else "Defender",
             att_total=attacker_total,
             def_total=defender_total,
-        buffer="game")
+        )
         return "attacker", 0, 1
 
     if defender_total > attacker_total:
         game.play_sound("game_ageofheroes/defend_win.ogg")
-        game.broadcast_l(
+        _broadcast_l_with_brief(
+            game,
             "ageofheroes-round-defender-wins",
+            "ageofheroes-round-defender-wins-brief",
             attacker=attacker.name if attacker else "Attacker",
             defender=defender.name if defender else "Defender",
             att_total=attacker_total,
             def_total=defender_total,
-        buffer="game")
+        )
         return "defender", 1, 0
 
-    game.broadcast_l(
+    _broadcast_l_with_brief(
+        game,
         "ageofheroes-round-draw",
+        "ageofheroes-round-draw-brief",
         attacker=attacker.name if attacker else "Attacker",
         defender=defender.name if defender else "Defender",
         total=attacker_total,
-    buffer="game")
+    )
     return "draw", 0, 0
 
 
@@ -584,16 +625,18 @@ def apply_war_outcome(game: AgeOfHeroesGame) -> None:
         if cities_to_take > 0:
             defender.tribe_state.cities -= cities_to_take
             attacker.tribe_state.cities += cities_to_take
-            game.broadcast_l(
+            _broadcast_l_with_brief(
+                game,
                 "ageofheroes-conquest-success",
+                "ageofheroes-conquest-success-brief",
                 attacker=attacker.name,
                 defender=defender.name,
                 count=cities_to_take,
-            buffer="game")
+            )
             game.play_sound("game_ageofheroes/conquest.ogg")
 
     elif war.goal == WarGoal.PLUNDER:
-        # Steal cards: 2 × army strength (Pascal: wgsPlunder)
+        # Steal cards: 2x army strength (Pascal: wgsPlunder)
         cards_to_steal = min(2 * attacker_strength, len(defender.hand))
         if cards_to_steal > 0:
             stolen = []
@@ -605,12 +648,14 @@ def apply_war_outcome(game: AgeOfHeroesGame) -> None:
                     attacker.hand.append(card)
                     stolen.append(card)
 
-            game.broadcast_l(
+            _broadcast_l_with_brief(
+                game,
                 "ageofheroes-plunder-success",
+                "ageofheroes-plunder-success-brief",
                 attacker=attacker.name,
                 count=len(stolen),
                 defender=defender.name,
-            buffer="game")
+            )
             game.play_sound("game_ageofheroes/plunder.ogg")
 
     elif war.goal == WarGoal.DESTRUCTION:
@@ -627,12 +672,14 @@ def apply_war_outcome(game: AgeOfHeroesGame) -> None:
 
         if resources_to_destroy > 0:
             defender.tribe_state.monument_progress -= resources_to_destroy
-            game.broadcast_l(
+            _broadcast_l_with_brief(
+                game,
                 "ageofheroes-destruction-success",
+                "ageofheroes-destruction-success-brief",
                 attacker=attacker.name,
                 defender=defender.name,
                 count=resources_to_destroy,
-            buffer="game")
+            )
             game.play_sound("game_ageofheroes/destruction.ogg")
 
     return_surviving_forces(game)
@@ -685,10 +732,6 @@ def return_surviving_forces(game: AgeOfHeroesGame) -> None:
                 has_road = has_road_connection(game, war.attacker_index, war.defender_index)
 
                 if has_road:
-                    # Immediate return via road
-                    attacker.tribe_state.armies += surviving_armies
-                    attacker.tribe_state.generals += surviving_generals
-
                     user = game.get_user(attacker)
                     if user:
                         user.speak_l("ageofheroes-army-return-road", buffer="game")
@@ -703,15 +746,8 @@ def return_surviving_forces(game: AgeOfHeroesGame) -> None:
                         user.speak_l(
                             "ageofheroes-army-return-delayed",
                             count=surviving_armies + surviving_generals,
-                        buffer="game")
-
-    # Defender's armies always return immediately (defending at home)
-    if war.defender_index < len(active_players):
-        defender = active_players[war.defender_index]
-        if hasattr(defender, "tribe_state") and defender.tribe_state:
-            # Defender's armies return to their tribe
-            defender.tribe_state.armies += war.defender_armies
-            defender.tribe_state.generals += war.defender_generals
+                            buffer="game",
+                        )
 
     # Reset war state
     war.reset()
@@ -731,7 +767,7 @@ def use_fortune_reroll(game: AgeOfHeroesGame, player: AgeOfHeroesPlayer) -> bool
         if card.card_type == CardType.EVENT and card.subtype == EventType.FORTUNE:
             removed = player.hand.pop(i)
             game.discard_pile.append(removed)
-            game.broadcast_l("ageofheroes-fortune-reroll", name=player.name, buffer="game")
+            game.broadcast_l("ageofheroes-fortune-reroll", player=player.name, buffer="game")
             game.play_sound("game_ageofheroes/fortune.ogg")
             return True
     return False
@@ -805,13 +841,15 @@ def execute_war_battle(game: AgeOfHeroesGame) -> None:
         def_armies = war.get_defender_total_armies()
 
         # Announce battle start
-        game.broadcast_l(
+        _broadcast_l_with_brief(
+            game,
             "ageofheroes-battle-start",
+            "ageofheroes-battle-start-brief",
             attacker=attacker.name,
             defender=defender.name,
             att_armies=att_armies,
             def_armies=def_armies,
-        buffer="game")
+        )
 
     # Check if battle is already over (one side has 0 armies)
     if is_battle_over(game):
@@ -870,19 +908,22 @@ def finish_war_battle(game: AgeOfHeroesGame) -> None:
                 "ageofheroes-battle-victory-attacker",
                 attacker=attacker_name,
                 defender=defender_name,
-            buffer="game")
+                buffer="game",
+            )
         elif winner == "defender":
             game.broadcast_l(
                 "ageofheroes-battle-victory-defender",
                 attacker=attacker_name,
                 defender=defender_name,
-            buffer="game")
+                buffer="game",
+            )
         else:
             game.broadcast_l(
                 "ageofheroes-battle-mutual-defeat",
                 attacker=attacker_name,
                 defender=defender_name,
-            buffer="game")
+                buffer="game",
+            )
 
     # Check for elimination of both players
     if war.attacker_index < len(active_players):
