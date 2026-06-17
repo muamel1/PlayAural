@@ -50,7 +50,7 @@ class MenuInput(DataClassJSONMixin):
     prompt: str  # Localization key for menu title/prompt
     options: str  # Method name that returns list[str]
     bot_select: str | None = None  # Method name for bot auto-selection
-    pre_input_check: str | None = None  # Method name returning disabled reason key, or None
+    pre_input_check: str | None = None  # Method name returning disabled reason, or None
     option_label: str | None = None  # Optional method name for localized option labels
 
 
@@ -79,8 +79,8 @@ class Action(DataClassJSONMixin):
 
     Callback signatures:
     - handler: (self, player, action_id) or (self, player, input_value, action_id)
-    - is_enabled: (self, player, *, action_id: str = None) -> str | None
-      Returns None if enabled, or a localization key (disabled reason) if disabled.
+    - is_enabled: (self, player, *, action_id: str = None) -> str | tuple[str, dict] | None
+      Returns None if enabled, or a localization key/parameter tuple if disabled.
       The action_id kwarg is optional and passed if the method signature accepts it.
     - is_hidden: (self, player, *, action_id: str = None) -> Visibility
       Returns Visibility.VISIBLE or Visibility.HIDDEN.
@@ -116,7 +116,7 @@ class ResolvedAction:
     action: Action
     label: str
     enabled: bool
-    disabled_reason: str | None  # Localization key if disabled, None if enabled
+    disabled_reason: str | tuple[str, dict] | None  # Localization key if disabled, None if enabled
     visible: bool
     sound: str | None = None  # Sound to play when this item is highlighted
 
@@ -162,7 +162,7 @@ class ActionSet(DataClassJSONMixin):
     ) -> ResolvedAction:
         """Resolve a single action's state for a player."""
         # Resolve enabled state
-        disabled_reason: str | None = None
+        disabled_reason: str | tuple[str, dict] | None = None
         if action.is_enabled:
             method = getattr(game, action.is_enabled, None)
             if method:

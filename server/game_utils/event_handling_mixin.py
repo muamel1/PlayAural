@@ -83,10 +83,7 @@ class EventHandlingMixin:
             if player.id not in self._pending_actions:
                 self.refresh_menus()
         elif resolved.disabled_reason:
-            if resolved.disabled_reason != "action-not-available":
-                user = self.get_user(player)
-                if user:
-                    user.speak_l(resolved.disabled_reason, buffer="game")
+            self._speak_action_disabled_reason(player, resolved.disabled_reason)
 
     def _handle_menu_event(self, player: "Player", event: dict) -> None:
         """Handle a menu selection event."""
@@ -119,10 +116,7 @@ class EventHandlingMixin:
                     if player.id not in self._pending_actions:
                         self.refresh_menus()
                 elif resolved.disabled_reason:
-                    if resolved.disabled_reason != "action-not-available":
-                        user = self.get_user(player)
-                        if user:
-                            user.speak_l(resolved.disabled_reason, buffer="game")
+                    self._speak_action_disabled_reason(player, resolved.disabled_reason)
             else:
                 # Fallback to index-based selection - use visible actions only
                 selection = event.get("selection", 1) - 1  # Convert to 0-based
@@ -260,11 +254,7 @@ class EventHandlingMixin:
                         self.execute_action(player, action_id, context=context)
                         executed_any = True
                     elif resolved.disabled_reason:
-                        if resolved.disabled_reason != "action-not-available":
-                            # Speak the disabled reason to the player
-                            user = self.get_user(player)
-                            if user:
-                                user.speak_l(resolved.disabled_reason, buffer="game")
+                        self._speak_action_disabled_reason(player, resolved.disabled_reason)
 
         # Any executed action may have changed shared state; mark everyone
         # except when the action opened a pending input flow. Pending inputs
@@ -288,4 +278,6 @@ class EventHandlingMixin:
             resolved = self.resolve_action(player, action)
             if resolved.enabled:
                 self.execute_action(player, action_id)
+            elif resolved.disabled_reason:
+                self._speak_action_disabled_reason(player, resolved.disabled_reason)
         self.refresh_menus(player)

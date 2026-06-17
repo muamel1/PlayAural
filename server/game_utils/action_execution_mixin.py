@@ -48,10 +48,7 @@ class ActionExecutionMixin:
         resolved = self.resolve_action(player, action)
         if not resolved.enabled:
             # Speak the reason to the player unless it's a silent block.
-            if resolved.disabled_reason and resolved.disabled_reason != "action-not-available":
-                user = self.get_user(player)
-                if user:
-                    user.speak_l(resolved.disabled_reason, buffer="game")
+            self._speak_action_disabled_reason(player, resolved.disabled_reason)
             return
 
         # If action requires input and we don't have it yet
@@ -93,6 +90,19 @@ class ActionExecutionMixin:
         finally:
             # Clean up context
             self._action_context.pop(player.id, None)
+
+    def _speak_action_disabled_reason(self, player: "Player", reason) -> None:
+        """Speak a disabled-action reason, including parameterized locale keys."""
+        if not reason or reason == "action-not-available":
+            return
+        user = self.get_user(player)
+        if not user:
+            return
+        if isinstance(reason, tuple):
+            key, kwargs = reason
+            user.speak_l(key, buffer="game", **kwargs)
+        else:
+            user.speak_l(reason, buffer="game")
 
     def _should_prompt_for_action_input(
         self, action: Action, player: "Player"
@@ -185,7 +195,7 @@ class ActionExecutionMixin:
             if pre_input_check:
                 disabled_reason = pre_input_check(player, action.id)
                 if disabled_reason:
-                    user.speak_l(disabled_reason, buffer="game")
+                    self._speak_action_disabled_reason(player, disabled_reason)
                     return
         self._pending_actions[player.id] = action.id
 

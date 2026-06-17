@@ -40,6 +40,7 @@ hc-judge-is = { $judges } { $count ->
    *[other] là các trọng tài
 }.
 hc-you-are-judge = Bạn là trọng tài vòng này.
+hc-you-and-others-are-judges = Bạn và { $judges } là các trọng tài vòng này.
 hc-you-are-not-judge = Bạn không phải trọng tài vòng này.
 
 # Lá bài đen
@@ -55,11 +56,16 @@ hc-select-cards = Chọn { $count } { $count ->
 hc-card-selected = { $text }, đã chọn
 hc-card-not-selected = { $text }
 hc-submit-cards = Nộp bài (đã chọn { $selected } trên { $required })
-hc-submitted = Bạn đã nộp bài.
-hc-player-submitted = { $player } đã nộp bài.
 hc-submission-progress = { $submitted } trên { $total } người chơi đã nộp bài.
 hc-waiting-for-submissions = Đang chờ mọi người nộp bài...
 hc-already-submitted = Bạn đã nộp bài rồi.
+hc-you-submitted = Bạn đã nộp bài.
+hc-player-submitted = { $player } đã nộp bài.
+hc-judge-cannot-submit = Bạn là trọng tài vòng này, nên không thể nộp câu trả lời.
+hc-not-submission-phase = Bạn chỉ có thể chọn và nộp bài trắng trong giai đoạn nộp bài.
+hc-card-not-in-hand = Vị trí lá bài đó không có trong tay bạn.
+hc-judge-has-no-submission = Trọng tài không có bài nộp để xem trước trong vòng này.
+hc-no-submission-active = Hiện không có bài nộp nào để xem trước.
 hc-wrong-card-count = Bạn cần chọn đúng { $count } { $count ->
     [one] lá bài
    *[other] lá bài
@@ -73,10 +79,13 @@ hc-select-winner-prompt = Chọn bài thắng cuộc
 hc-card-number = Lá bài { $number }
 hc-submission-number = Bài nộp { $number }
 hc-submission-option = { $text }
+hc-only-judges-pick = Chỉ trọng tài mới có thể chọn bài thắng cuộc.
+hc-not-judging-phase = Bạn chỉ có thể chọn bài thắng trong giai đoạn chấm bài.
+hc-submission-not-available = Bài nộp đó không còn khả dụng.
 
 # Kết quả
-hc-winner-announcement = { $player } thắng vòng này! Điểm: { $score }.
-hc-winner-card = Câu trả lời thắng cuộc: { $text }
+hc-you-win-round = Bạn thắng vòng này! Điểm của bạn hiện là { $score }.
+hc-player-wins-round = { $player } thắng vòng này! Điểm: { $score }.
 hc-round-scores = Điểm sau vòng { $round }:
 hc-score-line = { $player }: { $score } { $score ->
     [one] điểm
@@ -84,7 +93,10 @@ hc-score-line = { $player }: { $score } { $score ->
 }
 hc-final-score-line = { $rank }. { $player }: { $score } điểm
 hc-all-submissions = Các bài khác:
-hc-submission-reveal = { $player }: { $text }
+hc-your-winning-answer = Câu trả lời thắng cuộc của bạn: { $text }
+hc-winning-answer-player = Câu trả lời thắng cuộc của { $player }: { $text }
+hc-your-other-submission = Bài nộp khác của bạn: { $text }
+hc-other-submission-player = { $player }: { $text }
 
 # Xem
 hc-preview-submission = Xem trước bài nộp của bạn
@@ -102,6 +114,11 @@ hc-english-content-note = Lưu ý: nội dung câu hỏi và câu trả lời hi
 hc-deck-reshuffled = Chồng bài trắng đã bỏ được xáo lại vào bộ bài.
 hc-black-deck-reshuffled = Chồng bài đen đã bỏ được xáo lại vào bộ bài.
 hc-not-enough-cards = Không đủ bài. Hãy thử bật thêm bộ bài.
+hc-error-too-many-judges = { $judges } trọng tài cần ít nhất { $required } người chơi, nhưng bàn này chỉ có { $players }. Hãy giảm số trọng tài hoặc thêm người chơi.
+hc-error-no-valid-packs = Chưa chọn bộ bài hợp lệ nào. Hãy chọn ít nhất một bộ bài trước khi bắt đầu.
+hc-error-no-black-cards = Các bộ bài đã chọn không có lá bài đen nào. Hãy chọn bộ bài khác trước khi bắt đầu.
+hc-error-not-enough-white-cards = { $players } người chơi với số bài trên tay là { $hand_size } cần ít nhất { $needed } lá bài trắng, nhưng các bộ đã chọn chỉ có { $available } lá. Hãy bật thêm bộ bài hoặc giảm số bài trên tay.
+hc-error-pick-exceeds-hand-size = Các bộ bài đã chọn có lá yêu cầu { $pick } câu trả lời, nhưng số bài trên tay chỉ là { $hand_size }. Hãy tăng số bài trên tay hoặc chọn bộ bài khác.
 
 # Quản lý bài trên tay
 hc-view-hand = Xem bài trên tay

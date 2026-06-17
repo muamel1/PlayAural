@@ -4,6 +4,8 @@
 
 Cards Against Humanity is a party game for 3 to 10 players where one player serves as the Card Czar each round, reading a black prompt card aloud while everyone else competes to fill in the blanks with the funniest white card from their hand.
 
+The interface, announcements, and documentation are localized, but the question and answer card text currently supports English only.
+
 
 
 \*\*Gameplay\*\*
@@ -70,7 +72,7 @@ The host can configure these settings at the table before starting:
 
 &#x20;   \* \*\*Most Recent Winner:\*\* The player who won the last round becomes the next Card Czar. The winner sits out the next round as a trade-off for their success. On the first round, this falls back to rotating.
 
-\* \*\*Number of Judges:\*\* How many players serve as Card Czar simultaneously. Default 1, range 1 to 3. With multiple judges, any one of them can pick the winner. More judges means fewer players submitting answers each round, so this option works best with larger groups.
+\* \*\*Number of Judges:\*\* How many players serve as Card Czar simultaneously. Default 1, range 1 to 3. The game must always have at least one non-judge submitting answers, so the selected judge count must be lower than the number of players at the table. With multiple judges, any one of them can pick the winner. More judges means fewer players submitting answers each round, so this option works best with larger groups.
 
 
 
@@ -92,7 +94,7 @@ Once all four have submitted, Alice enters the judging phase. She hears the subm
 
 
 
-\* \*\*1 through 0:\*\* Toggle white cards 1 through 10 in your hand, selecting or deselecting them for submission. The first card you select fills the first blank; the second fills the second.
+\* \*\*1 through 0:\*\* Toggle white cards 1 through 10 in your hand, selecting or deselecting them for submission. The first card you select fills the first blank; the second fills the second. If the hand size is above 10, use the action menu to select the later cards.
 
 \* \*\*Space:\*\* Submit your selected cards.
 

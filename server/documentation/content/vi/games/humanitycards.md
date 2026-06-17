@@ -40,7 +40,7 @@ Trò chơi kết thúc khi có người đạt điểm mục tiêu.
 
 \* \*\*Cách chọn trọng tài:\*\* Cách chọn trọng tài mỗi vòng. Mặc định Luân phiên. Các lựa chọn: Luân phiên, Ngẫu nhiên, hoặc Người thắng vòng trước.
 
-\* \*\*Số trọng tài:\*\* Số người cùng làm trọng tài trong một vòng. Mặc định 1, phạm vi từ 1 đến 3. Nhiều trọng tài phù hợp hơn với nhóm đông vì sẽ có ít người nộp bài hơn mỗi vòng.
+\* \*\*Số trọng tài:\*\* Số người cùng làm trọng tài trong một vòng. Mặc định 1, phạm vi từ 1 đến 3. Ván luôn phải còn ít nhất một người không phải trọng tài để nộp bài, nên số trọng tài phải thấp hơn số người chơi trong bàn. Nhiều trọng tài phù hợp hơn với nhóm đông vì sẽ có ít người nộp bài hơn mỗi vòng.
 
 \*\*Các nhóm bộ bài\*\*
 
@@ -68,7 +68,7 @@ Khi đã đủ bài, Trung nghe các câu trả lời theo thứ tự ngẫu nhi
 
 \*\*Phím tắt\*\*
 
-\* \*\*1 đến 0:\*\* Chọn hoặc bỏ chọn các lá trắng từ 1 đến 10 trên tay.
+\* \*\*1 đến 0:\*\* Chọn hoặc bỏ chọn các lá trắng từ 1 đến 10 trên tay. Nếu số bài trên tay lớn hơn 10, hãy dùng menu hành động để chọn các lá ở vị trí phía sau.
 
 \* \*\*Dấu cách:\*\* Nộp các lá đã chọn.
 

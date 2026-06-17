@@ -40,6 +40,7 @@ hc-judge-is = { $judges } { $count ->
    *[other] are the Card Czars
 }.
 hc-you-are-judge = You are the Card Czar this round.
+hc-you-and-others-are-judges = You and { $judges } are the Card Czars this round.
 hc-you-are-not-judge = You are not the Card Czar this round.
 
 # Black card
@@ -55,11 +56,16 @@ hc-select-cards = Select { $count } { $count ->
 hc-card-selected = { $text }, selected
 hc-card-not-selected = { $text }
 hc-submit-cards = Submit ({ $selected } of { $required } selected)
-hc-submitted = You submitted your cards.
-hc-player-submitted = { $player } submitted.
 hc-submission-progress = { $submitted } of { $total } players submitted.
 hc-waiting-for-submissions = Waiting for submissions...
 hc-already-submitted = You already submitted your cards.
+hc-you-submitted = You submitted your cards.
+hc-player-submitted = { $player } submitted their cards.
+hc-judge-cannot-submit = You are the Card Czar this round, so you cannot submit an answer.
+hc-not-submission-phase = You can only select and submit white cards during the submission phase.
+hc-card-not-in-hand = That card slot is not in your hand.
+hc-judge-has-no-submission = The Card Czar does not have a submission to preview this round.
+hc-no-submission-active = There is no active submission to preview right now.
 hc-wrong-card-count = You need to select exactly { $count } { $count ->
     [one] card
    *[other] cards
@@ -73,10 +79,13 @@ hc-select-winner-prompt = Select the winning submission
 hc-card-number = Card { $number }
 hc-submission-number = Submission { $number }
 hc-submission-option = { $text }
+hc-only-judges-pick = Only the Card Czar can choose the winning submission.
+hc-not-judging-phase = You can only choose a winning submission during the judging phase.
+hc-submission-not-available = That submission is no longer available.
 
 # Results
-hc-winner-announcement = { $player } wins the round! Score: { $score }.
-hc-winner-card = Winning answer: { $text }
+hc-you-win-round = You win the round! Your score is now { $score }.
+hc-player-wins-round = { $player } wins the round! Score: { $score }.
 hc-round-scores = Scores after round { $round }:
 hc-score-line = { $player }: { $score } { $score ->
     [one] point
@@ -87,7 +96,10 @@ hc-final-score-line = { $rank }. { $player }: { $score } { $score ->
    *[other] points
 }
 hc-all-submissions = Other submissions:
-hc-submission-reveal = { $player }: { $text }
+hc-your-winning-answer = Your winning answer: { $text }
+hc-winning-answer-player = { $player }'s winning answer: { $text }
+hc-your-other-submission = Your other submission: { $text }
+hc-other-submission-player = { $player }: { $text }
 
 # View
 hc-preview-submission = Preview your submission
@@ -105,6 +117,11 @@ hc-english-content-note = Note: the question and answer card text currently supp
 hc-deck-reshuffled = White card discard pile reshuffled into the deck.
 hc-black-deck-reshuffled = Black card discard pile reshuffled into the deck.
 hc-not-enough-cards = Not enough cards. Try enabling more packs.
+hc-error-too-many-judges = { $judges } judges require at least { $required } players, but this table has { $players }. Lower the number of judges or add more players.
+hc-error-no-valid-packs = No valid card packs are selected. Select at least one pack before starting.
+hc-error-no-black-cards = The selected card packs do not contain any black prompt cards. Select another pack before starting.
+hc-error-not-enough-white-cards = { $players } players with a hand size of { $hand_size } need at least { $needed } white cards, but the selected packs only provide { $available }. Enable more packs or lower the hand size.
+hc-error-pick-exceeds-hand-size = The selected packs include a prompt that requires { $pick } answers, but the hand size is only { $hand_size }. Increase the hand size or choose different packs.
 
 # Hand management
 hc-view-hand = View hand
