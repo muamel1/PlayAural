@@ -223,23 +223,4 @@ class GameScoresMixin:
             user.speak_l("game-rules-not-available", game=game_name, buffer="game")
             return
 
-        # Parse markdown into status_box lines (same logic as server.py doc viewer)
-        lines = []
-        for line in content.split("\n"):
-            line = line.strip()
-            if not line:
-                continue
-            clean = (
-                line.replace("**", "")
-                .replace("__", "")
-                .replace("*", "")
-                .replace("`", "")
-                .replace("&nbsp;", "")
-            )
-            if clean.startswith("#"):
-                clean = clean.lstrip("#").strip()
-            elif clean.startswith("-") or clean.startswith("•"):
-                clean = clean.lstrip("-• ").strip()
-            lines.append(clean)
-
-        self.status_box(player, lines)
+        self.status_box(player, manager.render_markdown_lines(content))

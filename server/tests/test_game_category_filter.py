@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from server.core.server import Server
+from server.documentation.manager import DocumentationManager
 from server.messages.localization import Localization
 from server.users.preferences import UserPreferences
 from server.users.test_user import MockUser
@@ -122,6 +123,37 @@ def test_play_category_filter_does_not_leak_into_personal_stats(mock_server) -> 
     item_ids = _menu_ids(user, "my_stats_menu")
     assert "stats_pig" in item_ids
     assert "stats_holdem" in item_ids
+
+
+def test_documentation_manager_sanitizes_paths_and_markdown() -> None:
+    manager = DocumentationManager.get_instance()
+    manager.clear_cache()
+
+    assert manager.get_document("../secrets", "en") is None
+    assert manager.get_document("intro", "../vi") is not None
+    assert manager.normalize_doc_id("games\\scopa.md") == "games/scopa"
+
+    lines = manager.render_markdown_lines(
+        "\\* \\*\\*Desktop client:\\*\\* Best option.\n"
+        "1\\. \\*\\*Open Play:\\*\\* Browse games."
+    )
+
+    assert lines == [
+        "Desktop client: Best option.",
+        "1. Open Play: Browse games.",
+    ]
+
+
+def test_document_viewer_uses_clean_read_only_lines(mock_server) -> None:
+    user = MockUser("UserA")
+    mock_server._users[user.username] = user
+
+    mock_server._show_document_content(user, "intro")
+
+    items = user.get_current_menu_items("doc_viewer") or []
+    assert items[0].text == "Welcome to PlayAural"
+    assert items[0].id is None
+    assert items[-1].id == "back"
 
 
 @pytest.mark.asyncio

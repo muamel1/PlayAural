@@ -4169,19 +4169,16 @@ PlayAural Server
 
     def _show_documentation_menu(self, user: NetworkUser) -> None:
         """Show main documentation menu with categories."""
-        # Get categories (hardcoded for now, could be dynamic)
         manager = DocumentationManager.get_instance()
-        categories = manager.get_all_categories(user.locale)
-        
-        items = []
-        for doc_id, label_key in categories.items():
-            items.append(
-                MenuItem(text=Localization.get(user.locale, label_key), id=doc_id)
+        items = [
+            MenuItem(
+                text=Localization.get(user.locale, entry.label_key),
+                id=entry.doc_id,
             )
-        
-        # Add Rules section
+            for entry in manager.get_top_level_documents()
+        ]
+
         items.append(MenuItem(text=Localization.get(user.locale, "game-rules"), id="game_rules"))
-        
         items.append(MenuItem(text=Localization.get(user.locale, "back"), id="back"))
 
         user.show_menu(
@@ -4216,18 +4213,7 @@ PlayAural Server
         pass
 
     def _show_document_content(self, user: NetworkUser, doc_id: str) -> None:
-        """
-        Display document content.
-        For simplicity in this text/audio interface, we will:
-        1. Parse markdown headings and paragraphs
-        2. Present them as a read-only menu or speak them?
-        
-        Better approach for accessibility:
-        Present as a menu where:
-        - Each Header is a menu item (e.g. "H1: Welcome")
-        - Each Paragraph is a menu item (e.g. "PlayAural is...")
-        User can browse line by line.
-        """
+        """Display document content as read-only browseable lines."""
         manager = DocumentationManager.get_instance()
         content = manager.get_document(doc_id, user.locale)
         
@@ -4235,32 +4221,10 @@ PlayAural Server
             user.speak_l("document-not-found", buffer="system")
             return
 
-        # Simple Markdown Element Parser
-        items = []
-        lines = content.split('\n')
-        
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-            
-            # Clean markdown formatting characters
-            # Remove bold/italic markers
-            clean_text = line.replace('**', '').replace('__', '').replace('*', '').replace('`', '').replace('&nbsp;', '')
-            
-            if clean_text.startswith('#'):
-                # Header - remove # and extra spaces
-                clean_text = clean_text.lstrip('#').strip()
-                # Just show the text, no decorative ===
-                items.append(MenuItem(text=clean_text, id="header"))
-            elif clean_text.startswith('-') or clean_text.startswith('•'):
-                # List item
-                clean_text = clean_text.lstrip('-• ').strip()
-                items.append(MenuItem(text=f"{clean_text}", id="list_item"))
-            else:
-                # Paragraph
-                items.append(MenuItem(text=clean_text, id="text"))
-        
+        items = [
+            MenuItem(text=line)
+            for line in manager.render_markdown_lines(content)
+        ]
         items.append(MenuItem(text=Localization.get(user.locale, "back"), id="back"))
         
         user.show_menu(

@@ -1,74 +1,165 @@
-"""
-Documentation Manager for PlayAural.
-Handles loading and serving markdown documentation files.
-"""
+"""Documentation loading and lightweight markdown rendering."""
 
-import os
-from pathlib import Path
-from typing import Optional, Dict
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
+
+
+@dataclass(frozen=True)
+class DocumentationEntry:
+    """A top-level documentation page exposed in the Documentation menu."""
+
+    doc_id: str
+    label_key: str
+
+
+TOP_LEVEL_DOCUMENTS: tuple[DocumentationEntry, ...] = (
+    DocumentationEntry("intro", "introduction"),
+    DocumentationEntry("community_rules", "community-rules"),
+    DocumentationEntry("global_keys", "global-keys"),
+    DocumentationEntry("changelog", "changelog"),
+    DocumentationEntry("donation", "donation"),
+    DocumentationEntry("contact", "contact"),
+)
+
 
 class DocumentationManager:
-    """Singleton to manage documentation content."""
-    
-    _instance = None
-    _content_cache: Dict[str, Dict[str, str]] = {} # locale -> { doc_id -> content }
-    
+    """Load documentation content with safe IDs, caching, and English fallback."""
+
+    _instance: DocumentationManager | None = None
+
     @classmethod
-    def get_instance(cls):
+    def get_instance(cls) -> DocumentationManager:
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
-        
-    def __init__(self):
-        self.base_path = Path(__file__).parent / "content"
 
-    def get_document(self, doc_id: str, locale: str = "en") -> Optional[str]:
-        """
-        Get the content of a document by ID and locale.
-        Falls back to 'en' if localized version is missing.
-        
-        Args:
-            doc_id: Document identifier (e.g., 'intro', 'games/scopa')
-            locale: Language code (default 'en')
-            
-        Returns:
-            String content of the markdown file, or None if not found.
-        """
-        # Try requested locale
-        content = self._load_file(doc_id, locale)
-        if content:
-            return content
-            
-        # Fallback to English if not 'en'
-        if locale != "en":
-            return self._load_file(doc_id, "en")
-            
-        return None
+    def __init__(self, base_path: Path | None = None):
+        self.base_path = base_path or Path(__file__).parent / "content"
+        self._content_cache: dict[tuple[str, str], str | None] = {}
 
-    def _load_file(self, doc_id: str, locale: str) -> Optional[str]:
-        """Helper to load a raw file."""
-        try:
-            # Prevent directory traversal
-            if ".." in doc_id:
-                return None
-                
-            file_path = self.base_path / locale / f"{doc_id}.md"
-            if file_path.exists() and file_path.is_file():
-                return file_path.read_text(encoding="utf-8")
-        except Exception as e:
-            print(f"Error loading documentation {doc_id} ({locale}): {e}")
+    def clear_cache(self) -> None:
+        """Clear cached document contents after documentation files change."""
+        self._content_cache.clear()
+
+    def get_top_level_documents(self) -> tuple[DocumentationEntry, ...]:
+        """Return the ordered top-level documentation pages."""
+        return TOP_LEVEL_DOCUMENTS
+
+    def get_all_categories(self, locale: str = "en") -> dict[str, str]:
+        """Backward-compatible mapping of top-level document IDs to label keys."""
+        return {
+            entry.doc_id: entry.label_key
+            for entry in self.get_top_level_documents()
+        }
+
+    def get_document(self, doc_id: str, locale: str = "en") -> str | None:
+        """
+        Get raw markdown content by canonical document ID.
+
+        Document IDs are extensionless POSIX-style paths such as ``intro`` or
+        ``games/scopa``. Localized documents fall back to English when missing.
+        """
+        safe_doc_id = self.normalize_doc_id(doc_id)
+        if safe_doc_id is None:
             return None
 
-    def get_all_categories(self, locale: str = "en") -> Dict[str, str]:
-        """
-        Get a list of available top-level documentation categories.
-        Realistically this might be hardcoded, but here we'll define standard ones.
-        """
-        return {
-            "intro": "introduction",
-            "community_rules": "community-rules",
-            "global_keys": "global-keys",
-            "changelog": "changelog",
-            "donation": "donation",
-            "contact": "contact",
-        }
+        locale = self.normalize_locale(locale)
+        content = self._load_file(safe_doc_id, locale)
+        if content is not None:
+            return content
+        if locale != "en":
+            return self._load_file(safe_doc_id, "en")
+        return None
+
+    def document_exists(self, doc_id: str, locale: str = "en") -> bool:
+        """Return whether a document exists in the requested locale or English."""
+        return self.get_document(doc_id, locale) is not None
+
+    def render_markdown_lines(self, content: str) -> list[str]:
+        """Convert project markdown into screen-reader-friendly text lines."""
+        rendered: list[str] = []
+        for raw_line in content.splitlines():
+            text = raw_line.strip()
+            if not text:
+                continue
+
+            text = self._unescape_project_markdown(text)
+            if text.startswith("#"):
+                text = text.lstrip("#").strip()
+            elif self._starts_with_unordered_marker(text):
+                text = text[1:].strip()
+
+            text = self._strip_inline_markdown(text)
+            if text:
+                rendered.append(text)
+        return rendered
+
+    def normalize_doc_id(self, doc_id: str) -> str | None:
+        """Return a safe canonical document ID, or None for invalid paths."""
+        if not isinstance(doc_id, str):
+            return None
+        normalized = doc_id.strip().replace("\\", "/").strip("/")
+        if normalized.endswith(".md"):
+            normalized = normalized[:-3]
+        if not normalized or "\x00" in normalized:
+            return None
+
+        path = PurePosixPath(normalized)
+        if path.is_absolute():
+            return None
+        if any(part in ("", ".", "..") for part in path.parts):
+            return None
+        return path.as_posix()
+
+    def normalize_locale(self, locale: str) -> str:
+        """Return a filesystem-safe locale segment, falling back to English."""
+        if not isinstance(locale, str) or not locale:
+            return "en"
+        if any(ch in locale for ch in ("/", "\\", ".", "\x00")):
+            return "en"
+        return locale
+
+    def _load_file(self, doc_id: str, locale: str) -> str | None:
+        """Load a single canonical document file from disk or cache."""
+        cache_key = (locale, doc_id)
+        if cache_key in self._content_cache:
+            return self._content_cache[cache_key]
+
+        locale_root = (self.base_path / locale).resolve()
+        file_path = (locale_root / f"{doc_id}.md").resolve()
+        try:
+            file_path.relative_to(locale_root)
+        except ValueError:
+            self._content_cache[cache_key] = None
+            return None
+
+        if not file_path.is_file():
+            self._content_cache[cache_key] = None
+            return None
+
+        try:
+            content = file_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            print(f"Error loading documentation {doc_id} ({locale}): {exc}")
+            content = None
+
+        self._content_cache[cache_key] = content
+        return content
+
+    def _unescape_project_markdown(self, text: str) -> str:
+        """Undo the escaped markdown style used by documentation source files."""
+        for char in ("*", "_", "`", ".", "#", "-", "+"):
+            text = text.replace(f"\\{char}", char)
+        return text.replace("&nbsp;", " ")
+
+    def _starts_with_unordered_marker(self, text: str) -> bool:
+        if len(text) < 2:
+            return False
+        return text[0] in {"-", "*", "+", "\u2022"} and text[1].isspace()
+
+    def _strip_inline_markdown(self, text: str) -> str:
+        for marker in ("**", "__", "`"):
+            text = text.replace(marker, "")
+        return text.strip()
