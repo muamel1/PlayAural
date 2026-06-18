@@ -1,88 +1,75 @@
 \*\*1-4-24 (Midnight)\*\*
 
-
-
-1-4-24 (hay còn gọi là Midnight) là một trò chơi xúc xắc cổ điển đề cao khả năng quản lý rủi ro và lựa chọn xúc xắc. Bạn gieo sáu viên xúc xắc, nhưng chỉ có thể ghi điểm nếu bộ xúc xắc cuối cùng của bạn có cả con 1 và con 4. 
-
-
-
-Bốn viên xúc xắc còn lại sẽ được cộng dồn để tính điểm. Điểm số hoàn hảo là 24 (bốn con sáu) — đó là lý do trò chơi có tên gọi 1-4-24. Trò chơi diễn ra qua nhiều vòng, và người thắng nhiều vòng nhất sẽ thắng chung cuộc.
-
-
+1-4-24, còn gọi là Midnight, là trò chơi xúc xắc cổ điển dùng sáu viên. Mục tiêu của bạn là kết thúc lượt với đủ một con 1 và một con 4. Nếu đủ điều kiện, hai viên đó được loại khỏi phần tính điểm; bốn viên còn lại tạo thành điểm của lượt. Điểm tối đa là 24.
 
 \*\*Cách chơi\*\*
 
-
-
-Một trò chơi bao gồm một số vòng nhất định (mặc định là 5 vòng). Trong mỗi vòng, mỗi người chơi sẽ thực hiện lượt gieo của mình. Kết thúc vòng, người chơi có số điểm cao nhất sẽ thắng vòng đó.
-
-
+Trò chơi diễn ra qua một số vòng cố định. Trong mỗi vòng, từng người chơi còn hoạt động sẽ thực hiện một lượt gieo hoàn chỉnh. Người chơi đủ điều kiện và có điểm cao nhất sẽ thắng vòng đó.
 
 \*\*Lượt chơi của bạn\*\*
 
+1\. Gieo cả sáu viên xúc xắc.
 
+2\. Sau mỗi lần gieo, bạn phải giữ ít nhất một viên vừa gieo. Bạn có thể giữ nhiều viên cùng lúc nếu chiến thuật cần.
 
-Khi bắt đầu lượt, bạn có sáu viên xúc xắc tiêu chuẩn.
+3\. Những viên đã giữ sẽ bị khóa khi bạn gieo tiếp. Viên đã khóa không thể đổi lại.
 
-1\. \*\*Gieo:\*\* Hành động đầu tiên luôn là gieo cả sáu viên.
+4\. Tiếp tục cho đến khi cả sáu viên đều được khóa. Nếu mọi viên đã được quyết định, bạn có thể chốt điểm thay vì gieo tiếp.
 
-2\. \*\*Giữ:\*\* Sau mỗi lần gieo, bạn phải giữ lại ít nhất một viên xúc xắc. Những viên đã giữ sẽ bị khóa trong suốt lượt chơi và không thể thay đổi.
+\*\*Điều kiện ghi điểm\*\*
 
-3\. \*\*Gieo lại:\*\* Bạn gieo lại những viên còn lại cho đến khi cả sáu viên đều được khóa.
+Để được tính điểm, bộ xúc xắc cuối lượt phải có ít nhất một con \*\*1\*\* và ít nhất một con \*\*4\*\*. Một con 1 và một con 4 được bỏ ra khỏi điểm. Nếu bạn có thêm con 1 hoặc con 4 khác, những viên dư đó vẫn được tính trong bốn viên ghi điểm.
 
+Nếu kết thúc lượt mà thiếu 1 hoặc 4, bạn không đủ điều kiện và nhận 0 điểm cho vòng đó.
 
+\*\*Tính điểm và chiến thắng\*\*
 
-\*\*Điều kiện ghi điểm (Vòng loại)\*\*
+\* \*\*Điểm lượt:\*\* Nếu đủ điều kiện, cộng bốn viên không bắt buộc. Điểm tối đa: 24.
 
+\* \*\*Thắng vòng:\*\* Người chơi duy nhất đủ điều kiện và có điểm cao nhất sẽ thắng vòng.
 
+\* \*\*Vòng hòa:\*\* Nếu nhiều người cùng đạt điểm cao nhất, không ai được tính vòng thắng.
 
-Để được tính điểm, bộ sáu viên xúc xắc cuối cùng của bạn phải có ít nhất một con \*\*1\*\* và một con \*\*4\*\*. Nếu thiếu một trong hai, bạn sẽ bị coi là không đủ điều kiện và nhận 0 điểm cho vòng đó. Thách thức của trò chơi là bạn phải sớm tìm thấy con 1 và con 4, nhưng hai viên này sẽ không được tính vào tổng điểm của bạn.
+\* \*\*Không ai đủ điều kiện:\*\* Nếu cả bàn đều thiếu bộ 1 và 4, không ai được tính vòng thắng.
 
+\* \*\*Thắng chung cuộc:\*\* Sau số vòng đã đặt, người có nhiều vòng thắng nhất sẽ thắng trò chơi. Nếu vẫn hòa, trò chơi kết thúc hòa.
 
+\*\*Tác vụ kiểm tra trạng thái\*\*
 
-\*\*Tính điểm và Chiến thắng\*\*
+\* \*\*Đọc xúc xắc hiện tại:\*\* Đọc xúc xắc của người đang tới lượt, bao gồm viên đã khóa, viên đang giữ, viên còn sống, và bộ hiện tại đã đủ điều kiện hay chưa.
 
+\* \*\*Xem trạng thái vòng:\*\* Mở bảng trạng thái trực tiếp với số vòng, lượt hiện tại, lượt vừa hoàn tất, và bảng xếp hạng.
 
-
-\* \*\*Tính điểm:\*\* Nếu đủ điều kiện (có 1 và 4), tổng điểm của bạn là tổng giá trị của bốn viên xúc xắc còn lại.
-
-\* \*\*Thắng vòng:\*\* Người có điểm cao nhất trong số những người đủ điều kiện sẽ thắng vòng đó. Nếu không ai đủ điều kiện, vòng đó không có người thắng.
-
-\* \*\*Thắng chung cuộc:\*\* Người chơi có số vòng thắng nhiều nhất sau khi kết thúc tất cả các vòng sẽ là người chiến thắng cuối cùng.
-
-
+\* \*\*Điểm số:\*\* Đọc số vòng thắng của từng người. Điểm chi tiết sẽ mở bảng xếp hạng trực tiếp.
 
 \*\*Ví dụ một lượt chơi\*\*
 
+1\. Bạn gieo: \*\*3-1-5-4-2-6\*\*.
 
+2\. Bạn giữ 1 và 4 để đủ điều kiện, đồng thời giữ thêm con 6.
 
-1\. Bạn gieo cả sáu viên: \*\*3-1-5-4-2-6\*\*. 
+3\. Bạn gieo ba viên còn lại: \*\*2-5-3\*\*. Bạn giữ con 5.
 
-2\. Bạn đã có cả 1 và 4, vì vậy bạn giữ chúng ngay để đủ điều kiện. Bạn cũng giữ thêm con 6 (con số cao nhất). 
+4\. Bạn gieo hai viên cuối: \*\*6-6\*\*. Lượt chơi hoàn tất.
 
-3\. Hiện bạn đã khóa ba viên (1, 4, 6) và còn ba viên để gieo lại.
-
-4\. Bạn gieo ba viên còn lại: được \*\*2-5-3\*\*. Bạn giữ con 5 và gieo lại hai viên cuối.
-
-5\. Kết quả là \*\*6-6\*\*. Bạn giữ cả hai. 
-
-6\. \*\*Kết quả cuối cùng:\*\* Bạn có 1 và 4 (đủ điều kiện), và bốn viên còn lại là 6, 5, 6, 6. Tổng điểm: 23.
-
-
+5\. Bộ cuối cùng là 1, 4, 6, 5, 6, và 6. Con 1 và 4 giúp bạn đủ điều kiện; điểm là 6 + 5 + 6 + 6 = 23.
 
 \*\*Tùy chọn trò chơi\*\*
 
-\* \*\*Số vòng:\*\* Số vòng chơi (mặc định 5, phạm vi 1-20).
-
-
+\* \*\*Số vòng:\*\* Số vòng chơi. Mặc định: 5. Phạm vi: 1-20.
 
 \*\*Phím tắt bàn phím\*\*
 
-
-
 \* \*\*R:\*\* Gieo xúc xắc.
 
-\* \*\*1-6:\*\* Chọn giữ hoặc bỏ giữ một viên xúc xắc.
+\* \*\*1-6:\*\* Chọn giữ hoặc bỏ giữ một viên, theo kiểu giữ xúc xắc trong tùy chọn cá nhân của bạn.
 
-\* \*\*B:\*\* Chốt điểm (kết thúc lượt sau khi đã quyết định tất cả xúc xắc).
+\* \*\*B:\*\* Chốt điểm khi mọi viên đã được quyết định.
 
+\* \*\*H:\*\* Đọc xúc xắc hiện tại.
+
+\* \*\*E:\*\* Xem trạng thái vòng.
+
+\* \*\*S:\*\* Đọc điểm.
+
+\* \*\*Shift+S:\*\* Xem điểm chi tiết.

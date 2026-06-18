@@ -19,6 +19,11 @@ from ...game_utils.game_result import GameResult, PlayerResult
 from ...game_utils.options import IntOption, option_field
 from ...messages.localization import Localization
 from ...ui.keybinds import KeybindState
+from ...users.base import MenuItem
+
+
+QUALIFIER_ONE = 1
+QUALIFIER_FOUR = 4
 
 
 @dataclass
@@ -60,11 +65,16 @@ class MidnightGame(Game, DiceGameMixin):
     Highest score wins the round. First to win the most rounds wins the game.
     """
 
-    relevant_preferences = ["dice_keeping_style"]
+    relevant_preferences = ["brief_announcements", "dice_keeping_style"]
+    score_unit_key = "midnight-score-unit-round-wins"
 
     # Game-specific state
     players: list[MidnightPlayer] = field(default_factory=list)
     options: MidnightOptions = field(default_factory=MidnightOptions)
+    last_turn_player_id: str = ""
+    last_turn_dice: list[int] = field(default_factory=list)
+    last_turn_score: int = 0
+    last_turn_qualified: bool = False
 
     @classmethod
     def get_name(cls) -> str:
@@ -103,6 +113,126 @@ class MidnightGame(Game, DiceGameMixin):
             round_wins=0,
             qualified=False,
         )
+
+    def _player_locale(self, player: Player) -> str:
+        user = self.get_user(player)
+        return user.locale if user else "en"
+
+    def _wants_brief(self, user) -> bool:
+        return bool(
+            user
+            and user.preferences.get_effective(
+                "brief_announcements", game_type=self.get_type()
+            )
+        )
+
+    def _broadcast_actor_l(
+        self,
+        actor: MidnightPlayer,
+        personal_key: str,
+        others_key: str,
+        *,
+        brief_personal_key: str | None = None,
+        brief_others_key: str | None = None,
+        **kwargs,
+    ) -> None:
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+
+            is_actor = listener is actor
+            key = personal_key if is_actor else others_key
+            if self._wants_brief(user):
+                if is_actor and brief_personal_key:
+                    key = brief_personal_key
+                elif not is_actor and brief_others_key:
+                    key = brief_others_key
+
+            payload = dict(kwargs)
+            if not is_actor:
+                payload["player"] = actor.name
+            user.speak_l(key, buffer="game", **payload)
+
+    def _broadcast_global_l(
+        self,
+        full_key: str,
+        brief_key: str | None = None,
+        **kwargs,
+    ) -> None:
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+            key = brief_key if brief_key and self._wants_brief(user) else full_key
+            user.speak_l(key, buffer="game", **kwargs)
+
+    def _format_dice_values(self, values: list[int], locale: str) -> str:
+        return Localization.format_list(locale, [str(value) for value in values])
+
+    def _format_missing_qualifiers(self, values: list[int], locale: str) -> str:
+        missing = []
+        if QUALIFIER_ONE not in values:
+            missing.append(str(QUALIFIER_ONE))
+        if QUALIFIER_FOUR not in values:
+            missing.append(str(QUALIFIER_FOUR))
+        return Localization.format_list_and(locale, missing)
+
+    def _evaluate_dice(self, values: list[int]) -> tuple[bool, int, list[int]]:
+        if QUALIFIER_ONE not in values or QUALIFIER_FOUR not in values:
+            return False, 0, []
+        scoring_values = list(values)
+        scoring_values.remove(QUALIFIER_ONE)
+        scoring_values.remove(QUALIFIER_FOUR)
+        return True, sum(scoring_values), scoring_values
+
+    def _format_player_dice_status(self, player: MidnightPlayer, locale: str) -> str:
+        if not player.dice.has_rolled:
+            return Localization.get(locale, "midnight-status-dice-not-rolled")
+
+        parts = []
+        for index, value in enumerate(player.dice.values):
+            if player.dice.is_locked(index):
+                parts.append(
+                    Localization.get(locale, "midnight-die-locked", value=value)
+                )
+            elif player.dice.is_kept(index):
+                parts.append(
+                    Localization.get(locale, "midnight-die-kept", value=value)
+                )
+            else:
+                parts.append(str(value))
+        return Localization.format_list(locale, parts)
+
+    def _current_turn_snapshot_kwargs(self, player: MidnightPlayer, locale: str) -> dict:
+        dice_text = self._format_player_dice_status(player, locale)
+        locked_count = len(player.dice.locked)
+        kept_count = player.dice.kept_unlocked_count
+        remaining = player.dice.unlocked_count
+        qualified, score, scoring_values = self._evaluate_dice(player.dice.values)
+        scoring_dice = (
+            self._format_dice_values(scoring_values, locale)
+            if scoring_values
+            else ""
+        )
+        missing = self._format_missing_qualifiers(player.dice.values, locale)
+        return {
+            "player": player.name,
+            "dice": dice_text,
+            "locked": locked_count,
+            "kept": kept_count,
+            "remaining": remaining,
+            "score": score,
+            "scoring_dice": scoring_dice,
+            "missing": missing,
+            "qualified": "yes" if qualified else "no",
+        }
+
+    def _sync_team_scores(self) -> None:
+        for player in self.get_active_players():
+            team = self.team_manager.get_team(player.name)
+            if team:
+                team.total_score = getattr(player, "round_wins", 0)
 
     # ==========================================================================
     # Dice toggle methods (required by DiceGameMixin)
@@ -160,7 +290,45 @@ class MidnightGame(Game, DiceGameMixin):
             return Localization.get(locale, "midnight-die-kept", value=die_val)
         return Localization.get(locale, "midnight-die-value", value=die_val)
 
-    # Dice toggle handlers provided by DiceGameMixin (no override needed)
+    def _toggle_die(self, player: Player, die_index: int) -> None:
+        """Toggle a die and broadcast the public keep state."""
+        if not isinstance(player, MidnightPlayer):
+            return
+
+        user = self.get_user(player)
+        if die_index < 0 or die_index >= player.dice.num_dice:
+            if user:
+                user.speak_l("midnight-invalid-die-index", buffer="game")
+            return
+
+        result = player.dice.toggle_keep(die_index)
+        if result is None:
+            if user:
+                user.speak_l("dice-locked", buffer="game")
+            return
+
+        die_value = player.dice.get_value(die_index)
+        kwargs = {"die": die_value, "index": die_index + 1}
+        if result:
+            self._broadcast_actor_l(
+                player,
+                "midnight-you-keep",
+                "midnight-player-keeps",
+                brief_personal_key="midnight-you-keep-brief",
+                brief_others_key="midnight-player-keeps-brief",
+                **kwargs,
+            )
+        else:
+            self._broadcast_actor_l(
+                player,
+                "midnight-you-unkeep",
+                "midnight-player-unkeeps",
+                brief_personal_key="midnight-you-unkeep-brief",
+                brief_others_key="midnight-player-unkeeps-brief",
+                **kwargs,
+            )
+
+        self.refresh_menus(player)
 
     # ==========================================================================
     # Roll action
@@ -213,13 +381,32 @@ class MidnightGame(Game, DiceGameMixin):
         midnight_player.dice.roll(lock_kept=True, clear_kept=True)
         self._apply_dice_values_defaults(midnight_player)
 
-        # Format roll results
-        result_text = ", ".join(str(v) for v in midnight_player.dice.values)
-
-        # Announce results
-        self.broadcast_personal_l(
-            player, "midnight-you-rolled", "midnight-player-rolled", dice=result_text
-        )
+        # Announce results in each listener's locale so list conjunctions
+        # render correctly for English, Vietnamese, and future locales.
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+            dice_text = self._format_dice_values(
+                midnight_player.dice.values, user.locale
+            )
+            is_actor = listener is midnight_player
+            if is_actor:
+                key = (
+                    "midnight-you-rolled-brief"
+                    if self._wants_brief(user)
+                    else "midnight-you-rolled"
+                )
+                user.speak_l(key, buffer="game", dice=dice_text)
+            else:
+                key = (
+                    "midnight-player-rolled-brief"
+                    if self._wants_brief(user)
+                    else "midnight-player-rolled"
+                )
+                user.speak_l(
+                    key, buffer="game", player=midnight_player.name, dice=dice_text
+                )
 
         # Check if auto-score needed (all locked or only 1 unlocked)
         if midnight_player.dice.unlocked_count <= 1:
@@ -274,35 +461,78 @@ class MidnightGame(Game, DiceGameMixin):
 
     def _score_turn(self, player: MidnightPlayer) -> None:
         """Calculate and apply turn score."""
-        # Check if player has both 1 and 4
-        has_one = 1 in player.dice.values
-        has_four = 4 in player.dice.values
+        qualified, score, scoring_values = self._evaluate_dice(player.dice.values)
 
-        if has_one and has_four:
-            # Qualified! Calculate score from other 4 dice
-            # Remove first occurrence of 1 and first occurrence of 4
-            values_copy = player.dice.values.copy()
-            values_copy.remove(1)
-            values_copy.remove(4)
+        self.last_turn_player_id = player.id
+        self.last_turn_dice = list(player.dice.values)
+        self.last_turn_score = score
+        self.last_turn_qualified = qualified
 
-            player.round_score = sum(values_copy)
+        if qualified:
+            player.round_score = score
             player.qualified = True
 
             self.play_sound("game_pig/bank.ogg")
-            self.broadcast_personal_l(
-                player,
-                "midnight-you-scored",
-                "midnight-scored",
-                score=player.round_score,
-            )
+            for listener in self.players:
+                user = self.get_user(listener)
+                if not user:
+                    continue
+                scoring_dice = self._format_dice_values(scoring_values, user.locale)
+                is_actor = listener is player
+                if is_actor:
+                    key = (
+                        "midnight-you-scored-brief"
+                        if self._wants_brief(user)
+                        else "midnight-you-scored"
+                    )
+                    user.speak_l(
+                        key,
+                        buffer="game",
+                        score=player.round_score,
+                        scoring_dice=scoring_dice,
+                    )
+                else:
+                    key = (
+                        "midnight-scored-brief"
+                        if self._wants_brief(user)
+                        else "midnight-scored"
+                    )
+                    user.speak_l(
+                        key,
+                        buffer="game",
+                        player=player.name,
+                        score=player.round_score,
+                        scoring_dice=scoring_dice,
+                    )
         else:
             # Disqualified
             player.round_score = 0
             player.qualified = False
 
-            self.broadcast_personal_l(
-                player, "midnight-you-disqualified", "midnight-player-disqualified"
-            )
+            for listener in self.players:
+                user = self.get_user(listener)
+                if not user:
+                    continue
+                missing = self._format_missing_qualifiers(
+                    player.dice.values, user.locale
+                )
+                is_actor = listener is player
+                if is_actor:
+                    key = (
+                        "midnight-you-disqualified-brief"
+                        if self._wants_brief(user)
+                        else "midnight-you-disqualified"
+                    )
+                    user.speak_l(key, buffer="game", missing=missing)
+                else:
+                    key = (
+                        "midnight-player-disqualified-brief"
+                        if self._wants_brief(user)
+                        else "midnight-player-disqualified"
+                    )
+                    user.speak_l(
+                        key, buffer="game", player=player.name, missing=missing
+                    )
 
         # Jolt all bots to pause for the turn change
         BotHelper.jolt_bots(self, ticks=random.randint(20, 30))
@@ -349,6 +579,45 @@ class MidnightGame(Game, DiceGameMixin):
 
         return action_set
 
+    web_target_order = [
+        "check_dice",
+        "check_round_status",
+        "check_scores",
+        "whose_turn",
+        "whos_at_table",
+    ]
+
+    def create_standard_action_set(self, player: Player) -> ActionSet:
+        action_set = super().create_standard_action_set(player)
+        locale = self._player_locale(player)
+
+        action_set.add(
+            Action(
+                id="check_dice",
+                label=Localization.get(locale, "midnight-check-dice"),
+                handler="_action_check_dice",
+                is_enabled="_is_check_dice_enabled",
+                is_hidden="_is_check_dice_hidden",
+                include_spectators=True,
+            )
+        )
+        action_set.add(
+            Action(
+                id="check_round_status",
+                label=Localization.get(locale, "midnight-check-round-status"),
+                handler="_action_check_round_status",
+                is_enabled="_is_check_round_status_enabled",
+                is_hidden="_is_check_round_status_hidden",
+                include_spectators=True,
+            )
+        )
+
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            self._order_touch_standard_actions(action_set, self.web_target_order)
+
+        return action_set
+
     # WEB-SPECIFIC: Override visibility for standard actions
     # accessible in the Standard Action Set (displayed at bottom of menu)
 
@@ -369,9 +638,33 @@ class MidnightGame(Game, DiceGameMixin):
             return Visibility.HIDDEN
         return super()._is_whose_turn_hidden(player)
 
-    def _is_always_visible(self, player: "Player") -> Visibility:
-        """Helper for web-specific actions that should always be visible."""
-        return Visibility.VISIBLE
+    def _is_check_scores_hidden(self, player: "Player") -> Visibility:
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            return Visibility.VISIBLE if self.status == "playing" else Visibility.HIDDEN
+        return super()._is_check_scores_hidden(player)
+
+    def _is_check_dice_enabled(self, player: Player) -> str | None:
+        if self.status != "playing":
+            return "action-not-playing"
+        return None
+
+    def _is_check_dice_hidden(self, player: Player) -> Visibility:
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            return Visibility.VISIBLE if self.status == "playing" else Visibility.HIDDEN
+        return Visibility.HIDDEN
+
+    def _is_check_round_status_enabled(self, player: Player) -> str | None:
+        if self.status != "playing":
+            return "action-not-playing"
+        return None
+
+    def _is_check_round_status_hidden(self, player: Player) -> Visibility:
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            return Visibility.VISIBLE if self.status == "playing" else Visibility.HIDDEN
+        return Visibility.HIDDEN
 
     def setup_keybinds(self) -> None:
         """Define all keybinds for the game."""
@@ -389,10 +682,179 @@ class MidnightGame(Game, DiceGameMixin):
                  user = self.get_user(player)
         locale = user.locale if user else "en"
 
-        self.define_keybind("r", Localization.get(locale, "midnight-roll"), ["roll"], state=KeybindState.ACTIVE)
+        self.define_keybind(
+            "r",
+            Localization.get(locale, "midnight-roll"),
+            ["roll"],
+            state=KeybindState.ACTIVE,
+        )
 
         # Bank action keybind
-        self.define_keybind("b", Localization.get(locale, "midnight-bank"), ["bank"], state=KeybindState.ACTIVE)
+        self.define_keybind(
+            "b",
+            Localization.get(locale, "midnight-bank"),
+            ["bank"],
+            state=KeybindState.ACTIVE,
+        )
+        self.define_keybind(
+            "h",
+            Localization.get(locale, "midnight-check-dice"),
+            ["check_dice"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
+        )
+        self.define_keybind(
+            "e",
+            Localization.get(locale, "midnight-check-round-status"),
+            ["check_round_status"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
+        )
+
+    def _action_check_dice(self, player: Player, action_id: str) -> None:
+        user = self.get_user(player)
+        if not user:
+            return
+
+        current = self.current_player
+        if not isinstance(current, MidnightPlayer):
+            user.speak_l("game-no-turn", buffer="game")
+            return
+
+        if not current.dice.has_rolled:
+            if current is player:
+                user.speak_l("midnight-your-dice-not-rolled", buffer="game")
+            else:
+                user.speak_l(
+                    "midnight-player-dice-not-rolled",
+                    buffer="game",
+                    player=current.name,
+                )
+            return
+
+        kwargs = self._current_turn_snapshot_kwargs(current, user.locale)
+        if current is player:
+            user.speak_l("midnight-your-dice-status", buffer="game", **kwargs)
+        else:
+            user.speak_l("midnight-player-dice-status", buffer="game", **kwargs)
+
+    def _status_items(self, player: Player, user) -> list[MenuItem]:
+        locale = user.locale
+        items = [
+            MenuItem(
+                text=Localization.get(
+                    locale,
+                    "midnight-status-round",
+                    round=self.round,
+                    total=self.options.rounds,
+                ),
+                id="round",
+            )
+        ]
+
+        current = self.current_player
+        if isinstance(current, MidnightPlayer):
+            items.append(
+                MenuItem(
+                    text=Localization.get(
+                        locale,
+                        "midnight-status-current-player",
+                        player=current.name,
+                    ),
+                    id="current-player",
+                )
+            )
+            if current.dice.has_rolled:
+                items.append(
+                    MenuItem(
+                        text=Localization.get(
+                            locale,
+                            "midnight-status-current-dice",
+                            **self._current_turn_snapshot_kwargs(current, locale),
+                        ),
+                        id=f"current-dice:{current.id}",
+                    )
+                )
+            else:
+                items.append(
+                    MenuItem(
+                        text=Localization.get(
+                            locale,
+                            "midnight-status-current-not-rolled",
+                            player=current.name,
+                        ),
+                        id=f"current-dice:{current.id}",
+                    )
+                )
+
+        if self.last_turn_player_id:
+            last_player = self.get_player_by_id(self.last_turn_player_id)
+            if last_player:
+                dice = self._format_dice_values(self.last_turn_dice, locale)
+                key = (
+                    "midnight-status-last-qualified"
+                    if self.last_turn_qualified
+                    else "midnight-status-last-disqualified"
+                )
+                items.append(
+                    MenuItem(
+                        text=Localization.get(
+                            locale,
+                            key,
+                            player=last_player.name,
+                            dice=dice,
+                            score=self.last_turn_score,
+                        ),
+                        id=f"last-turn:{self.last_turn_player_id}",
+                    )
+                )
+
+        for standing_index, midnight_player in enumerate(
+            self._sorted_players_by_standing(), 1
+        ):
+            items.append(
+                MenuItem(
+                    text=Localization.get(
+                        locale,
+                        "midnight-status-standing-line",
+                        rank=standing_index,
+                        player=midnight_player.name,
+                        wins=midnight_player.round_wins,
+                        current=midnight_player.round_score,
+                        qualified="yes" if midnight_player.qualified else "no",
+                    ),
+                    id=f"standing:{midnight_player.id}",
+                )
+            )
+        return items
+
+    def _action_check_round_status(self, player: Player, action_id: str) -> None:
+        self.live_status_box(
+            player,
+            "midnight_round_status",
+            lambda _player, live_user: self._status_items(_player, live_user),
+        )
+
+    def _sorted_players_by_standing(self) -> list[MidnightPlayer]:
+        active_players = [
+            player for player in self.get_active_players() if isinstance(player, MidnightPlayer)
+        ]
+        return sorted(
+            active_players,
+            key=lambda p: (p.round_wins, p.round_score, p.qualified),
+            reverse=True,
+        )
+
+    def prestart_validate(self) -> list[str | tuple[str, dict]]:
+        errors: list[str | tuple[str, dict]] = list(super().prestart_validate())
+        if not 1 <= self.options.rounds <= 20:
+            errors.append(
+                (
+                    "midnight-error-rounds-out-of-range",
+                    {"rounds": self.options.rounds, "min": 1, "max": 20},
+                )
+            )
+        return errors
 
     def on_start(self) -> None:
         """Called when the game starts."""
@@ -404,6 +866,13 @@ class MidnightGame(Game, DiceGameMixin):
         # Initialize turn order
         active_players = self.get_active_players()
         self.set_turn_players(active_players)
+        self.team_manager.team_mode = "individual"
+        self.team_manager.setup_teams([player.name for player in active_players])
+        self.team_manager.reset_all_scores()
+        self.last_turn_player_id = ""
+        self.last_turn_dice = []
+        self.last_turn_score = 0
+        self.last_turn_qualified = False
 
         # Reset player state
         for player in active_players:
@@ -411,6 +880,7 @@ class MidnightGame(Game, DiceGameMixin):
             player.round_score = 0
             player.round_wins = 0
             player.qualified = False
+        self._sync_team_scores()
 
         # Play intro music
         self.play_music("game_pig/mus.ogg")
@@ -426,7 +896,12 @@ class MidnightGame(Game, DiceGameMixin):
         self.set_turn_players(self.get_active_players())
 
         self.play_sound("game_pig/roundstart.ogg")
-        self.broadcast_l("game-round-start", buffer="game", round=self.round)
+        self._broadcast_global_l(
+            "midnight-round-start",
+            "midnight-round-start-brief",
+            round=self.round,
+            total=self.options.rounds,
+        )
 
         # Reset all players for new round
         for player in self.get_active_players():
@@ -468,54 +943,66 @@ class MidnightGame(Game, DiceGameMixin):
 
     def bot_think(self, player: MidnightPlayer) -> str | None:
         """Bot AI decision making. Called by BotHelper."""
-        # Strategy: Keep 1 and 4 first, then keep highest dice
         if not player.dice.has_rolled:
             return "roll"
 
-        # If we have kept dice but haven't rolled yet to lock them, roll
+        if player.dice.all_decided:
+            return "bank"
+
+        keep_index = self._bot_pick_die_to_keep(player)
+        if keep_index is not None:
+            return f"toggle_die_{keep_index}"
+
         if player.dice.kept_unlocked_count > 0:
             return "roll"
 
-        # Look for 1 if we don't have one locked yet
-        if 1 not in [player.dice.values[i] for i in player.dice.locked]:
-            for i in range(6):
-                if not player.dice.is_locked(i) and player.dice.values[i] == 1:
-                    return f"toggle_die_{i}"
+        return "bank"
 
-        # Look for 4 if we don't have one locked yet
-        if 4 not in [player.dice.values[i] for i in player.dice.locked]:
-            for i in range(6):
-                if not player.dice.is_locked(i) and player.dice.values[i] == 4:
-                    return f"toggle_die_{i}"
+    def _bot_pick_die_to_keep(self, player: MidnightPlayer) -> int | None:
+        available = [
+            index
+            for index in range(player.dice.num_dice)
+            if not player.dice.is_locked(index) and not player.dice.is_kept(index)
+        ]
+        if not available:
+            return None
 
-        # Keep highest available die
-        best_index = -1
-        best_value = 0
-        for i in range(6):
-            if not player.dice.is_locked(i) and not player.dice.is_kept(i):
-                if player.dice.values[i] > best_value:
-                    best_value = player.dice.values[i]
-                    best_index = i
+        kept_values = [
+            player.dice.values[index]
+            for index in range(player.dice.num_dice)
+            if player.dice.is_locked(index) or player.dice.is_kept(index)
+        ]
+        has_one = QUALIFIER_ONE in kept_values
+        has_four = QUALIFIER_FOUR in kept_values
 
-        if best_index >= 0:
-            return f"toggle_die_{best_index}"
+        if not has_one:
+            one_index = self._find_available_die(player, available, QUALIFIER_ONE)
+            if one_index is not None:
+                return one_index
 
-        # No more dice to keep - decide whether to roll or stop
-        # If we have both 1 and 4 locked, we can stop
-        locked_values = [player.dice.values[i] for i in player.dice.locked]
-        has_one = 1 in locked_values
-        has_four = 4 in locked_values
+        if not has_four:
+            four_index = self._find_available_die(player, available, QUALIFIER_FOUR)
+            if four_index is not None:
+                return four_index
 
         if has_one and has_four:
-            # We have what we need, bank to lock in score
-            return "bank"
+            for target in (6, 5):
+                index = self._find_available_die(player, available, target)
+                if index is not None:
+                    return index
 
-        # Still missing 1 or 4, keep trying (but can't roll if kept_unlocked_count is 0)
-        # In this case, bank anyway to avoid getting stuck
         if player.dice.kept_unlocked_count == 0:
-            return "bank"
+            return max(available, key=lambda index: player.dice.values[index])
 
-        return "roll"
+        return None
+
+    def _find_available_die(
+        self, player: MidnightPlayer, available: list[int], value: int
+    ) -> int | None:
+        for index in available:
+            if player.dice.values[index] == value:
+                return index
+        return None
 
     def _on_turn_end(self) -> None:
         """Handle end of a player's turn."""
@@ -536,7 +1023,10 @@ class MidnightGame(Game, DiceGameMixin):
 
         if not qualified_players:
             # No one qualified
-            self.broadcast_l("midnight-all-disqualified", buffer="game")
+            self._broadcast_global_l(
+                "midnight-all-disqualified",
+                "midnight-all-disqualified-brief",
+            )
         else:
             high_score = max(p.round_score for p in qualified_players)
             winners = [p for p in qualified_players if p.round_score == high_score]
@@ -545,22 +1035,29 @@ class MidnightGame(Game, DiceGameMixin):
                 # Single round winner
                 winner = winners[0]
                 winner.round_wins += 1
+                self._sync_team_scores()
                 self.play_sound("game_pig/bank.ogg")
-                self.broadcast_l(
-                    "midnight-round-winner", buffer="game", player=winner.name
+                self._broadcast_actor_l(
+                    winner,
+                    "midnight-you-win-round",
+                    "midnight-round-winner",
+                    brief_personal_key="midnight-you-win-round-brief",
+                    brief_others_key="midnight-round-winner-brief",
+                    round=self.round,
+                    score=winner.round_score,
                 )
             else:
                 # Tie
                 names = [w.name for w in winners]
-                # Each tied player gets a win
-                for w in winners:
-                    w.round_wins += 1
                 for player in self.players:
                     user = self.get_user(player)
                     if user:
                         names_str = Localization.format_list_and(user.locale, names)
                         user.speak_l(
-                            "midnight-round-tie", buffer="game", players=names_str
+                            "midnight-round-tie",
+                            buffer="game",
+                            players=names_str,
+                            score=high_score,
                         )
 
         # Check if game is over
@@ -580,9 +1077,15 @@ class MidnightGame(Game, DiceGameMixin):
 
         if len(winners) == 1:
             # Single game winner
+            winner = winners[0]
             self.play_sound("game_pig/win.ogg")
-            self.broadcast_l(
-                "midnight-game-winner", buffer="game", player=winners[0].name, wins=max_wins
+            self._broadcast_actor_l(
+                winner,
+                "midnight-you-win-game",
+                "midnight-game-winner",
+                brief_personal_key="midnight-you-win-game-brief",
+                brief_others_key="midnight-game-winner-brief",
+                wins=max_wins,
             )
         else:
             # Game tie
@@ -591,17 +1094,24 @@ class MidnightGame(Game, DiceGameMixin):
                 user = self.get_user(player)
                 if user:
                     names_str = Localization.format_list_and(user.locale, names)
-                    user.speak_l("midnight-game-tie", buffer="game", players=names_str, wins=max_wins)
+                    user.speak_l(
+                        "midnight-game-tie",
+                        buffer="game",
+                        players=names_str,
+                        wins=max_wins,
+                    )
 
         self.finish_game()
 
     def build_game_result(self) -> GameResult:
         """Build the game result with Midnight-specific data."""
         active_players = self.get_active_players()
-        sorted_players = sorted(
-            active_players, key=lambda p: p.round_wins, reverse=True
-        )
-        winner = sorted_players[0] if sorted_players else None
+        sorted_players = self._sorted_players_by_standing()
+        max_wins = sorted_players[0].round_wins if sorted_players else 0
+        winner_candidates = [
+            player for player in sorted_players if player.round_wins == max_wins
+        ]
+        winner = winner_candidates[0] if len(winner_candidates) == 1 else None
 
         # Build final standings
         final_standings = {}
@@ -622,7 +1132,7 @@ class MidnightGame(Game, DiceGameMixin):
             ],
             custom_data={
                 "winner_name": winner.name if winner else None,
-                "winner_rounds": winner.round_wins if winner else 0,
+                "winner_rounds": max_wins,
                 "final_standings": final_standings,
                 "rounds_played": self.round,
                 "total_rounds": self.options.rounds,

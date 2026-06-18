@@ -8,9 +8,12 @@ Following the testing strategy:
 """
 
 import pytest
+from pathlib import Path
+import re
 import random
 import json
 
+from ..game_utils import dice as dice_utils
 from ..games.midnight.game import MidnightGame, MidnightOptions
 from ..users.test_user import MockUser
 from ..users.bot import Bot
@@ -119,6 +122,34 @@ class TestMidnightGameActions:
         assert self.player1.dice.has_rolled
         assert len(self.player1.dice.values) == 6
         assert all(1 <= v <= 6 for v in self.player1.dice.values)
+
+    def test_roll_broadcast_formats_dice_list_in_listener_locale(self, monkeypatch):
+        """Dice roll lists should use each listener's localized conjunction."""
+        self.user1._locale = "vi"
+        rolls = iter([1, 3, 3, 3, 1, 4])
+        monkeypatch.setattr(
+            dice_utils.random,
+            "randint",
+            lambda _low, _high: next(rolls),
+        )
+
+        self.game.execute_action(self.player1, "roll")
+
+        spoken = self.user1.get_last_spoken()
+        assert spoken == "Bạn gieo được: 1, 3, 3, 3, 1 và 4."
+        assert " and " not in spoken
+
+    def test_score_broadcast_formats_scoring_dice_in_listener_locale(self):
+        """Scoring dice lists should also use the listener's localized conjunction."""
+        self.user1._locale = "vi"
+        self.player1.dice.values = [1, 4, 6, 5, 3, 2]
+        self.player1.dice.locked = [0, 1, 2, 3, 4, 5]
+
+        self.game._score_turn(self.player1)
+
+        spoken = self.user1.get_spoken_messages()
+        assert any("6, 5, 3 và 2" in message for message in spoken)
+        assert not any("6, 5, 3, and 2" in message for message in spoken)
 
     def test_keep_die(self):
         """Test keeping a die."""
@@ -298,6 +329,102 @@ class TestMidnightGameActions:
         assert "roll" in p2_ids
         assert p2_by_id["roll"].enabled is False
         assert p2_by_id["roll"].disabled_reason == "action-not-your-turn"
+
+    def test_touch_status_actions_are_visible_and_ordered(self):
+        """Touch clients get useful state checks before standard table actions."""
+        self.user1.client_type = "web"
+        standard_set = self.game.create_standard_action_set(self.player1)
+        visible_ids = [
+            a.action.id for a in standard_set.get_visible_actions(self.game, self.player1)
+        ]
+
+        ordered_subset = [
+            action_id
+            for action_id in visible_ids
+            if action_id in {
+                "check_dice",
+                "check_round_status",
+                "check_scores",
+                "whose_turn",
+                "whos_at_table",
+            }
+        ]
+        assert ordered_subset == [
+            "check_dice",
+            "check_round_status",
+            "check_scores",
+            "whose_turn",
+            "whos_at_table",
+        ]
+
+    def test_check_dice_reports_current_player_context(self):
+        """Read current dice explains the active player's dice state."""
+        self.player1.dice.values = [1, 4, 6, 5, 2, 3]
+        self.player1.dice.kept = [0, 1, 2]
+        self.player1.dice.locked = [0, 1]
+
+        self.game.execute_action(self.player2, "check_dice")
+
+        spoken = self.user2.get_last_spoken()
+        assert spoken is not None
+        assert "Alice's dice" in spoken
+        assert "Current qualifying score would be 16" in spoken
+
+    def test_round_tie_does_not_award_round_wins(self):
+        """A tied high score is announced but no player receives a round win."""
+        self.game.options.rounds = 1
+        self.player1.qualified = True
+        self.player2.qualified = True
+        self.player1.round_score = 20
+        self.player2.round_score = 20
+
+        self.game._on_round_end()
+
+        assert self.player1.round_wins == 0
+        assert self.player2.round_wins == 0
+        assert any("No round win is awarded" in msg for msg in self.user1.get_spoken_messages())
+
+    def test_tied_game_result_has_no_single_winner(self):
+        """Stored results should not invent a winner when round wins are tied."""
+        self.player1.round_wins = 1
+        self.player2.round_wins = 1
+
+        result = self.game.build_game_result()
+
+        assert result.custom_data["winner_name"] is None
+        assert result.custom_data["winner_rounds"] == 1
+
+    def test_score_actions_are_backed_by_round_wins(self):
+        """Shared score actions report synchronized round-win totals."""
+        self.player1.round_wins = 2
+        self.player2.round_wins = 1
+        self.game._sync_team_scores()
+
+        self.game.execute_action(self.player1, "check_scores")
+
+        spoken = self.user1.get_spoken_messages()
+        assert any("Alice: 2 round wins" in msg for msg in spoken)
+        assert any("Bob: 1 round win" in msg for msg in spoken)
+
+    def test_invalid_round_count_is_contextual_start_error(self):
+        """Directly invalid option state is blocked before start."""
+        game = MidnightGame(options=MidnightOptions(rounds=0))
+        errors = game.prestart_validate()
+
+        assert (
+            "midnight-error-rounds-out-of-range",
+            {"rounds": 0, "min": 1, "max": 20},
+        ) in errors
+
+    def test_bot_keeps_multiple_useful_dice_before_rerolling(self):
+        """Bot should not reroll immediately after keeping only one useful die."""
+        self.player1.dice.values = [1, 4, 6, 2, 3, 5]
+        self.player1.dice.kept = []
+        self.player1.dice.locked = []
+
+        assert self.game.bot_think(self.player1) == "toggle_die_0"
+        self.game.execute_action(self.player1, "toggle_die_0")
+        assert self.game.bot_think(self.player1) == "toggle_die_1"
 
 
 class TestMidnightPlayTest:
@@ -543,6 +670,41 @@ class TestMidnightPersistence:
         # Actions should still work
         actions = game.get_all_enabled_actions(game.players[0])
         assert len(actions) > 0
+
+
+def test_midnight_locale_key_and_variable_parity():
+    """English and Vietnamese Midnight locale files must stay structurally synced."""
+    root = Path(__file__).resolve().parents[1]
+    en_text = (root / "locales" / "en" / "midnight.ftl").read_text(encoding="utf-8")
+    vi_text = (root / "locales" / "vi" / "midnight.ftl").read_text(encoding="utf-8")
+
+    def messages(text: str) -> dict[str, set[str]]:
+        result = {}
+        current_key = None
+        current_lines: list[str] = []
+        for line in text.splitlines():
+            if line and not line.startswith((" ", "\t")) and "=" in line:
+                if current_key is not None:
+                    result[current_key] = set(
+                        re.findall(
+                            r"\{\s*\$([a-zA-Z_][\w-]*)",
+                            "\n".join(current_lines),
+                        )
+                    )
+                current_key = line.split("=", 1)[0].strip()
+                current_lines = [line]
+            elif current_key is not None:
+                current_lines.append(line)
+        if current_key is not None:
+            result[current_key] = set(
+                re.findall(
+                    r"\{\s*\$([a-zA-Z_][\w-]*)",
+                    "\n".join(current_lines),
+                )
+            )
+        return result
+
+    assert messages(en_text) == messages(vi_text)
 
 
 if __name__ == "__main__":
