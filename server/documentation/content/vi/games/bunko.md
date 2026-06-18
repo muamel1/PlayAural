@@ -1,52 +1,52 @@
 \*\*Bunko\*\*
 
-Bunko là một trò chơi xúc xắc nhịp độ nhanh, nơi cả bàn lao vào những chuỗi tung liên tiếp để chớp thời cơ ghi điểm. Mỗi vòng xoay quanh một con số đích, và ai tận dụng được đà may mắn tốt hơn sẽ vươn lên trước.
+Bunko là trò chơi xúc xắc nhịp nhanh, xoay quanh việc săn đúng số đích của từng vòng. PlayAural dùng phiên bản một bàn: mọi người cùng chơi tại một bàn, số đích luân phiên qua các vòng, và người thắng chung cuộc được xác định theo cách tính thắng mà chủ bàn đã chọn.
 
 \*\*Lối Chơi\*\*
 
 \* Bunko dùng \*\*3 viên xúc xắc sáu mặt\*\*.
-\* Ván chơi diễn ra qua một số vòng cố định. Mặc định là \*\*6 vòng\*\*.
-\* Mỗi vòng có một \*\*số đích\*\*. Vòng 1 tính số 1, vòng 2 tính số 2, rồi tiếp tục như vậy đến số 6.
+\* Mặc định ván có \*\*6 vòng\*\*. Chủ bàn có thể chọn ít hơn hoặc nhiều hơn.
+\* Mỗi vòng có một \*\*số đích\*\*. Vòng 1 săn số 1, vòng 2 săn số 2, tiếp tục đến số 6. Nếu ván có hơn 6 vòng, số đích quay lại từ 1.
 \* Trong lượt của mình, bạn tung cả 3 viên xúc xắc.
-\* Nếu có ghi điểm, bạn được tung tiếp.
-\* Nếu không ghi được điểm nào, lượt của bạn kết thúc ngay và chuyển sang người kế tiếp.
+\* Nếu lượt tung ghi được điểm, bạn tiếp tục tung.
+\* Nếu lượt tung ghi 0 điểm, lượt của bạn kết thúc và chuyển sang người kế tiếp.
 
-\*\*Cơ Chế Đặc Biệt\*\*
+\*\*Lượt Tung Đặc Biệt\*\*
 
-\* Một vòng kết thúc ngay khi có người đạt hoặc vượt \*\*21 điểm\*\* trong vòng đó.
-\* Một Bunko cũng kết thúc vòng ngay lập tức vì bản thân nó đã trị giá 21 điểm.
-\* Sau khi một vòng kết thúc, người ngồi ở bên \*\*trái của người thắng vòng\*\* sẽ là người mở đầu vòng kế tiếp.
-\* Nếu chủ bàn chọn nhiều hơn 6 vòng, các số đích sẽ quay vòng từ 1 đến 6 rồi lặp lại.
+\* \*\*Bunko:\*\* cả 3 viên đều trùng số đích hiện tại. Kết quả này ghi \*\*21 điểm\*\* và kết thúc vòng ngay lập tức.
+\* \*\*Bunko phụ:\*\* cả 3 viên giống nhau, nhưng không trùng số đích hiện tại. Kết quả này ghi \*\*5 điểm\*\* và bạn được tung tiếp.
+\* Một lượt tung thường ghi \*\*1 điểm\*\* cho mỗi viên trùng số đích.
 
-\*\*Cách Tính Điểm\*\*
+\*\*Nhịp Vòng\*\*
 
-\* \*\*1 điểm\*\* cho mỗi viên xúc xắc hiện đúng \*\*số đích\*\* của vòng đang chơi.
-\* \*\*Bộ ba lệch đích:\*\* cả 3 viên giống nhau nhưng \*không\* trùng với số đích. Kết quả này được \*\*5 điểm\*\*.
-\* \*\*Bunko:\*\* cả 3 viên đều trúng đúng số đích. Kết quả này được \*\*21 điểm\*\* và khép lại vòng ngay lập tức.
+\* Một vòng kết thúc khi có người đạt hoặc vượt \*\*21 điểm\*\* trong vòng đó.
+\* Bunko kết thúc vòng ngay vì bản thân nó trị giá 21 điểm.
+\* Người thắng vòng nhận 1 vòng thắng.
+\* Người ngồi sau người thắng vòng sẽ mở đầu vòng kế tiếp.
 
 \*\*Xác Định Người Thắng\*\*
 
-Người thắng chung cuộc phụ thuộc vào \*\*Cách tính thắng\*\* mà chủ bàn chọn:
+Chủ bàn chọn một trong hai cách tính thắng:
 
-\* \*\*Số vòng thắng:\*\* người thắng nhiều vòng nhất đứng đầu.
-\* \*\*Tổng điểm:\*\* người có tổng điểm cao nhất sau toàn bộ ván đứng đầu.
+\* \*\*Số vòng thắng\*\* \(mặc định\): xếp hạng theo số vòng thắng, rồi đến tổng điểm, số Bunko, và số Bunko phụ.
+\* \*\*Tổng điểm\*\*: xếp hạng theo tổng điểm, rồi đến số vòng thắng, số Bunko, và số Bunko phụ.
 
-Nếu vẫn hòa, thứ tự phân hạng sẽ tiếp tục xét theo:
+\*\*Ghi Chú Truy Cập\*\*
 
-\* tổng điểm
-\* số lần Bunko
-\* số lần bộ ba lệch đích
+\* Tùy chọn chung \*\*Thông báo ngắn gọn\*\* sẽ rút gọn các thông báo tung xúc xắc và bắt đầu vòng, nhưng vẫn giữ đủ xúc xắc, điểm ghi được, điểm vòng, và tổng điểm.
+\* \*\*Xác nhận hành động rủi ro\*\* không được dùng trong Bunko, vì tung xúc xắc là hành động bắt buộc của lượt chơi và không có quyết định giữ điểm hay bỏ lượt có thể làm mất điểm ngoài ý muốn.
 
 \*\*Tùy Chỉnh Tại Bàn Chơi\*\*
 
-\* \*\*Số vòng:\*\* Mặc định là 6. Chủ bàn có thể chọn từ 1 đến 12 vòng.
-\* \*\*Cách tính thắng:\*\* Chọn thắng theo số vòng thắng hoặc theo tổng điểm.
+\* \*\*Số vòng:\*\* Mặc định 6. Phạm vi từ 1 đến 12.
+\* \*\*Cách tính thắng:\*\* Mặc định Số vòng thắng. Có thể chọn Số vòng thắng hoặc Tổng điểm.
 
 \*\*Phím Tắt\*\*
 
 \* \*\*R:\*\* Tung xúc xắc.
 \* \*\*E:\*\* Nghe vòng hiện tại, số đích, và người đang dẫn đầu.
-\* \*\*D:\*\* Nghe lượt tung gần nhất và kết quả của nó.
+\* \*\*D:\*\* Nghe lượt tung mới nhất và kết quả của nó.
 \* \*\*T:\*\* Kiểm tra xem đang là lượt của ai.
 \* \*\*S:\*\* Xem bảng xếp hạng.
+\* \*\*Shift+S:\*\* Mở bảng xếp hạng chi tiết.
 \* \*\*Ctrl+U:\*\* Xem những ai đang ngồi tại bàn.

@@ -22,6 +22,7 @@ TARGET_NUMBERS = 6
 ROLL_DICE_COUNT = 3
 WINNING_MODE_ROUND_WINS = "round_wins"
 WINNING_MODE_TOTAL_SCORE = "total_score"
+WINNING_MODES = {WINNING_MODE_ROUND_WINS, WINNING_MODE_TOTAL_SCORE}
 SHAKE_TO_ROLL_DELAY_TICKS = 34
 ROLL_TO_RESULT_DELAY_TICKS = 24
 
@@ -91,6 +92,8 @@ class BunkoOptions(GameOptions):
 class BunkoGame(Game):
     """Single-table Bunko adaptation for PlayAural."""
 
+    relevant_preferences = ["brief_announcements"]
+
     players: list[BunkoPlayer] = field(default_factory=list)
     options: BunkoOptions = field(default_factory=BunkoOptions)
     current_target_number: int = 1
@@ -131,6 +134,14 @@ class BunkoGame(Game):
     def _player_locale(self, player: Player) -> str:
         user = self.get_user(player)
         return user.locale if user else "en"
+
+    def _wants_brief(self, user) -> bool:
+        return bool(
+            user
+            and user.preferences.get_effective(
+                "brief_announcements", game_type=self.get_type()
+            )
+        )
 
     def _current_round_limit(self) -> int:
         return max(1, self.options.round_count)
@@ -189,6 +200,48 @@ class BunkoGame(Game):
     def _format_roll_values(self, values: list[int]) -> str:
         return ", ".join(str(value) for value in values)
 
+    def _broadcast_actor_l(
+        self,
+        actor: BunkoPlayer,
+        personal_key: str,
+        others_key: str,
+        *,
+        brief_personal_key: str | None = None,
+        brief_others_key: str | None = None,
+        **kwargs,
+    ) -> None:
+        """Broadcast an actor event with per-listener perspective and verbosity."""
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+
+            is_actor = listener is actor
+            key = personal_key if is_actor else others_key
+            if self._wants_brief(user):
+                if is_actor and brief_personal_key:
+                    key = brief_personal_key
+                elif not is_actor and brief_others_key:
+                    key = brief_others_key
+
+            payload = dict(kwargs)
+            if not is_actor:
+                payload["player"] = actor.name
+            user.speak_l(key, buffer="game", **payload)
+
+    def _broadcast_global_l(
+        self,
+        full_key: str,
+        brief_key: str | None = None,
+        **kwargs,
+    ) -> None:
+        """Broadcast a global event with each listener's verbosity preference."""
+        for listener in self.players:
+            user = self.get_user(listener)
+            if user:
+                key = brief_key if brief_key and self._wants_brief(user) else full_key
+                user.speak_l(key, buffer="game", **kwargs)
+
     def _announce_game_start(self) -> None:
         names = [player.name for player in self.get_active_players()]
         for listener in self.players:
@@ -224,9 +277,9 @@ class BunkoGame(Game):
         self.set_turn_players(ordered_players)
 
         self.play_sound("game_bunko/roundstart.ogg")
-        self.broadcast_l(
+        self._broadcast_global_l(
             "bunko-round-start",
-            buffer="game",
+            "bunko-round-start-brief",
             round=self.round,
             total_rounds=self._current_round_limit(),
             target=self.current_target_number,
@@ -236,11 +289,14 @@ class BunkoGame(Game):
     def _finish_current_round(self, winner: BunkoPlayer) -> None:
         winner.rounds_won += 1
         self.play_sound("game_pig/win.ogg")
-        self.broadcast_l(
-            "bunko-round-winner",
-            buffer="game",
-            player=winner.name,
+        self._broadcast_actor_l(
+            winner,
+            "bunko-you-win-round",
+            "bunko-player-wins-round",
+            brief_personal_key="bunko-you-win-round-brief",
+            brief_others_key="bunko-player-wins-round-brief",
             round=self.round,
+            target=self.current_target_number,
             score=winner.round_score,
         )
 
@@ -294,7 +350,7 @@ class BunkoGame(Game):
         if self.current_player != player:
             return "action-not-your-turn"
         if self.is_sequence_gameplay_locked():
-            return "action-not-available"
+            return "bunko-roll-already-resolving"
         return None
 
     def _is_roll_hidden(self, player: Player) -> Visibility:
@@ -461,6 +517,7 @@ class BunkoGame(Game):
             lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
             pause_bots=True,
         )
+        self.refresh_menus(player)
 
     def _action_check_status(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)
@@ -503,13 +560,16 @@ class BunkoGame(Game):
             user.speak_l("bunko-last-roll-none", buffer="game")
             return
 
-        user.speak_l(
-            f"bunko-last-roll-{self.last_roll_outcome}",
-            buffer="game",
-            player=roller.name,
-            dice=self._format_roll_values(self.last_roll),
-            points=self.last_roll_points,
-        )
+        key = f"bunko-last-roll-{self.last_roll_outcome}"
+        kwargs = {
+            "dice": self._format_roll_values(self.last_roll),
+            "points": self.last_roll_points,
+            "target": self.current_target_number,
+        }
+        if roller is player:
+            user.speak_l(f"{key}-you", buffer="game", **kwargs)
+        else:
+            user.speak_l(key, buffer="game", player=roller.name, **kwargs)
 
     def _action_check_scores(self, player: Player, action_id: str) -> None:
         user = self.get_user(player)
@@ -547,6 +607,25 @@ class BunkoGame(Game):
         ]
         lines.extend(self._standings_lines(locale))
         return lines
+
+    def prestart_validate(self) -> list[str | tuple[str, dict]]:
+        """Validate Bunko setup options before play starts."""
+        errors: list[str | tuple[str, dict]] = list(super().prestart_validate())
+        if not 1 <= self.options.round_count <= 12:
+            errors.append(
+                (
+                    "bunko-error-round-count-invalid",
+                    {"count": self.options.round_count, "min": 1, "max": 12},
+                )
+            )
+        if self.options.winning_mode not in WINNING_MODES:
+            errors.append(
+                (
+                    "bunko-error-winning-mode-invalid",
+                    {"mode": self.options.winning_mode},
+                )
+            )
+        return errors
 
     # ======================================================================
     # Game flow
@@ -597,8 +676,13 @@ class BunkoGame(Game):
         player = self.get_player_by_id(payload.get("player_id", ""))
         if not isinstance(player, BunkoPlayer):
             return
+        if player is not self.current_player or player not in self.get_active_players():
+            return
 
-        values = [int(value) for value in payload.get("values", [])]
+        try:
+            values = [int(value) for value in payload.get("values", [])]
+        except (TypeError, ValueError):
+            return
         if len(values) != ROLL_DICE_COUNT:
             return
 
@@ -623,12 +707,15 @@ class BunkoGame(Game):
         self.last_roll_points = points
         self._sync_team_scores()
 
-        self.broadcast_l(
-            f"bunko-roll-{outcome}",
-            buffer="game",
-            player=player.name,
+        self._broadcast_actor_l(
+            player,
+            f"bunko-you-roll-{outcome}",
+            f"bunko-player-rolls-{outcome}",
+            brief_personal_key=f"bunko-you-roll-{outcome}-brief",
+            brief_others_key=f"bunko-player-rolls-{outcome}-brief",
             dice=self._format_roll_values(values),
             points=points,
+            target=self.current_target_number,
             total=player.total_score,
             round_total=player.round_score,
         )
