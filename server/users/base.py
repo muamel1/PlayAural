@@ -253,7 +253,7 @@ class User(ABC):
         """Clear all menus and editboxes."""
         ...
 
-    def set_table_context(self, table_id: str) -> None:
+    def set_table_context(self, table_id: str, game_type: str = "") -> None:
         """Notify the client which table context is currently active."""
         return
 

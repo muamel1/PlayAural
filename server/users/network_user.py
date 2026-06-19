@@ -412,10 +412,11 @@ class NetworkUser(User):
         self._last_menu_packet_id = None
         self._queue_packet({"type": "clear_ui"})
 
-    def set_table_context(self, table_id: str) -> None:
+    def set_table_context(self, table_id: str, game_type: str = "") -> None:
         self._queue_packet(
             {
                 "type": "table_context",
                 "table_id": table_id,
+                "game_type": game_type,
             }
         )

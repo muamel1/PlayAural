@@ -181,8 +181,8 @@ class MockUser(User):
         self.editboxes.clear()
         self.messages.append(Message("clear_ui", {}))
 
-    def set_table_context(self, table_id: str) -> None:
-        self.messages.append(Message("table_context", {"table_id": table_id}))
+    def set_table_context(self, table_id: str, game_type: str = "") -> None:
+        self.messages.append(Message("table_context", {"table_id": table_id, "game_type": game_type}))
 
     # Test helper methods
 

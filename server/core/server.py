@@ -2952,7 +2952,9 @@ PlayAural Server
 
     def _set_in_game_state(self, user: NetworkUser, table_id: str) -> None:
         self._user_states[user.username] = {"menu": "in_game", "table_id": table_id}
-        user.set_table_context(table_id)
+        table = self._tables.get_table(table_id)
+        game_type = table.game_type if table else ""
+        user.set_table_context(table_id, game_type=game_type)
 
     async def _handle_voice_presence(self, client: ClientConnection, packet: dict) -> None:
         user = self._users.get(client.username)
