@@ -651,6 +651,8 @@ PlayAural Server
                 await self._handle_open_friends_hub(client)
             elif packet_type == "open_options":
                 await self._handle_open_options(client)
+            elif packet_type == "get_history":
+                await self._handle_get_history(client)
             elif packet_type == "broadcast_cmd":
                 await self._handle_broadcast_cmd(client, packet)
             elif packet_type == "set_preference":
@@ -8098,6 +8100,38 @@ PlayAural Server
         if self._user_states.get(username, {}).get("menu") in OPTIONS_MENU_IDS:
             return
         self._nav_push(user, self._show_options_menu)
+
+    async def _handle_get_history(self, client: ClientConnection) -> None:
+        """Handle get_history request: fetch and return the user's game history."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+        try:
+            history = self._db.get_player_game_history(user.uuid)
+            detailed_history = []
+            for h in history:
+                players = self._db.get_game_result_players(h["id"])
+                detailed_history.append({
+                    "id": h["id"],
+                    "game_type": h["game_type"],
+                    "timestamp": h["timestamp"],
+                    "duration_ticks": h["duration_ticks"],
+                    "custom_data": h["custom_data"],
+                    "players": players,
+                })
+            await client.send({
+                "type": "history_list",
+                "history": detailed_history,
+            })
+        except Exception as e:
+            await client.send({
+                "type": "history_list",
+                "history": [],
+                "error": str(e),
+            })
 
     async def _handle_ping(self, client: ClientConnection) -> None:
         """Handle ping request - respond immediately with pong."""
