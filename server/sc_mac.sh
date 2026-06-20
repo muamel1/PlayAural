@@ -365,6 +365,20 @@ check_status() {
 
     load_voice_config
     echo "Voice URL:    ${PLAYAURAL_VOICE_URL:-not configured}"
+
+    # Get local Wi-Fi IP address
+    local wifi_interface wifi_ip
+    wifi_interface=$(networksetup -listallhardwareports 2>/dev/null | awk '/Wi-Fi|AirPort/ {found=1; next} found && /Device/ {print $2; exit}')
+    if [ -n "$wifi_interface" ]; then
+        wifi_ip=$(ipconfig getifaddr "$wifi_interface" 2>/dev/null)
+        if [ -n "$wifi_ip" ]; then
+            echo -e "Wi-Fi IP:     ${CYAN}$wifi_ip${NC} (Connect from iPhone/other devices)"
+        else
+            echo -e "Wi-Fi IP:     ${YELLOW}Not connected to Wi-Fi${NC}"
+        fi
+    else
+        echo -e "Wi-Fi IP:     ${YELLOW}Wi-Fi interface not found${NC}"
+    fi
 }
 
 start_server() {
@@ -386,7 +400,7 @@ start_server() {
         set +a
     fi
 
-    (cd "$SERVER_DIR" && uv run python main.py --host 127.0.0.1 --port 8000 > "$SERVER_DIR/server.log" 2>&1 & echo $! > "$SERVER_PID_FILE")
+    (cd "$SERVER_DIR" && uv run python main.py --host 0.0.0.0 --port 8000 > "$SERVER_DIR/server.log" 2>&1 & echo $! > "$SERVER_PID_FILE")
     sleep 2
 
     if pid=$(is_running "$SERVER_PID_FILE"); then
@@ -424,7 +438,7 @@ restart_server_non_interactive() {
         . "$VOICE_ENV_FILE"
         set +a
     fi
-    (cd "$SERVER_DIR" && uv run python main.py --host 127.0.0.1 --port 8000 > "$SERVER_DIR/server.log" 2>&1 & echo $! > "$SERVER_PID_FILE")
+    (cd "$SERVER_DIR" && uv run python main.py --host 0.0.0.0 --port 8000 > "$SERVER_DIR/server.log" 2>&1 & echo $! > "$SERVER_PID_FILE")
 }
 
 restart_server() {
