@@ -328,7 +328,8 @@ class MileByMileGame(Game):
         action_set.add(
             Action(
                 id="check_status",
-                label=Localization.get(locale, "milebymile-check-status"),
+                label="",
+                get_label="_get_status_label",
                 handler="_action_check_status",
                 is_enabled="_is_check_status_enabled",
                 is_hidden="_is_check_status_hidden",
@@ -482,10 +483,10 @@ class MileByMileGame(Game):
                 )
             )
 
-        # Move check_status to the end (after card actions)
+        # Move check_status to the top (before card actions)
         if "check_status" in turn_set._order:
             turn_set._order.remove("check_status")
-            turn_set._order.append("check_status")
+            turn_set._order.insert(0, "check_status")
 
         # WEB-SPECIFIC: 
         # 1. Force dirty_trick to the top
@@ -496,11 +497,11 @@ class MileByMileGame(Game):
                 turn_set._order.remove("dirty_trick")
                 turn_set._order.insert(0, "dirty_trick")
 
-            # Keep touch utility buttons together, with Info before View status.
+            # Keep touch utility buttons together, with Info after View status.
             if "info" in turn_set._order:
                 turn_set._order.remove("info")
                 if "check_status" in turn_set._order:
-                    turn_set._order.insert(turn_set._order.index("check_status"), "info")
+                    turn_set._order.insert(turn_set._order.index("check_status") + 1, "info")
                 else:
                     turn_set._order.append("info")
 
@@ -757,6 +758,40 @@ class MileByMileGame(Game):
         user = self.get_user(player)
         locale = user.locale if user else "en"
         return self._get_localized_card_name(card, locale)
+
+    def _get_status_label(self, player: Player, action_id: str) -> str:
+        """Get dynamic status label showing current scores and distances for all teams/players."""
+        user = self.get_user(player)
+        locale = user.locale if user else "en"
+
+        parts = []
+        for team_idx, race_state in self.iter_teams():
+            # Get the team/player name
+            name = self.get_team_name(team_idx, locale)
+
+            # Format first-person reference for the requesting player's own team
+            is_own_team = False
+            if isinstance(player, MileByMilePlayer):
+                player_race = self.get_player_race_state(player)
+                if player_race:
+                    if self.is_individual_mode():
+                        is_own_team = (player == self.players[team_idx])
+                    else:
+                        is_own_team = (player.team_index == team_idx)
+
+            if is_own_team:
+                name = "You" if locale == "en" else "Bạn"
+
+            # Get total score
+            team = self._team_manager.teams[team_idx] if team_idx < len(self._team_manager.teams) else None
+            score = team.total_score if team else 0
+
+            miles_label = "miles" if locale == "en" else "dặm"
+            points_label = "points" if locale == "en" else "điểm"
+
+            parts.append(f"{name}: {race_state.miles} {miles_label}, {score} {points_label}")
+
+        return " | ".join(parts)
 
     def _update_turn_actions(self, player: MileByMilePlayer) -> None:
         """Update dynamic card actions for a player."""

@@ -372,7 +372,7 @@ check_status() {
     if [ -n "$wifi_interface" ]; then
         wifi_ip=$(ipconfig getifaddr "$wifi_interface" 2>/dev/null)
         if [ -n "$wifi_ip" ]; then
-            echo -e "Wi-Fi IP:     ${CYAN}$wifi_ip${NC} (Connect from iPhone/other devices)"
+            echo -e "Wi-Fi IP:     ${CYAN}$wifi_ip${NC}"
         else
             echo -e "Wi-Fi IP:     ${YELLOW}Not connected to Wi-Fi${NC}"
         fi
@@ -411,13 +411,161 @@ start_server() {
     pause_screen
 }
 
+kill_server_processes() {
+    # 1. Send SIGINT (Signal 2 / graceful KeyboardInterrupt) by PID file
+    if [ -f "$SERVER_PID_FILE" ]; then
+        local pid
+        pid=$(cat "$SERVER_PID_FILE")
+        if [ -n "$pid" ]; then
+            kill -2 "$pid" 2>/dev/null || true
+            # Terminate children gracefully too
+            local children
+            children=$(pgrep -P "$pid" 2>/dev/null)
+            for child in $children; do
+                kill -2 "$child" 2>/dev/null || true
+            done
+        fi
+    fi
+
+    # 2. Send SIGINT to any process listening on port 8000
+    local port_pids
+    port_pids=$(lsof -t -i :8000 2>/dev/null)
+    if [ -n "$port_pids" ]; then
+        for p in $port_pids; do
+            kill -2 "$p" 2>/dev/null || true
+        done
+    fi
+
+    # 3. Send SIGINT to python processes matching the pattern
+    local pattern_pids
+    pattern_pids=$(pgrep -f "python.*main.py|python -m server" 2>/dev/null)
+    if [ -n "$pattern_pids" ]; then
+        for p in $pattern_pids; do
+            kill -2 "$p" 2>/dev/null || true
+        done
+    fi
+
+    # Wait up to 5 seconds for all processes to terminate gracefully
+    local i
+    for i in {1..10}; do
+        local running=0
+        if [ -f "$SERVER_PID_FILE" ]; then
+            local pid
+            pid=$(cat "$SERVER_PID_FILE")
+            if [ -n "$pid" ] && ps -p "$pid" >/dev/null 2>&1; then
+                running=1
+            fi
+        fi
+        
+        local port_pids
+        port_pids=$(lsof -t -i :8000 2>/dev/null)
+        if [ -n "$port_pids" ]; then
+            running=1
+        fi
+        
+        local pattern_pids
+        pattern_pids=$(pgrep -f "python.*main.py|python -m server" 2>/dev/null)
+        if [ -n "$pattern_pids" ]; then
+            running=1
+        fi
+        
+        if [ $running -eq 0 ]; then
+            break
+        fi
+        sleep 0.5
+    done
+
+    # Force kill (-9) as a last resort if anything is still hanging after 5 seconds
+    if [ -f "$SERVER_PID_FILE" ]; then
+        local pid
+        pid=$(cat "$SERVER_PID_FILE")
+        if [ -n "$pid" ] && ps -p "$pid" >/dev/null 2>&1; then
+            kill -9 "$pid" 2>/dev/null || true
+        fi
+    fi
+
+    port_pids=$(lsof -t -i :8000 2>/dev/null)
+    if [ -n "$port_pids" ]; then
+        for p in $port_pids; do
+            kill -9 "$p" 2>/dev/null || true
+        done
+    fi
+
+    pattern_pids=$(pgrep -f "python.*main.py|python -m server" 2>/dev/null)
+    if [ -n "$pattern_pids" ]; then
+        for p in $pattern_pids; do
+            kill -9 "$p" 2>/dev/null || true
+        done
+    fi
+
+    rm -f "$SERVER_PID_FILE"
+}
+
+kill_voice_server_processes() {
+    # 1. Send SIGTERM (graceful stop) by PID file
+    if [ -f "$VOICE_PID_FILE" ]; then
+        local pid
+        pid=$(cat "$VOICE_PID_FILE")
+        if [ -n "$pid" ]; then
+            kill "$pid" 2>/dev/null || true
+        fi
+    fi
+
+    local pids
+    pids=$(pgrep -f "livekit-server" 2>/dev/null)
+    if [ -n "$pids" ]; then
+        for p in $pids; do
+            kill "$p" 2>/dev/null || true
+        done
+    fi
+
+    # Wait up to 5 seconds for voice server to terminate gracefully
+    local i
+    for i in {1..10}; do
+        local running=0
+        if [ -f "$VOICE_PID_FILE" ]; then
+            local pid
+            pid=$(cat "$VOICE_PID_FILE")
+            if [ -n "$pid" ] && ps -p "$pid" >/dev/null 2>&1; then
+                running=1
+            fi
+        fi
+        
+        local pids
+        pids=$(pgrep -f "livekit-server" 2>/dev/null)
+        if [ -n "$pids" ]; then
+            running=1
+        fi
+        
+        if [ $running -eq 0 ]; then
+            break
+        fi
+        sleep 0.5
+    done
+
+    # Force kill (-9) as a last resort if still running after 5 seconds
+    if [ -f "$VOICE_PID_FILE" ]; then
+        local pid
+        pid=$(cat "$VOICE_PID_FILE")
+        if [ -n "$pid" ] && ps -p "$pid" >/dev/null 2>&1; then
+            kill -9 "$pid" 2>/dev/null || true
+        fi
+    fi
+
+    pids=$(pgrep -f "livekit-server" 2>/dev/null)
+    if [ -n "$pids" ]; then
+        for p in $pids; do
+            kill -9 "$p" 2>/dev/null || true
+        done
+    fi
+
+    rm -f "$VOICE_PID_FILE"
+}
+
 stop_server() {
-    local pid
-    if pid=$(is_running "$SERVER_PID_FILE"); then
-        say_info "Stopping game server (PID: $pid)..."
-        kill "$pid"
-        sleep 1
-        rm -f "$SERVER_PID_FILE"
+    if is_running "$SERVER_PID_FILE" >/dev/null 2>&1 || lsof -i :8000 >/dev/null 2>&1 || pgrep -f "python.*main.py|python -m server" >/dev/null 2>&1; then
+        say_info "Stopping game server..."
+        kill_server_processes
         say_ok "Game server stopped."
     else
         say_warn "Game server is not running."
@@ -426,12 +574,7 @@ stop_server() {
 }
 
 restart_server_non_interactive() {
-    local pid
-    if pid=$(is_running "$SERVER_PID_FILE"); then
-        kill "$pid" 2>/dev/null || true
-        rm -f "$SERVER_PID_FILE"
-        sleep 1
-    fi
+    kill_server_processes
     if [ -f "$VOICE_ENV_FILE" ]; then
         set -a
         # shellcheck disable=SC1090
@@ -487,12 +630,9 @@ start_voice_server() {
 }
 
 stop_voice_server() {
-    local pid
-    if pid=$(is_running "$VOICE_PID_FILE"); then
-        say_info "Stopping voice server (PID: $pid)..."
-        kill "$pid"
-        sleep 1
-        rm -f "$VOICE_PID_FILE"
+    if is_running "$VOICE_PID_FILE" >/dev/null 2>&1 || pgrep -f "livekit-server" >/dev/null 2>&1; then
+        say_info "Stopping voice server..."
+        kill_voice_server_processes
         say_ok "Voice server stopped."
     else
         say_warn "Voice server is not running."
@@ -501,12 +641,7 @@ stop_voice_server() {
 }
 
 restart_voice_server_non_interactive() {
-    local pid
-    if pid=$(is_running "$VOICE_PID_FILE"); then
-        kill "$pid" 2>/dev/null || true
-        rm -f "$VOICE_PID_FILE"
-        sleep 1
-    fi
+    kill_voice_server_processes
     livekit-server --config "$LIVEKIT_CONFIG_FILE" > "$SERVER_DIR/voice.log" 2>&1 &
     echo $! > "$VOICE_PID_FILE"
 }
