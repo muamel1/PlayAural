@@ -20,13 +20,11 @@ from . import combat
 from . import skills
 from .skills import (
     SWORD_FIGHTER,
-    PUSH,
     SKILLED_CAPTAIN,
     PORTAL,
     GEM_SEEKER,
     BATTLESHIP,
     DOUBLE_DEVASTATION,
-    SKILLS_BY_ID,
 )
 
 
@@ -93,10 +91,7 @@ def _analyze_and_decide(game: "PiratesGame", player: "PiratesPlayer") -> BotDeci
     # Priority 1: If we want to attack a valuable target
     if valuable_target and targets:
         # Check if target has strong defense buffs
-        target_has_defense = (
-            PUSH.is_active(valuable_target) or
-            SKILLED_CAPTAIN.is_active(valuable_target)
-        )
+        target_has_defense = SKILLED_CAPTAIN.is_active(valuable_target)
 
         # If target has defense and we don't have attack buff, consider buffing first
         if target_has_defense and not has_attack_buff:
@@ -369,7 +364,7 @@ def bot_select_target(
 
     # Check if we have a pre-computed decision
     decision = getattr(game, "_bot_decision", None)
-    if decision and decision.target and decision.target in targets:
+    if player.is_bot and decision and decision.target and decision.target in targets:
         return decision.target
 
     # Fall back to finding valuable target
@@ -393,8 +388,9 @@ def bot_select_boarding_action(
         return random.choice(["left", "right"])
 
     # Calculate steal success probability
-    attack_bonus = skills.get_attack_bonus(player)
-    defense_bonus = skills.get_defense_bonus(defender)
+    use_bonuses = game.options.gem_stealing == "with_roll_bonus"
+    attack_bonus = skills.get_attack_bonus(player) if use_bonuses else 0
+    defense_bonus = skills.get_defense_bonus(defender) if use_bonuses else 0
 
     # If we have advantage, higher chance to steal
     advantage = attack_bonus - defense_bonus
@@ -480,12 +476,7 @@ def bot_select_skill_choice(
     """
     decision = getattr(game, "_bot_decision", None)
     if decision and decision.skill_name:
-        # Find the matching skill label in options
-        skill = SKILLS_BY_ID.get(decision.skill_name)
-        if skill:
-            label = skill.get_menu_label(player)
-            if label in skill_options:
-                return label
+        if decision.skill_name in skill_options:
+            return decision.skill_name
 
-    # Fall back to "Back" if no valid skill found
-    return "Back"
+    return skill_options[0]

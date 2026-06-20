@@ -229,6 +229,13 @@ class ActionExecutionMixin:
             option_label_method = None
             if isinstance(req, MenuInput) and req.option_label:
                 option_label_method = getattr(self, req.option_label, None)
+            initial_selection = None
+            if isinstance(req, MenuInput) and req.initial_selection:
+                initial_selection_method = getattr(self, req.initial_selection, None)
+                if initial_selection_method:
+                    initial_selection = initial_selection_method(player, options)
+                    if initial_selection not in options:
+                        initial_selection = None
 
             # Build menu items with localized labels if available
             items = []
@@ -251,6 +258,7 @@ class ActionExecutionMixin:
                 items,
                 multiletter=True,
                 escape_behavior=EscapeBehavior.SELECT_LAST,
+                selection_id=initial_selection,
             )
 
         elif isinstance(req, EditboxInput):

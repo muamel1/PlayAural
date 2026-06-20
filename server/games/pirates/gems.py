@@ -6,6 +6,8 @@ Defines gem types, values, and placement logic.
 
 import random
 
+from ...messages.localization import Localization
+
 # Gem names indexed by type (0-17)
 GEM_NAMES: dict[int, str] = {
     0: "pirates-gem-0",
@@ -65,7 +67,7 @@ def get_gem_name(gem_type: int) -> str:
     Returns:
         The gem name, or "unknown gem" if invalid
     """
-    return GEM_NAMES.get(gem_type, "unknown gem")
+    return GEM_NAMES.get(gem_type, "pirates-gem-unknown")
 
 
 def calculate_score_from_gems(gems: list[int]) -> int:
@@ -109,8 +111,6 @@ def place_gems(map_size: int = 40) -> dict[int, int]:
 
     return gem_positions
 
-
-from ...messages.localization import Localization
 
 def format_gem_list(gems: list[int], locale: str = "en") -> str:
     """

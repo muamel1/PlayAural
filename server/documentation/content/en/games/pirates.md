@@ -1,108 +1,149 @@
 \*\*Pirates of the Lost Seas\*\*
 
+Pirates of the Lost Seas is an audio-first treasure hunt for 2 to 5 players. Each player commands a crew sailing along a shared 40-space route. You recover gems, gain experience, unlock stronger skills, and interfere with rival ships.
 
+The game ends as soon as the last gem is recovered. The player whose cargo is worth the most points wins. If two or more players have the same highest cargo value, they share the victory.
 
-Pirates of the Lost Seas is an RPG-style adventure game for 2 to 5 players. You sail across a 40-tile map spanning four randomly selected oceans, collecting gems and battling other pirates with cannonballs. As you play, you earn experience points (XP) and level up, unlocking increasingly powerful skills.
+\*\*The Route\*\*
 
+The route has 40 spaces. It is divided into four oceans, with 10 spaces in each ocean. The four ocean names are chosen randomly at the start of the game.
 
+The route is a straight line:
 
-The goal is to have the highest score when all 18 gems have been collected. Your score comes entirely from the gems you hold at the end of the game, so attacking other players and stealing their gems is a key strategy.
+\* Sailing left moves toward space 1.
 
+\* Sailing right moves toward space 40.
 
+\* If a move would go past the edge, the ship stops at the edge and the announcement tells you how many spaces you actually moved.
 
-\*\*Gameplay\*\*
+Every crew begins on a different empty space. Starting spaces never cover a gem.
 
+\*\*Goal\*\*
 
+Collect the most valuable cargo before the final gem is taken.
 
-The game is divided into rounds, and in each round every player takes one turn. On your turn, you choose an action: sail to an adjacent tile, fire a cannonball at a nearby opponent, or use an unlocked skill.
+Common gems are worth 1 point, rare gems are worth 2 points, and the black pearl is worth 3 points. Your score is the total point value of the gems currently on your ship. Stolen gems move from one ship to another and update both scores immediately.
 
+\*\*Your Turn\*\*
 
+On your turn, choose one main action:
 
-\*\*The Map \& Movement\*\*
+\* \*\*Sail:\*\* move left or right.
 
-The map consists of 40 tiles divided into 4 oceans. You start at a random position. As you level up, you can sail further in a single turn:
+\* \*\*Fire cannonball:\*\* attack a rival ship within cannon range.
 
-\* \*\*Level 0+:\*\* Move 1 tile left or right.
+\* \*\*Use a skill:\*\* choose one of your unlocked skills.
 
-\* \*\*Level 15+:\*\* Move up to 2 tiles.
+Some skills are information or preparation actions. Those do not end your turn, so you may still sail or fire afterward. Portal and Battleship are committing skills: once you use one, it resolves the rest of your turn.
 
-\* \*\*Level 150+:\*\* Move up to 3 tiles.
+\*\*Movement\*\*
 
+Your movement improves as your level rises:
 
+\* \*\*Level 0:\*\* sail 1 space left or right.
 
-\*\*Gems\*\*
+\* \*\*Level 15:\*\* you may sail 2 spaces left or right.
 
-There are 18 gems scattered across the map:
+\* \*\*Level 150:\*\* you may sail 3 spaces left or right.
 
-\* \*\*Common Gems (1 point):\*\* Opal, Ruby, Diamond, etc.
+When you finish movement on a space with a gem, you recover it immediately and gain gem recovery XP.
 
-\* \*\*Rare Gems (2 points):\*\* Gem of the Palace, Awesome Blue Bastardstone, etc.
+\*\*Cannon Combat\*\*
 
-\* \*\*Legendary Gem (3 points):\*\* Definitely Not Cursed Black Pearl (tm).
+A normal cannonball can target one rival ship within 5 spaces. Double Devastation can temporarily increase this range.
 
-Landing on a tile with a gem collects it automatically. The game ends when the last gem is found.
+When you fire:
 
+\* You roll one six-sided attack die.
 
+\* The defender rolls one six-sided defense die.
 
-\*\*Combat\*\*
+\* Active combat bonuses are added.
 
-You can fire a cannonball at any player within 5 tiles. 
+\* The attack hits only if your attack total is higher than the defense total.
 
-\* \*\*Attack/Defense:\*\* Both sides roll a d6 and add their respective skill bonuses. If the attacker rolls higher, it's a hit.
+A hit grants attack XP and opens a boarding choice. A miss or tie grants defense XP to the defender and ends your turn.
 
-\* \*\*On a Hit:\*\* You earn XP and choose to \*\*Push\*\* the defender (3-8 tiles) or \*\*Steal\*\* a gem (if enabled).
+\*\*Boarding\*\*
 
-\* \*\*On a Miss:\*\* The defender earns XP for fending you off.
+After a normal cannon hit, you must resolve boarding before doing anything else. The available choices are:
 
+\* \*\*Ram left:\*\* push the defender toward space 1.
 
+\* \*\*Ram right:\*\* push the defender toward space 40.
 
-\*\*XP and The Golden Moon\*\*
+\* \*\*Steal a gem:\*\* available only if gem stealing is enabled and the defender is carrying at least one gem.
 
-\* \*\*XP Sources:\*\* Finding gems, hitting an opponent, or successfully defending.
+Ramming moves the defender 3 to 8 spaces, stopping at the edge. If Ramming Speed is active, the ram moves the defender 2 extra spaces. A defender rammed onto a gem recovers that gem immediately.
 
-\* \*\*The Golden Moon:\*\* Every 3rd round, the Golden Moon rises, tripling all XP gains.
+Stealing uses opposed six-sided rolls. The attacker steals one random gem only if the theft total is higher than the guard total. Depending on the table option, active attack and defense bonuses may or may not apply to this theft roll.
 
-\* \*\*Leveling:\*\* Each level requires (Level x 20) XP.
+\*\*Experience, Levels, And The Golden Moon\*\*
 
+Experience unlocks skills. Level N requires N times 20 total XP, so level 10 requires 200 XP and level 25 requires 500 XP.
 
+You gain XP for:
+
+\* Recovering gems.
+
+\* Hitting with cannon fire.
+
+\* Successfully defending against cannon fire.
+
+Every third round is a Golden Moon round. During that round, all XP gains are tripled before the table multipliers are applied.
 
 \*\*Skills\*\*
 
-\* \*\*Level 10:\*\* Sailor's Instinct (View map sectors).
+\* \*\*Level 10, Sailor's Instinct:\*\* Opens an information chart divided into eight five-space sectors. Each sector tells you how many uncollected gems and rival ships are there. This is a safe information action and does not end your turn.
 
-\* \*\*Level 25:\*\* Portal (Teleport to another player's ocean).
+\* \*\*Level 25, Portal:\*\* Choose a different ocean that contains at least one rival ship, then teleport to a random space in that ocean. You may also choose \*\*Random\*\*, which sends you to a completely random space anywhere on the 40-space map, including empty oceans. Random is always available while Portal is usable, so Portal can also be used as an escape even when every rival ship is in your current ocean. Portal is a turn-committing skill: after you use it, you are locked into choosing a destination, and the turn ends after travel. Portal enters cooldown for 3 of your turns after it moves you.
 
-\* \*\*Level 40:\*\* Gem Seeker (Reveal a gem's location — 3 uses).
+\* \*\*Level 40, Gem Seeker:\*\* Reveals the exact position of one uncollected gem. You have 3 uses per game. Gem Seeker does not end your turn, so you can still move or attack afterward.
 
-\* \*\*Level 60:\*\* Sword Fighter (Boost attack and defense for several turns).
+\* \*\*Level 60, Sword Fighter:\*\* Gives you +2 attack for 3 of your turns. It is useful before firing a normal cannonball or before making a theft roll when theft bonuses are enabled. Cooldown: 6 of your turns. It cannot be active at the same time as Skilled Captain.
 
-\* \*\*Level 75:\*\* Push (Increase push distance after a successful hit).
+\* \*\*Level 75, Ramming Speed:\*\* Adds 2 spaces to your boarding rams for 3 of your turns. It does not improve attack or defense rolls; it only makes successful boarding pushes stronger. Cooldown: 6 of your turns.
 
-\* \*\*Level 90:\*\* Skilled Captain (Boost both attack and defense).
+\* \*\*Level 90, Skilled Captain:\*\* Gives you +1 attack and +1 defense for 4 of your turns. It is a balanced combat buff for players who expect both to fire and to be attacked. Cooldown: 7 of your turns. It cannot be active at the same time as Sword Fighter.
 
-\* \*\*Level 125:\*\* Battleship (Fire two cannons in one turn).
+\* \*\*Level 125, Battleship:\*\* Fires two crew-targeted cannon shots at valuable targets currently in range. These shots can grant combat XP, but they never open boarding choices. Battleship ends your turn and enters cooldown for 4 of your turns. You cannot launch Battleship after activating a combat buff in the same turn.
 
-\* \*\*Level 200:\*\* Double Devastation (Double attack range to 10 tiles).
+\* \*\*Level 200, Double Devastation:\*\* Increases your normal cannon range from 5 spaces to 10 spaces for 3 of your turns. Cooldown: 10 of your turns. It cannot be combined with Battleship.
 
+Only one temporary combat buff may be activated during the same turn. Sword Fighter, Ramming Speed, Skilled Captain, and Double Devastation are the temporary combat buffs.
 
+\*\*Useful Information Actions\*\*
 
-\*\*Game Options\*\*
+\* \*\*Check position:\*\* hear your current space, sector, and ocean.
 
-\* \*\*Combat XP Multiplier:\*\* Scale XP earned from combat (default 1.0, range 0.1-3.0).
+\* \*\*Check Golden Moon:\*\* hear whether the Golden Moon is active, when it returns, and how many gems remain.
 
-\* \*\*Find Gem XP Multiplier:\*\* Scale XP earned from finding gems (default 1.0, range 0.1-3.0).
+\* \*\*Check crew status:\*\* hear each crew's level, XP, score, gem count, and active effects.
 
-\* \*\*Gem Stealing:\*\* How gem theft works after a hit — with roll bonus, without roll bonus, or disabled (default with roll bonus).
+\* \*\*Detailed crew status:\*\* opens a live status panel with the same information in a navigable list.
 
+\*\*Customizable Options\*\*
 
+\* \*\*Combat XP multiplier:\*\* changes XP from cannon hits and successful defenses. Default: 1.0. Range: 0.1 to 3.0.
+
+\* \*\*Gem recovery XP multiplier:\*\* changes XP from recovering gems, including gems collected after Portal travel or a ram. Default: 1.0. Range: 0.1 to 3.0.
+
+\* \*\*Gem stealing:\*\* controls boarding theft. It may be enabled with combat bonuses, enabled without combat bonuses, or disabled. Default: enabled with combat bonuses. When disabled, boarding offers only ram left and ram right.
+
+Invalid stored option values block the game from starting and explain which setting must be corrected.
+
+\*\*Personal Game Options\*\*
+
+\* \*\*Brief Announcements:\*\* supported. Brief mode shortens frequent turn, movement, combat, XP, skill, and result messages while keeping the important totals.
+
+\* \*\*Confirm Risky Actions:\*\* not used. Cannon targets, Portal destinations, and theft attempts already require explicit menu choices.
 
 \*\*Keyboard Shortcuts\*\*
 
-\* \*\*P:\*\* Check your current position and ocean.
+\* \*\*P:\*\* Check your position.
 
-\* \*\*M:\*\* Check the Golden Moon status.
+\* \*\*M:\*\* Check Golden Moon status.
 
-\* \*\*S:\*\* Check game status (all players' positions, gems, and levels).
+\* \*\*S:\*\* Check crew status.
 
-\* \*\*Shift+S:\*\* Detailed status.
-
+\* \*\*Shift+S:\*\* Open detailed crew status.
