@@ -46,3 +46,6 @@ PRIVATE_ANDROID_BUILD_GUIDE.md
 *.jks
 *.keystore
 *keystore*credential*.md
+server/.config/
+server/*.log
+
