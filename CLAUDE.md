@@ -309,10 +309,12 @@ Consequences that still matter when designing a menu:
 - The Escape/actions menu is refreshed in place by the sealed flush while it
   is open. Do not block state changes just because a player is reading that
   menu, and do not manually rebuild it from a game.
-- Framework-owned Back/Cancel exits restore focus to the opener when possible:
-  actions-menu Back, action-input Cancel, leave-confirmation No, and
-  status-box close all use the recorded action context. Games should pass
-  stable action ids and avoid ad-hoc focus jumps for these standard exits.
+- Framework-owned exits restore focus to the opener when possible:
+  actions-menu Back, actions selected from the actions menu, action-input
+  Cancel/submit, leave-confirmation No, status-box close, and server menus
+  that close after a selection all use the recorded action context. Games
+  should pass stable action ids and avoid ad-hoc focus jumps for these
+  standard exits.
 
 #### Static vs. Live Status Boxes
 Use the right status-box helper for the job:
@@ -463,6 +465,72 @@ Any new persistent feature must define:
   it for native review rather than treating it as final.
 - Prefer writing the `en` strings before the game/feature code — it forces the
   flow to be planned and every announcement to be enumerated up front.
+
+#### String Localization & Contextual Broadcasting Standard (Mandatory)
+
+Whenever a new game is added or an existing game is modified with
+player-facing string changes, the implementation must include a deliberate
+audit of every affected string, announcement path, listener perspective, and
+reachable state. This is part of the feature work, not optional cleanup.
+
+**Perspective split**
+- Every actor-attributable gameplay broadcast must have distinct personal
+  first-person and public third-person forms. The actor hears a direct
+  "You ..." message; every other listener hears "<PlayerName> ...".
+- Use `broadcast_personal_l(...)` when one personal/public pair is sufficient.
+  Use an equivalent per-listener localized helper when brief announcements,
+  team names, hidden information, locale-dependent values, or other listener
+  context requires individual rendering.
+- Do not broadcast one third-person message to everyone and make the actor hear
+  their own name. Genuinely global events with no actor, such as a round start
+  or neutral environmental change, may use one shared form.
+
+**Complete contextual awareness**
+- Evaluate affected strings against the full applicable state and audience
+  matrix: actor versus observer, individual versus team, success versus
+  failure, active versus waiting/resolving state, option and ruleset variants,
+  spectators, bots, reconnect/save restoration, and full versus brief
+  announcements.
+- Include the concrete values that make the event understandable, such as the
+  action or object involved, amount gained or lost, resulting total, target,
+  remaining requirement, current phase, risk, consequence, or next available
+  step. Localize listener-dependent values separately for each recipient.
+- Do not reuse a broad string when different branches have materially
+  different causes, consequences, private information, or recovery steps.
+
+**Errors, warnings, and action feedback**
+- Every disabled-action reason, validation error, warning, confirmation, and
+  gameplay notification must identify the attempted action and the specific
+  condition that blocked or resulted from it.
+- Tell the player what state caused the outcome and, whenever useful, what must
+  change or what action is available next. Avoid generic feedback such as
+  "Invalid action", "Not allowed", or "You cannot do that" when a precise
+  situational explanation can be provided.
+- Maintain EN/VI key, variable, plural, and select-arm parity. Add regression
+  coverage for actor and observer forms, listener-specific rendering, and the
+  important success, failure, edge, and validation branches introduced or
+  changed by the work.
+
+### Documentation
+
+When writing or updating documentation, agents must first reference existing
+polished project manuals for similar games and match their structure,
+formatting, and player-facing style. Documentation is part of the accessible
+game experience, not a developer changelog.
+
+- Write for beginners. Use plain, concrete vocabulary, introduce game terms
+  before relying on them, and explain what the player does, hears, chooses, and
+  wins.
+- Cover the practical player manual shape: overview, goal, turn flow, special
+  mechanics, scoring or win condition, customizable options with defaults and
+  ranges, useful information actions, and game-specific shortcuts where
+  relevant.
+- Never write manuals like changelogs, patch notes, design notes, or
+  implementation summaries. Do not include unnecessary technical development
+  details, justifications, or rationale that do not help someone play.
+- Keep EN and VI documentation synchronized in structure, meaning, terminology,
+  and attribution. Vietnamese manuals should be natural, friendly, and aligned
+  with the matching `.ftl` terminology.
 
 ### Desktop Client Architecture
 - **`client/ui/main_window.py`** — primary desktop UI and gameplay interaction

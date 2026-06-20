@@ -43,6 +43,9 @@ BOT_EXPECTED_GAIN_BY_DICE = {
     6: 71,
 }
 BOT_BANK_MARGIN = 1.03
+BOT_CLOSE_GAP_FRACTION = 8
+BOT_FAR_GAP_FRACTION = 4
+BOT_MEANINGFUL_TURN_FRACTION = 10
 
 
 @dataclass
@@ -66,7 +69,7 @@ class FarkleOptions(GameOptions):
 
     target_score: int = option_field(
         IntOption(
-            default=500,
+            default=1000,
             min_val=500,
             max_val=5000,
             value_key="score",
@@ -996,26 +999,24 @@ class FarkleGame(Game):
             return potential_total > score_to_beat
 
         if potential_total >= self.options.target_score:
-            # If this bank ends the round immediately, take the win. Otherwise,
-            # six dice are still valuable enough to build a harder score for
-            # opponents to chase unless the turn score is already enormous.
-            if self.turn_index >= len(self.turn_players) - 1:
-                return True
-            if dice_to_roll == 6 and player.turn_score < self.options.target_score:
-                return False
             return True
-
-        # A fresh six-dice roll after hot dice has only about a 2.3% Farkle risk;
-        # banking here before the target is the bug this policy intentionally bans.
-        if dice_to_roll == 6:
-            return False
 
         farkle_probability = BOT_FARKLE_PROBABILITY_BY_DICE[dice_to_roll]
         expected_gain = BOT_EXPECTED_GAIN_BY_DICE[dice_to_roll]
         roll_value = (1 - farkle_probability) * (player.turn_score + expected_gain)
         bank_value = float(player.turn_score)
+        leader_score = self._bot_leader_score(player)
+        margin = self._bot_contextual_bank_margin(
+            player,
+            dice_to_roll=dice_to_roll,
+            potential_total=potential_total,
+            leader_score=leader_score,
+        )
 
-        leader_score = max(
+        return roll_value <= bank_value * margin
+
+    def _bot_leader_score(self, player: FarklePlayer) -> int:
+        return max(
             (
                 other.score
                 for other in self._round_players()
@@ -1023,10 +1024,50 @@ class FarkleGame(Game):
             ),
             default=0,
         )
-        if potential_total <= leader_score:
-            return False
 
-        return roll_value <= bank_value * BOT_BANK_MARGIN
+    def _bot_contextual_bank_margin(
+        self,
+        player: FarklePlayer,
+        *,
+        dice_to_roll: int,
+        potential_total: int,
+        leader_score: int,
+    ) -> float:
+        """Tune bot risk tolerance from score pressure and dice danger."""
+        target = max(1, self.options.target_score)
+        current_gap = max(0, leader_score - player.score)
+        bank_gap = max(0, leader_score - potential_total)
+        close_gap = max(50, target // BOT_CLOSE_GAP_FRACTION)
+        far_gap = max(150, target // BOT_FAR_GAP_FRACTION)
+        meaningful_turn = max(
+            self._bank_minimum(player),
+            target // BOT_MEANINGFUL_TURN_FRACTION,
+        )
+
+        margin = BOT_BANK_MARGIN
+        if potential_total >= leader_score:
+            margin += 0.12
+        elif bank_gap <= close_gap:
+            margin += 0.08
+        elif current_gap and player.turn_score >= max(
+            meaningful_turn,
+            int(current_gap * 0.6),
+        ):
+            margin += 0.04
+        elif bank_gap >= far_gap and player.turn_score < meaningful_turn:
+            margin -= 0.08
+
+        if dice_to_roll == 1:
+            margin += 0.20
+        elif dice_to_roll == 2:
+            margin += 0.10
+        elif dice_to_roll >= 5 and bank_gap > close_gap and potential_total < target:
+            margin -= 0.05
+
+        if player.turn_score >= max(meaningful_turn * 2, target // 4):
+            margin += 0.05
+
+        return max(0.75, margin)
 
     def _action_roll(self, player: Player, action_id: str) -> None:
         """Handle roll action."""

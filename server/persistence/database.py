@@ -86,17 +86,75 @@ class Database:
     Stores users and tables as specified in persistence.md.
     """
 
+    # SQLite exposes corruption through message text rather than a dedicated
+    # exception type. Keep the patterns centralized so future SQLite versions
+    # or drivers can be supported without changing connect-time control flow.
+    CORRUPT_DATABASE_MARKERS = (
+        "database disk image is malformed",
+        "file is not a database",
+        "not a database",
+        "malformed database schema",
+        "database integrity check failed",
+    )
+    SQLITE_SIDECAR_SUFFIXES = ("-wal", "-shm", "-journal")
+    CORRUPT_FILE_SUFFIX = ".corrupt"
+
     def __init__(self, db_path: str | Path = "PlayAural.db"):
         self.db_path = Path(db_path)
         self._conn: sqlite3.Connection | None = None
 
-    def connect(self, *, prune: bool = True, timeout: float = 30.0) -> None:
-        """Connect to the database and create tables if needed."""
+    def connect(
+        self,
+        *,
+        prune: bool = True,
+        timeout: float = 30.0,
+        recover_corrupt: bool = True,
+    ) -> None:
+        """Connect to the database and create tables if needed.
+
+        When recover_corrupt is true, a database that fails SQLite integrity
+        checks is moved aside with its sidecar files and replaced with a fresh
+        schema. Callers that perform short maintenance operations should pass
+        recover_corrupt=False so they fail loudly instead of acting on a newly
+        rebuilt empty database.
+        """
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            self._connect_once(prune=prune, timeout=timeout)
+        except sqlite3.DatabaseError as exc:
+            self.close()
+            if (
+                not recover_corrupt
+                or not self._is_corruption_error(exc)
+                or not self._can_quarantine()
+            ):
+                raise
+
+            quarantine_paths = self._quarantine_corrupt_database(exc)
+            logger = logging.getLogger("playaural.db")
+            logger.critical(
+                "SQLite database was corrupt and has been quarantined. "
+                "A fresh database will be created. Quarantined files: %s",
+                ", ".join(str(path) for path in quarantine_paths),
+                exc_info=True,
+            )
+            print(
+                "Database recovery: detected a corrupt SQLite database and "
+                "moved it aside before creating a fresh one. Quarantined files: "
+                + ", ".join(str(path) for path in quarantine_paths)
+            )
+            try:
+                self._connect_once(prune=prune, timeout=timeout)
+            except Exception:
+                self.close()
+                raise
+
+    def _connect_once(self, *, prune: bool, timeout: float) -> None:
         self._conn = sqlite3.connect(str(self.db_path), timeout=timeout)
         self._conn.row_factory = sqlite3.Row
         self._conn.execute(f"PRAGMA busy_timeout = {int(timeout * 1000)};")
         self._conn.execute("PRAGMA foreign_keys = ON;")
+        self._verify_database_integrity()
         self._create_tables()
         if prune:
             self.prune_old_records()
@@ -106,6 +164,69 @@ class Database:
         if self._conn:
             self._conn.close()
             self._conn = None
+
+    def _verify_database_integrity(self) -> None:
+        """Fail early if an existing SQLite file is corrupt."""
+        if not self._is_file_database() or not self.db_path.exists():
+            return
+
+        row = self._conn.execute("PRAGMA quick_check(1)").fetchone()
+        result = row[0] if row else "ok"
+        if result != "ok":
+            raise sqlite3.DatabaseError(
+                f"database integrity check failed: {result}"
+            )
+
+    def _is_file_database(self) -> bool:
+        return str(self.db_path) not in {":memory:", ""}
+
+    @classmethod
+    def _is_corruption_error(cls, exc: sqlite3.DatabaseError) -> bool:
+        message = str(exc).lower()
+        return any(
+            marker in message for marker in cls.CORRUPT_DATABASE_MARKERS
+        )
+
+    def _can_quarantine(self) -> bool:
+        return self._is_file_database() and self.db_path.exists()
+
+    def _database_sidecar_paths(self) -> list[Path]:
+        return [
+            self.db_path,
+            *(
+                Path(f"{self.db_path}{suffix}")
+                for suffix in self.SQLITE_SIDECAR_SUFFIXES
+            ),
+        ]
+
+    @classmethod
+    def _next_quarantine_path(cls, path: Path, timestamp: str) -> Path:
+        candidate = path.with_name(
+            f"{path.name}{cls.CORRUPT_FILE_SUFFIX}-{timestamp}"
+        )
+        counter = 1
+        while candidate.exists():
+            candidate = path.with_name(
+                f"{path.name}{cls.CORRUPT_FILE_SUFFIX}-{timestamp}.{counter}"
+            )
+            counter += 1
+        return candidate
+
+    def _quarantine_corrupt_database(
+        self, exc: sqlite3.DatabaseError
+    ) -> list[Path]:
+        self.close()
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        moved: list[Path] = []
+        for path in self._database_sidecar_paths():
+            if not path.exists():
+                continue
+            target = self._next_quarantine_path(path, timestamp)
+            path.replace(target)
+            moved.append(target)
+        if not moved:
+            raise exc
+        return moved
 
     def _create_tables(self) -> None:
         """Create database tables if they don't exist."""

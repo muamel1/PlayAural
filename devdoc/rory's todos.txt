@@ -1,5 +1,5 @@
 trivia game (and trivia battle game, with spells to cast at your enemies)
-raise farkle default score to 1000
+[x] raise farkle default score to 1000 - completed by @Daoductrung
 keystroke to contact the admins
 chat rooms / free table
 add the squares game like duck racing

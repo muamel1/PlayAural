@@ -52,6 +52,7 @@ class MenuInput(DataClassJSONMixin):
     bot_select: str | None = None  # Method name for bot auto-selection
     pre_input_check: str | None = None  # Method name returning disabled reason, or None
     option_label: str | None = None  # Optional method name for localized option labels
+    initial_selection: str | None = None  # Optional method name returning option id to focus
 
 
 @dataclass

@@ -1,196 +1,287 @@
-# Thông báo trò chơi Bóng Lăn (Rolling Balls)
-# Lưu ý: Các thông báo chung như bắt đầu vòng, bắt đầu lượt nằm trong games.ftl
+# Bóng Lăn
 
-# Tên trò chơi
 game-name-rollingballs = Bóng Lăn
 
-# Hành động trong lượt
+# Hành động
 rb-take = Rút { $count } { $count ->
     [one] quả bóng
-    *[other] quả bóng
+   *[other] quả bóng
 }
-rb-reshuffle-action = Xóc lại ống (còn { $remaining } lần)
-rb-view-pipe-action = Xem trộm ống (còn { $remaining } lần)
-rb-key-reshuffle-pipe = Xóc lại ống
-rb-key-view-pipe = Xem ống
+rb-reshuffle-action = Xáo đoạn đầu ống (còn { $remaining } lần)
+rb-view-pipe-action = Xem trước trong ống (còn { $remaining } lần)
+rb-check-pipe-status = Kiểm tra trạng thái ống
+rb-key-reshuffle-pipe = Xáo đoạn đầu ống
+rb-key-view-pipe = Xem trước trong ống
 
-# Sự kiện rút bóng
-rb-you-take = Bạn đã rút { $count } { $count ->
+# Rút và công bố bóng
+rb-you-take = Bạn chọn rút { $count } { $count ->
     [one] quả bóng
-    *[other] quả bóng
-}!
-rb-player-takes = { $player } đã rút { $count } { $count ->
+   *[other] quả bóng
+} ở đầu ống đang có { $remaining } quả.
+rb-player-takes = { $player } chọn rút { $count } { $count ->
     [one] quả bóng
-    *[other] quả bóng
-}!
-rb-ball-plus = Bóng số { $num }: { $description }! Được cộng { $value } điểm!
-rb-ball-minus = Bóng số { $num }: { $description }! Bị trừ { $value } điểm!
-rb-ball-zero = Bóng số { $num }: { $description }! Không đổi điểm!
-rb-new-score = Điểm của { $player }: { $score } điểm.
+   *[other] quả bóng
+} ở đầu ống đang có { $remaining } quả.
+rb-you-take-brief = Bạn rút { $count } { $count ->
+    [one] quả bóng
+   *[other] quả bóng
+}.
+rb-player-takes-brief = { $player } rút { $count } { $count ->
+    [one] quả bóng
+   *[other] quả bóng
+}.
+rb-you-forced-take = Chỉ còn { $count } { $count ->
+    [one] quả bóng
+   *[other] quả bóng
+}, ít hơn mức rút tối thiểu { $minimum }, nên bạn phải rút hết số còn lại.
+rb-player-forced-takes = Chỉ còn { $count } { $count ->
+    [one] quả bóng
+   *[other] quả bóng
+}, ít hơn mức rút tối thiểu { $minimum }, nên { $player } phải rút hết số còn lại.
+rb-you-forced-take-brief = Bạn phải rút { $count } { $count ->
+    [one] quả bóng cuối cùng
+   *[other] quả bóng cuối cùng
+}.
+rb-player-forced-takes-brief = { $player } phải rút { $count } { $count ->
+    [one] quả bóng cuối cùng
+   *[other] quả bóng cuối cùng
+}.
 
-# Sự kiện xóc lại ống
-rb-you-reshuffle = Bạn vừa xóc lại ống!
-rb-player-reshuffles = { $player } vừa xóc lại ống!
-rb-reshuffled = Chiếc ống đã được xóc tung lên!
-rb-reshuffle-penalty = { $player } bị trừ { $points } { $points ->
+rb-your-ball-plus = Bóng số { $num } của bạn: { $description }. Cộng { $value } { $value ->
     [one] điểm
-    *[other] điểm
-} vì tội xóc lại ống.
+   *[other] điểm
+}.
+rb-player-ball-plus = Bóng số { $num } của { $player }: { $description }. Cộng { $value } { $value ->
+    [one] điểm
+   *[other] điểm
+}.
+rb-your-ball-minus = Bóng số { $num } của bạn: { $description }. Trừ { $value } { $value ->
+    [one] điểm
+   *[other] điểm
+}.
+rb-player-ball-minus = Bóng số { $num } của { $player }: { $description }. Trừ { $value } { $value ->
+    [one] điểm
+   *[other] điểm
+}.
+rb-your-ball-zero = Bóng số { $num } của bạn: { $description }. Điểm không đổi.
+rb-player-ball-zero = Bóng số { $num } của { $player }: { $description }. Điểm không đổi.
 
-# Xem trộm ống
-rb-view-pipe-header = Trong ống đang có { $count } quả bóng:
+rb-your-draw-summary = Lượt rút { $count } bóng của bạn có tổng giá trị { $delta } điểm. Bạn đang có { $score } điểm; trong ống còn { $remaining } bóng.
+rb-player-draw-summary = Lượt rút { $count } bóng của { $player } có tổng giá trị { $delta } điểm. { $player } đang có { $score } điểm; trong ống còn { $remaining } bóng.
+rb-your-draw-summary-brief = Tổng { $delta }; bạn có { $score } điểm. Còn { $remaining } bóng.
+rb-player-draw-summary-brief = { $player }: tổng { $delta }, có { $score } điểm. Còn { $remaining } bóng.
+rb-your-score-legacy = Bạn đang có { $score } điểm; trong ống còn { $remaining } bóng.
+rb-player-score-legacy = { $player } đang có { $score } điểm; trong ống còn { $remaining } bóng.
+
+# Xáo bóng
+rb-you-reshuffle = Bạn xáo { $count } quả bóng đầu ống. { $penalty ->
+    [0] Bạn không bị phạt điểm
+   *[other] Bạn bị trừ { $penalty } điểm
+}; hiện bạn có { $score } điểm và còn { $remaining } lần xáo.
+rb-player-reshuffles = { $player } xáo { $count } quả bóng đầu ống. { $penalty ->
+    [0] { $player } không bị phạt điểm
+   *[other] { $player } bị trừ { $penalty } điểm
+}; hiện họ có { $score } điểm và còn { $remaining } lần xáo.
+rb-you-reshuffle-brief = Bạn xáo { $count } bóng; phạt { $penalty }, điểm { $score }, còn { $remaining } lần.
+rb-player-reshuffles-brief = { $player } xáo { $count } bóng; phạt { $penalty }, điểm { $score }, còn { $remaining } lần.
+
+# Xem trước và trạng thái ống
+rb-view-pipe-header = Đang hiển thị { $shown } quả tiếp theo trong tổng số { $total } quả. Bạn còn { $remaining } lượt xem nội dung mới.
 rb-view-pipe-ball = { $num }: { $description }. Giá trị: { $value } điểm.
+rb-status-pipe = Vòng { $round }. Trong ống còn { $count } quả bóng.
+rb-status-take-range = Mỗi lượt bình thường phải rút từ { $min } đến { $max } quả bóng.
+rb-status-turn = Lượt hiện tại: { $player }.
+rb-status-resources = Bạn còn { $views } lượt xem nội dung mới và { $reshuffles } lần xáo.
 
-# Bắt đầu trò chơi
-rb-pipe-filled = Ống đã được nạp đầy với { $count } quả bóng!
-rb-balls-remaining = Còn { $count } quả bóng trong ống.
+# Bắt đầu và vòng chơi
+rb-pipe-filled = Ống đã được nạp { $count } quả bóng không trùng nhau từ: { $packs }.
+rb-round-start = Vòng { $round } bắt đầu; trong ống còn { $count } quả bóng.
+rb-round-start-brief = Vòng { $round }; còn { $count } bóng.
 
-# Kết thúc trò chơi
-rb-pipe-empty = Ống đã trống không!
-rb-score-line = { $player }: { $score } điểm.
-rb-winner = Người chiến thắng là { $player } với { $score } điểm!
-rb-you-win = Chúc mừng! Bạn đã thắng với { $score } điểm!
-rb-tie = Trận đấu hòa giữa { $players } với { $score } điểm!
+# Kết thúc
+rb-pipe-empty = Ống đã hết bóng.
+rb-winner = { $player } thắng với { $score } điểm.
+rb-you-win = Bạn thắng với { $score } điểm.
+rb-you-tie = Bạn đồng chiến thắng cùng { $players }; mỗi người đạt { $score } điểm.
+rb-tie = { $players } đồng chiến thắng với { $score } điểm.
 rb-line-format = { $rank }. { $player }: { $points }
 
 # Tùy chọn
-rb-set-min-take = Số bóng tối thiểu phải rút mỗi lượt: { $count }
-rb-enter-min-take = Nhập số lượng bóng tối thiểu phải rút (từ 1 đến 5):
-rb-option-changed-min-take = Số bóng rút tối thiểu đã được đặt là { $count }.
-
-rb-set-max-take = Số bóng tối đa được rút mỗi lượt: { $count }
-rb-enter-max-take = Nhập số lượng bóng tối đa được rút (từ 1 đến 5):
-rb-option-changed-max-take = Số bóng rút tối đa đã được đặt là { $count }.
-
-rb-set-view-pipe-limit = Số lần được xem trộm ống: { $count }
-rb-enter-view-pipe-limit = Nhập số lần được xem trộm ống (0 để tắt, tối đa 100):
-rb-option-changed-view-pipe-limit = Số lần xem trộm ống đã được đặt là { $count }.
-
-rb-set-reshuffle-limit = Số lần được xóc lại ống: { $count }
-rb-enter-reshuffle-limit = Nhập số lần được xóc lại ống (0 để tắt, tối đa 100):
-rb-option-changed-reshuffle-limit = Số lần xóc lại ống đã được đặt là { $count }.
-
-rb-set-reshuffle-penalty = Điểm phạt khi xóc lại ống: { $points }
-rb-enter-reshuffle-penalty = Nhập điểm phạt khi xóc lại ống (từ 0 đến 5):
-rb-option-changed-reshuffle-penalty = Điểm phạt xóc lại ống đã được đặt là { $points }.
-
+rb-set-min-take = Số bóng rút tối thiểu mỗi lượt: { $count }
+rb-enter-min-take = Nhập số bóng rút tối thiểu mỗi lượt, từ 1 đến 5:
+rb-option-changed-min-take = Đã đặt số bóng rút tối thiểu mỗi lượt là { $count }.
+rb-set-max-take = Số bóng rút tối đa mỗi lượt: { $count }
+rb-enter-max-take = Nhập số bóng rút tối đa mỗi lượt, từ 1 đến 5:
+rb-option-changed-max-take = Đã đặt số bóng rút tối đa mỗi lượt là { $count }.
+rb-set-view-pipe-limit = Lượt xem nội dung mới cho mỗi người: { $count }
+rb-enter-view-pipe-limit = Nhập số lượt xem nội dung mới cho mỗi người, từ 0 đến 100; nhập 0 để tắt:
+rb-option-changed-view-pipe-limit = Đã đặt số lượt xem nội dung mới cho mỗi người là { $count }.
+rb-set-reshuffle-limit = Số lần xáo cho mỗi người: { $count }
+rb-enter-reshuffle-limit = Nhập số lần xáo cho mỗi người, từ 0 đến 100; nhập 0 để tắt:
+rb-option-changed-reshuffle-limit = Đã đặt số lần xáo cho mỗi người là { $count }.
+rb-set-reshuffle-penalty = Điểm phạt mỗi lần xáo: { $points } điểm
+rb-enter-reshuffle-penalty = Nhập điểm phạt mỗi lần xáo, từ 0 đến 5 điểm:
+rb-option-changed-reshuffle-penalty = Đã đặt điểm phạt mỗi lần xáo là { $points } điểm.
 rb-set-ball-packs = Bộ bóng (đã chọn { $count } trên { $total })
-rb-option-changed-ball-packs = Đã thay đổi lựa chọn bộ bóng.
+rb-option-changed-ball-packs = Đã thay đổi các bộ bóng được chọn.
 
-# Lý do hành động bị vô hiệu hóa
-rb-not-enough-balls = Không còn đủ bóng trong ống.
-rb-no-reshuffles-left = Bạn đã hết quyền xóc lại ống.
-rb-already-reshuffled = Bạn đã xóc lại ống trong lượt này rồi.
-rb-no-views-left = Bạn đã hết quyền xem trộm ống.
+# Lý do vô hiệu hóa và kiểm tra thiết lập
+rb-draw-resolving = Hãy chờ lượt công bố bóng hiện tại của { $player } kết thúc rồi mới thực hiện hành động khác với ống.
+rb-take-not-your-turn = Bạn chưa thể rút { $count } bóng vì đang là lượt của { $player }.
+rb-take-outside-range = Bạn chọn rút { $count } bóng, nhưng ván này chỉ cho phép rút từ { $min } đến { $max } bóng trong lượt bình thường.
+rb-not-enough-balls = Bạn chọn rút { $count } bóng, nhưng trong ống chỉ còn { $remaining } bóng.
+rb-reshuffle-not-your-turn = Bạn chưa thể xáo bóng vì đang là lượt của { $player }.
+rb-no-reshuffles-left = Bạn đã dùng hết { $limit } lần xáo trong ván này.
+rb-already-reshuffled = Bạn đã xáo bóng trong lượt này. Hãy rút bóng để kết thúc lượt.
+rb-not-enough-balls-to-reshuffle = Cần ít nhất { $required } bóng để xáo, nhưng trong ống chỉ còn { $remaining } bóng. Hãy rút bóng thay vì xáo.
+rb-no-views-left = Nội dung đầu ống đã thay đổi và bạn đã dùng hết { $limit } lượt xem nội dung mới. Nếu ống chưa đổi, bạn vẫn có thể mở lại lần xem gần nhất.
+rb-error-min-take-invalid = Mức rút tối thiểu đang là { $count }; giá trị hợp lệ là từ { $min } đến { $max }.
+rb-error-max-take-invalid = Mức rút tối đa đang là { $count }; giá trị hợp lệ là từ { $min } đến { $max }.
+rb-error-take-range-conflict = Mức rút tối thiểu là { $min }, cao hơn mức tối đa { $max }. Hãy giảm mức tối thiểu hoặc tăng mức tối đa trước khi bắt đầu.
+rb-error-view-limit-invalid = Giới hạn xem đang là { $count }; giá trị hợp lệ là từ { $min } đến { $max }.
+rb-error-reshuffle-limit-invalid = Giới hạn xáo đang là { $count }; giá trị hợp lệ là từ { $min } đến { $max }.
+rb-error-reshuffle-penalty-invalid = Điểm phạt xáo đang là { $points }; giá trị hợp lệ là từ { $min } đến { $max } điểm.
+rb-error-no-ball-packs = Hãy chọn ít nhất một bộ bóng trước khi bắt đầu Bóng Lăn.
+rb-error-invalid-ball-packs = Lựa chọn hiện có { $count } { $count ->
+    [one] bộ bóng không còn khả dụng
+   *[other] bộ bóng không còn khả dụng
+}. Hãy bỏ các bộ này trước khi bắt đầu.
 
-# Các mục trong Bộ bóng
-rb-pack-all = Trộn lẫn các bộ bóng
-rb-pack-international = Du lịch Quốc tế
-rb-ball-paris-pickpocket = Bị móc túi ở Paris
-rb-ball-lost-luggage-in-london = Thất lạc hành lý ở London
-rb-ball-tokyo-train-delay = Tàu cao tốc Tokyo bị trễ
-rb-ball-sahara-sandstorm = Bão cát Sahara
-rb-ball-venice-flood = Triều cường ngập Venice
-rb-ball-new-york-traffic = Kẹt xe ở New York
-rb-ball-amazon-mosquito-swarm = Đàn muỗi Amazon tấn công
-rb-ball-berlin-club-rejected = Bị bảo kê quán bar Berlin đuổi
-rb-ball-spilled-coffee-in-rome = Đổ cà phê ở Rome
-rb-ball-sydney-sunburn = Cháy nắng ở Sydney
-rb-ball-istanbul-bazaar-scam = Bị chém đẹp ở chợ Istanbul
-rb-ball-moscow-blizzard = Bão tuyết Moscow
-rb-ball-dubai-heatwave = Nắng nóng vỡ đầu ở Dubai
-rb-ball-mexico-city-smog = Bụi mịn Mexico City
-rb-ball-cairo-camel-spit = Lạc đà Cairo phun nước bọt
-rb-ball-athens-ruins-trip = Trượt chân ngã ở tàn tích Athens
-rb-ball-rio-carnival-hangover = Say bí tỉ ở Lễ hội Rio
-rb-ball-bali-belly = Tào tháo rượt ở Bali
-rb-ball-swiss-alps-avalanche = Lở tuyết trên dãy Alps
-rb-ball-amsterdam-bicycle-crash = Tai nạn xe đạp ở Amsterdam
-rb-ball-bangkok-tuk-tuk-breakdown = Xe Tuk-Tuk xịt lốp ở Bangkok
-rb-ball-iceland-volcano-ash = Tro bụi núi lửa Iceland
-rb-ball-cape-town-wind = Gió thổi bay người ở Cape Town
-rb-ball-neutral-passport = Hộ chiếu bình thường
-rb-ball-airport-layover = Vật vờ chờ quá cảnh
-rb-ball-hotel-lobby = Ngồi chờ ở sảnh khách sạn
-rb-ball-tourist-map = Bản đồ du lịch
-rb-ball-souvenir-magnet = Nam châm gắn tủ lạnh
-rb-ball-free-museum-day = Ngày tham quan bảo tàng miễn phí
-rb-ball-street-food-snack = Ăn vặt lề đường
+# Bộ bóng
+rb-pack-all = Trộn tất cả bộ bóng
+rb-pack-international = Vòng quanh thế giới
+rb-pack-vietnam = Hành trình Việt Nam
+
+# Vòng quanh thế giới: -5
+rb-ball-paris-pickpocket = Mất hộ chiếu và ví khi đang ở nước ngoài
+rb-ball-lost-luggage-in-london = Phải đi cấp cứu giữa chuyến đi
+rb-ball-tokyo-train-delay = Lỡ chuyến nối quốc tế cuối ngày
+rb-ball-sahara-sandstorm = Phải sơ tán vì thời tiết nguy hiểm
+rb-ball-passport-lost-before-flight = Thất lạc hộ chiếu trước giờ khởi hành
+# Vòng quanh thế giới: -4
+rb-ball-venice-flood = Nơi lưu trú đóng cửa vì ngập
+rb-ball-new-york-traffic = Chuyến bay đêm bị hủy
+rb-ball-amazon-mosquito-swarm = Hành lý thiết yếu bị gửi nhầm sang nước khác
+rb-ball-berlin-club-rejected = Đến nơi mới biết khách sạn không có tên đặt phòng
+rb-ball-hotel-booking-vanished = Tuyến đường núi đóng nhiều ngày
+# Vòng quanh thế giới: -3
+rb-ball-spilled-coffee-in-rome = Điện thoại nứt màn hình lúc chuyển chặng
+rb-ball-sydney-sunburn = Kiệt sức vì nóng, phải hủy chuyến đi trong ngày
+rb-ball-istanbul-bazaar-scam = Tour đã trả trước bất ngờ bị hủy
+rb-ball-moscow-blizzard = Tàu mắc kẹt vì bão tuyết
+rb-ball-dubai-heatwave = Xe thuê bị hỏng giữa đường
+# Vòng quanh thế giới: -2
+rb-ball-mexico-city-smog = Phải đổi lịch trình vì chất lượng không khí kém
+rb-ball-cairo-camel-spit = Say xe trên chặng đường dài
+rb-ball-athens-ruins-trip = Bong gân khi đi bộ tham quan
+rb-ball-rio-carnival-hangover = Ngủ quên, lỡ tour buổi sáng
+rb-ball-bali-belly = Đau bụng, mất nửa ngày khám phá
+# Vòng quanh thế giới: -1
+rb-ball-swiss-alps-avalanche = Đường mòn ngắm cảnh tạm đóng để bảo đảm an toàn
+rb-ball-amsterdam-bicycle-crash = Xe đạp bị xẹp lốp
+rb-ball-bangkok-tuk-tuk-breakdown = Xe tuk-tuk chết máy giữa dòng xe
+rb-ball-iceland-volcano-ash = Cảnh báo thời tiết làm chuyến bay chậm
+rb-ball-cape-town-wind = Điểm ngắm cảnh đóng cửa vì gió mạnh
+# Vòng quanh thế giới: 0
+rb-ball-neutral-passport = Thêm một dấu mộc vào hộ chiếu
+rb-ball-airport-layover = Khoảng chờ yên tĩnh ở sân bay
+rb-ball-hotel-lobby = Ngồi chờ tại sảnh khách sạn
+rb-ball-tourist-map = Mở bản đồ thành phố
+rb-ball-souvenir-magnet = Chọn một chiếc nam châm lưu niệm
+# Vòng quanh thế giới: +1
+rb-ball-free-museum-day = Được vào bảo tàng miễn phí
+rb-ball-street-food-snack = Món ăn đường phố ngon bất ngờ
 rb-ball-post-card-home = Gửi bưu thiếp về nhà
-rb-ball-friendly-local = Dân địa phương thân thiện
-rb-ball-sunny-day = Một ngày nắng đẹp
-rb-ball-eiffel-tower-view = Ngắm tháp Eiffel
-rb-ball-taj-mahal-sunrise = Bình minh ở đền Taj Mahal
-rb-ball-great-wall-hike = Leo Vạn Lý Trường Thành
-rb-ball-machu-picchu-climb = Chinh phục Machu Picchu
-rb-ball-kyoto-cherry-blossoms = Ngắm hoa anh đào ở Kyoto
-rb-ball-colosseum-tour = Tham quan Đấu trường La Mã
-rb-ball-pyramids-exploration = Khám phá Kim Tự Tháp
-rb-ball-santorini-sunset = Hoàng hôn ở Santorini
-rb-ball-aurora-borealis = Chiêm ngưỡng Bắc Cực Quang
-rb-ball-safari-lion-sighting = Thấy sư tử đi dạo ở Safari
-rb-ball-bora-bora-villa = Ở villa xịn tại Bora Bora
-rb-ball-maldives-scuba = Lặn biển ngắm san hô Maldives
-rb-ball-niagara-falls-boat = Du thuyền qua Thác Niagara
-rb-ball-grand-canyon-heli = Đi trực thăng ngắm Grand Canyon
-rb-ball-serengeti-migration = Xem cuộc đại di cư ở Serengeti
-rb-ball-first-class-upgrade = Được nâng hạng vé máy bay First Class
-rb-ball-lottery-in-macau = Trúng độc đắc ở Macau
-rb-ball-private-jet = Bao trọn chuyên cơ riêng
-rb-ball-royal-palace-invite = Nhận thiệp mời vào Cung điện Hoàng gia
-rb-ball-world-tour-ticket = Vé đi vòng quanh thế giới
+rb-ball-friendly-local = Được người địa phương nhiệt tình chỉ đường
+rb-ball-sunny-day = Thời tiết hoàn hảo để khám phá
+# Vòng quanh thế giới: +2
+rb-ball-eiffel-tower-view = Ngắm Paris từ tháp Eiffel
+rb-ball-taj-mahal-sunrise = Bình minh tại Taj Mahal
+rb-ball-great-wall-hike = Đi bộ trên Vạn Lý Trường Thành
+rb-ball-machu-picchu-climb = Buổi sáng ở Machu Picchu
+rb-ball-kyoto-cherry-blossoms = Ngắm hoa anh đào tại Kyoto
+# Vòng quanh thế giới: +3
+rb-ball-colosseum-tour = Tham quan Đấu trường La Mã cùng hướng dẫn viên
+rb-ball-pyramids-exploration = Khám phá quần thể kim tự tháp Giza
+rb-ball-santorini-sunset = Ngắm hoàng hôn Santorini
+rb-ball-aurora-borealis = Bắc cực quang rực sáng trên đầu
+rb-ball-safari-lion-sighting = Gặp động vật hoang dã trong chuyến safari có trách nhiệm
+# Vòng quanh thế giới: +4
+rb-ball-bora-bora-villa = Nghỉ bên đầm phá Bora Bora
+rb-ball-maldives-scuba = Lặn ngắm rạn san hô Maldives
+rb-ball-niagara-falls-boat = Đi thuyền dưới thác Niagara
+rb-ball-grand-canyon-heli = Ngắm Grand Canyon từ trên không
+rb-ball-serengeti-migration = Chứng kiến cuộc đại di cư ở Serengeti
+# Vòng quanh thế giới: +5
+rb-ball-first-class-upgrade = Bất ngờ được nâng lên khoang hạng nhất
+rb-ball-lottery-in-macau = Trúng thẻ đi tàu dùng suốt một năm
+rb-ball-private-jet = Chuyến hải trình khám phá đảo chỉ có một lần trong đời
+rb-ball-royal-palace-invite = Tham quan bảo tàng riêng sau giờ đóng cửa
+rb-ball-world-tour-ticket = Tấm vé vòng quanh thế giới
 
-rb-pack-vietnam = Cuộc phiêu lưu ở Việt Nam
-rb-ball-stolen-motorbike = Bị trộm mất xe máy
-rb-ball-flooded-street-saigon = Bơi giữa đường Sài Gòn mùa mưa
-rb-ball-food-poisoning-bun-mam = Đau bụng vì ăn bún mắm
-rb-ball-fake-taxi-scam = Đi nhầm taxi dù
-rb-ball-typhoon-in-central-vietnam = Bão đổ bộ miền Trung
-rb-ball-lost-wallet-ben-thanh = Rơi ví ở chợ Bến Thành
-rb-ball-traffic-jam-hanoi = Kẹt xe cứng ngắc ở Hà Nội
-rb-ball-pickpocketed-in-bui-vien = Bị rạch túi ở phố Tây Bùi Viện
-rb-ball-spilled-pho = Lỡ tay đổ tô phở
-rb-ball-overcharged-for-coffee = Mua cà phê bị chặt chém
-rb-ball-sunburn-in-mui-ne = Cháy đen thui ở Mũi Né
-rb-ball-missed-train-to-sapa = Trễ chuyến tàu đi Sapa
-rb-ball-loud-karaoke-next-door = Hàng xóm hát loa kẹo kéo lúc nửa đêm
-rb-ball-broken-flip-flop = Đứt quai dép tổ ong
-rb-ball-sudden-downpour = Mưa rào vỡ đầu
-rb-ball-dog-chased-you = Bị chó rượt chạy trối chết
-rb-ball-bitten-by-mosquitoes = Muỗi chích sưng vù
-rb-ball-out-of-gas = Dắt bộ vì hết xăng
-rb-ball-spicy-chili-bite = Cắn nhầm quả ớt hiểm
-rb-ball-delayed-flight = Chuyến bay bị delay (chuyện thường ở huyện)
-rb-ball-wifi-disconnected = Rớt mạng Wi-Fi
-rb-ball-forgot-umbrella = Quên mang áo mưa
-rb-ball-minor-scratch = Quẹt xe xước nhẹ
-rb-ball-plastic-stool = Ngồi ghế nhựa chém gió
-rb-ball-iced-tea-tra-da = Trà đá vỉa hè
-rb-ball-waiting-for-green-light = Chờ đèn đỏ 99 giây
-rb-ball-bamboo-hat = Đội nón lá
-rb-ball-motorbike-helmet = Đội mũ bảo hiểm
-rb-ball-tasty-banh-mi = Cắn ổ bánh mì giòn rụm
-rb-ball-free-sugar-cane-juice = Được cô bán nước mía bao
-rb-ball-friendly-street-vendor = Chú bán hàng rong thân thiện
-rb-ball-cool-breeze = Gió thổi mát rượi
-rb-ball-found-10k-vnd = Nhặt được tờ 10 cành
-rb-ball-delicious-pho-bowl = Húp trọn tô phở đặc biệt
-rb-ball-egg-coffee-in-hanoi = Thưởng thức cà phê trứng Hà Nội
-rb-ball-boat-ride-in-ninh-binh = Ngồi đò ngắm cảnh Tràng An - Ninh Bình
-rb-ball-lantern-festival-hoian = Thả hoa đăng ở Hội An
-rb-ball-motorbike-road-trip = Đi phượt bằng xe máy
-rb-ball-ha-long-bay-cruise = Lên du thuyền Vịnh Hạ Long
-rb-ball-golden-bridge-bana-hills = Check-in Cầu Vàng Bà Nà Hills
+# Hành trình Việt Nam: -5
+rb-ball-stolen-motorbike = Mất hộ chiếu và ví giữa hành trình
+rb-ball-flooded-street-saigon = Phải chuyển chỗ ở khẩn cấp vì ngập
+rb-ball-food-poisoning-bun-mam = Sự cố sức khỏe làm gián đoạn chuyến đi
+rb-ball-fake-taxi-scam = Xe gặp sự cố khiến bạn lỡ chuyến bay
+rb-ball-passport-lost-at-airport = Thất lạc hộ chiếu tại sân bay
+# Hành trình Việt Nam: -4
+rb-ball-typhoon-in-central-vietnam = Phải sơ tán vì bão ở duyên hải miền Trung
+rb-ball-lost-wallet-ben-thanh = Hành lý thiết yếu thất lạc khi chuyển chặng
+rb-ball-traffic-jam-hanoi = Chuyến tàu đêm bị hủy
+rb-ball-pickpocketed-in-bui-vien = Mất điện thoại ở khu phố đông người
+rb-ball-mountain-road-landslide = Đèo núi đóng vì sạt lở
+# Hành trình Việt Nam: -3
+rb-ball-spilled-pho = Máy ảnh hỏng vì cơn mưa bất chợt
+rb-ball-overcharged-for-coffee = Khách sạn nhầm thông tin đặt phòng
+rb-ball-sunburn-in-mui-ne = Kiệt sức vì nóng ở Mũi Né
+rb-ball-missed-train-to-sapa = Lỡ chuyến tàu đêm đi Lào Cai
+rb-ball-loud-karaoke-next-door = Mất ngủ trước giờ khởi hành sớm
+# Hành trình Việt Nam: -2
+rb-ball-broken-flip-flop = Đứt quai dép giữa chuyến đi bộ
+rb-ball-sudden-downpour = Gặp mưa rào nhiệt đới bất chợt
+rb-ball-dog-chased-you = Xuống nhầm điểm xe buýt cách xa khách sạn
+rb-ball-bitten-by-mosquitoes = Một tối bị muỗi đốt liên tục
+rb-ball-out-of-gas = Xe máy hết xăng giữa đường
+# Hành trình Việt Nam: -1
+rb-ball-spicy-chili-bite = Cắn phải miếng ớt cay ngoài dự kiến
+rb-ball-delayed-flight = Chuyến bay nội địa chậm một lúc
+rb-ball-wifi-disconnected = Sóng yếu khi lên vùng núi
+rb-ball-forgot-umbrella = Để quên áo mưa ở khách sạn
+rb-ball-minor-scratch = Rẽ nhầm đường trong khu phố cổ
+# Hành trình Việt Nam: 0
+rb-ball-plastic-stool = Ngồi nghỉ trên chiếc ghế nhựa vỉa hè
+rb-ball-iced-tea-tra-da = Uống một ly trà đá
+rb-ball-waiting-for-green-light = Chờ qua một nhịp đèn đỏ dài
+rb-ball-bamboo-hat = Thử đội nón lá
+rb-ball-motorbike-helmet = Cài quai mũ bảo hiểm
+# Hành trình Việt Nam: +1
+rb-ball-tasty-banh-mi = Ăn ổ bánh mì giòn cho bữa sáng
+rb-ball-free-sugar-cane-juice = Uống ly nước mía tươi
+rb-ball-friendly-street-vendor = Được cô chú tiểu thương đón tiếp niềm nở
+rb-ball-cool-breeze = Gió mát sau cơn mưa
+rb-ball-found-10k-vnd = Đi xe buýt địa phương vừa rẻ vừa tiện
+# Hành trình Việt Nam: +2
+rb-ball-delicious-pho-bowl = Thưởng thức tô phở thơm lừng
+rb-ball-egg-coffee-in-hanoi = Nhâm nhi cà phê trứng Hà Nội
+rb-ball-boat-ride-in-ninh-binh = Ngồi thuyền khám phá Quần thể danh thắng Tràng An
+rb-ball-lantern-festival-hoian = Dạo Phố cổ Hội An trong đêm đèn lồng
+rb-ball-motorbike-road-trip = Đi thuyền giữa vườn cây ở Đồng bằng sông Cửu Long
+# Hành trình Việt Nam: +3
+rb-ball-ha-long-bay-cruise = Du ngoạn Vịnh Hạ Long - quần đảo Cát Bà
+rb-ball-golden-bridge-bana-hills = Ngắm Cầu Vàng trên Bà Nà Hills
 rb-ball-phu-quoc-sunset = Ngắm hoàng hôn Phú Quốc
-rb-ball-sapa-terraced-fields = Săn mây ở ruộng bậc thang Sapa
-rb-ball-phong-nha-cave-exploration = Khám phá hang động Phong Nha
-rb-ball-tet-holiday-lucky-money = Được lì xì ngày Tết
-rb-ball-vip-ticket-to-concert = Có vé VIP xem concert idol
-rb-ball-luxury-resort-stay = Nghỉ dưỡng ở resort 5 sao
-rb-ball-business-class-flight = Bay khoang thương gia
-rb-ball-won-lottery-vietlott = Trúng độc đắc Vietlott
-rb-ball-billionaire-inheritance = Được tỷ phú thừa kế tài sản
-rb-ball-found-gold-treasure = Đào được hũ vàng
-rb-ball-free-house-in-district-1 = Trúng nhà mặt tiền Quận 1
-rb-ball-national-hero-award = Nhận huân chương anh hùng
-rb-ball-ultimate-happiness = Hạnh phúc viên mãn
+rb-ball-sapa-terraced-fields = Ngắm ruộng bậc thang quanh Sa Pa
+rb-ball-phong-nha-cave-exploration = Khám phá hang động Phong Nha - Kẻ Bàng
+# Hành trình Việt Nam: +4
+rb-ball-tet-holiday-lucky-money = Sum họp và nhận lì xì ngày Tết
+rb-ball-vip-ticket-to-concert = Đón bình minh trên cung đường Hà Giang
+rb-ball-luxury-resort-stay = Tham gia hoạt động bảo tồn cùng cộng đồng ở Côn Đảo
+rb-ball-business-class-flight = Nằm khoang giường ngắm cảnh trên tàu Thống Nhất
+rb-ball-won-lottery-vietlott = Đêm lễ hội giữa Quần thể di tích Cố đô Huế
+# Hành trình Việt Nam: +5
+rb-ball-billionaire-inheritance = Thám hiểm hang Sơn Đoòng
+rb-ball-found-gold-treasure = Học nghề thủ công riêng cùng nghệ nhân bậc thầy
+rb-ball-free-house-in-district-1 = Một tháng xuyên Việt bằng đường sắt
+rb-ball-national-hero-award = Trở thành khách quý trong lễ hội làng
+rb-ball-ultimate-happiness = Hành trình trong mơ từ Hà Giang đến Cà Mau

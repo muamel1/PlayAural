@@ -139,9 +139,10 @@ Client focus doctrine:
   reader focus. Use `request_menu_focus` only for deliberate action-driven jumps.
 - The Escape/actions menu auto-refreshes in place through sealed
   `flush_menus()`. Games must not repaint or block it manually.
-- Framework Back/Cancel exits restore focus to the opener when possible:
-  actions-menu Back, action-input Cancel, leave-confirmation No, and status-box
-  close. Use stable action ids so this works.
+- Framework-owned exits restore focus to the opener when possible: actions-menu
+  Back, actions selected from the actions menu, action-input Cancel/submit,
+  leave-confirmation No, status-box close, and server menus that close after a
+  selection. Use stable action ids so this works.
 - Use `status_box(player, lines)` for static snapshots/help/limited reveals.
   Use `live_status_box(player, box_id, builder, focus_id=None)` for dynamic
   state panels such as boards, standings, clocks, rosters, and detailed scores.
@@ -220,6 +221,48 @@ players.
 - Prefer writing locale keys before feature code so every announcement path is
   planned.
 
+### String Localization & Contextual Broadcasting Standard
+
+Whenever a new game is added or an existing game is modified with player-facing
+string changes, perform a complete string and broadcast-context audit.
+
+- Every actor-attributable gameplay broadcast must have distinct personal
+  first-person and public third-person forms: the actor hears "You ...", while
+  other listeners hear "<PlayerName> ...". Use `broadcast_personal_l(...)` or
+  an equivalent per-listener localized helper. Do not send the actor the same
+  third-person message as everyone else. Genuinely global events with no actor
+  may use one shared form.
+- Evaluate every message against the complete state and audience matrix,
+  including actor versus observer, player versus team, success versus failure,
+  active versus waiting/resolving state, option variants, spectators, bots,
+  reconnect/save restoration, and relevant brief-announcement variants.
+- Errors, warnings, disabled-action reasons, confirmations, and gameplay
+  notifications must identify the attempted action, the specific blocking or
+  resulting condition, and the state values needed to understand what happened
+  and what the player can do next. Avoid generic messages such as "You cannot
+  do that" when a contextual explanation is available.
+- Keep EN/VI keys and variables structurally synchronized, localize
+  listener-dependent values per recipient, and add tests for both actor and
+  observer wording plus important contextual and error branches.
+
+## Documentation
+
+When writing or updating documentation, first read existing polished project
+manuals for similar games and follow their standard structure, formatting, and
+player-facing tone.
+
+- Manuals must be beginner-friendly, accessible, and focused on how to play:
+  overview, goal, turn flow, special mechanics, scoring, options, information
+  actions, and shortcuts where relevant.
+- Do not write manuals like changelogs, patch notes, design notes, or developer
+  justifications. Leave out unnecessary implementation details and rationale
+  that do not help a player understand the game.
+- Keep vocabulary plain and concrete. Explain game terms before relying on
+  them, especially for custom games or mechanics that may be unfamiliar.
+- Keep EN/VI documentation synchronized in structure, meaning, terminology, and
+  attribution. Vietnamese docs should be natural and friendly, with terminology
+  aligned to the matching `.ftl` strings.
+
 ## Scores, Leaderboards, and Teams
 
 - Only games with real leaderboard support should expose
@@ -253,7 +296,8 @@ tokens, invites, moderation records, or similar data without this lifecycle.
 
 - Server navigation uses `_nav_push`, `_nav_back`, `_nav_refresh`, and
   `_restore_frame`; action handlers should not call `_show_*()` directly.
-  The stack remembers the opener item and restores focus on Back/cancel.
+  The stack remembers the opener item and restores focus on Back/cancel and
+  action completion.
   Server-owned menu selections are validated against the active menu before
   dispatch; stale client packets and forged item ids are ignored.
 - Use `_enter_input_state(...)` / `server.enter_input_state(...)` for editbox
@@ -285,9 +329,9 @@ Files normally required:
 
 Also register the game in `server/games/__init__.py`.
 
-Documentation must follow established game docs: escaped markdown bold,
-overview, gameplay, special mechanics, scoring, customizable options with
-defaults/ranges, and game-specific keyboard shortcuts.
+Documentation must follow the Documentation rules above and established game
+docs: escaped markdown bold, overview, gameplay, special mechanics, scoring,
+customizable options with defaults/ranges, and game-specific keyboard shortcuts.
 
 Tests should cover registration/default options, pre-start validation, core
 mechanics, scoring/scoreless behavior, bot completion, touch visibility/order,

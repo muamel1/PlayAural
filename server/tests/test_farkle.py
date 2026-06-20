@@ -40,6 +40,12 @@ def test_farkle_game_initialization(farkle_game):
     assert player1.score == 0
     assert player1.turn_score == 0
 
+
+def test_farkle_default_target_score_is_1000():
+    assert FarkleOptions().target_score == 1000
+    assert FarkleGame().options.target_score == 1000
+
+
 def test_minimal_entrance_score(farkle_game):
     # Set custom entrance score
     farkle_game.options.min_entrance_score = 100
@@ -135,6 +141,35 @@ def test_bot_rolls_with_six_available_after_hot_dice(farkle_game):
     assert farkle_game.bot_think(bot_player) == "roll"
 
 
+def test_bot_banks_one_die_catchup_points_instead_of_chasing(farkle_game):
+    bot_player = farkle_game.current_player
+    leader = next(player for player in farkle_game.players if player is not bot_player)
+    bot_player.is_bot = True
+    bot_player.score = 500
+    bot_player.turn_score = 250
+    bot_player.dice.values = [2]
+    bot_player.has_taken_combo = True
+    leader.score = 760
+
+    assert farkle_game._get_roll_dice_count(bot_player) == 1
+    assert farkle_game._is_bank_enabled(bot_player) is None
+    assert farkle_game.bot_think(bot_player) == "bank"
+
+
+def test_bot_banks_when_target_is_reached_even_with_hot_dice(farkle_game):
+    bot_player = farkle_game.current_player
+    bot_player.is_bot = True
+    bot_player.score = 900
+    bot_player.turn_score = 100
+    bot_player.banked_dice = [1, 2, 3, 4, 5, 6]
+    bot_player.dice.values = []
+    bot_player.has_taken_combo = True
+
+    assert farkle_game._get_roll_dice_count(bot_player) == 6
+    assert farkle_game._is_bank_enabled(bot_player) is None
+    assert farkle_game.bot_think(bot_player) == "bank"
+
+
 def test_bot_keeps_scoring_dice_before_banking(farkle_game):
     bot_player = farkle_game.current_player
     bot_player.is_bot = True
@@ -189,7 +224,7 @@ def test_risky_roll_confirmation_respects_preference(farkle_game, monkeypatch):
     user = farkle_game.get_user(player)
     assert user is not None
     player.score = 100
-    player.turn_score = 150
+    player.turn_score = 250
     player.has_taken_combo = True
     player.dice.values = [2, 3]
 
@@ -201,7 +236,7 @@ def test_risky_roll_confirmation_respects_preference(farkle_game, monkeypatch):
 
     farkle_game._action_roll(player, "roll")
 
-    assert player.pending_risky_action.startswith("roll:150")
+    assert player.pending_risky_action.startswith("roll:250")
     assert player.risky_confirm_ticks == RISK_CONFIRM_TICKS
     assert player.dice.values == [2, 3]
     assert "Rolling again risks losing them" in user.get_last_spoken()

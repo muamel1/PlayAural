@@ -7,11 +7,18 @@ Following the testing strategy:
 - Persistence tests (save/reload at each tick)
 """
 
-import pytest
-import random
 import json
+from collections import Counter
+from pathlib import Path
+import random
+import re
+
+import pytest
 
 from server.games.rollingballs.game import (
+    DRAW_SEQUENCE_TAG,
+    PIPE_PREVIEW_MAX,
+    PIPE_PREVIEW_MIN,
     RollingBallsGame,
     RollingBallsOptions,
     RollingBallsPlayer,
@@ -22,12 +29,43 @@ from server.users.test_user import MockUser
 from server.users.bot import Bot
 
 
+LOCALES_DIR = Path(__file__).parent.parent / "locales"
+DOCS_DIR = Path(__file__).parent.parent / "documentation" / "content"
+
+
 def set_web_client(game: RollingBallsGame, *players) -> None:
     targets = players or game.players
     for player in targets:
         user = game.get_user(player)
         if user is not None:
             user.client_type = "web"
+
+
+def advance_draw(game: RollingBallsGame, max_ticks: int = 300) -> None:
+    for _ in range(max_ticks):
+        if not game.has_active_sequence(tag=DRAW_SEQUENCE_TAG):
+            return
+        game.on_tick()
+    raise AssertionError("Rolling Balls draw sequence did not finish")
+
+
+def valid_ball(value: int = 1, key: str = "rb-ball-free-museum-day") -> dict:
+    return {"value": value, "description_key": key}
+
+
+def ftl_messages(text: str) -> dict[str, set[str]]:
+    result: dict[str, set[str]] = {}
+    current = ""
+    for line in text.splitlines():
+        match = re.match(r"^([a-z0-9-]+)\s*=", line)
+        if match:
+            current = match.group(1)
+            result[current] = set()
+        if current:
+            result[current].update(
+                re.findall(r"\{\s*\$([a-zA-Z_][\w-]*)", line)
+            )
+    return result
 
 
 class TestRollingBallsUnit:
@@ -41,6 +79,7 @@ class TestRollingBallsUnit:
         assert game.get_category() == "misc"
         assert game.get_min_players() == 2
         assert game.get_max_players() == 4
+        assert game.relevant_preferences == ["brief_announcements"]
 
     def test_player_creation(self):
         """Test creating a player with correct initial state."""
@@ -82,7 +121,10 @@ class TestRollingBallsUnit:
         assert "rb-pack-international" in packs
         assert "rb-pack-vietnam" in packs
         for pack_id, pack in packs.items():
-            assert len(pack) > 0
+            assert len(pack) == 55
+            assert Counter(pack.values()) == Counter(
+                {value: 5 for value in range(-5, 6)}
+            )
             for desc, value in pack.items():
                 assert isinstance(desc, str)
                 assert isinstance(value, int)
@@ -126,6 +168,20 @@ class TestRollingBallsUnit:
         game.on_start()
 
         assert len(game.pipe) == 50
+
+    def test_filled_pipe_is_unique_and_value_balanced(self):
+        random.seed(123)
+        game = RollingBallsGame()
+        for name in ["Alice", "Bob", "Charlie", "Dave"]:
+            game.add_player(name, MockUser(name))
+
+        game.on_start()
+
+        keys = [ball["description_key"] for ball in game.pipe]
+        counts = Counter(ball["value"] for ball in game.pipe)
+        assert len(keys) == len(set(keys)) == 50
+        assert set(counts) == set(range(-5, 6))
+        assert max(counts.values()) - min(counts.values()) <= 1
 
     def test_pipe_balls_from_pack(self):
         """Test that pipe balls come from the selected pack."""
@@ -180,12 +236,43 @@ class TestRollingBallsUnit:
         action_set = game.create_standard_action_set(player1)
         order = action_set._order
 
-        expected = ["view_pipe", "reshuffle", "check_scores", "whose_turn", "whos_at_table"]
+        expected = [
+            "check_pipe_status",
+            "view_pipe",
+            "reshuffle",
+            "check_scores",
+            "whose_turn",
+            "whos_at_table",
+        ]
         indices = [order.index(action_id) for action_id in expected]
 
         assert indices == sorted(indices)
         assert order.index("view_pipe") < order.index("check_scores")
         assert order.index("reshuffle") < order.index("check_scores")
+
+    def test_reshuffle_penalty_option_hidden_when_reshuffling_disabled(self):
+        game = RollingBallsGame(
+            options=RollingBallsOptions(reshuffle_limit=0)
+        )
+        player = game.add_player("Alice", MockUser("Alice"))
+
+        option_set = game.options.create_options_action_set(game, player)
+
+        assert "set_reshuffle_penalty" not in option_set._order
+
+    def test_disabled_optional_actions_still_exist_for_keybind_resolution(self):
+        game = RollingBallsGame(
+            options=RollingBallsOptions(
+                view_pipe_limit=0,
+                reshuffle_limit=0,
+            )
+        )
+        player = game.add_player("Alice", MockUser("Alice"))
+
+        standard_set = game.create_standard_action_set(player)
+
+        assert "view_pipe" in standard_set._order
+        assert "reshuffle" in standard_set._order
 
     def test_serialization(self):
         """Test that game state can be serialized and deserialized."""
@@ -242,9 +329,14 @@ class TestRollingBallsActions:
         first_ball_value = self.game.pipe[0]["value"]
 
         self.game.execute_action(self.player1, "take_1")
+        assert len(self.game.pipe) == initial_pipe_len
+        advance_draw(self.game)
 
         assert len(self.game.pipe) == initial_pipe_len - 1
-        assert self.game._team_manager.get_team(self.player1.name).total_score == initial_score + first_ball_value
+        assert (
+            self.game._team_manager.get_team(self.player1.name).total_score
+            == initial_score + first_ball_value
+        )
 
     def test_take_2_balls(self):
         """Test taking 2 balls from the pipe."""
@@ -252,6 +344,7 @@ class TestRollingBallsActions:
         expected_score = self.game.pipe[0]["value"] + self.game.pipe[1]["value"]
 
         self.game.execute_action(self.player1, "take_2")
+        advance_draw(self.game)
 
         assert len(self.game.pipe) == initial_pipe_len - 2
         assert self.game._team_manager.get_team(self.player1.name).total_score == expected_score
@@ -262,19 +355,24 @@ class TestRollingBallsActions:
         expected_score = sum(self.game.pipe[i]["value"] for i in range(3))
 
         self.game.execute_action(self.player1, "take_3")
+        advance_draw(self.game)
 
         assert len(self.game.pipe) == initial_pipe_len - 3
         assert self.game._team_manager.get_team(self.player1.name).total_score == expected_score
 
-    def test_take_2_hidden_when_only_1_ball(self):
-        """Test that take 2 is hidden when only 1 ball in pipe."""
-        self.game.pipe = [{"value": 1, "description": "test"}]
+    def test_take_controls_stay_visible_but_disable_when_pipe_is_short(self):
+        """Persistent take controls should keep their focus anchors near game end."""
+        self.game.pipe = [valid_ball()]
         visible_actions = self.game.get_all_visible_actions(self.player1)
-        visible_ids = [a.action.id for a in visible_actions]
+        actions = {resolved.action.id: resolved for resolved in visible_actions}
 
-        assert "take_1" in visible_ids
-        assert "take_2" not in visible_ids
-        assert "take_3" not in visible_ids
+        assert actions["take_1"].enabled is True
+        assert actions["take_2"].enabled is False
+        assert actions["take_2"].disabled_reason == (
+            "rb-not-enough-balls",
+            {"count": 2, "remaining": 1},
+        )
+        assert actions["take_3"].enabled is False
 
     def test_reshuffle(self):
         """Test reshuffling the pipe."""
@@ -289,7 +387,10 @@ class TestRollingBallsActions:
         assert self.player1.reshuffle_uses == 1
 
         # Penalty should be applied
-        assert self.game._team_manager.get_team(self.player1.name).total_score == -self.game.options.reshuffle_penalty
+        assert (
+            self.game._team_manager.get_team(self.player1.name).total_score
+            == -self.game.options.reshuffle_penalty
+        )
 
     def test_reshuffle_hidden_when_limit_0(self):
         """Test reshuffle action hidden when limit is 0."""
@@ -301,31 +402,47 @@ class TestRollingBallsActions:
 
         assert "reshuffle" not in visible_ids
 
-    def test_reshuffle_hidden_when_uses_exhausted(self):
-        """Test reshuffle hidden when all uses consumed."""
+    def test_reshuffle_touch_control_stays_visible_when_uses_exhausted(self):
+        """An exhausted touch control remains as a disabled focus anchor."""
+        set_web_client(self.game, self.player1)
         self.player1.reshuffle_uses = self.game.options.reshuffle_limit
-        visible_actions = self.game.get_all_visible_actions(self.player1)
-        visible_ids = [a.action.id for a in visible_actions]
+        actions = {
+            resolved.action.id: resolved
+            for resolved in self.game.get_all_visible_actions(self.player1)
+        }
 
-        assert "reshuffle" not in visible_ids
+        assert actions["reshuffle"].enabled is False
+        assert actions["reshuffle"].disabled_reason == (
+            "rb-no-reshuffles-left",
+            {"limit": self.game.options.reshuffle_limit},
+        )
 
-    def test_reshuffle_hidden_after_reshuffling_this_turn(self):
-        """Test reshuffle hidden after already reshuffling this turn."""
+    def test_reshuffle_touch_control_stays_visible_after_use_this_turn(self):
+        """The reshuffle anchor remains present after its once-per-turn use."""
+        set_web_client(self.game, self.player1)
         self.game.execute_action(self.player1, "reshuffle")
 
-        # Should not be able to reshuffle again this turn
-        visible_actions = self.game.get_all_visible_actions(self.player1)
-        visible_ids = [a.action.id for a in visible_actions]
+        actions = {
+            resolved.action.id: resolved
+            for resolved in self.game.get_all_visible_actions(self.player1)
+        }
 
-        assert "reshuffle" not in visible_ids
+        assert actions["reshuffle"].enabled is False
+        assert actions["reshuffle"].disabled_reason == "rb-already-reshuffled"
 
-    def test_reshuffle_hidden_when_pipe_too_small(self):
-        """Test reshuffle hidden when pipe has fewer than 6 balls."""
-        self.game.pipe = [{"value": 1, "description": "test"}] * 5
-        visible_actions = self.game.get_all_visible_actions(self.player1)
-        visible_ids = [a.action.id for a in visible_actions]
+    def test_reshuffle_touch_control_explains_when_pipe_is_too_small(self):
+        set_web_client(self.game, self.player1)
+        self.game.pipe = [valid_ball()] * 5
+        actions = {
+            resolved.action.id: resolved
+            for resolved in self.game.get_all_visible_actions(self.player1)
+        }
 
-        assert "reshuffle" not in visible_ids
+        assert actions["reshuffle"].enabled is False
+        assert actions["reshuffle"].disabled_reason == (
+            "rb-not-enough-balls-to-reshuffle",
+            {"remaining": 5, "required": 6},
+        )
 
     def test_reshuffle_no_penalty_when_0(self):
         """Test that no penalty when reshuffle_penalty is 0."""
@@ -372,9 +489,31 @@ class TestRollingBallsActions:
         self.game.execute_action(self.player1, "view_pipe")
         assert self.player1.view_pipe_uses == 1
 
-        # View again without any pipe changes
         self.game.execute_action(self.player1, "view_pipe")
         assert self.player1.view_pipe_uses == 1
+
+    def test_view_pipe_shows_bounded_preview(self):
+        self.game.execute_action(self.player1, "view_pipe")
+
+        preview = self.player1.last_viewed_pipe
+        assert preview is not None
+        assert PIPE_PREVIEW_MIN <= len(preview) <= PIPE_PREVIEW_MAX
+        assert len(preview) == self.game.options.max_take * 2
+
+    def test_final_preview_can_be_reopened_until_pipe_changes(self):
+        self.game.options.view_pipe_limit = 1
+        self.game.execute_action(self.player1, "view_pipe")
+        assert self.player1.view_pipe_uses == 1
+        assert self.game._is_view_pipe_enabled(self.player1) is None
+
+        self.game.execute_action(self.player1, "view_pipe")
+        assert self.player1.view_pipe_uses == 1
+
+        self.game.pipe.pop(0)
+        assert self.game._is_view_pipe_enabled(self.player1) == (
+            "rb-no-views-left",
+            {"limit": 1},
+        )
 
     def test_view_pipe_charges_after_change(self):
         """Test that viewing the pipe after a change uses a charge."""
@@ -383,23 +522,26 @@ class TestRollingBallsActions:
 
         # Take a ball to change the pipe
         self.game.execute_action(self.player1, "take_1")
+        advance_draw(self.game)
 
         # View again - pipe changed, should cost a use
         self.game.execute_action(self.player1, "view_pipe")
         assert self.player1.view_pipe_uses == 2
 
-    def test_requires_turn(self):
-        """Test that turn-required actions are only available on your turn."""
-        # get_all_enabled_actions only returns actions with show_in_actions_menu=True
-        # We need to check visible actions instead to test turn gating, as take_1 is hidden from actions menu.
+    def test_take_controls_stay_visible_off_turn_but_are_disabled(self):
+        """Turn changes must not remove the primary focus anchors."""
         p1_actions = self.game.get_all_visible_actions(self.player1)
         p2_actions = self.game.get_all_visible_actions(self.player2)
 
-        p1_ids = [a.action.id for a in p1_actions]
-        p2_ids = [a.action.id for a in p2_actions]
+        p1 = {resolved.action.id: resolved for resolved in p1_actions}
+        p2 = {resolved.action.id: resolved for resolved in p2_actions}
 
-        assert "take_1" in p1_ids
-        assert "take_1" not in p2_ids
+        assert p1["take_1"].enabled is True
+        assert p2["take_1"].enabled is False
+        assert p2["take_1"].disabled_reason == (
+            "rb-take-not-your-turn",
+            {"count": 1, "player": self.player1.name},
+        )
 
     def test_reshuffle_resets_each_turn(self):
         """Test that has_reshuffled resets at the start of each turn."""
@@ -426,15 +568,18 @@ class TestRollingBallsActions:
         take_ids = [a.action.id for a in visible_actions if a.action.id.startswith("take_")]
         assert take_ids == ["take_1", "take_2", "take_3", "take_4", "take_5"]
 
-    def test_option_change_clamps_min_max(self):
-        """Test that min_take is clamped when max_take is lowered below it."""
+    def test_option_conflict_is_preserved_and_blocks_start(self):
+        """Conflicting settings should be explicit instead of silently mutating."""
         self.game._handle_option_change("min_take", "3")
         assert self.game.options.min_take == 3
 
-        # Lower max_take below min_take - min should be clamped
         self.game._handle_option_change("max_take", "2")
         assert self.game.options.max_take == 2
-        assert self.game.options.min_take == 2
+        assert self.game.options.min_take == 3
+        assert (
+            "rb-error-take-range-conflict",
+            {"min": 3, "max": 2},
+        ) in self.game.prestart_validate()
 
     def test_min_take_hides_lower_actions(self):
         """Test that take actions below min_take are not created."""
@@ -494,6 +639,113 @@ class TestRollingBallsActions:
         take_ids = [a.action.id for a in visible_actions if a.action.id.startswith("take_")]
 
         assert take_ids == ["take_2"]
+
+    def test_forced_final_draw_is_contextual_and_completes_game(self):
+        self.game.options.min_take = 3
+        self.game.pipe = [
+            valid_ball(2),
+            valid_ball(-1, "rb-ball-amsterdam-bicycle-crash"),
+        ]
+        self.user1.clear_messages()
+        self.user2.clear_messages()
+
+        self.game._start_turn()
+        advance_draw(self.game)
+
+        assert self.game.status == "finished"
+        assert any(
+            "fewer than the minimum take of 3" in message
+            for message in self.user1.get_spoken_messages()
+        )
+        assert any(
+            "Alice must take the rest" in message
+            for message in self.user2.get_spoken_messages()
+        )
+
+    def test_draw_broadcasts_first_and_third_person_context(self):
+        self.game.pipe = [valid_ball(2)] + self.game.pipe[1:]
+        self.user1.clear_messages()
+        self.user2.clear_messages()
+
+        self.game.execute_action(self.player1, "take_1")
+        advance_draw(self.game)
+
+        actor_text = "\n".join(self.user1.get_spoken_messages())
+        observer_text = "\n".join(self.user2.get_spoken_messages())
+        assert "Your ball 1:" in actor_text
+        assert "Alice's ball 1:" in observer_text
+        assert "Your 1-ball draw has a net value of 2 points" in actor_text
+        assert "Alice's 1-ball draw has a net value of 2 points" in observer_text
+
+    def test_brief_announcements_skip_individual_ball_descriptions(self):
+        self.user1.preferences.set_game_override(
+            "brief_announcements", "rollingballs", True
+        )
+        self.game.pipe = [valid_ball(2)] + self.game.pipe[1:]
+        self.user1.clear_messages()
+        self.user2.clear_messages()
+
+        self.game.execute_action(self.player1, "take_1")
+        advance_draw(self.game)
+
+        actor_text = "\n".join(self.user1.get_spoken_messages())
+        observer_text = "\n".join(self.user2.get_spoken_messages())
+        assert "Free museum admission" not in actor_text
+        assert "Net 2; your score is 2." in actor_text
+        assert "Free museum admission" in observer_text
+
+    def test_reshuffle_always_changes_front_order(self, monkeypatch):
+        original = [dict(ball) for ball in self.game.pipe[:15]]
+        monkeypatch.setattr(random, "shuffle", lambda values: None)
+
+        self.game.execute_action(self.player1, "reshuffle")
+
+        assert self.game.pipe[:15] == original[1:] + original[:1]
+
+    def test_invalid_direct_options_are_reported_before_start(self):
+        game = RollingBallsGame(
+            options=RollingBallsOptions(
+                min_take=0,
+                max_take=6,
+                view_pipe_limit=-1,
+                reshuffle_limit=101,
+                reshuffle_penalty=8,
+                ball_packs=["missing-pack"],
+            )
+        )
+
+        errors = game.prestart_validate()
+
+        assert ("rb-error-min-take-invalid", {"count": 0, "min": 1, "max": 5}) in errors
+        assert ("rb-error-max-take-invalid", {"count": 6, "min": 1, "max": 5}) in errors
+        assert (
+            "rb-error-view-limit-invalid",
+            {"count": -1, "min": 0, "max": 100},
+        ) in errors
+        assert (
+            "rb-error-reshuffle-limit-invalid",
+            {"count": 101, "min": 0, "max": 100},
+        ) in errors
+        assert (
+            "rb-error-reshuffle-penalty-invalid",
+            {"points": 8, "min": 0, "max": 5},
+        ) in errors
+        assert ("rb-error-invalid-ball-packs", {"count": 1}) in errors
+
+    def test_bot_reshuffles_a_known_bad_prefix(self):
+        self.player1.is_bot = True
+        self.player1.last_viewed_pipe = None
+        self.player1.view_pipe_uses = 0
+        self.game.pipe[:6] = [
+            valid_ball(-5, "rb-ball-paris-pickpocket"),
+            valid_ball(-4, "rb-ball-venice-flood"),
+            valid_ball(-3, "rb-ball-spilled-coffee-in-rome"),
+            valid_ball(0, "rb-ball-neutral-passport"),
+            valid_ball(1, "rb-ball-free-museum-day"),
+            valid_ball(2, "rb-ball-eiffel-tower-view"),
+        ]
+
+        assert self.game.bot_think(self.player1) == "reshuffle"
 
 
 class TestRollingBallsPlayTest:
@@ -686,7 +938,11 @@ class TestRollingBallsPlayTest:
 
             # Human always takes 1 ball on their turn (when not revealing)
             current = game.current_player
-            if current and current.name == "Human" and not game._ball_reveal_player_id:
+            if (
+                current
+                and current.name == "Human"
+                and not game.has_active_sequence(tag=DRAW_SEQUENCE_TAG)
+            ):
                 game.execute_action(current, "take_1")
 
         assert not game.game_active
@@ -781,6 +1037,120 @@ class TestRollingBallsPersistence:
         # Actions should still work
         actions = game.get_all_enabled_actions(game.players[0])
         assert len(actions) > 0
+
+    def test_active_draw_sequence_survives_reload_without_double_scoring(self):
+        game = RollingBallsGame()
+        user1 = MockUser("Alice")
+        user2 = MockUser("Bob")
+        player1 = game.add_player("Alice", user1)
+        game.add_player("Bob", user2)
+        game.on_start()
+        initial_length = len(game.pipe)
+        expected_delta = sum(ball["value"] for ball in game.pipe[:2])
+
+        game.execute_action(player1, "take_2")
+        assert game.has_active_sequence(tag=DRAW_SEQUENCE_TAG)
+        loaded = RollingBallsGame.from_json(game.to_json())
+        loaded.attach_user("Alice", user1)
+        loaded.attach_user("Bob", user2)
+        loaded.rebuild_runtime_state()
+        for player in loaded.players:
+            loaded.setup_player_actions(player)
+
+        advance_draw(loaded)
+
+        assert len(loaded.pipe) == initial_length - 2
+        assert loaded._team_manager.get_team("Alice").total_score == expected_delta
+
+    def test_legacy_mid_reveal_state_migrates_to_sequence(self):
+        game = RollingBallsGame()
+        user1 = MockUser("Alice")
+        user2 = MockUser("Bob")
+        player1 = game.add_player("Alice", user1)
+        game.add_player("Bob", user2)
+        game.on_start()
+        legacy_ball = dict(game.pipe.pop(0))
+        legacy_ball["num"] = 1
+        game._team_manager.add_to_team_score("Alice", legacy_ball["value"])
+        game._ball_reveal_player_id = player1.id
+        game._ball_reveal_queue = [legacy_ball]
+        game._ball_reveal_tick = game.sound_scheduler_tick + 2
+
+        loaded = RollingBallsGame.from_json(game.to_json())
+        loaded.attach_user("Alice", user1)
+        loaded.attach_user("Bob", user2)
+        loaded.rebuild_runtime_state()
+
+        assert loaded.has_active_sequence(tag=DRAW_SEQUENCE_TAG)
+        assert loaded._ball_reveal_queue == []
+        assert loaded._ball_reveal_player_id == ""
+        advance_draw(loaded)
+        assert loaded._team_manager.get_team("Alice").total_score == legacy_ball["value"]
+
+
+def test_tied_winners_receive_shared_result_ids_and_ranks() -> None:
+    game = RollingBallsGame()
+    user1 = MockUser("Alice")
+    user2 = MockUser("Bob")
+    alice = game.add_player("Alice", user1)
+    bob = game.add_player("Bob", user2)
+    game.on_start()
+    game._team_manager.get_team("Alice").total_score = 7
+    game._team_manager.get_team("Bob").total_score = 7
+    game.pipe = []
+    user1.clear_messages()
+    user2.clear_messages()
+
+    game._announce_winner()
+    result = game.build_game_result()
+    lines = game.format_end_screen(result, "en")
+
+    assert result.custom_data["winner_name"] is None
+    assert result.custom_data["winner_ids"] == [alice.id, bob.id]
+    assert lines[1].startswith("1.")
+    assert lines[2].startswith("1.")
+    assert "You share the win with Bob" in user1.get_last_spoken()
+    assert "You share the win with Alice" in user2.get_last_spoken()
+
+
+def test_locale_parity_ball_coverage_and_vietnamese_documentation_terms() -> None:
+    en_text = (LOCALES_DIR / "en" / "rollingballs.ftl").read_text(
+        encoding="utf-8"
+    )
+    vi_text = (LOCALES_DIR / "vi" / "rollingballs.ftl").read_text(
+        encoding="utf-8"
+    )
+    en_messages = ftl_messages(en_text)
+    vi_messages = ftl_messages(vi_text)
+
+    assert en_messages == vi_messages
+    for pack in load_ball_packs().values():
+        assert set(pack) <= en_messages.keys()
+
+    en_docs = (
+        DOCS_DIR / "en" / "games" / "rollingballs.md"
+    ).read_text(encoding="utf-8")
+    vi_docs = (
+        DOCS_DIR / "vi" / "games" / "rollingballs.md"
+    ).read_text(encoding="utf-8")
+    assert "PlayPalace" in en_docs
+    assert "PlayPalace" in vi_docs
+    assert "not an original game created by PlayAural" in en_docs
+    assert "không phải là trò chơi nguyên bản" in vi_docs
+    assert "PlayAural original" not in en_docs
+    assert "nguyên bản của PlayAural" not in vi_docs
+    assert "Confirm Risky Actions" not in en_docs
+    assert "Xác nhận hành động rủi ro" not in vi_docs
+    for term in (
+        "Quần thể danh thắng Tràng An",
+        "Phố cổ Hội An",
+        "Quần thể di tích Cố đô Huế",
+        "Vịnh Hạ Long - quần đảo Cát Bà",
+        "Phong Nha - Kẻ Bàng",
+        "Xem trước trong ống",
+        "Xáo đoạn đầu ống",
+    ):
+        assert term in vi_docs
 
 
 if __name__ == "__main__":

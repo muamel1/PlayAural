@@ -122,6 +122,141 @@ def test_connect_can_skip_pruning_for_short_cli_operations(tmp_path):
     assert cursor.fetchone()[0] == 0
     database.close()
 
+
+def test_connect_quarantines_corrupt_database_and_rebuilds(tmp_path, capsys):
+    db_path = tmp_path / "PlayAural.db"
+    wal_path = tmp_path / "PlayAural.db-wal"
+    shm_path = tmp_path / "PlayAural.db-shm"
+    db_path.write_bytes(b"this is not a sqlite database")
+    wal_path.write_bytes(b"stale wal")
+    shm_path.write_bytes(b"stale shm")
+
+    database = Database(db_path)
+    database.connect()
+    printed = capsys.readouterr().out
+
+    assert "Database recovery: detected a corrupt SQLite database" in printed
+    assert db_path.exists()
+
+    quarantined_main = list(tmp_path.glob("PlayAural.db.corrupt-*"))
+    assert len(quarantined_main) == 1
+    assert quarantined_main[0].read_bytes() == b"this is not a sqlite database"
+
+    cursor = database._conn.cursor()
+    cursor.execute(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'users'"
+    )
+    assert cursor.fetchone()["name"] == "users"
+    database.close()
+
+
+def test_connect_can_disable_corrupt_database_recovery(tmp_path):
+    db_path = tmp_path / "PlayAural.db"
+    db_path.write_bytes(b"this is not a sqlite database")
+
+    database = Database(db_path)
+    with pytest.raises(sqlite3.DatabaseError):
+        database.connect(recover_corrupt=False)
+
+    assert db_path.read_bytes() == b"this is not a sqlite database"
+    assert not list(tmp_path.glob("PlayAural.db.corrupt-*"))
+    assert database._conn is None
+
+
+def test_quarantine_corrupt_database_moves_existing_sidecars(tmp_path):
+    db_path = tmp_path / "PlayAural.db"
+    wal_path = tmp_path / "PlayAural.db-wal"
+    shm_path = tmp_path / "PlayAural.db-shm"
+    journal_path = tmp_path / "PlayAural.db-journal"
+    db_path.write_bytes(b"bad db")
+    wal_path.write_bytes(b"bad wal")
+    shm_path.write_bytes(b"bad shm")
+    journal_path.write_bytes(b"bad journal")
+
+    database = Database(db_path)
+    moved = database._quarantine_corrupt_database(
+        sqlite3.DatabaseError("database disk image is malformed")
+    )
+
+    assert db_path.exists() is False
+    assert wal_path.exists() is False
+    assert shm_path.exists() is False
+    assert journal_path.exists() is False
+    assert len(moved) == 4
+    assert (
+        list(tmp_path.glob("PlayAural.db.corrupt-*"))[0].read_bytes()
+        == b"bad db"
+    )
+    assert (
+        list(tmp_path.glob("PlayAural.db-wal.corrupt-*"))[0].read_bytes()
+        == b"bad wal"
+    )
+    assert (
+        list(tmp_path.glob("PlayAural.db-shm.corrupt-*"))[0].read_bytes()
+        == b"bad shm"
+    )
+    assert (
+        list(tmp_path.glob("PlayAural.db-journal.corrupt-*"))[0].read_bytes()
+        == b"bad journal"
+    )
+
+
+def test_connect_recovers_when_pruning_reports_corruption(tmp_path, monkeypatch):
+    db_path = tmp_path / "PlayAural.db"
+    original_prune = Database.prune_old_records
+    calls = 0
+
+    def flaky_prune(self):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise sqlite3.DatabaseError("database disk image is malformed")
+        return original_prune(self)
+
+    monkeypatch.setattr(Database, "prune_old_records", flaky_prune)
+
+    database = Database(db_path)
+    database.connect()
+
+    assert calls == 2
+    assert len(list(tmp_path.glob("PlayAural.db.corrupt-*"))) == 1
+    cursor = database._conn.cursor()
+    cursor.execute(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'users'"
+    )
+    assert cursor.fetchone()["name"] == "users"
+    database.close()
+
+
+def test_corruption_detection_is_narrow():
+    assert Database._is_corruption_error(
+        sqlite3.DatabaseError("database disk image is malformed")
+    )
+    assert Database._is_corruption_error(
+        sqlite3.DatabaseError("database integrity check failed: freelist error")
+    )
+    assert not Database._is_corruption_error(
+        sqlite3.OperationalError("database is locked")
+    )
+
+
+def test_cli_auth_database_refuses_corrupt_database(tmp_path, monkeypatch, capsys):
+    from server import cli
+
+    db_path = tmp_path / "PlayAural.db"
+    db_path.write_bytes(b"this is not a sqlite database")
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        with cli.open_auth_database():
+            raise AssertionError("corrupt database should not open")
+
+    assert exc_info.value.code == 1
+    assert "database appears to be corrupt" in capsys.readouterr().out
+    assert db_path.read_bytes() == b"this is not a sqlite database"
+    assert not list(tmp_path.glob("PlayAural.db.corrupt-*"))
+
+
 def test_prune_unregistered_game_data_removes_only_stale_game_types(db, capsys):
     cursor = db._conn.cursor()
 

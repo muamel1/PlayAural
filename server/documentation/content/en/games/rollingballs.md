@@ -1,100 +1,95 @@
 \*\*Rolling Balls\*\*
 
+Rolling Balls is a 2 to 4 player pipe-and-score game based on and originating from the open-source PlayPalace project. It is not an original game created by PlayAural. Players take balls from the front of one shared pipe. Each ball has a hidden value from -5 to +5, so every choice can raise or lower your score.
 
+When the pipe is empty, the player with the highest score wins. If several players share the highest score, they share the win.
 
-Rolling Balls is a push-your-luck pipe game for 2 to 4 players. A pipe is filled with balls, each carrying a hidden point value between -5 and +5 along with a fun flavor description. On your turn, choose how many balls to pull from the front of the pipe. Their values are applied to your score immediately, for better or worse. When the pipe runs out, whoever has the most points wins.
+\*\*Goal\*\*
 
+Finish with the most points when the last ball leaves the pipe.
 
+Scores can go below zero. A careful small draw can be better than a large risky draw, especially near the end of the game.
 
-\*\*Gameplay\*\*
+\*\*The Pipe\*\*
 
+The pipe is the shared line of balls everyone draws from.
 
+The game starts with 25 balls for 2 players, 35 balls for 3 players, or 50 balls for 4 players. The host chooses one or more ball sets, then the game fills and shuffles the pipe.
 
-At the start of the game, the pipe is filled with balls drawn randomly from the active ball packs. The number of balls depends on how many players are at the table: 25 balls for 2 players, 35 for 3, and 50 for 4.
+Ball values range from -5 to +5. You do not hear a ball's value until it is revealed, unless you use Preview the Pipe.
 
+\*\*Your Turn\*\*
 
+On your turn, choose how many balls to take from the front of the pipe. The default range is 1 to 3 balls.
 
-On your turn, you choose how many balls to take from the front of the pipe. By default you can take 1, 2, or 3 balls (configurable by the host). Balls are revealed one at a time with sound and speech: positive balls add to your score, negative balls subtract from it, and zero-value balls do nothing. After all your balls are revealed, your updated score is announced and play passes to the next player.
+After you choose, the game reveals those balls one at a time. Positive values add to your score. Negative values subtract from your score. Zero changes nothing. When the draw ends, the game reads the total change, your new score, and how many balls remain.
 
+After your draw, play passes to the next player. When every player has taken one turn, a new round begins. Scores stay as they are, and the pipe is not refilled.
 
+If fewer balls remain than the minimum take, the current player automatically takes all remaining balls.
 
-If fewer balls remain in the pipe than the minimum take, those remaining balls are taken automatically by the current player.
+\*\*Preview the Pipe\*\*
 
+\*\*Preview the Pipe\*\* privately tells you the next few balls in the pipe before you draw.
 
+The preview shows at least 6 balls. If the maximum take is higher, it can show up to twice the maximum take, but never more than 10 balls.
 
-The game ends as soon as the pipe is empty. In the event of a tie, the tied players share the victory.
+A preview use is spent only when the preview has changed. If you open the same preview again before the pipe changes, it does not cost another use.
 
+Previewing does not end your turn.
 
+\*\*Reshuffle the Front\*\*
 
-\*\*Actions\*\*
+\*\*Reshuffle the Front of the Pipe\*\* mixes the first 15 balls, or all remaining balls if fewer than 15 are left.
 
+You can reshuffle only on your own turn. You need at least 6 balls in the pipe, and you can reshuffle only once during the same turn. Reshuffling does not end your turn, so you still need to take balls afterward.
 
+If the host set a reshuffle penalty, that many points are subtracted from your score when you reshuffle.
 
-\* \*\*Take Balls:\*\* Draw the specified number of balls from the front of the pipe. Balls are revealed one by one and their values are applied to your score immediately.
+\*\*Useful Information\*\*
 
-\* \*\*Reshuffle Pipe:\*\* Shuffle the first 15 balls in the pipe into a random new order (or all remaining balls if fewer than 15 are left). Reshuffling requires at least 6 balls remaining in the pipe, costs a point penalty, and can only be used once per turn. You have a limited number of reshuffles available for the entire game.
+\*\*Check Pipe Status\*\* tells you the round, how many balls remain, the legal take range, and whose turn it is. Active players also hear how many previews and reshuffles they still have.
 
-\* \*\*View Pipe:\*\* Privately peek at the full contents of the pipe, seeing every ball's name and point value in order. This does not use your turn. You have a limited number of views available for the game. Viewing again when the pipe has not changed since your last look does not consume a use.
+\*\*Check Scores\*\* tells you the current scores.
 
+\*\*Ball Sets\*\*
 
+The host chooses which themed ball sets can appear in the pipe.
 
-\*\*Game Options\*\*
+\* \*\*Around the World:\*\* travel problems, quiet travel moments, famous landmarks, and dream trips.
 
+\* \*\*Journey Through Vietnam:\*\* Vietnamese travel moments and destination names such as Tràng An, Hội An Ancient Town, Huế, Ha Long Bay - Cat Ba Archipelago, Phong Nha - Ke Bang, Côn Đảo, the Reunification Express, and Sơn Đoòng.
 
+\*\*Customizable Options\*\*
 
-The host can configure these settings at the table before starting:
+\* \*\*Minimum Balls per Turn:\*\* Default 1. Range: 1 to 5.
 
-\* \*\*Minimum Balls to Take:\*\* The fewest balls you must take per turn (default 1, range 1 to 5).
+\* \*\*Maximum Balls per Turn:\*\* Default 3. Range: 1 to 5. The game cannot start if the minimum is higher than the maximum.
 
-\* \*\*Maximum Balls to Take:\*\* The most balls you can take per turn (default 3, range 1 to 5). If you set this lower than the minimum, the minimum is adjusted down automatically, and vice versa.
+\* \*\*New Pipe Previews per Player:\*\* Default 5. Range: 0 to 100. Set to 0 to turn previews off.
 
-\* \*\*View Pipe Limit:\*\* How many times each player can peek at the pipe during the game (default 5, range 0 to 100). Set to 0 to disable pipe viewing entirely.
+\* \*\*Reshuffles per Player:\*\* Default 3. Range: 0 to 100. Set to 0 to turn reshuffling off.
 
-\* \*\*Reshuffle Limit:\*\* How many times each player can reshuffle during the game (default 3, range 0 to 100). Set to 0 to disable reshuffling entirely.
+\* \*\*Reshuffle Penalty:\*\* Default 1 point. Range: 0 to 5. This appears only when reshuffling is enabled.
 
-\* \*\*Reshuffle Penalty:\*\* The number of points deducted each time you reshuffle (default 1, range 0 to 5). Only visible when reshuffling is enabled.
+\* \*\*Ball Sets:\*\* Choose one or more sets for the pipe.
 
-\* \*\*Ball Packs:\*\* Which themed sets of balls to include in the pipe. The default is International Travel. At least one pack must be selected; selecting multiple packs combines them into one pool. Available packs are:
+\*\*Personal Game Options\*\*
 
-&#x20;   \* \*\*International Travel:\*\* Balls themed around global travel, from Paris Pickpocket (-5) and Lost Luggage in London (-5) at the painful end, to First Class Upgrade (+5) and Private Jet Charter (+5) at the top.
-
-&#x20;   \* \*\*Vietnam Adventure:\*\* Balls themed around Vietnamese culture and travel, from Stolen Motorbike (-5) and Flooded Street in Saigon (-5) as the worst hazards, to Billionaire Inheritance (+5) and Ultimate Happiness (+5) as the greatest rewards.
-
-
-
-\*\*Example Turn\*\*
-
-
-
-It is your turn. You press \*\*P\*\* to view the pipe and see that the next three balls are: +3 (Colosseum Tour), -2 (Cairo Camel Spit), and +5 (First Class Upgrade).
-
-
-
-You decide to take 3 balls to get those positive points, even with the negative one in the middle. You press \*\*3\*\*.
-
-
-
-The game announces your draws: "Ball 1: Colosseum Tour! Plus 3 points!", "Ball 2: Cairo Camel Spit! Minus 2 points!", "Ball 3: First Class Upgrade! Plus 5 points!".
-
-
-
-Your turn ends, and your total score increases by 6 points. The next player is up.
-
-
+\* \*\*Brief Announcements:\*\* Shortens ball and turn summaries while keeping scores and remaining balls clear.
 
 \*\*Keyboard Shortcuts\*\*
 
+\* \*\*1-5:\*\* Take that many balls when the number is legal.
 
+\* \*\*P:\*\* Preview the pipe.
 
-\* \*\*1-5:\*\* Take that many balls from the pipe.
+\* \*\*D:\*\* Reshuffle the front of the pipe.
 
-\* \*\*D:\*\* Reshuffle the pipe.
-
-\* \*\*P:\*\* View the pipe.
+\* \*\*C:\*\* Check pipe status.
 
 \* \*\*T:\*\* Check whose turn it is.
 
 \* \*\*S:\*\* Check scores.
 
-\* \*\*Shift+S:\*\* View detailed scores.
-
+\* \*\*Shift+S:\*\* Open detailed scores.

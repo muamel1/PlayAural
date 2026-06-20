@@ -45,7 +45,7 @@ PlayAural currently includes **42 games** across backend categories:
 - Dice games such as Farkle, Bunko, Yahtzee, Pig, Left Center Right, Color Game, Toss Up, Tradeoff, Threes, and 1-4-24
 - Board games such as Chess, Battleship, Backgammon, Senet, Sorry!, Ludo, and Snakes and Ladders
 - Original arcade-style titles such as Battle, Chaos Bear, Light Turret, and Pirates of the Lost Seas
-- Miscellaneous originals such as Rolling Balls and Metal Pipe
+- Miscellaneous games such as Rolling Balls and Metal Pipe
 
 The Play menu includes a persisted category filter with dynamic game counts so players can quickly narrow the catalog by genre.
 

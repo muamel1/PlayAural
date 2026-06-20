@@ -738,13 +738,23 @@ def open_auth_database():
     try:
         # CLI account actions should not run historical pruning while the live
         # server may be writing to the same SQLite file.
-        db.connect(prune=False, timeout=30.0)
+        db.connect(prune=False, timeout=30.0, recover_corrupt=False)
         yield db
     except sqlite3.OperationalError as exc:
         if "locked" in str(exc).lower():
             print(
                 "Error: The database is busy. Please retry in a moment, or stop "
                 "the game server before running this maintenance command."
+            )
+        else:
+            print(f"Error: Database operation failed: {exc}")
+        sys.exit(1)
+    except sqlite3.DatabaseError as exc:
+        if Database._is_corruption_error(exc):
+            print(
+                "Error: The database appears to be corrupt. Restore a known-good "
+                "backup, or start the server so its guarded startup recovery can "
+                "quarantine the damaged file before rebuilding."
             )
         else:
             print(f"Error: Database operation failed: {exc}")

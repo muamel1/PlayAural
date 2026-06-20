@@ -10,6 +10,7 @@ from datetime import datetime
 import json
 import random
 from pathlib import Path
+from typing import Any
 
 from ..base import Game, Player, GameOptions
 from ..registry import register_game
@@ -22,14 +23,30 @@ from ...game_utils.options import (
     multi_select_field,
     option_field,
 )
+from ...game_utils.sequence_runner_mixin import SequenceBeat, SequenceOperation
 from ...game_utils.teams import TeamManager
 from ...messages.localization import Localization
 from ...ui.keybinds import KeybindState
+from ...users.base import MenuItem
 
 from .bot import bot_think
 
-# Cached ball packs data
+
+BALL_VALUES = tuple(range(-5, 6))
+PIPE_SIZE_BY_PLAYER_COUNT = {2: 25, 3: 35, 4: 50}
+PIPE_PREVIEW_MIN = 6
+PIPE_PREVIEW_MAX = 10
+RESHUFFLE_WINDOW = 15
+RESHUFFLE_MIN_BALLS = 6
+DRAW_SEQUENCE_ID = "rollingballs_draw"
+DRAW_SEQUENCE_TAG = "rollingballs_draw"
+DRAW_START_DELAY_TICKS = 8
+BALL_SOUND_DELAY_TICKS = 1
+BALL_REVEAL_DELAY_TICKS = 11
+DRAW_FINISH_DELAY_TICKS = 15
+
 _ball_packs: dict[str, dict[str, int]] | None = None
+
 
 def load_ball_packs() -> dict[str, dict[str, int]]:
     """Load ball packs from JSON file. Results are cached."""
@@ -40,13 +57,16 @@ def load_ball_packs() -> dict[str, dict[str, int]]:
             _ball_packs = json.load(f)
     return _ball_packs
 
+
 def get_pack_names() -> list[str]:
     """Get available pack IDs."""
     return list(load_ball_packs().keys())
 
+
 def get_pack_labels() -> dict[str, str]:
     """Get localization keys for ball packs (each pack id is its own loc key)."""
     return {pack: pack for pack in load_ball_packs().keys()}
+
 
 @dataclass
 class RollingBallsPlayer(Player):
@@ -116,7 +136,8 @@ class RollingBallsOptions(GameOptions):
             label="rb-set-reshuffle-penalty",
             prompt="rb-enter-reshuffle-penalty",
             change_msg="rb-option-changed-reshuffle-penalty",
-        )
+        ),
+        visible_when=("reshuffle_limit", lambda value: value > 0),
     )
     ball_packs: list[str] = multi_select_field(
         MultiSelectOption(
@@ -142,10 +163,13 @@ class RollingBallsGame(Game):
     highest score when the pipe empties wins.
     """
 
+    relevant_preferences = ["brief_announcements"]
+
     players: list[RollingBallsPlayer] = field(default_factory=list)
     options: RollingBallsOptions = field(default_factory=RollingBallsOptions)
     pipe: list[dict] = field(default_factory=list)
     _team_manager: TeamManager = field(default_factory=TeamManager)
+    # Legacy mid-draw state retained only to migrate saves from the old timer flow.
     _ball_reveal_queue: list[dict] = field(default_factory=list)
     _ball_reveal_tick: int = 0
     _ball_reveal_player_id: str = ""
@@ -180,23 +204,81 @@ class RollingBallsGame(Game):
         """Create a new player with Rolling Balls state."""
         return RollingBallsPlayer(id=player_id, name=name, is_bot=is_bot)
 
+    def _wants_brief(self, user) -> bool:
+        return bool(
+            user
+            and user.preferences.get_effective(
+                "brief_announcements", game_type=self.get_type()
+            )
+        )
+
+    def _broadcast_actor_l(
+        self,
+        actor: RollingBallsPlayer,
+        personal_key: str,
+        others_key: str,
+        *,
+        brief_personal_key: str | None = None,
+        brief_others_key: str | None = None,
+        **kwargs,
+    ) -> None:
+        """Broadcast with listener-specific perspective and verbosity."""
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+
+            is_actor = listener.id == actor.id
+            key = personal_key if is_actor else others_key
+            if self._wants_brief(user):
+                if is_actor and brief_personal_key:
+                    key = brief_personal_key
+                elif not is_actor and brief_others_key:
+                    key = brief_others_key
+
+            payload = dict(kwargs)
+            if not is_actor:
+                payload["player"] = actor.name
+            user.speak_l(key, buffer="game", **payload)
+
+    def _broadcast_global_l(
+        self, full_key: str, brief_key: str | None = None, **kwargs
+    ) -> None:
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+            key = brief_key if brief_key and self._wants_brief(user) else full_key
+            user.speak_l(key, buffer="game", **kwargs)
+
+    def _active_rolling_players(self) -> list[RollingBallsPlayer]:
+        return [
+            player
+            for player in self.get_active_players()
+            if isinstance(player, RollingBallsPlayer)
+        ]
+
+    def _preview_size(self) -> int:
+        return min(
+            PIPE_PREVIEW_MAX,
+            max(PIPE_PREVIEW_MIN, self.options.max_take * 2),
+        )
+
+    def _pipe_preview(self) -> list[dict]:
+        return [
+            {"value": ball["value"], "description_key": ball["description_key"]}
+            for ball in self.pipe[: self._preview_size()]
+        ]
+
     # ==========================================================================
     # Option change handling
     # ==========================================================================
 
     def _handle_option_change(self, option_name: str, value: str) -> None:
-        """Handle option changes, rebuilding turn actions when min/max take change."""
+        """Handle option changes that affect the stable take controls."""
         super()._handle_option_change(option_name, value)
 
-        if option_name == "min_take":
-            # Clamp max_take up if needed
-            if self.options.max_take < self.options.min_take:
-                self.options.max_take = self.options.min_take
-            self._rebuild_turn_actions()
-        elif option_name == "max_take":
-            # Clamp min_take down if needed
-            if self.options.min_take > self.options.max_take:
-                self.options.min_take = self.options.max_take
+        if option_name in {"min_take", "max_take"}:
             self._rebuild_turn_actions()
 
     def _rebuild_turn_actions(self) -> None:
@@ -228,32 +310,44 @@ class RollingBallsGame(Game):
 
     def _get_active_packs(self) -> list[str]:
         """Get list of active pack IDs."""
-        return list(self.options.ball_packs)
+        packs = load_ball_packs()
+        selected = [pack_id for pack_id in self.options.ball_packs if pack_id in packs]
+        return selected or [get_pack_names()[0]]
 
     def fill_pipe(self) -> int:
-        """Fill the pipe with balls based on player count."""
+        """Fill a varied pipe with an approximately even value distribution."""
         player_count = len(self.get_active_players())
-        if player_count >= 4:
-            total_balls = 50
-        elif player_count == 3:
-            total_balls = 35
-        else:
-            total_balls = 25
+        total_balls = PIPE_SIZE_BY_PLAYER_COUNT.get(
+            min(4, max(2, player_count)), 25
+        )
 
-        # Build combined ball pool from active packs
         packs = load_ball_packs()
-        ball_pool: list[tuple[str, int]] = []
+        buckets: dict[int, list[tuple[str, int]]] = {
+            value: [] for value in BALL_VALUES
+        }
         for pack_id in self._get_active_packs():
-            pack = packs.get(pack_id, {})
-            ball_pool.extend(pack.items())
+            for description_key, value in packs.get(pack_id, {}).items():
+                if value in buckets:
+                    buckets[value].append((description_key, value))
 
-        self.pipe = []
-        for _ in range(total_balls):
-            if not ball_pool:
-                break
-            description_key, value = random.choice(ball_pool)  # nosec B311
-            self.pipe.append({"value": value, "description_key": description_key})
-        return total_balls
+        base_count, extra_count = divmod(total_balls, len(BALL_VALUES))
+        extra_values = set(random.sample(list(BALL_VALUES), extra_count))
+        selected: list[tuple[str, int]] = []
+        for value in BALL_VALUES:
+            count = base_count + (1 if value in extra_values else 0)
+            bucket = buckets[value]
+            if len(bucket) < count:
+                raise ValueError(
+                    f"Ball packs do not provide {count} unique entries for value {value}"
+                )
+            selected.extend(random.sample(bucket, count))
+
+        random.shuffle(selected)
+        self.pipe = [
+            {"value": value, "description_key": description_key}
+            for description_key, value in selected
+        ]
+        return len(self.pipe)
 
     # ==========================================================================
     # Action set creation
@@ -283,8 +377,8 @@ class RollingBallsGame(Game):
 
         return action_set
 
-    # WEB-SPECIFIC: Target order for Standard Actions
-    web_target_order = [
+    touch_standard_order = [
+        "check_pipe_status",
         "view_pipe",
         "reshuffle",
         "check_scores",
@@ -299,34 +393,57 @@ class RollingBallsGame(Game):
 
         rb_player = player if isinstance(player, RollingBallsPlayer) else None
 
-        if self.options.view_pipe_limit > 0:
-            remaining = self.options.view_pipe_limit - (rb_player.view_pipe_uses if rb_player else 0)
-            action_set.add(
-                Action(
-                    id="view_pipe",
-                    label=Localization.get(locale, "rb-view-pipe-action", remaining=remaining),
-                    handler="_action_view_pipe",
-                    is_enabled="_is_view_pipe_enabled",
-                    is_hidden="_is_view_pipe_hidden",
-                    get_label="_get_view_pipe_label",
-                )
+        action_set.add(
+            Action(
+                id="check_pipe_status",
+                label=Localization.get(locale, "rb-check-pipe-status"),
+                handler="_action_check_pipe_status",
+                is_enabled="_is_pipe_status_enabled",
+                is_hidden="_is_pipe_status_hidden",
+                include_spectators=True,
             )
+        )
 
-        if self.options.reshuffle_limit > 0:
-            remaining = self.options.reshuffle_limit - (rb_player.reshuffle_uses if rb_player else 0)
-            action_set.add(
-                Action(
-                    id="reshuffle",
-                    label=Localization.get(locale, "rb-reshuffle-action", remaining=remaining),
-                    handler="_action_reshuffle",
-                    is_enabled="_is_reshuffle_enabled",
-                    is_hidden="_is_reshuffle_hidden",
-                    get_label="_get_reshuffle_label",
-                )
+        remaining = max(
+            0,
+            self.options.view_pipe_limit
+            - (rb_player.view_pipe_uses if rb_player else 0),
+        )
+        action_set.add(
+            Action(
+                id="view_pipe",
+                label=Localization.get(
+                    locale, "rb-view-pipe-action", remaining=remaining
+                ),
+                handler="_action_view_pipe",
+                is_enabled="_is_view_pipe_enabled",
+                is_hidden="_is_view_pipe_hidden",
+                get_label="_get_view_pipe_label",
             )
+        )
+
+        remaining = max(
+            0,
+            self.options.reshuffle_limit
+            - (rb_player.reshuffle_uses if rb_player else 0),
+        )
+        action_set.add(
+            Action(
+                id="reshuffle",
+                label=Localization.get(
+                    locale, "rb-reshuffle-action", remaining=remaining
+                ),
+                handler="_action_reshuffle",
+                is_enabled="_is_reshuffle_enabled",
+                is_hidden="_is_reshuffle_hidden",
+                get_label="_get_reshuffle_label",
+            )
+        )
 
         if self.is_touch_client(user):
-            self._order_touch_standard_actions(action_set, self.web_target_order)
+            self._order_touch_standard_actions(
+                action_set, self.touch_standard_order
+            )
 
         return action_set
 
@@ -352,53 +469,121 @@ class RollingBallsGame(Game):
             state=KeybindState.ACTIVE,
             include_spectators=False,
         )
+        self.define_keybind(
+            "c",
+            Localization.get("en", "rb-check-pipe-status"),
+            ["check_pipe_status"],
+            state=KeybindState.ACTIVE,
+            include_spectators=True,
+        )
 
     # ==========================================================================
     # is_enabled callbacks
     # ==========================================================================
 
-    def _is_take_enabled(self, player: Player, action_id: str) -> str | None:
-        if self._ball_reveal_player_id:
-            return "action-not-your-turn"
+    def _draw_in_progress_reason(self) -> tuple[str, dict] | None:
+        sequence = self._get_sequence(DRAW_SEQUENCE_ID)
+        if sequence is None:
+            return None
+        actor = self.get_player_by_id(str(sequence.metadata.get("player_id", "")))
+        return (
+            "rb-draw-resolving",
+            {"player": actor.name if actor else ""},
+        )
+
+    def _is_take_enabled(
+        self, player: Player, action_id: str
+    ) -> str | tuple[str, dict] | None:
+        count = int(action_id.removeprefix("take_"))
+        resolving = self._draw_in_progress_reason()
+        if resolving:
+            return resolving
         if self.status != "playing":
             return "action-not-playing"
         if player.is_spectator:
             return "action-spectator"
         if self.current_player != player:
-            return "action-not-your-turn"
-        count = int(action_id.removeprefix("take_"))
+            return (
+                "rb-take-not-your-turn",
+                {
+                    "count": count,
+                    "player": self.current_player.name if self.current_player else "",
+                },
+            )
         if count < self.options.min_take or count > self.options.max_take:
-            return "action-not-available"
+            return (
+                "rb-take-outside-range",
+                {
+                    "count": count,
+                    "min": self.options.min_take,
+                    "max": self.options.max_take,
+                },
+            )
         if len(self.pipe) < count:
-            return "rb-not-enough-balls"
+            return (
+                "rb-not-enough-balls",
+                {"count": count, "remaining": len(self.pipe)},
+            )
         return None
 
-    def _is_reshuffle_enabled(self, player: Player) -> str | None:
-        if self._ball_reveal_player_id:
-            return "action-not-your-turn"
+    def _is_reshuffle_enabled(
+        self, player: Player
+    ) -> str | tuple[str, dict] | None:
+        resolving = self._draw_in_progress_reason()
+        if resolving:
+            return resolving
         if self.status != "playing":
             return "action-not-playing"
         if player.is_spectator:
             return "action-spectator"
         if self.current_player != player:
-            return "action-not-your-turn"
+            return (
+                "rb-reshuffle-not-your-turn",
+                {"player": self.current_player.name if self.current_player else ""},
+            )
         rb_player: RollingBallsPlayer = player  # type: ignore
         if rb_player.reshuffle_uses >= self.options.reshuffle_limit:
-            return "rb-no-reshuffles-left"
+            return (
+                "rb-no-reshuffles-left",
+                {"limit": self.options.reshuffle_limit},
+            )
         if rb_player.has_reshuffled:
             return "rb-already-reshuffled"
-        if len(self.pipe) < 6:
-            return "rb-not-enough-balls"
+        if len(self.pipe) < RESHUFFLE_MIN_BALLS:
+            return (
+                "rb-not-enough-balls-to-reshuffle",
+                {
+                    "remaining": len(self.pipe),
+                    "required": RESHUFFLE_MIN_BALLS,
+                },
+            )
         return None
 
-    def _is_view_pipe_enabled(self, player: Player) -> str | None:
+    def _is_view_pipe_enabled(
+        self, player: Player
+    ) -> str | tuple[str, dict] | None:
+        resolving = self._draw_in_progress_reason()
+        if resolving:
+            return resolving
         if self.status != "playing":
             return "action-not-playing"
         if player.is_spectator:
             return "action-spectator"
         rb_player: RollingBallsPlayer = player  # type: ignore
-        if rb_player.view_pipe_uses >= self.options.view_pipe_limit:
-            return "rb-no-views-left"
+        current_preview = self._pipe_preview()
+        if (
+            rb_player.view_pipe_uses >= self.options.view_pipe_limit
+            and rb_player.last_viewed_pipe != current_preview
+        ):
+            return (
+                "rb-no-views-left",
+                {"limit": self.options.view_pipe_limit},
+            )
+        return None
+
+    def _is_pipe_status_enabled(self, player: Player) -> str | None:
+        if self.status != "playing":
+            return "action-not-playing"
         return None
 
     # ==========================================================================
@@ -410,12 +595,8 @@ class RollingBallsGame(Game):
             return Visibility.HIDDEN
         if player.is_spectator:
             return Visibility.HIDDEN
-        if self.current_player != player:
-            return Visibility.HIDDEN
         count = int(action_id.removeprefix("take_"))
         if count < self.options.min_take or count > self.options.max_take:
-            return Visibility.HIDDEN
-        if len(self.pipe) < count:
             return Visibility.HIDDEN
         return Visibility.VISIBLE
 
@@ -424,17 +605,8 @@ class RollingBallsGame(Game):
             return Visibility.HIDDEN
         if player.is_spectator:
             return Visibility.HIDDEN
-        if self.current_player != player:
-            return Visibility.HIDDEN
-        rb_player: RollingBallsPlayer = player  # type: ignore
-        can_reshuffle = (
-            self.options.reshuffle_limit > 0
-            and rb_player.reshuffle_uses < self.options.reshuffle_limit
-            and not rb_player.has_reshuffled
-            and len(self.pipe) >= 6
-        )
         user = self.get_user(player)
-        if can_reshuffle and self.is_touch_client(user):
+        if self.options.reshuffle_limit > 0 and self.is_touch_client(user):
             return Visibility.VISIBLE
         return Visibility.HIDDEN
 
@@ -443,28 +615,30 @@ class RollingBallsGame(Game):
             return Visibility.HIDDEN
         if player.is_spectator:
             return Visibility.HIDDEN
-        rb_player: RollingBallsPlayer = player  # type: ignore
-        can_view = (
-            self.options.view_pipe_limit > 0
-            and rb_player.view_pipe_uses < self.options.view_pipe_limit
-            and self.status == "playing"
-        )
         user = self.get_user(player)
-        if can_view and self.is_touch_client(user):
+        if self.options.view_pipe_limit > 0 and self.is_touch_client(user):
             return Visibility.VISIBLE
         return Visibility.HIDDEN
 
-    # WEB-SPECIFIC: Visibility Overrides
+    def _is_pipe_status_hidden(self, player: Player) -> Visibility:
+        user = self.get_user(player)
+        if self.is_touch_client(user):
+            return (
+                Visibility.VISIBLE
+                if self.status == "playing"
+                else Visibility.HIDDEN
+            )
+        return Visibility.HIDDEN
 
     def _is_whos_at_table_hidden(self, player: "Player") -> Visibility:
-        """Override: Visible for Web (always), hidden otherwise."""
+        """Keep the standard table action available to touch clients."""
         user = self.get_user(player)
         if self.is_touch_client(user):
             return Visibility.VISIBLE
         return super()._is_whos_at_table_hidden(player)
 
     def _is_whose_turn_hidden(self, player: "Player") -> Visibility:
-        """Override: Visible for Web (Playing only), hidden otherwise."""
+        """Keep the standard turn action available to touch clients."""
         user = self.get_user(player)
         if self.is_touch_client(user):
             if self.status == "playing":
@@ -473,7 +647,7 @@ class RollingBallsGame(Game):
         return super()._is_whose_turn_hidden(player)
 
     def _is_check_scores_hidden(self, player: "Player") -> Visibility:
-        """Override: Visible for Web (Playing only), hidden otherwise."""
+        """Keep the standard score action available to touch clients."""
         user = self.get_user(player)
         if self.is_touch_client(user):
             if self.status == "playing":
@@ -489,14 +663,14 @@ class RollingBallsGame(Game):
         user = self.get_user(player)
         locale = user.locale if user else "en"
         rb_player: RollingBallsPlayer = player  # type: ignore
-        remaining = self.options.reshuffle_limit - rb_player.reshuffle_uses
+        remaining = max(0, self.options.reshuffle_limit - rb_player.reshuffle_uses)
         return Localization.get(locale, "rb-reshuffle-action", remaining=remaining)
 
     def _get_view_pipe_label(self, player: Player, action_id: str) -> str:
         user = self.get_user(player)
         locale = user.locale if user else "en"
         rb_player: RollingBallsPlayer = player  # type: ignore
-        remaining = self.options.view_pipe_limit - rb_player.view_pipe_uses
+        remaining = max(0, self.options.view_pipe_limit - rb_player.view_pipe_uses)
         return Localization.get(locale, "rb-view-pipe-action", remaining=remaining)
 
     # ==========================================================================
@@ -505,160 +679,369 @@ class RollingBallsGame(Game):
 
     def _action_take(self, player: Player, action_id: str) -> None:
         count = int(action_id.removeprefix("take_"))
-        self._take_balls(player, count)
+        if isinstance(player, RollingBallsPlayer):
+            self._begin_take(player, count)
 
-    def _take_balls(self, player: Player, count: int) -> None:
-        """Take balls from the pipe, queuing reveals for on_tick."""
-        rb_player: RollingBallsPlayer = player  # type: ignore
+    def _ball_payload(self, ball: dict, num: int) -> dict[str, Any]:
+        return {
+            "num": num,
+            "value": int(ball["value"]),
+            "description_key": str(ball["description_key"]),
+        }
 
-        self.broadcast_personal_l(
-            player, "rb-you-take", "rb-player-takes", count=count, buffer="game"
-        )
-        self.play_sound(f"game_rollingballs/take{random.randint(1,3)}.ogg")
-
-        # Pop balls from pipe and queue them for reveal
-        balls = []
-        for _ in range(count):
-            if not self.pipe:
-                break
-            balls.append(self.pipe.pop(0))
-
-        # Erode bot pipe memory (balls removed from front)
-        taken = len(balls)
-        for p in self.players:
-            rb_p: RollingBallsPlayer = p  # type: ignore
-            if rb_p.is_bot:
-                rb_p.bot_pipe_memory = max(0, rb_p.bot_pipe_memory - taken)
-
-        # Apply scores immediately (game state is updated now)
-        for ball in balls:
-            self._team_manager.add_to_team_score(player.name, ball["value"])
-
-        # Queue balls for synchronized sound+speech reveal in on_tick
-        for i, ball in enumerate(balls, 1):
-            ball["num"] = i
-        self._ball_reveal_queue = balls
-        self._ball_reveal_player_id = player.id
-        self._ball_reveal_tick = self.sound_scheduler_tick + 8  # ~400 ms initial delay
-
-    def _reveal_next_ball(self) -> None:
-        """Reveal the next ball from the queue with synchronized sound and speech."""
-        ball = self._ball_reveal_queue.pop(0)
-        ball_num = ball["num"]
-
-        # Play value sound and broadcast description
-        value = ball["value"]
-        description_key = ball["description_key"]
-        abs_value = abs(value)
-        sound_value = abs_value if abs_value <=5 else 5
-
-        # Play takeball sound immediately, schedule value sound 1 tick later
-        self.play_sound("game_rollingballs/takeball.ogg")
-
-        for p in self.players:
-            user = self.get_user(p)
-            if not user:
-                continue
-
-            description = Localization.get(user.locale, description_key)
-            if value > 0:
-                user.speak_l(
-                    "rb-ball-plus", num=ball_num, description=description, value=abs_value, buffer="game"
+    def _draw_beats(
+        self,
+        player: RollingBallsPlayer,
+        balls: list[dict],
+        *,
+        resolve: bool,
+        forced: bool,
+        legacy: bool = False,
+        initial_delay: int = DRAW_START_DELAY_TICKS,
+    ) -> list[SequenceBeat]:
+        payload = {
+            "player_id": player.id,
+            "balls": [
+                self._ball_payload(ball, int(ball.get("num", index)))
+                for index, ball in enumerate(balls, 1)
+            ],
+            "forced": forced,
+            "legacy": legacy,
+        }
+        beats = [
+            SequenceBeat(
+                ops=[
+                    SequenceOperation.sound_op(
+                        f"game_rollingballs/take{random.randint(1, 3)}.ogg"
+                    )
+                ],
+                delay_after_ticks=max(0, initial_delay),
+            )
+        ]
+        if resolve:
+            beats.append(
+                SequenceBeat(
+                    ops=[
+                        SequenceOperation.callback_op("resolve_draw", payload)
+                    ]
                 )
-            elif value < 0:
-                user.speak_l(
-                    "rb-ball-minus", num=ball_num, description=description, value=abs_value, buffer="game"
+            )
+
+        for index, ball in enumerate(payload["balls"]):
+            is_last = index == len(payload["balls"]) - 1
+            beats.append(
+                SequenceBeat(
+                    ops=[
+                        SequenceOperation.sound_op(
+                            "game_rollingballs/takeball.ogg"
+                        ),
+                        SequenceOperation.callback_op(
+                            "announce_ball",
+                            {"player_id": player.id, "ball": ball},
+                        ),
+                    ],
+                    delay_after_ticks=BALL_SOUND_DELAY_TICKS,
+                )
+            )
+            value = int(ball["value"])
+            if value:
+                beats.append(
+                    SequenceBeat(
+                        ops=[
+                            SequenceOperation.sound_op(
+                                f"game_rollingballs/"
+                                f"{'plus' if value > 0 else 'minus'}"
+                                f"{min(5, abs(value))}.ogg",
+                                volume=80 if value > 0 else 100,
+                            )
+                        ],
+                        delay_after_ticks=(
+                            0 if is_last else BALL_REVEAL_DELAY_TICKS
+                        ),
+                    )
                 )
             else:
-                user.speak_l("rb-ball-zero", num=ball_num, description=description, buffer="game")
+                beats.append(
+                    SequenceBeat.pause(
+                        0 if is_last else BALL_REVEAL_DELAY_TICKS
+                    )
+                )
 
-        if value > 0:
-            self.schedule_sound(f"game_rollingballs/plus{sound_value}.ogg", delay_ticks=1, volume=80)
-        elif value < 0:
-            self.schedule_sound(f"game_rollingballs/minus{sound_value}.ogg", delay_ticks=1)
+        beats.extend(
+            [
+                SequenceBeat.pause(DRAW_FINISH_DELAY_TICKS),
+                SequenceBeat(
+                    ops=[
+                        SequenceOperation.callback_op("complete_draw", payload)
+                    ]
+                ),
+            ]
+        )
+        return beats
 
-        if self._ball_reveal_queue:
-            # More balls to reveal - schedule next in 1200ms (24 ticks)
-            self._ball_reveal_tick = self.sound_scheduler_tick + 12
-        else:
-            # All balls revealed - finish after 1500ms delay
-            self._ball_reveal_tick = self.sound_scheduler_tick + 15
-
-    def _finish_ball_reveals(self) -> None:
-        """Announce score and end turn after all balls are revealed."""
-        player = self.get_player_by_id(self._ball_reveal_player_id)
-        self._ball_reveal_player_id = ""
-
-        if not player:
+    def _begin_take(
+        self, player: RollingBallsPlayer, count: int, *, forced: bool = False
+    ) -> None:
+        """Lock the chosen prefix into a serialized reveal sequence."""
+        if self.has_active_sequence(tag=DRAW_SEQUENCE_TAG):
+            return
+        count = min(max(0, count), len(self.pipe))
+        if count <= 0:
             return
 
+        balls = [dict(ball) for ball in self.pipe[:count]]
+        if forced:
+            self._broadcast_actor_l(
+                player,
+                "rb-you-forced-take",
+                "rb-player-forced-takes",
+                brief_personal_key="rb-you-forced-take-brief",
+                brief_others_key="rb-player-forced-takes-brief",
+                count=count,
+                minimum=self.options.min_take,
+            )
+        else:
+            self._broadcast_actor_l(
+                player,
+                "rb-you-take",
+                "rb-player-takes",
+                brief_personal_key="rb-you-take-brief",
+                brief_others_key="rb-player-takes-brief",
+                count=count,
+                remaining=len(self.pipe),
+            )
+
+        self.start_sequence(
+            DRAW_SEQUENCE_ID,
+            self._draw_beats(player, balls, resolve=True, forced=forced),
+            tag=DRAW_SEQUENCE_TAG,
+            lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
+            pause_bots=True,
+            metadata={"player_id": player.id, "count": count},
+            replace_existing=False,
+        )
+        self.refresh_menus()
+
+    def _validated_draw_payload(
+        self, payload: dict
+    ) -> tuple[RollingBallsPlayer, list[dict]] | None:
+        player = self.get_player_by_id(str(payload.get("player_id", "")))
+        raw_balls = payload.get("balls")
+        if not isinstance(player, RollingBallsPlayer) or not isinstance(raw_balls, list):
+            return None
+        if player is not self.current_player or player not in self.get_active_players():
+            return None
+
+        balls: list[dict] = []
+        for raw_ball in raw_balls:
+            if not isinstance(raw_ball, dict):
+                return None
+            try:
+                num = int(raw_ball.get("num", 0))
+                value = int(raw_ball["value"])
+                description_key = str(raw_ball["description_key"])
+            except (KeyError, TypeError, ValueError):
+                return None
+            if num <= 0 or value not in BALL_VALUES or not description_key:
+                return None
+            balls.append(
+                {
+                    "num": num,
+                    "value": value,
+                    "description_key": description_key,
+                }
+            )
+        return player, balls
+
+    def _resolve_draw(self, player: RollingBallsPlayer, balls: list[dict]) -> bool:
+        expected_prefix = [
+            {
+                "value": int(ball["value"]),
+                "description_key": str(ball["description_key"]),
+            }
+            for ball in balls
+        ]
+        actual_prefix = [
+            {
+                "value": int(ball["value"]),
+                "description_key": str(ball["description_key"]),
+            }
+            for ball in self.pipe[: len(balls)]
+        ]
+        if actual_prefix != expected_prefix:
+            return False
+
+        self.pipe = self.pipe[len(balls) :]
+        for ball in balls:
+            self._team_manager.add_to_team_score(player.name, int(ball["value"]))
+
+        for candidate in self.players:
+            if isinstance(candidate, RollingBallsPlayer) and candidate.is_bot:
+                candidate.bot_pipe_memory = max(
+                    0, candidate.bot_pipe_memory - len(balls)
+                )
+        self.refresh_menus()
+        return True
+
+    def _announce_ball(
+        self, player: RollingBallsPlayer, ball: dict
+    ) -> None:
+        value = int(ball["value"])
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+            if self._wants_brief(user):
+                continue
+
+            description = Localization.get(
+                user.locale, str(ball["description_key"])
+            )
+            is_actor = listener.id == player.id
+            payload = {
+                "num": int(ball["num"]),
+                "description": description,
+                "value": abs(value),
+            }
+            if not is_actor:
+                payload["player"] = player.name
+            if value > 0:
+                key = "rb-your-ball-plus" if is_actor else "rb-player-ball-plus"
+            elif value < 0:
+                key = "rb-your-ball-minus" if is_actor else "rb-player-ball-minus"
+            else:
+                key = "rb-your-ball-zero" if is_actor else "rb-player-ball-zero"
+                payload.pop("value")
+            user.speak_l(key, buffer="game", **payload)
+
+    def _complete_draw(
+        self,
+        player: RollingBallsPlayer,
+        balls: list[dict],
+        *,
+        legacy: bool,
+    ) -> None:
         team = self._team_manager.get_team(player.name)
         score = team.total_score if team else 0
-
-        self.broadcast_l("rb-new-score", player=player.name, score=score, buffer="game")
+        delta = sum(int(ball["value"]) for ball in balls)
+        if legacy:
+            self._broadcast_actor_l(
+                player,
+                "rb-your-score-legacy",
+                "rb-player-score-legacy",
+                score=score,
+                remaining=len(self.pipe),
+            )
+        else:
+            self._broadcast_actor_l(
+                player,
+                "rb-your-draw-summary",
+                "rb-player-draw-summary",
+                brief_personal_key="rb-your-draw-summary-brief",
+                brief_others_key="rb-player-draw-summary-brief",
+                count=len(balls),
+                delta=delta,
+                score=score,
+                remaining=len(self.pipe),
+            )
         self.end_turn()
+
+    def on_sequence_callback(
+        self, sequence_id: str, callback_id: str, payload: dict
+    ) -> None:
+        if sequence_id != DRAW_SEQUENCE_ID or self.status != "playing":
+            return
+        if callback_id == "announce_ball":
+            player = self.get_player_by_id(str(payload.get("player_id", "")))
+            raw_ball = payload.get("ball")
+            if isinstance(player, RollingBallsPlayer) and isinstance(raw_ball, dict):
+                self._announce_ball(player, raw_ball)
+            return
+
+        validated = self._validated_draw_payload(payload)
+        if not validated:
+            self.cancel_sequence(sequence_id)
+            return
+        player, balls = validated
+        if callback_id == "resolve_draw":
+            if not self._resolve_draw(player, balls):
+                self.cancel_sequence(sequence_id)
+        elif callback_id == "complete_draw":
+            self._complete_draw(
+                player, balls, legacy=bool(payload.get("legacy", False))
+            )
 
     def _action_reshuffle(self, player: Player, action_id: str) -> None:
         """Reshuffle a portion of the pipe."""
+        if not isinstance(player, RollingBallsPlayer):
+            return
         rb_player: RollingBallsPlayer = player  # type: ignore
-
-        self.broadcast_personal_l(
-            player, "rb-you-reshuffle", "rb-player-reshuffles", buffer="game"
-        )
         self.play_sound(
             f"game_rollingballs/disrupt{random.randint(1, 2)}.ogg"  # nosec B311
         )
 
-        # Shuffle the first min(len(pipe), 15) balls
-        shuffle_count = min(len(self.pipe), 15)
+        shuffle_count = min(len(self.pipe), RESHUFFLE_WINDOW)
         section = self.pipe[:shuffle_count]
+        original = list(section)
         random.shuffle(section)
+        if section == original:
+            section = section[1:] + section[:1]
         self.pipe[:shuffle_count] = section
 
-        # Invalidate bot pipe memory (pipe order changed)
         for p in self.players:
-            rb_p: RollingBallsPlayer = p  # type: ignore
-            if rb_p.is_bot:
-                rb_p.bot_pipe_memory = 0
+            if isinstance(p, RollingBallsPlayer) and p.is_bot:
+                p.bot_pipe_memory = 0
 
-        self.broadcast_l("rb-reshuffled", buffer="game")
-
-        # Apply penalty
-        if self.options.reshuffle_penalty > 0:
-            self._team_manager.add_to_team_score(player.name, -self.options.reshuffle_penalty)
-            self.broadcast_l(
-                "rb-reshuffle-penalty",
-                player=player.name,
-                points=self.options.reshuffle_penalty,
-                buffer="game"
-            )
+        penalty = self.options.reshuffle_penalty
+        if penalty > 0:
+            self._team_manager.add_to_team_score(player.name, -penalty)
 
         rb_player.has_reshuffled = True
         rb_player.reshuffle_uses += 1
+        team = self._team_manager.get_team(player.name)
+        score = team.total_score if team else 0
+        self._broadcast_actor_l(
+            player,
+            "rb-you-reshuffle",
+            "rb-player-reshuffles",
+            brief_personal_key="rb-you-reshuffle-brief",
+            brief_others_key="rb-player-reshuffles-brief",
+            count=shuffle_count,
+            penalty=penalty,
+            score=score,
+            remaining=max(0, self.options.reshuffle_limit - rb_player.reshuffle_uses),
+        )
 
-        # Jolt bot
         BotHelper.jolt_bot(player, ticks=random.randint(8, 12))  # nosec B311
-
-        # Rebuild menus to reflect updated remaining count
         self.refresh_menus()
 
     def _action_view_pipe(self, player: Player, action_id: str) -> None:
-        """View the pipe contents (private to the requesting player)."""
+        """Preview the strategic front section of the pipe privately."""
+        if not isinstance(player, RollingBallsPlayer):
+            return
         rb_player: RollingBallsPlayer = player  # type: ignore
         user = self.get_user(player)
         if not user:
             return
 
-        # Only count as a use if the pipe changed since last view
-        if rb_player.last_viewed_pipe != self.pipe:
+        preview = self._pipe_preview()
+        if rb_player.last_viewed_pipe != preview:
             rb_player.view_pipe_uses += 1
-            rb_player.last_viewed_pipe = [b.copy() for b in self.pipe]
+            rb_player.last_viewed_pipe = [dict(ball) for ball in preview]
 
         locale = user.locale
-
-        # Build pipe contents as a status box
-        lines = [Localization.get(locale, "rb-view-pipe-header", count=len(self.pipe))]
-        for i, ball in enumerate(self.pipe, 1):
+        lines = [
+            Localization.get(
+                locale,
+                "rb-view-pipe-header",
+                shown=len(preview),
+                total=len(self.pipe),
+                remaining=max(
+                    0, self.options.view_pipe_limit - rb_player.view_pipe_uses
+                ),
+            )
+        ]
+        for i, ball in enumerate(preview, 1):
             desc = Localization.get(locale, ball["description_key"])
             lines.append(
                 Localization.get(
@@ -670,24 +1053,193 @@ class RollingBallsGame(Game):
                 )
             )
         self.status_box(player, lines)
-
-        # Rebuild menus to reflect updated remaining count
         self.refresh_menus()
 
+    def _pipe_status_items(self, player: Player, locale: str) -> list[MenuItem]:
+        current_name = self.current_player.name if self.current_player else ""
+        items = [
+            MenuItem(
+                text=Localization.get(
+                    locale,
+                    "rb-status-pipe",
+                    count=len(self.pipe),
+                    round=self.round,
+                ),
+                id="pipe",
+            ),
+            MenuItem(
+                text=Localization.get(
+                    locale,
+                    "rb-status-take-range",
+                    min=self.options.min_take,
+                    max=self.options.max_take,
+                ),
+                id="range",
+            ),
+            MenuItem(
+                text=Localization.get(
+                    locale, "rb-status-turn", player=current_name
+                ),
+                id="turn",
+            ),
+        ]
+        if isinstance(player, RollingBallsPlayer) and not player.is_spectator:
+            items.append(
+                MenuItem(
+                    text=Localization.get(
+                        locale,
+                        "rb-status-resources",
+                        views=max(
+                            0,
+                            self.options.view_pipe_limit
+                            - player.view_pipe_uses,
+                        ),
+                        reshuffles=max(
+                            0,
+                            self.options.reshuffle_limit
+                            - player.reshuffle_uses,
+                        ),
+                    ),
+                    id="resources",
+                )
+            )
+        return items
+
+    def _action_check_pipe_status(self, player: Player, action_id: str) -> None:
+        self.live_status_box(
+            player,
+            "rollingballs_pipe_status",
+            lambda live_player, live_user: self._pipe_status_items(
+                live_player, live_user.locale
+            ),
+            focus_id="pipe",
+        )
+
+    def prestart_validate(self) -> list[str | tuple[str, dict]]:
+        errors: list[str | tuple[str, dict]] = list(super().prestart_validate())
+        if not 1 <= self.options.min_take <= 5:
+            errors.append(
+                (
+                    "rb-error-min-take-invalid",
+                    {"count": self.options.min_take, "min": 1, "max": 5},
+                )
+            )
+        if not 1 <= self.options.max_take <= 5:
+            errors.append(
+                (
+                    "rb-error-max-take-invalid",
+                    {"count": self.options.max_take, "min": 1, "max": 5},
+                )
+            )
+        if self.options.min_take > self.options.max_take:
+            errors.append(
+                (
+                    "rb-error-take-range-conflict",
+                    {
+                        "min": self.options.min_take,
+                        "max": self.options.max_take,
+                    },
+                )
+            )
+        if not 0 <= self.options.view_pipe_limit <= 100:
+            errors.append(
+                (
+                    "rb-error-view-limit-invalid",
+                    {
+                        "count": self.options.view_pipe_limit,
+                        "min": 0,
+                        "max": 100,
+                    },
+                )
+            )
+        if not 0 <= self.options.reshuffle_limit <= 100:
+            errors.append(
+                (
+                    "rb-error-reshuffle-limit-invalid",
+                    {
+                        "count": self.options.reshuffle_limit,
+                        "min": 0,
+                        "max": 100,
+                    },
+                )
+            )
+        if not 0 <= self.options.reshuffle_penalty <= 5:
+            errors.append(
+                (
+                    "rb-error-reshuffle-penalty-invalid",
+                    {
+                        "points": self.options.reshuffle_penalty,
+                        "min": 0,
+                        "max": 5,
+                    },
+                )
+            )
+
+        available_packs = set(get_pack_names())
+        selected_packs = list(self.options.ball_packs)
+        invalid_packs = [pack for pack in selected_packs if pack not in available_packs]
+        if not selected_packs:
+            errors.append("rb-error-no-ball-packs")
+        elif invalid_packs:
+            errors.append(
+                (
+                    "rb-error-invalid-ball-packs",
+                    {"count": len(invalid_packs)},
+                )
+            )
+        return errors
 
     # ==========================================================================
     # Game lifecycle
     # ==========================================================================
 
+    def rebuild_runtime_state(self) -> None:
+        super().rebuild_runtime_state()
+        if (
+            self.status == "playing"
+            and self._ball_reveal_player_id
+            and not self.has_active_sequence(tag=DRAW_SEQUENCE_TAG)
+        ):
+            player = self.get_player_by_id(self._ball_reveal_player_id)
+            if isinstance(player, RollingBallsPlayer):
+                initial_delay = max(
+                    0, self._ball_reveal_tick - self.sound_scheduler_tick
+                )
+                balls = [dict(ball) for ball in self._ball_reveal_queue]
+                self.start_sequence(
+                    DRAW_SEQUENCE_ID,
+                    self._draw_beats(
+                        player,
+                        balls,
+                        resolve=False,
+                        forced=False,
+                        legacy=True,
+                        initial_delay=initial_delay,
+                    ),
+                    tag=DRAW_SEQUENCE_TAG,
+                    lock_scope=self.SEQUENCE_LOCK_GAMEPLAY,
+                    pause_bots=True,
+                    metadata={"player_id": player.id, "count": len(balls)},
+                    replace_existing=False,
+                )
+        self._ball_reveal_queue = []
+        self._ball_reveal_tick = 0
+        self._ball_reveal_player_id = ""
+
     def on_start(self) -> None:
         """Called when the game starts."""
+        self.cancel_sequences_by_tag(DRAW_SEQUENCE_TAG)
+        self.clear_scheduled_sounds()
+        self._ball_reveal_queue = []
+        self._ball_reveal_tick = 0
+        self._ball_reveal_player_id = ""
         self.status = "playing"
         self._sync_table_status()
         self.game_active = True
         self.round = 0
 
         # Set up teams based on active players (using team_mode logic like Pig)
-        active_players = self.get_active_players()
+        active_players = self._active_rolling_players()
         self._team_manager.team_mode = "individual"
         self._team_manager.setup_teams([p.name for p in active_players])
 
@@ -706,11 +1258,22 @@ class RollingBallsGame(Game):
         # Fill pipe
         total_balls = self.fill_pipe()
 
-        # Play music
         self.play_music("game_pig/mus.ogg")
 
-        # Announce
-        self.broadcast_l("rb-pipe-filled", count=total_balls, buffer="game")
+        for listener in self.players:
+            user = self.get_user(listener)
+            if not user:
+                continue
+            pack_names = [
+                Localization.get(user.locale, pack_id)
+                for pack_id in self._get_active_packs()
+            ]
+            user.speak_l(
+                "rb-pipe-filled",
+                buffer="game",
+                count=total_balls,
+                packs=Localization.format_list_and(user.locale, pack_names),
+            )
 
         # Pipe filling sounds
         delay = 0
@@ -728,33 +1291,35 @@ class RollingBallsGame(Game):
         """Start a new round."""
         self.round += 1
 
-        # Refresh turn order
-        self.set_turn_players(self.get_active_players())
+        self.set_turn_players(self._active_rolling_players())
 
         self.play_sound("game_pig/roundstart.ogg", volume=60)
-        self.broadcast_l("game-round-start", round=self.round, buffer="game")
-        self.broadcast_l("rb-balls-remaining", count=len(self.pipe), buffer="game")
+        self._broadcast_global_l(
+            "rb-round-start",
+            "rb-round-start-brief",
+            round=self.round,
+            count=len(self.pipe),
+        )
 
         self._start_turn()
 
     def _start_turn(self) -> None:
         """Start a player's turn."""
         player = self.current_player
-        if not player:
+        if not isinstance(player, RollingBallsPlayer):
+            return
+        if not self.pipe:
+            self._announce_winner()
             return
 
-        rb_player: RollingBallsPlayer = player  # type: ignore
-        rb_player.has_reshuffled = False
+        player.has_reshuffled = False
 
-        # If remaining balls are below minimum take, auto-take them
         if 0 < len(self.pipe) < self.options.min_take:
-            self._take_balls(player, len(self.pipe))
+            self._begin_take(player, len(self.pipe), forced=True)
             return
 
-        # Announce turn
         self.announce_turn(turn_sound="game_3cardpoker/turn.ogg")
 
-        # Set up bot if needed
         if player.is_bot:
             BotHelper.set_target(player, 0)
 
@@ -768,27 +1333,20 @@ class RollingBallsGame(Game):
         if not self.game_active:
             return
 
-        # Process ball reveal queue (blocks bot actions while active)
-        if self._ball_reveal_player_id:
-            if self.sound_scheduler_tick >= self._ball_reveal_tick:
-                if self._ball_reveal_queue:
-                    self._reveal_next_ball()
-                else:
-                    self._finish_ball_reveals()
-            return
-
-        BotHelper.on_tick(self)
+        self.process_sequences()
+        if not self.is_sequence_bot_paused():
+            BotHelper.on_tick(self)
 
     def _get_bot_perceived_pipe(self, player: RollingBallsPlayer) -> list[dict]:
         """Get the pipe as the bot perceives it, with limited information."""
-        # Auto-use a view if available and the pipe has changed
+        preview = self._pipe_preview()
         if (
             player.view_pipe_uses < self.options.view_pipe_limit
-            and player.last_viewed_pipe != self.pipe
+            and player.last_viewed_pipe != preview
         ):
             player.view_pipe_uses += 1
-            player.last_viewed_pipe = [b.copy() for b in self.pipe]
-            player.bot_pipe_memory = min(6, len(self.pipe))
+            player.last_viewed_pipe = [dict(ball) for ball in preview]
+            player.bot_pipe_memory = len(preview)
             self.refresh_menus()
 
         perceived = []
@@ -796,10 +1354,7 @@ class RollingBallsGame(Game):
             if i < player.bot_pipe_memory:
                 perceived.append(ball)
             else:
-                perceived.append({
-                    **ball,
-                    "value": random.randint(-5, 5),  # nosec B311
-                })
+                perceived.append({**ball, "value": 0})
         return perceived
 
     def bot_think(self, player: RollingBallsPlayer) -> str | None:
@@ -831,17 +1386,14 @@ class RollingBallsGame(Game):
         """Announce the winner and finish the game."""
         self.broadcast_l("rb-pipe-empty", buffer="game")
 
-        sorted_teams = self._team_manager.get_sorted_teams(
-            by_score=True, descending=True
-        )
-
-        winning_teams = []
+        sorted_teams = self._sorted_teams()
         high_score = sorted_teams[0].total_score if sorted_teams else 0
-        for team in sorted_teams:
-            if team.total_score == high_score:
-                winning_teams.append(team)
-            else:
-                break
+        winning_teams = [
+            team for team in sorted_teams if team.total_score == high_score
+        ]
+        winner_names = {
+            member for team in winning_teams for member in team.members
+        }
 
         if len(winning_teams) == 1:
             winning_team = winning_teams[0]
@@ -855,43 +1407,92 @@ class RollingBallsGame(Game):
                     else:
                         user.speak_l("rb-winner", player=team_name, score=high_score, buffer="game")
         else:
-            # Tie
-            team_names = [self._team_manager.get_team_name(t) for t in winning_teams]
+            self.play_sound("game_rollingballs/wingame.ogg")
             for p in self.players:
                 user = self.get_user(p)
                 if user:
-                    names_str = Localization.format_list_and(user.locale, team_names)
-                    user.speak_l("rb-tie", players=names_str, score=high_score, buffer="game")
+                    team_names = [
+                        self._team_manager.get_team_name(team, user.locale)
+                        for team in winning_teams
+                    ]
+                    if p.name in winner_names:
+                        other_names = [
+                            name for name in team_names if name != p.name
+                        ]
+                        user.speak_l(
+                            "rb-you-tie",
+                            players=Localization.format_list_and(
+                                user.locale, other_names
+                            ),
+                            score=high_score,
+                            buffer="game",
+                        )
+                    else:
+                        user.speak_l(
+                            "rb-tie",
+                            players=Localization.format_list_and(
+                                user.locale, team_names
+                            ),
+                            score=high_score,
+                            buffer="game",
+                        )
 
         self.finish_game()
 
-    def build_game_result(self) -> GameResult:
-        """Build the game result using TeamManager."""
-        sorted_teams = self._team_manager.get_sorted_teams(
+    def _sorted_teams(self):
+        return self._team_manager.get_sorted_teams(
             by_score=True, descending=True
         )
-        winner = sorted_teams[0] if sorted_teams else None
+
+    def finish_game(self, show_end_screen: bool = True) -> None:
+        self.cancel_sequences_by_tag(DRAW_SEQUENCE_TAG)
+        self._ball_reveal_queue = []
+        self._ball_reveal_tick = 0
+        self._ball_reveal_player_id = ""
+        for player in self.players:
+            if isinstance(player, RollingBallsPlayer):
+                player.last_viewed_pipe = None
+                player.bot_pipe_memory = 0
+                player.has_reshuffled = False
+        super().finish_game(show_end_screen=show_end_screen)
+
+    def build_game_result(self) -> GameResult:
+        """Build the game result using TeamManager."""
+        sorted_teams = self._sorted_teams()
+        high_score = sorted_teams[0].total_score if sorted_teams else 0
+        winners = [
+            team for team in sorted_teams if team.total_score == high_score
+        ]
 
         final_scores = {}
         team_rankings = []
-        for team in sorted_teams:
+        previous_score: int | None = None
+        rank = 0
+        for index, team in enumerate(sorted_teams, 1):
+            if team.total_score != previous_score:
+                rank = index
+                previous_score = team.total_score
             name = self._team_manager.get_team_name(team)
             final_scores[name] = team.total_score
 
-            team_rankings.append({
-                "index": team.index,
-                "members": team.members,
-                "score": team.total_score,
-                "is_individual": True
-            })
+            team_rankings.append(
+                {
+                    "index": team.index,
+                    "members": team.members,
+                    "rank": rank,
+                    "score": team.total_score,
+                    "is_individual": True,
+                }
+            )
 
-        winner_ids = []
-        if winner:
-            active_players = self.get_active_players()
-            name_to_id = {p.name: p.id for p in active_players}
-            for member_name in winner.members:
-                if member_name in name_to_id:
-                    winner_ids.append(name_to_id[member_name])
+        winning_names = {
+            member for winner in winners for member in winner.members
+        }
+        winner_ids = [
+            player.id
+            for player in self._active_rolling_players()
+            if player.name in winning_names
+        ]
 
         return GameResult(
             game_type=self.get_type(),
@@ -906,9 +1507,13 @@ class RollingBallsGame(Game):
                 for p in self.get_active_players()
             ],
             custom_data={
-                "winner_name": self._team_manager.get_team_name(winner) if winner else None,
+                "winner_name": (
+                    self._team_manager.get_team_name(winners[0])
+                    if len(winners) == 1
+                    else None
+                ),
                 "winner_ids": winner_ids,
-                "winner_score": winner.total_score if winner else 0,
+                "winner_score": high_score,
                 "final_scores": final_scores,
                 "team_rankings": team_rankings,
                 "rounds_played": self.round,
@@ -931,13 +1536,28 @@ class RollingBallsGame(Game):
 
                 score = data["score"]
                 points_str = Localization.get(locale, "game-points", count=score)
-                # Let's use a standard format for it
-                lines.append(Localization.get(locale, "rb-line-format", rank=i, player=name, points=points_str))
+                lines.append(
+                    Localization.get(
+                        locale,
+                        "rb-line-format",
+                        rank=data.get("rank", i),
+                        player=name,
+                        points=points_str,
+                    )
+                )
         else:
             final_scores = result.custom_data.get("final_scores", {})
             for i, (name, score) in enumerate(final_scores.items(), 1):
                 points_str = Localization.get(locale, "game-points", count=score)
-                lines.append(Localization.get(locale, "rb-line-format", rank=i, player=name, points=points_str))
+                lines.append(
+                    Localization.get(
+                        locale,
+                        "rb-line-format",
+                        rank=i,
+                        player=name,
+                        points=points_str,
+                    )
+                )
 
         return lines
 
