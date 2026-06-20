@@ -70,14 +70,15 @@ def setup_turn(game: LastCardGame, player_index: int, discard_card: Card,
         p.bot_pending_action = None
         p.draws_this_turn = 0
         p.called_last_card = False
-    game._sync_turn_actions(game.players[player_index])
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
 
 def advance_ticks(game: LastCardGame, count: int) -> None:
     """Advance the game by a number of ticks."""
     for _ in range(count):
         game.on_tick()
+        game.flush_menus()
 
 
 def advance_until(game: LastCardGame, condition, max_ticks: int = 2000) -> bool:
@@ -86,6 +87,7 @@ def advance_until(game: LastCardGame, condition, max_ticks: int = 2000) -> bool:
         if condition():
             return True
         game.on_tick()
+        game.flush_menus()
     return condition()
 
 
@@ -996,6 +998,7 @@ def test_bot_game_completes():
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
 
     assert game.status == "finished"
 
@@ -1015,6 +1018,7 @@ def test_bot_game_with_stacking():
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
 
     assert game.status == "finished"
 
@@ -1037,6 +1041,7 @@ def test_bot_game_with_all_features():
         if game.status == "finished":
             break
         game.on_tick()
+        game.flush_menus()
 
     assert game.status == "finished"
 
@@ -1466,7 +1471,8 @@ def test_non_current_player_turn_menu_still_shows_hand_cards_direct_play():
     setup_turn(game, 0, make_card(100, 5, COLOR_RED), COLOR_RED)
     first.hand = [make_card(1, 7, COLOR_RED)]
     second.hand = [make_card(2, 9, COLOR_BLUE), make_card(3, 4, COLOR_GREEN)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     assert game._is_play_card_hidden(second, action_id="play_card_2") == Visibility.VISIBLE
     assert game._is_play_card_hidden(second, action_id="play_card_3") == Visibility.VISIBLE
@@ -1490,7 +1496,8 @@ def test_non_current_player_turn_menu_still_shows_hand_cards_multi_play():
     setup_turn(game, 0, make_card(100, 5, COLOR_RED), COLOR_RED)
     first.hand = [make_card(1, 7, COLOR_RED)]
     second.hand = [make_card(2, 9, COLOR_BLUE), make_card(3, 4, COLOR_GREEN)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     assert game._is_toggle_card_hidden(second, action_id="toggle_card_2") == Visibility.VISIBLE
     assert game._is_toggle_card_hidden(second, action_id="toggle_card_3") == Visibility.VISIBLE
@@ -1510,7 +1517,8 @@ def test_out_of_turn_visible_card_is_rejected_without_changing_state():
     setup_turn(game, 0, make_card(100, 5, COLOR_RED), COLOR_RED)
     first.hand = [make_card(1, 7, COLOR_RED)]
     second.hand = [make_card(2, 9, COLOR_RED)]
-    game.rebuild_all_menus()
+    game.refresh_menus()
+    game.flush_menus()
 
     discard_ids_before = [card.id for card in game.discard_pile]
     second_user = game.get_user(second)

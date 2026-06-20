@@ -389,7 +389,7 @@ class LastCardGame(Game, TurnTimerMixin):
         self.add_player(bot_name, bot_user)
         self.broadcast_l("table-joined", buffer="game", player=bot_name)
         self.broadcast_sound("join.ogg")
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _action_remove_bot(self, player: Player, action_id: str) -> None:
         for i in range(len(self.players) - 1, -1, -1):
@@ -398,7 +398,7 @@ class LastCardGame(Game, TurnTimerMixin):
                 self.remove_player(bot.id)
                 self.broadcast_sound("leave.ogg")
                 break
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _perform_leave_game(self, player: Player) -> None:
         if player.is_spectator:
@@ -406,7 +406,7 @@ class LastCardGame(Game, TurnTimerMixin):
             if self._table:
                 self._table.remove_member(player.name)
             self.broadcast_sound("leave_spectator.ogg")
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         if self.status == "playing" and not player.is_bot:
@@ -414,7 +414,7 @@ class LastCardGame(Game, TurnTimerMixin):
             if other_humans:
                 self._replace_with_bot(player)
                 self.broadcast_sound("leave.ogg")
-                self.rebuild_all_menus()
+                self.refresh_menus()
                 return
 
         self.remove_player(player.id)
@@ -427,7 +427,7 @@ class LastCardGame(Game, TurnTimerMixin):
             self.destroy()
             return
 
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # ==========================================================================
     # Action sets
@@ -581,18 +581,9 @@ class LastCardGame(Game, TurnTimerMixin):
     # Menu syncing
     # ==========================================================================
 
-    def rebuild_player_menu(self, player: Player) -> None:
+    def before_menu_build(self, player: Player) -> None:
+        super().before_menu_build(player)
         self._sync_turn_actions(player)
-        super().rebuild_player_menu(player)
-
-    def update_player_menu(self, player: Player, selection_id: str | None = None) -> None:
-        self._sync_turn_actions(player)
-        super().update_player_menu(player, selection_id=selection_id)
-
-    def rebuild_all_menus(self) -> None:
-        for player in self.players:
-            self._sync_turn_actions(player)
-        super().rebuild_all_menus()
 
     def _sync_turn_actions(self, player: Player) -> None:
         if not isinstance(player, LastCardPlayer):
@@ -847,7 +838,7 @@ class LastCardGame(Game, TurnTimerMixin):
 
         self.start_turn_timer()
         self._sync_turn_actions(player)
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _advance_turn(self) -> None:
         self.advance_turn(announce=False)
@@ -916,7 +907,7 @@ class LastCardGame(Game, TurnTimerMixin):
             player.selected_cards.remove(card_id)
         else:
             player.selected_cards.add(card_id)
-        self.update_player_menu(player)
+        self.refresh_menus(player)
 
     def _action_play_selected(self, player: Player, action_id: str) -> None:
         block_reason = self._get_card_action_block_reason(player)
@@ -1022,7 +1013,7 @@ class LastCardGame(Game, TurnTimerMixin):
                 self.interrupt_wd4_player_id = ""
                 self.interrupt_wd4_had_matching = False
                 BotHelper.jolt_bots(self, ticks=random.randint(10, 30))
-                self.rebuild_all_menus()
+                self.refresh_menus()
                 return
 
         # Apply stacked effects
@@ -1072,7 +1063,7 @@ class LastCardGame(Game, TurnTimerMixin):
                     self.swap_player_id = cur.id
                     if cur.is_bot:
                         BotHelper.jolt_bot(cur, ticks=random.randint(10, 20))
-                    self.rebuild_all_menus()
+                    self.refresh_menus()
                     return
 
         if rank == 0 and self.options.zero_card_rule == "rotate_hands":
@@ -1084,7 +1075,7 @@ class LastCardGame(Game, TurnTimerMixin):
             self.interrupt_phase = "jump_in_window"
             self.interrupt_timer_ticks = self.options.interrupt_timer * 20
             BotHelper.jolt_bots(self, ticks=random.randint(10, 30))
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         self._advance_turn()
@@ -1132,7 +1123,7 @@ class LastCardGame(Game, TurnTimerMixin):
             if player.is_bot:
                 BotHelper.jolt_bot(player, ticks=random.randint(10, 20))
             self.start_turn_timer()
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         # Non-wild card
@@ -1155,7 +1146,7 @@ class LastCardGame(Game, TurnTimerMixin):
                 self.interrupt_wd4_player_id = player.id if card.rank == RANK_WILD_DRAW_FOUR else ""
                 self.interrupt_wd4_had_matching = had_matching_color
                 BotHelper.jolt_bots(self, ticks=random.randint(10, 30))
-                self.rebuild_all_menus()
+                self.refresh_menus()
                 return
 
         # WD4 challenge window
@@ -1180,7 +1171,7 @@ class LastCardGame(Game, TurnTimerMixin):
                 user.speak_l("lastcard-can-challenge", buffer="game")
 
         BotHelper.jolt_bots(self, ticks=random.randint(20, 40))
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _apply_card_effects_and_advance(self, card: Card) -> None:
         """Apply card effects (skip, reverse, draw, etc.) and advance turn."""
@@ -1190,7 +1181,7 @@ class LastCardGame(Game, TurnTimerMixin):
             if self.options.skip_card_rule == "all":
                 # Skip all — current player plays again
                 self.play_sound(SOUND_SKIP)
-                self.rebuild_all_menus()
+                self.refresh_menus()
                 self._start_turn()
                 return
             else:
@@ -1244,7 +1235,7 @@ class LastCardGame(Game, TurnTimerMixin):
                     self.swap_player_id = player.id
                     if player.is_bot:
                         BotHelper.jolt_bot(player, ticks=random.randint(10, 20))
-                    self.rebuild_all_menus()
+                    self.refresh_menus()
                     return
 
         if card.rank == 0 and self.options.zero_card_rule == "rotate_hands":
@@ -1255,7 +1246,7 @@ class LastCardGame(Game, TurnTimerMixin):
             self.interrupt_phase = "jump_in_window"
             self.interrupt_timer_ticks = self.options.interrupt_timer * 20
             BotHelper.jolt_bots(self, ticks=random.randint(10, 30))
-            self.rebuild_all_menus()
+            self.refresh_menus()
             return
 
         self._advance_turn()
@@ -1325,7 +1316,7 @@ class LastCardGame(Game, TurnTimerMixin):
                 # Keep drawing state - player can draw again or will auto-draw
                 self.turn_has_drawn = False
             self.start_turn_timer()
-            self.rebuild_all_menus()
+            self.refresh_menus()
             if p.is_bot:
                 BotHelper.jolt_bot(p, ticks=random.randint(10, 20))
             return
@@ -1334,7 +1325,7 @@ class LastCardGame(Game, TurnTimerMixin):
         if self.options.force_play and playable:
             self.start_turn_timer()
             prefix = "toggle_card_" if self.options.allow_multiple_play else "play_card_"
-            self.update_player_menu(p, selection_id=f"{prefix}{card.id}")
+            self.request_menu_focus(p, f"{prefix}{card.id}")
             if p.is_bot:
                 BotHelper.jolt_bot(p, ticks=random.randint(10, 20))
             return
@@ -1345,7 +1336,10 @@ class LastCardGame(Game, TurnTimerMixin):
             selection_id = f"{prefix}{card.id}"
         else:
             selection_id = None
-        self.update_player_menu(p, selection_id=selection_id)
+        if selection_id:
+            self.request_menu_focus(p, selection_id)
+        else:
+            self.refresh_menus(p)
         if p.is_bot:
             BotHelper.jolt_bot(p, ticks=random.randint(10, 20))
 
@@ -1392,7 +1386,7 @@ class LastCardGame(Game, TurnTimerMixin):
 
         self.timer.clear()
         self.color_wait_ticks = 15
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     # ==========================================================================
     # Buzzer action
@@ -1757,8 +1751,7 @@ class LastCardGame(Game, TurnTimerMixin):
         label_key = HAND_SORT_LABELS.get(player.hand_sort, "lastcard-sort-by-color")
         mode_label = Localization.get(user.locale, label_key)
         user.speak_l("lastcard-sort-changed", buffer="game", mode=mode_label)
-        self._sync_turn_actions(player)
-        self.rebuild_player_menu(player)
+        self.refresh_menus(player)
 
     # ==========================================================================
     # Action state helpers
@@ -2412,7 +2405,7 @@ class LastCardGame(Game, TurnTimerMixin):
                 return
 
         self.hand_wait_ticks = 5 * 20
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _end_round_deadlock(self) -> None:
         """End the round when all players are forced to pass (deck exhausted, no playable cards)."""
@@ -2444,7 +2437,7 @@ class LastCardGame(Game, TurnTimerMixin):
                 return
 
         self.hand_wait_ticks = 5 * 20
-        self.rebuild_all_menus()
+        self.refresh_menus()
 
     def _hand_points(self, hand: list[Card]) -> int:
         total = 0

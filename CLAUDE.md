@@ -110,7 +110,7 @@ Important server-driven packets include:
 ### Server Architecture
 - **`server/core/server.py`** — Main orchestrator, auth routing, menus, reconnect, moderation, MOTD, presence
 - **`server/network/websocket_server.py`** — Async WebSocket transport
-- **`server/games/`** — 42 registered game implementations
+- **`server/games/`** — 43 registered game implementations
 - **`server/game_utils/`** — shared game mixins and helpers
 - **`server/tables/`** — table lifecycle, save/restore, membership
 - **`server/auth/`** — authentication, CAPTCHA checks, password reset, rate limiting
@@ -585,12 +585,11 @@ Mobile rules:
 - browser web-runtime tests expose browser/Web Speech voices, while Android builds expose device TTS voices through Expo Speech
 - unavailable synced mobile voices or engines must fall back to the system default without throwing
 
-### Game Counts and Catalog
-The server currently registers **42 games**:
+The server currently registers **43 games**:
 - category ids are `cards`, `dice`, `board`, `poker`, `arcade`, and `misc`
 - the Play menu exposes a persisted category filter with dynamic per-category game counts
 - games usually expose one category through `get_category()`, while `get_categories()` supports future multi-category games
-- recent additions include `Metal Pipe`, `Nine`, `Senet`, `Cards Against Humanity`, `21`, `Age of Heroes`, and `UNO`
+- recent additions include `Metal Pipe`, `Nine`, `Senet`, `Cards Against Humanity`, `21`, `Age of Heroes`, `UNO`, and `LastCard`
 
 ### Key Tech Stack
 - Python 3.11, `asyncio`, `websockets>=12.0`, `mashumaro`, `fluent-runtime`, `openskill`, `argon2-cffi`
