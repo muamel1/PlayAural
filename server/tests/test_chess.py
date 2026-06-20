@@ -842,6 +842,85 @@ def test_undo_request_restores_previous_position() -> None:
     assert not game.move_history
 
 
+def test_undo_accept_shortcut_does_not_accept_draw() -> None:
+    game = make_game_with_options(
+        start=True,
+        allow_draw_offers=True,
+        allow_undo_requests=True,
+    )
+    white = game.players[0]
+    black = game.players[1]
+
+    select_square(game, white, "e2")
+    select_square(game, white, "e4")
+    game._action_request_undo(black, "request_undo")
+
+    assert game.undo_request_from == black.id
+    assert game.draw_offer_from == ""
+    assert game._is_draw_response_enabled(white) == "action-not-available"
+    assert game._is_undo_response_enabled(white) is None
+
+    game.handle_event(white, {"type": "keybind", "key": "y"})
+    game.flush_menus()
+
+    assert game.status == "playing"
+    assert game.draw_reason == ""
+    assert game.undo_request_from == ""
+    assert game.board[notation_to_index("e2")] is not None
+    assert game.board[notation_to_index("e4")] is None
+    assert game.current_color == COLOR_WHITE
+    assert not game.move_history
+
+
+def test_undo_request_cannot_be_answered_by_draw_actions_directly() -> None:
+    game = make_game_with_options(
+        start=True,
+        allow_draw_offers=True,
+        allow_undo_requests=True,
+    )
+    white = game.players[0]
+    black = game.players[1]
+
+    select_square(game, white, "e2")
+    select_square(game, white, "e4")
+    game._action_request_undo(black, "request_undo")
+
+    game.execute_action(white, "accept_draw")
+    game.flush_menus()
+
+    assert game.status == "playing"
+    assert game.draw_reason == ""
+    assert game.undo_request_from == black.id
+    assert game.board[notation_to_index("e4")] is not None
+
+
+def test_draw_offer_cannot_be_answered_by_undo_actions() -> None:
+    game = make_game_with_options(
+        start=True,
+        allow_draw_offers=True,
+        allow_undo_requests=True,
+    )
+    white = game.players[0]
+    black = game.players[1]
+
+    select_square(game, white, "g1")
+    select_square(game, white, "f3")
+    select_square(game, black, "g8")
+    select_square(game, black, "f6")
+    game._action_offer_draw(white, "offer_draw")
+
+    assert game.draw_offer_from == white.id
+    assert game._is_draw_response_enabled(black) is None
+    assert game._is_undo_response_enabled(black) == "action-not-available"
+
+    game.execute_action(black, "accept_undo")
+    game.flush_menus()
+
+    assert game.status == "playing"
+    assert game.draw_offer_from == white.id
+    assert game.draw_reason == ""
+
+
 def test_undo_request_can_be_declined() -> None:
     game = make_game_with_options(start=True, allow_undo_requests=True)
     white = game.players[0]

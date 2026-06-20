@@ -651,8 +651,7 @@ class ChessGame(GridGameMixin, Game):
     def _has_pending_response(self) -> bool:
         return bool(self.draw_offer_from or self.undo_request_from)
 
-    def _get_pending_response_player(self) -> ChessPlayer | None:
-        requester_id = self.draw_offer_from or self.undo_request_from
+    def _get_response_player_for(self, requester_id: str) -> ChessPlayer | None:
         if not requester_id:
             return None
         requester = self.get_player_by_id(requester_id)
@@ -661,6 +660,16 @@ class ChessGame(GridGameMixin, Game):
             return None
         responder_color = COLOR_BLACK if requester_color == COLOR_WHITE else COLOR_WHITE
         return self._get_player_by_color(responder_color)
+
+    def _get_pending_response_player(self) -> ChessPlayer | None:
+        requester_id = self.draw_offer_from or self.undo_request_from
+        return self._get_response_player_for(requester_id)
+
+    def _get_draw_response_player(self) -> ChessPlayer | None:
+        return self._get_response_player_for(self.draw_offer_from)
+
+    def _get_undo_response_player(self) -> ChessPlayer | None:
+        return self._get_response_player_for(self.undo_request_from)
 
     def _format_clock_value(self, ticks: int) -> str:
         total_seconds = (max(0, ticks) + TICKS_PER_SECOND - 1) // TICKS_PER_SECOND
@@ -2127,7 +2136,11 @@ class ChessGame(GridGameMixin, Game):
         return Visibility.HIDDEN
 
     def _is_draw_response_enabled(self, player: Player) -> str | None:
-        responder = self._get_pending_response_player()
+        if self.status != "playing":
+            return "action-not-playing"
+        if not self.draw_offer_from:
+            return "action-not-available"
+        responder = self._get_draw_response_player()
         if responder is None:
             return "action-not-available"
         if player.id != responder.id:
@@ -2137,7 +2150,7 @@ class ChessGame(GridGameMixin, Game):
     def _is_draw_response_hidden(self, player: Player) -> Visibility:
         if not self.draw_offer_from or player.is_spectator:
             return Visibility.HIDDEN
-        responder = self._get_pending_response_player()
+        responder = self._get_draw_response_player()
         if responder and player.id == responder.id and self._is_web_client(player):
             return Visibility.VISIBLE
         return Visibility.HIDDEN
@@ -2164,8 +2177,12 @@ class ChessGame(GridGameMixin, Game):
         return Visibility.HIDDEN
 
     def _is_undo_response_enabled(self, player: Player) -> str | None:
-        responder = self._get_pending_response_player()
-        if responder is None or not self.undo_request_from:
+        if self.status != "playing":
+            return "action-not-playing"
+        if not self.undo_request_from:
+            return "action-not-available"
+        responder = self._get_undo_response_player()
+        if responder is None:
             return "action-not-available"
         if player.id != responder.id:
             return "action-not-your-turn"
@@ -2174,7 +2191,7 @@ class ChessGame(GridGameMixin, Game):
     def _is_undo_response_hidden(self, player: Player) -> Visibility:
         if not self.undo_request_from or player.is_spectator:
             return Visibility.HIDDEN
-        responder = self._get_pending_response_player()
+        responder = self._get_undo_response_player()
         if responder and player.id == responder.id and self._is_web_client(player):
             return Visibility.VISIBLE
         return Visibility.HIDDEN
@@ -2341,6 +2358,7 @@ class ChessGame(GridGameMixin, Game):
         if chess_player is None or self._is_offer_draw_enabled(player) is not None:
             return
         self.draw_offer_from = chess_player.id
+        self.undo_request_from = ""
         self.broadcast_personal_l(
             chess_player,
             "chess-you-offer-draw",
@@ -2383,6 +2401,7 @@ class ChessGame(GridGameMixin, Game):
         chess_player = self._as_chess_player(player)
         if chess_player is None or self._is_request_undo_enabled(player) is not None:
             return
+        self.draw_offer_from = ""
         self.undo_request_from = chess_player.id
         self.broadcast_personal_l(
             chess_player,
