@@ -653,6 +653,8 @@ PlayAural Server
                 await self._handle_open_friends_hub(client)
             elif packet_type == "open_options":
                 await self._handle_open_options(client)
+            elif packet_type == "open_game_options":
+                await self._handle_open_game_options(client)
             elif packet_type == "open_profile":
                 await self._handle_open_profile(client)
             elif packet_type == "open_stats":
@@ -8293,6 +8295,18 @@ PlayAural Server
         if self._user_states.get(username, {}).get("menu") in OPTIONS_MENU_IDS:
             return
         self._nav_push(user, self._show_options_menu)
+
+    async def _handle_open_game_options(self, client: ClientConnection) -> None:
+        """Open the game options menu from any context."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+        if self._user_states.get(username, {}).get("menu") == "game_options_menu":
+            return
+        self._nav_push(user, self._show_game_options_menu)
 
     async def _handle_open_profile(self, client: ClientConnection) -> None:
         """Open the profile menu from any context."""
