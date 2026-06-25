@@ -667,6 +667,12 @@ PlayAural Server
                 await self._handle_action_accept_friend_request(client, packet)
             elif packet_type == "action_remove_friendship":
                 await self._handle_action_remove_friendship(client, packet)
+            elif packet_type == "action_join_player_table":
+                await self._handle_action_join_player_table(client, packet)
+            elif packet_type == "action_view_public_profile":
+                await self._handle_action_view_public_profile(client, packet)
+            elif packet_type == "action_send_pm":
+                await self._handle_action_send_pm(client, packet)
             elif packet_type == "get_history":
                 await self._handle_get_history(client)
             elif packet_type == "broadcast_cmd":
@@ -8336,9 +8342,38 @@ PlayAural Server
                 online_user = self._users.get(username)
                 state = self._user_states.get(username, {})
                 online = online_user is not None and online_user.approved and state.get("menu") != "banned_menu"
+                
+                can_join = False
+                if online:
+                    status = Localization.get(user.locale, "friend-status-lobby")
+                    table = self._tables.find_user_table(username)
+                    if table:
+                        game_class = get_game_class(table.game_type)
+                        game_name = Localization.get(user.locale, game_class.get_name_key()) if game_class else table.game_type
+
+                        is_spectator = False
+                        for m in table.members:
+                            if m.username == username:
+                                is_spectator = m.is_spectator
+                                break
+
+                        if is_spectator:
+                            status = Localization.get(user.locale, "friend-status-spectating", game=game_name)
+                        else:
+                            status = Localization.get(user.locale, "friend-status-playing", game=game_name)
+
+                        # Check if requesting user can join
+                        user_is_member = any(m.username == user.username for m in table.members)
+                        if not table.is_private or user_is_member:
+                            can_join = True
+                else:
+                    status = Localization.get(user.locale, "friend-status-offline")
+
                 friends_list.append({
                     "username": username,
                     "online": bool(online),
+                    "status": status,
+                    "can_join": can_join,
                     "uuid": uuid
                 })
 
@@ -8555,6 +8590,79 @@ PlayAural Server
             self.on_friend_requests_changed(user.uuid)
         else:
             user.speak_l("friend-remove-not-friends", buffer="system", username=target_record.username)
+
+    async def _handle_action_join_player_table(self, client: ClientConnection, packet: dict) -> None:
+        """Handle action_join_player_table packet."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+
+        target_username = packet.get("username", "").strip()
+        if not target_username:
+            return
+
+        target_user = self._users.get(target_username)
+        if not target_user:
+            user.speak_l("unknown-player", buffer="system")
+            return
+
+        table = self._tables.find_user_table(target_username)
+        if table:
+            current_table = self._tables.find_user_table(user.username)
+            if current_table:
+                if current_table == table:
+                     user.speak_l("already-in-table", buffer="system")
+                     return
+
+            user_is_member = any(m.username == user.username for m in table.members)
+            if table.is_private and not user_is_member:
+                user.speak_l("table-private-invite-only", buffer="system")
+                return
+
+            self._auto_join_table(user, table, table.game_type)
+        else:
+            user.speak_l("table-not-exists", buffer="system")
+
+    async def _handle_action_view_public_profile(self, client: ClientConnection, packet: dict) -> None:
+        """Handle action_view_public_profile packet."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+
+        target_username = packet.get("username", "").strip()
+        if not target_username:
+            return
+
+        if not hasattr(self._db, "get_user"):
+            return
+        target_record = self._db.get_user(target_username)
+        if not target_record:
+            user.speak_l("unknown-player", buffer="system")
+            return
+
+        self._nav_push(user, self._show_public_profile, target_username)
+
+    async def _handle_action_send_pm(self, client: ClientConnection, packet: dict) -> None:
+        """Handle action_send_pm packet."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+
+        target_username = packet.get("username", "").strip()
+        message_text = packet.get("message", "").strip()
+        if not target_username or not message_text:
+            return
+
+        await self._deliver_private_message(user, target_username, message_text)
 
     async def _handle_get_history(self, client: ClientConnection) -> None:
         """Handle get_history request: fetch and return the user's game history."""

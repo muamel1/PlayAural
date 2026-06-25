@@ -57,7 +57,7 @@ import { TtsManager } from "../tts/TtsManager";
 import { ENABLE_CLIENT_DEBUG_LOGS } from "../utils/debug";
 import { MobileVoiceManager, type MobileVoiceConnectionState } from "../voice/MobileVoiceManager";
 
-const MOBILE_CLIENT_VERSION = "1.0.4.5";
+const MOBILE_CLIENT_VERSION = "1.0.4.6";
 const MOBILE_BUILD_STAMP = "2026-06-09 19:08:13 +07:00";
 const DEFAULT_SERVER_URL = "wss://playaural.ddt.one:443";
 const APK_DOWNLOAD_URL =

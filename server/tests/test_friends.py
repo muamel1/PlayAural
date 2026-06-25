@@ -387,6 +387,21 @@ class TestFriendsSystem:
         assert user_b.uuid in self.db.get_friends(user_a.uuid)
         assert user_a.uuid in self.db.get_friends(user_b.uuid)
 
+        # 4.5. Test view profile and send PM direct action packets
+        await self.server._handle_action_view_public_profile(
+            ua_user.connection,
+            {"username": "UserB"}
+        )
+        assert self.server._user_states[user_a.username].get("menu") == "public_profile_menu"
+        assert self.server._user_states[user_a.username].get("target_username") == "UserB"
+
+        await self.server._handle_action_send_pm(
+            ua_user.connection,
+            {"username": "UserB", "message": "Hello Bob!"}
+        )
+        ub_messages = ub_user.get_queued_messages()
+        assert any(msg.get("type") == "speak" and msg.get("key") == "pm-received" for msg in ub_messages)
+
         # 5. Remove friendship (unfriend) via direct action packet
         await self.server._handle_action_remove_friendship(
             ua_user.connection,
