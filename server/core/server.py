@@ -648,10 +648,16 @@ PlayAural Server
                 await self._handle_list_online(client)
             elif packet_type == "list_online_with_games":
                 await self._handle_list_online_with_games(client)
-            elif packet_type == "open_friends_hub":
+            elif packet_type == "open_friends_hub" or packet_type == "open_friends":
                 await self._handle_open_friends_hub(client)
             elif packet_type == "open_options":
                 await self._handle_open_options(client)
+            elif packet_type == "open_profile":
+                await self._handle_open_profile(client)
+            elif packet_type == "open_stats":
+                await self._handle_open_stats(client)
+            elif packet_type == "open_online_users":
+                await self._handle_open_online_users(client)
             elif packet_type == "get_history":
                 await self._handle_get_history(client)
             elif packet_type == "broadcast_cmd":
@@ -8243,6 +8249,42 @@ PlayAural Server
         if self._user_states.get(username, {}).get("menu") in OPTIONS_MENU_IDS:
             return
         self._nav_push(user, self._show_options_menu)
+
+    async def _handle_open_profile(self, client: ClientConnection) -> None:
+        """Open the profile menu from any context."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+        if self._user_states.get(username, {}).get("menu") == "profile_menu":
+            return
+        self._nav_push(user, self._show_profile_menu)
+
+    async def _handle_open_stats(self, client: ClientConnection) -> None:
+        """Open the stats menu from any context."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+        if self._user_states.get(username, {}).get("menu") == "my_stats_menu":
+            return
+        self._nav_push(user, self._show_my_stats_menu)
+
+    async def _handle_open_online_users(self, client: ClientConnection) -> None:
+        """Open the online users menu from any context."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+        if self._user_states.get(username, {}).get("menu") == "online_users":
+            return
+        self._nav_push(user, self._show_online_users_menu)
 
     async def _handle_get_history(self, client: ClientConnection) -> None:
         """Handle get_history request: fetch and return the user's game history."""
