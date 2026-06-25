@@ -46,8 +46,8 @@ from ..game_utils.bot_names import bot_name_key
 from ..game_utils.game_result import GameResult
 
 
-VERSION = "1.0.4.5"
-LATEST_CLIENT_VERSION = "1.0.4.5"
+VERSION = "1.0.4.6"
+LATEST_CLIENT_VERSION = "1.0.4.6"
 UPDATE_URL = "https://github.com/Daoductrung/PlayAural/releases/latest/download/PlayAural.zip"
 UPDATE_HASH = "" # Optional SHA256
 
@@ -517,6 +517,7 @@ PlayAural Server
             pass
         finally:
             self.on_user_presence_changed()
+            self.on_friend_presence_changed(user_uuid)
 
     def _broadcast_presence_l(
         self, message_id: str, player_name: str, player_uuid: str, default_sound: str, target_trust_level: int = 1
@@ -658,6 +659,14 @@ PlayAural Server
                 await self._handle_open_stats(client)
             elif packet_type == "open_online_users":
                 await self._handle_open_online_users(client)
+            elif packet_type == "get_friends_tab_data":
+                await self._handle_get_friends_tab_data(client)
+            elif packet_type == "action_send_friend_request":
+                await self._handle_action_send_friend_request(client, packet)
+            elif packet_type == "action_accept_friend_request":
+                await self._handle_action_accept_friend_request(client, packet)
+            elif packet_type == "action_remove_friendship":
+                await self._handle_action_remove_friendship(client, packet)
             elif packet_type == "get_history":
                 await self._handle_get_history(client)
             elif packet_type == "broadcast_cmd":
@@ -840,6 +849,7 @@ PlayAural Server
             if not pending_task:
                  self._broadcast_presence_l("user-online", canonical_username, user_uuid, online_sound, trust_level)
                  self.on_user_presence_changed()
+                 self.on_friend_presence_changed(user_uuid)
 
                  # If user is a developer or admin, announce that as well
                  if trust_level >= 3:
@@ -1827,11 +1837,39 @@ PlayAural Server
                     items = self._get_host_invite_menu_items(user, table)
                     user.update_menu("host_invite_menu", items)
 
+    def on_friend_presence_changed(self, user_uuid: str) -> None:
+        """Notify friends that this user's online status has changed."""
+        if not hasattr(self._db, "get_friends"):
+            return
+        friend_uuids = self._db.get_friends(user_uuid)
+        for username, user in self._users.items():
+            if user.uuid in friend_uuids:
+                payload = self._get_friends_tab_data_payload(user)
+                if hasattr(user, "connection") and user.connection is not None:
+                    conn = user.connection
+                    try:
+                        res = conn.send(payload)
+                        if asyncio.iscoroutine(res):
+                            asyncio.create_task(res)
+                    except Exception:
+                        pass
+
     def on_friend_requests_changed(self, target_uuid: str) -> None:
         """Called when friend requests are sent, accepted, or declined to refresh UI."""
         # We need to find the user by UUID to update their menu
         for username, user in self._users.items():
             if user.uuid == target_uuid:
+                # Send real-time friends tab data
+                payload = self._get_friends_tab_data_payload(user)
+                if hasattr(user, "connection") and user.connection is not None:
+                    conn = user.connection
+                    try:
+                        res = conn.send(payload)
+                        if asyncio.iscoroutine(res):
+                            asyncio.create_task(res)
+                    except Exception:
+                        pass
+
                 state = self._user_states.get(username, {})
                 current_menu = state.get("menu")
                 if current_menu == "friends_hub_menu":
@@ -8285,6 +8323,238 @@ PlayAural Server
         if self._user_states.get(username, {}).get("menu") == "online_users":
             return
         self._nav_push(user, self._show_online_users_menu)
+
+    def _get_friends_tab_data_payload(self, user: NetworkUser) -> dict:
+        friend_uuids = self._db.get_friends(user.uuid) if hasattr(self._db, "get_friends") else []
+        pending_outgoing_uuids = self._db.get_pending_outgoing_requests(user.uuid) if hasattr(self._db, "get_pending_outgoing_requests") else []
+        pending_incoming_uuids = self._db.get_pending_incoming_requests(user.uuid) if hasattr(self._db, "get_pending_incoming_requests") else []
+
+        friends_list = []
+        for uuid in friend_uuids:
+            username = self._db.get_user_name_by_uuid(uuid)
+            if username:
+                online_user = self._users.get(username)
+                state = self._user_states.get(username, {})
+                online = online_user is not None and online_user.approved and state.get("menu") != "banned_menu"
+                friends_list.append({
+                    "username": username,
+                    "online": bool(online),
+                    "uuid": uuid
+                })
+
+        pending_list = []
+        for uuid in pending_outgoing_uuids:
+            username = self._db.get_user_name_by_uuid(uuid)
+            if username:
+                online_user = self._users.get(username)
+                state = self._user_states.get(username, {})
+                online = online_user is not None and online_user.approved and state.get("menu") != "banned_menu"
+                pending_list.append({
+                    "username": username,
+                    "online": bool(online),
+                    "uuid": uuid
+                })
+
+        received_list = []
+        for uuid in pending_incoming_uuids:
+            username = self._db.get_user_name_by_uuid(uuid)
+            if username:
+                online_user = self._users.get(username)
+                state = self._user_states.get(username, {})
+                online = online_user is not None and online_user.approved and state.get("menu") != "banned_menu"
+                received_list.append({
+                    "username": username,
+                    "online": bool(online),
+                    "uuid": uuid
+                })
+
+        return {
+            "type": "friends_tab_data",
+            "friends": friends_list,
+            "pending": pending_list,
+            "received": received_list
+        }
+
+    async def _handle_get_friends_tab_data(self, client: ClientConnection) -> None:
+        """Handle get_friends_tab_data request: send friends tab data."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+        payload = self._get_friends_tab_data_payload(user)
+        await client.send(payload)
+
+    async def _handle_action_send_friend_request(self, client: ClientConnection, packet: dict) -> None:
+        """Handle action_send_friend_request packet."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+        
+        target_username = packet.get("username", "").strip()
+        if not target_username:
+            return
+            
+        if target_username.lower() == user.username.lower():
+            user.speak_l("friend-error-self", buffer="system")
+            return
+
+        if not hasattr(self._db, "get_user"):
+            return
+        target_record = self._db.get_user(target_username)
+        if not target_record:
+            user.speak_l("unknown-player", buffer="system")
+            return
+
+        status = self._db.send_friend_request(user.uuid, target_record.uuid)
+        if status == "already_friends":
+            user.speak_l("friend-error-already-friends", buffer="system")
+        elif status == "duplicate":
+            user.speak_l("friend-error-duplicate", buffer="system")
+        elif status == "accepted":
+            user.speak_l("friend-accepted-success", buffer="system", username=target_record.username)
+            user.play_sound("friend_accepted.ogg")
+            # Notify target
+            target_user = self._users.get(target_record.username)
+            if target_user:
+                target_user.speak_l("friend-accepted-notify", buffer="system", username=user.username)
+                target_user.play_sound("friend_accepted.ogg")
+            else:
+                self._db.add_notification(target_record.uuid, user.username, "friend_accepted")
+            self.on_friend_requests_changed(target_record.uuid)
+            self.on_friend_requests_changed(user.uuid)
+        elif status == "sent":
+            user.speak_l("friend-request-sent", buffer="system", username=target_record.username)
+            user.play_sound("friend_request_sent.ogg")
+            # Notify target
+            target_user = self._users.get(target_record.username)
+            if target_user:
+                target_user.speak_l("friend-request-received", buffer="system", username=user.username)
+                target_user.play_sound("friend_request_received.ogg")
+            else:
+                self._db.add_notification(target_record.uuid, user.username, "friend_request_received")
+            self.on_friend_requests_changed(target_record.uuid)
+            self.on_friend_requests_changed(user.uuid)
+
+    async def _handle_action_accept_friend_request(self, client: ClientConnection, packet: dict) -> None:
+        """Handle action_accept_friend_request packet."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+
+        target_username = packet.get("username", "").strip()
+        if not target_username:
+            return
+
+        if not hasattr(self._db, "get_user"):
+            return
+        target_record = self._db.get_user(target_username)
+        if not target_record:
+            user.speak_l("unknown-player", buffer="system")
+            return
+
+        success = self._db.accept_friend_request(target_record.uuid, user.uuid)
+        if success:
+            user.speak_l("friend-accepted-success", buffer="system", username=target_username)
+            user.play_sound("friend_accepted.ogg")
+            # Notify target
+            target_user = self._users.get(target_username)
+            if target_user:
+                target_user.speak_l("friend-accepted-notify", buffer="system", username=user.username)
+                target_user.play_sound("friend_accepted.ogg")
+            else:
+                self._db.add_notification(target_record.uuid, user.username, "friend_accepted")
+            self.on_friend_requests_changed(target_record.uuid)
+            self.on_friend_requests_changed(user.uuid)
+        else:
+            user.speak_l("request-not-found", buffer="system")
+
+    async def _handle_action_remove_friendship(self, client: ClientConnection, packet: dict) -> None:
+        """Handle action_remove_friendship packet (decline, cancel, or unfriend)."""
+        username = client.username
+        if not username:
+            return
+        user = self._users.get(username)
+        if not user:
+            return
+
+        target_username = packet.get("username", "").strip()
+        if not target_username:
+            return
+
+        if not hasattr(self._db, "get_user"):
+            return
+        target_record = self._db.get_user(target_username)
+        if not target_record:
+            user.speak_l("unknown-player", buffer="system")
+            return
+
+        # Check existing friendship status to determine correct audio/text feedback
+        conn = self._db._conn if hasattr(self._db, "_conn") else None
+        status = None
+        requester_id = None
+        if conn is not None:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT status, requester_id FROM friendships
+                    WHERE (requester_id = ? AND receiver_id = ?)
+                       OR (requester_id = ? AND receiver_id = ?)
+                """, (user.uuid, target_record.uuid, target_record.uuid, user.uuid))
+                row = cursor.fetchone()
+                if row:
+                    status = row["status"]
+                    requester_id = row["requester_id"]
+            except Exception:
+                pass
+
+        success = self._db.remove_friendship(user.uuid, target_record.uuid)
+        if success:
+            if status == "accepted":
+                user.speak_l("friend-removed-success", buffer="system", username=target_record.username)
+                user.play_sound("friend_removed.ogg")
+                target_user = self._users.get(target_record.username)
+                if target_user:
+                    target_user.speak_l("friend-removed-notify", buffer="system", username=user.username)
+                    target_user.play_sound("friend_removed.ogg")
+                else:
+                    self._db.add_notification(target_record.uuid, user.username, "friend_removed")
+            elif status == "pending":
+                if requester_id == user.uuid:
+                    # Outgoing request cancelled
+                    user.speak_l("friend-request-cancelled", buffer="system", username=target_record.username)
+                    user.play_sound("friend_removed.ogg")
+                    target_user = self._users.get(target_record.username)
+                    if target_user:
+                        target_user.speak_l("friend-request-cancelled-notify", buffer="system", username=user.username)
+                    else:
+                        self._db.add_notification(target_record.uuid, user.username, "friend_request_cancelled")
+                else:
+                    # Incoming request declined
+                    user.speak_l("friend-declined-success", buffer="system")
+                    user.play_sound("friend_declined.ogg")
+                    target_user = self._users.get(target_record.username)
+                    if target_user:
+                        target_user.speak_l("friend-declined-notify", buffer="system", username=user.username)
+                        target_user.play_sound("friend_declined.ogg")
+                    else:
+                        self._db.add_notification(target_record.uuid, user.username, "friend_declined")
+            else:
+                # Fallback generic removal feedback
+                user.speak_l("friend-removed-success", buffer="system", username=target_record.username)
+                user.play_sound("friend_removed.ogg")
+
+            self.on_friend_requests_changed(target_record.uuid)
+            self.on_friend_requests_changed(user.uuid)
+        else:
+            user.speak_l("friend-remove-not-friends", buffer="system", username=target_record.username)
 
     async def _handle_get_history(self, client: ClientConnection) -> None:
         """Handle get_history request: fetch and return the user's game history."""

@@ -345,3 +345,51 @@ class TestFriendsSystem:
             and msg.get("name") == "friend_removed.ogg"
             for msg in messages
         )
+
+    @pytest.mark.asyncio
+    async def test_direct_friend_actions(self):
+        self.db.create_user("UserA", "hash")
+        self.db.create_user("UserB", "hash")
+        user_a = self.db.get_user("UserA")
+        user_b = self.db.get_user("UserB")
+        
+        ua_user = self._make_network_user(user_a.username, user_a.uuid)
+        ub_user = self._make_network_user(user_b.username, user_b.uuid)
+        ua_user.connection.username = user_a.username
+        ub_user.connection.username = user_b.username
+
+        # 1. Send friend request via direct action packet
+        await self.server._handle_action_send_friend_request(
+            ua_user.connection,
+            {"username": "UserB"}
+        )
+        assert user_a.uuid in self.db.get_pending_incoming_requests(user_b.uuid)
+        assert user_b.uuid in self.db.get_pending_outgoing_requests(user_a.uuid)
+        
+        # 2. Cancel the pending outgoing request via direct action packet
+        await self.server._handle_action_remove_friendship(
+            ua_user.connection,
+            {"username": "UserB"}
+        )
+        assert user_a.uuid not in self.db.get_pending_incoming_requests(user_b.uuid)
+        
+        # 3. Send friend request again
+        await self.server._handle_action_send_friend_request(
+            ua_user.connection,
+            {"username": "UserB"}
+        )
+        
+        # 4. Accept friend request via direct action packet
+        await self.server._handle_action_accept_friend_request(
+            ub_user.connection,
+            {"username": "UserA"}
+        )
+        assert user_b.uuid in self.db.get_friends(user_a.uuid)
+        assert user_a.uuid in self.db.get_friends(user_b.uuid)
+
+        # 5. Remove friendship (unfriend) via direct action packet
+        await self.server._handle_action_remove_friendship(
+            ua_user.connection,
+            {"username": "UserB"}
+        )
+        assert user_b.uuid not in self.db.get_friends(user_a.uuid)

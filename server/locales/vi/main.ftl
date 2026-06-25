@@ -601,6 +601,8 @@ friend-accepted-notify = { $username } đã chấp nhận lời mời kết bạ
 request-not-found = Lời mời kết bạn không còn tồn tại.
 friend-declined-success = Đã từ chối lời mời kết bạn.
 friend-declined-notify = { $username } đã từ chối lời mời kết bạn của bạn.
+friend-request-cancelled = Lời mời kết bạn đến { $username } đã bị hủy.
+friend-request-cancelled-notify = { $username } đã hủy yêu cầu kết bạn.
 
 public-profile-title = Hồ sơ của { $username }
 enter-friend-username = Nhập tên người dùng bạn muốn kết bạn:

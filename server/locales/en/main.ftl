@@ -601,6 +601,8 @@ friend-accepted-notify = { $username } has accepted your friend request!
 request-not-found = Friend request no longer exists.
 friend-declined-success = Friend request declined.
 friend-declined-notify = { $username } declined your friend request.
+friend-request-cancelled = Friend request to { $username } cancelled.
+friend-request-cancelled-notify = { $username } cancelled their friend request.
 
 public-profile-title = { $username }'s Profile
 enter-friend-username = Enter the username of the person you want to friend:

@@ -2117,6 +2117,15 @@ class Database:
         """, (user_id,))
         return [row["requester_id"] for row in cursor.fetchall()]
 
+    def get_pending_outgoing_requests(self, user_id: str) -> list[str]:
+        """Get a list of UUIDs to whom this user sent a pending friend request."""
+        cursor = self._conn.cursor()
+        cursor.execute("""
+            SELECT receiver_id FROM friendships
+            WHERE requester_id = ? AND status = 'pending'
+        """, (user_id,))
+        return [row["receiver_id"] for row in cursor.fetchall()]
+
     def add_notification(self, user_id: str, source_username: str, event_type: str) -> None:
         """Add an offline notification for a user."""
         now = datetime.now().isoformat()
