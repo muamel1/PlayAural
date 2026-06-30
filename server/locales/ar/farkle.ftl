@@ -1,105 +1,105 @@
-game-name-farkle = Farkle
+game-name-farkle = فاركل
 
-farkle-roll = Roll { $count } { $count ->
-    [one] die
-   *[other] dice
+farkle-roll = رمي { $count } { $count ->
+    [one] نرد
+   *[other] أحجار نرد
 }
-farkle-bank = Bank { $points } points
+farkle-bank = تسجيل { $points } نقطة
 
-farkle-take-single-one = Single 1 for { $points } points
-farkle-take-single-five = Single 5 for { $points } points
-farkle-take-three-kind = Three { $number }s for { $points } points
-farkle-take-four-kind = Four { $number }s for { $points } points
-farkle-take-five-kind = Five { $number }s for { $points } points
-farkle-take-six-kind = Six { $number }s for { $points } points
-farkle-take-small-straight = Small straight for { $points } points
-farkle-take-large-straight = Large straight for { $points } points
-farkle-take-three-pairs = Three pairs for { $points } points
-farkle-take-double-triplets = Double triplets for { $points } points
-farkle-take-full-house = Four of a kind with a pair for { $points } points
+farkle-take-single-one = رقم 1 منفرد مقابل { $points } نقطة
+farkle-take-single-five = رقم 5 منفرد مقابل { $points } نقطة
+farkle-take-three-kind = ثلاثة { $number } متطابقة مقابل { $points } نقطة
+farkle-take-four-kind = أربعة { $number } متطابقة مقابل { $points } نقطة
+farkle-take-five-kind = خمسة { $number } متطابقة مقابل { $points } نقطة
+farkle-take-six-kind = ستة { $number } متطابقة مقابل { $points } نقطة
+farkle-take-small-straight = متتالية صغيرة مقابل { $points } نقطة
+farkle-take-large-straight = متتالية كبيرة مقابل { $points } نقطة
+farkle-take-three-pairs = ثلاثة أزواج مقابل { $points } نقطة
+farkle-take-double-triplets = ثلاثيتان مزدوجتان مقابل { $points } نقطة
+farkle-take-full-house = أربعة متطابقة مع زوج مقابل { $points } نقطة
 
-farkle-you-roll = You roll { $count } { $count ->
-    [one] die
-   *[other] dice
+farkle-you-roll = لقد رميت { $count } { $count ->
+    [one] نرد
+   *[other] أحجار نرد
 }.
-farkle-player-rolls = { $player } rolls { $count } { $count ->
-    [one] die
-   *[other] dice
+farkle-player-rolls = يرمي { $player } { $count } { $count ->
+    [one] نرد
+   *[other] أحجار نرد
 }.
-farkle-you-roll-brief = You roll { $count }.
-farkle-player-rolls-brief = { $player } rolls { $count }.
-farkle-roll-result = The dice show: { $dice }.
-farkle-roll-result-brief = Dice: { $dice }.
+farkle-you-roll-brief = لقد رميت { $count }.
+farkle-player-rolls-brief = رمى { $player } { $count }.
+farkle-roll-result = يظهر النرد: { $dice }.
+farkle-roll-result-brief = النرد: { $dice }.
 
-farkle-you-farkle = FARKLE! You lose { $points } turn points.
-farkle-player-farkles = FARKLE! { $player } loses { $points } turn points.
-farkle-you-farkle-brief = Farkle: you lose { $points }.
-farkle-player-farkles-brief = Farkle: { $player } loses { $points }.
+farkle-you-farkle = فاركل! لقد خسرت { $points } نقطة في هذا الدور.
+farkle-player-farkles = فاركل! خسر { $player } { $points } نقطة في هذا الدور.
+farkle-you-farkle-brief = فاركل: خسرت { $points }.
+farkle-player-farkles-brief = فاركل: خسر { $player } { $points }.
 
-farkle-you-take-combo = You keep { $combo } for { $points } points.
-farkle-player-takes-combo = { $player } keeps { $combo } for { $points } points.
-farkle-you-take-combo-brief = You: { $combo }, +{ $points }.
-farkle-player-takes-combo-brief = { $player }: { $combo }, +{ $points }.
+farkle-you-take-combo = لقد احتفظت بـ { $combo } مقابل { $points } نقطة.
+farkle-player-takes-combo = يحتفظ { $player } بـ { $combo } مقابل { $points } نقطة.
+farkle-you-take-combo-brief = أنت: { $combo }، +{ $points }.
+farkle-player-takes-combo-brief = { $player }: { $combo }، +{ $points }.
 
-farkle-you-hot-dice = Hot dice! You scored all six dice and may roll all six again.
-farkle-player-hot-dice = Hot dice! { $player } scored all six dice and may roll all six again.
-farkle-you-hot-dice-brief = You: hot dice.
-farkle-player-hot-dice-brief = { $player }: hot dice.
+farkle-you-hot-dice = نرد مشتعل! لقد سجلت بجميع أحجار النرد الستة ويمكنك رميها جميعًا مرة أخرى.
+farkle-player-hot-dice = نرد مشتعل! سجل { $player } بجميع أحجار النرد الستة ويمكنه رميها جميعًا مرة أخرى.
+farkle-you-hot-dice-brief = أنت: نرد مشتعل.
+farkle-player-hot-dice-brief = { $player }: نرد مشتعل.
 
-farkle-you-bank = You bank { $points } points. Your total is now { $total }.
-farkle-player-banks = { $player } banks { $points } points for a total of { $total }.
-farkle-you-bank-brief = You bank { $points}; total { $total }.
-farkle-player-banks-brief = { $player } banks { $points}; total { $total }.
+farkle-you-bank = لقد سجلت { $points } نقطة. إجمالي نقاطك الآن { $total }.
+farkle-player-banks = يسجل { $player } { $points } نقطة ليصبح إجمالي نقاطه { $total }.
+farkle-you-bank-brief = لقد سجلت { $points }؛ الإجمالي { $total }.
+farkle-player-banks-brief = سجل { $player } { $points }؛ الإجمالي { $total }.
 
-farkle-you-win = You win with { $score } points!
-farkle-winner = { $player } wins with { $score } points!
-farkle-you-win-brief = You win: { $score }.
-farkle-winner-brief = { $player } wins: { $score }.
-farkle-winners-tie = Tie at the target! Tiebreaker players: { $players }.
-farkle-tiebreaker-round-start = Tiebreaker round { $round }. Still competing: { $players }.
+farkle-you-win = لقد فزت بـ { $score } نقطة!
+farkle-winner = فاز { $player } بـ { $score } نقطة!
+farkle-you-win-brief = لقد فزت: { $score }.
+farkle-winner-brief = فاز { $player }: { $score }.
+farkle-winners-tie = تعادل عند نقاط الهدف! لاعبو جولة كسر التعادل: { $players }.
+farkle-tiebreaker-round-start = جولة كسر التعادل { $round }. اللاعبون المستمرون في المنافسة: { $players }.
 
-farkle-your-turn-score = You have { $points } points in this turn.
-farkle-turn-score = { $player } has { $points } points in this turn.
-farkle-no-turn = No one is currently taking a turn.
+farkle-your-turn-score = لديك { $points } نقطة في هذا الدور.
+farkle-turn-score = لدى { $player } { $points } نقطة في هذا الدور.
+farkle-no-turn = لا أحد يلعب دوره حاليًا.
 
-farkle-set-target-score = Target score: { $score }
-farkle-enter-target-score = Enter target score (500-5000):
-farkle-option-changed-target = Target score set to { $score }.
+farkle-set-target-score = نقاط الهدف: { $score }
+farkle-enter-target-score = أدخل نقاط الهدف (500-5000):
+farkle-option-changed-target = تم ضبط نقاط الهدف إلى { $score }.
 
-farkle-set-entrance-score = Minimum entrance score: { $score }
-farkle-enter-entrance-score = Enter minimum entrance score (0-5000):
-farkle-option-changed-entrance = Minimum entrance score set to { $score }.
+farkle-set-entrance-score = الحد الأدنى لنقاط الدخول: { $score }
+farkle-enter-entrance-score = أدخل الحد الأدنى لنقاط الدخول (0-5000):
+farkle-option-changed-entrance = تم ضبط الحد الأدنى لنقاط الدخول إلى { $score }.
 
-farkle-set-bank-score = Minimum bank score: { $score }
-farkle-enter-bank-score = Enter minimum bank score (0-5000):
-farkle-option-changed-bank = Minimum bank score set to { $score }.
+farkle-set-bank-score = الحد الأدنى لنقاط التسجيل: { $score }
+farkle-enter-bank-score = أدخل الحد الأدنى لنقاط التسجيل (0-5000):
+farkle-option-changed-bank = تم ضبط الحد الأدنى لنقاط التسجيل إلى { $score }.
 
-farkle-error-entrance-above-target = The minimum entrance score ({ $entrance }) cannot be higher than the target score ({ $target }).
-farkle-error-bank-above-target = The minimum bank score ({ $bank }) cannot be higher than the target score ({ $target }).
+farkle-error-entrance-above-target = لا يمكن أن يكون الحد الأدنى لنقاط الدخول ({ $entrance }) أعلى من نقاط الهدف ({ $target }).
+farkle-error-bank-above-target = لا يمكن أن يكون الحد الأدنى لنقاط التسجيل ({ $bank }) أعلى من نقاط الهدف ({ $target }).
 
-farkle-must-take-combo = You must keep at least one scoring die or combination before rolling again.
-farkle-cannot-bank = You can bank only after keeping a scoring die or combination this turn.
-farkle-must-reach-entrance-score = You need at least { $points } turn points before banking your first score.
-farkle-must-reach-bank-score = You need at least { $points } turn points before banking.
-farkle-confirm-risky-roll = You can bank { $points } points now. Rolling again risks losing them; repeat Roll within { $seconds } seconds to confirm.
-farkle-invalid-combo-action = That scoring choice is not recognized. Please choose one of the currently listed combinations.
-farkle-combo-no-longer-available = That scoring combination is no longer available. The current scoring choices have been refreshed.
+farkle-must-take-combo = يجب عليك الاحتفاظ بحجر نرد مسجل أو مجموعة واحدة على الأقل قبل الرمي مرة أخرى.
+farkle-cannot-bank = يمكنك التسجيل فقط بعد الاحتفاظ بنرد مسجل أو مجموعة نقاط في هذا الدور.
+farkle-must-reach-entrance-score = تحتاج إلى { $points } نقطة دور على الأقل قبل تسجيل أول نقاط لك.
+farkle-must-reach-bank-score = تحتاج إلى { $points } نقطة دور على الأقل قبل التسجيل.
+farkle-confirm-risky-roll = يمكنك تسجيل { $points } نقطة الآن. الرمي مرة أخرى يعرضك لخسارتها؛ أعد الضغط على "رمي" خلال { $seconds } ثوانٍ للتأكيد.
+farkle-invalid-combo-action = خيار التسجيل هذا غير معترف به. يرجى اختيار إحدى المجموعات المدرجة حاليًا.
+farkle-combo-no-longer-available = لم تعد مجموعة التسجيل هذه متاحة. تم تحديث خيارات التسجيل الحالية.
 
-farkle-combo-single-1 = Single 1
-farkle-combo-single-5 = Single 5
-farkle-combo-three-kind = Three { $number }s
-farkle-combo-four-kind = Four { $number }s
-farkle-combo-five-kind = Five { $number }s
-farkle-combo-six-kind = Six { $number }s
-farkle-combo-small-straight = Small straight
-farkle-combo-large-straight = Large straight
-farkle-combo-three-pairs = Three pairs
-farkle-combo-double-triplets = Double triplets
-farkle-combo-full-house = Four of a kind with a pair
+farkle-combo-single-1 = رقم 1 منفرد
+farkle-combo-single-5 = رقم 5 منفرد
+farkle-combo-three-kind = ثلاثة { $number } متطابقة
+farkle-combo-four-kind = أربعة { $number } متطابقة
+farkle-combo-five-kind = خمسة { $number } متطابقة
+farkle-combo-six-kind = ستة { $number } متطابقة
+farkle-combo-small-straight = متتالية صغيرة
+farkle-combo-large-straight = متتالية كبيرة
+farkle-combo-three-pairs = ثلاثة أزواج
+farkle-combo-double-triplets = ثلاثيتان مزدوجتان
+farkle-combo-full-house = أربعة متطابقة مع زوج
 
 farkle-line-format = { $rank }. { $player }: { $points }
-farkle-combo-fallback = { $combo } for { $points } points
+farkle-combo-fallback = { $combo } مقابل { $points } نقطة
 
-farkle-check-turn-score = Check turn score
-farkle-roll-label = Roll dice
-farkle-bank-label = Bank points
+farkle-check-turn-score = التحقق من نقاط الدور
+farkle-roll-label = رمي النرد
+farkle-bank-label = تسجيل النقاط

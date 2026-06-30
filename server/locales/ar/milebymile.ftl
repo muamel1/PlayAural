@@ -1,175 +1,175 @@
-game-name-milebymile = Mile by Mile
+game-name-milebymile = ميل بميل
 
-milebymile-set-distance = Race distance: { $miles } miles
-milebymile-enter-distance = Enter race distance (300-3000)
-milebymile-set-winning-score = Winning score: { $score } points
-milebymile-enter-winning-score = Enter winning score (1000-10000)
-milebymile-toggle-perfect-crossing = Require exact finish: { $enabled }
-milebymile-toggle-stacking = Allow stacking attacks: { $enabled }
-milebymile-toggle-reshuffle = Reshuffle discard pile: { $enabled }
-milebymile-toggle-karma = Karma rule: { $enabled }
-milebymile-set-rig = Deck rigging: { $rig }
-milebymile-select-rig = Select deck rigging option
-milebymile-rig-none = None
-milebymile-rig-no-duplicates = No Duplicates
-milebymile-rig-2x-attacks = 2x Attacks
-milebymile-rig-2x-defenses = 2x Defenses
+milebymile-set-distance = مسافة السباق: { $miles } ميل
+milebymile-enter-distance = أدخل مسافة السباق (300-3000)
+milebymile-set-winning-score = النقاط المطلوبة للفوز: { $score } نقطة
+milebymile-enter-winning-score = أدخل نقاط الفوز (1000-10000)
+milebymile-toggle-perfect-crossing = اشتراط الوصول الدقيق للنهاية: { $enabled }
+milebymile-toggle-stacking = السماح بتراكم الهجمات: { $enabled }
+milebymile-toggle-reshuffle = إعادة خلط كومة الاستبعاد: { $enabled }
+milebymile-toggle-karma = قاعدة الكارما: { $enabled }
+milebymile-set-rig = إعداد الأوراق: { $rig }
+milebymile-select-rig = اختر خيار إعداد الأوراق
+milebymile-rig-none = بدون
+milebymile-rig-no-duplicates = بدون تكرار
+milebymile-rig-2x-attacks = هجمات مضاعفة (2x)
+milebymile-rig-2x-defenses = دفاعات مضاعفة (2x)
 
-milebymile-option-changed-distance = Race distance set to { $miles } miles.
-milebymile-option-changed-winning = Winning score set to { $score } points.
-milebymile-option-changed-crossing = Require exact finish { $enabled }.
-milebymile-option-changed-stacking = Allow stacking attacks { $enabled }.
-milebymile-option-changed-reshuffle = Reshuffle discard pile { $enabled }.
-milebymile-option-changed-karma = Karma rule { $enabled }.
-milebymile-option-changed-rig = Deck rigging set to { $rig }.
+milebymile-option-changed-distance = تم ضبط مسافة السباق إلى { $miles } ميل.
+milebymile-option-changed-winning = تم ضبط نقاط الفوز إلى { $score } نقطة.
+milebymile-option-changed-crossing = اشتراط الوصول الدقيق للنهاية { $enabled }.
+milebymile-option-changed-stacking = السماح بتراكم الهجمات { $enabled }.
+milebymile-option-changed-reshuffle = إعادة خلط كومة الاستبعاد { $enabled }.
+milebymile-option-changed-karma = قاعدة الكارما { $enabled }.
+milebymile-option-changed-rig = تم ضبط إعداد الأوراق إلى { $rig }.
 
-milebymile-status = { $score_info }, { $miles } miles, Problems: { $problems }, Safeties: { $safeties }
+milebymile-status = { $score_info }، { $miles } ميل، المشاكل: { $problems }، وسائل الأمان: { $safeties }
 
-milebymile-no-matching-safety = You don't have the matching safety card!
-milebymile-cant-play = You can't play { $card } because { $reason }.
-milebymile-unplayable-card-menu-title = Card cannot be played
-milebymile-unplayable-discard-question = You cannot play { $card } because { $reason }. Do you want to discard it?
-milebymile-no-card-selected = No card selected to discard.
-milebymile-no-valid-targets = No valid targets for this hazard!
-milebymile-you-drew = You drew: { $card }
-milebymile-you-discard = You discard { $card }.
-milebymile-discards = { $player } discards { $card }.
-milebymile-select-target = Select a target
+milebymile-no-matching-safety = لا تملك بطاقة الأمان المطابقة!
+milebymile-cant-play = لا يمكنك لعب { $card } لأن { $reason }.
+milebymile-unplayable-card-menu-title = لا يمكن لعب البطاقة
+milebymile-unplayable-discard-question = لا يمكنك لعب { $card } لأن { $reason }. هل تريد استبعادها؟
+milebymile-no-card-selected = لم يتم اختيار بطاقة لاستبعادها.
+milebymile-no-valid-targets = لا توجد أهداف صالحة لهذا الخطر!
+milebymile-you-drew = لقد سحبت: { $card }
+milebymile-you-discard = لقد استبعدت { $card }.
+milebymile-discards = يستبعد { $player } { $card }.
+milebymile-select-target = اختر هدفًا
 
-milebymile-you-play-distance-individual = You play { $distance } miles, and are now at { $total } miles.
-milebymile-plays-distance-individual = { $player } plays { $distance } miles, and is now at { $total } miles.
-milebymile-you-play-distance-team = You play { $distance } miles; your team is now at { $total } miles.
-milebymile-plays-distance-team = { $player } plays { $distance } miles; their team is now at { $total } miles.
+milebymile-you-play-distance-individual = لقد لعبت { $distance } ميل، وأنت الآن عند { $total } ميل.
+milebymile-plays-distance-individual = يلعب { $player } { $distance } ميل، وهو الآن عند { $total } ميل.
+milebymile-you-play-distance-team = لقد لعبت { $distance } ميل؛ وفريقك الآن عند { $total } ميل.
+milebymile-plays-distance-team = يلعب { $player } { $distance } ميل؛ وفريقه الآن عند { $total } ميل.
 
-milebymile-you-complete-perfect-individual = You complete the journey with a perfect crossing!
-milebymile-journey-complete-perfect-individual = { $player } has completed the journey with a perfect crossing!
-milebymile-your-team-completes-perfect = Your team completes the journey with a perfect crossing!
-milebymile-journey-complete-perfect-team = Team { $team } has completed the journey with a perfect crossing!
-milebymile-you-complete-individual = You complete the journey!
-milebymile-journey-complete-individual = { $player } has completed the journey!
-milebymile-your-team-completes = Your team completes the journey!
-milebymile-journey-complete-team = Team { $team } has completed the journey!
+milebymile-you-complete-perfect-individual = لقد أكملت الرحلة بوصول دقيق مثالي!
+milebymile-journey-complete-perfect-individual = أكمل { $player } الرحلة بوصول دقيق مثالي!
+milebymile-your-team-completes-perfect = أكمل فريقك الرحلة بوصول دقيق مثالي!
+milebymile-journey-complete-perfect-team = أكمل الفريق { $team } الرحلة بوصول دقيق مثالي!
+milebymile-you-complete-individual = لقد أكملت الرحلة!
+milebymile-journey-complete-individual = أكمل { $player } الرحلة!
+milebymile-your-team-completes = أكمل فريقك الرحلة!
+milebymile-journey-complete-team = أكمل الفريق { $team } الرحلة!
 
-milebymile-you-play-hazard-individual = You play { $card } on { $target }.
-milebymile-hazard-played-on-you = { $player } plays { $card } on you.
-milebymile-plays-hazard-individual = { $player } plays { $card } on { $target }.
-milebymile-you-play-hazard-team = You play { $card } on Team { $team }.
-milebymile-hazard-played-on-your-team = { $player } plays { $card } on your team.
-milebymile-plays-hazard-team = { $player } plays { $card } on Team { $team }.
+milebymile-you-play-hazard-individual = لقد لعبت { $card } على { $target }.
+milebymile-hazard-played-on-you = لعب { $player } { $card } عليك.
+milebymile-plays-hazard-individual = يلعب { $player } { $card } على { $target }.
+milebymile-you-play-hazard-team = لقد لعبت { $card } على الفريق { $team }.
+milebymile-hazard-played-on-your-team = لعب { $player } { $card } على فريقك.
+milebymile-plays-hazard-team = يلعب { $player } { $card } على الفريق { $team }.
 
-milebymile-you-play-card = You play { $card }.
-milebymile-plays-card = { $player } plays { $card }.
-milebymile-you-play-dirty-trick = You play { $card } as a Dirty Trick!
-milebymile-plays-dirty-trick = { $player } plays { $card } as a Dirty Trick!
+milebymile-you-play-card = لقد لعبت { $card }.
+milebymile-plays-card = يلعب { $player } { $card }.
+milebymile-you-play-dirty-trick = لقد لعبت { $card } كخدعة قذرة!
+milebymile-plays-dirty-trick = يلعب { $player } { $card } كخدعة قذرة!
 
-milebymile-deck-reshuffled = Discard pile shuffled back into deck.
+milebymile-deck-reshuffled = تم إعادة خلط كومة الاستبعاد وإعادتها إلى مجموعة السحب.
 
-milebymile-new-race = New race begins!
-milebymile-race-complete = Race complete! Calculating scores...
-milebymile-earned-points = { $name } earned { $score } points this race: { $breakdown }.
-milebymile-total-scores = Total scores:
-milebymile-team-score = { $name }: { $score } points
+milebymile-new-race = يبدأ سباق جديد!
+milebymile-race-complete = اكتمل السباق! جاري حساب النقاط...
+milebymile-earned-points = حصل { $name } على { $score } نقطة في هذا السباق: { $breakdown }.
+milebymile-total-scores = إجمالي النقاط:
+milebymile-team-score = { $name }: { $score } نقطة
 
-milebymile-from-distance = { $miles } from distance travelled
-milebymile-from-trip = { $points } from completing the trip
-milebymile-from-perfect = { $points } from a perfect crossing
-milebymile-from-safe = { $points } from a safe trip
-milebymile-from-shutout = { $points } from a shut out
-milebymile-from-safeties = { $points } from { $count } { $count ->
-    [one] safety
-    *[other] safeties
+milebymile-from-distance = { $miles } من المسافة المقطوعة
+milebymile-from-trip = { $points } من إكمال الرحلة
+milebymile-from-perfect = { $points } من الوصول الدقيق المثالي
+milebymile-from-safe = { $points } من رحلة آمنة
+milebymile-from-shutout = { $points } من استبعاد الخصم (Shutout)
+milebymile-from-safeties = { $points } من { $count } { $count ->
+    [one] بطاقة أمان واحدة
+   *[other] بطاقات أمان
 }
-milebymile-from-all-safeties = { $points } from all 4 safeties
-milebymile-from-dirty-tricks = { $points } from { $count } { $count ->
-    [one] dirty trick
-    *[other] dirty tricks
+milebymile-from-all-safeties = { $points } من جميع بطاقات الأمان الأربعة
+milebymile-from-dirty-tricks = { $points } من { $count } { $count ->
+    [one] خدعة قذرة واحدة
+   *[other] خدع قذرة
 }
 
-milebymile-you-win-individual = You win the game!
-milebymile-wins-individual = { $player } wins the game!
-milebymile-your-team-wins = Your team wins the game!
-milebymile-wins-team = Team { $team } wins the game! ({ $members })
-milebymile-final-score = Final score: { $score } points
+milebymile-you-win-individual = لقد فزت باللعبة!
+milebymile-wins-individual = فاز { $player } باللعبة!
+milebymile-your-team-wins = فاز فريقك باللعبة!
+milebymile-wins-team = فاز الفريق { $team } باللعبة! ({ $members })
+milebymile-final-score = النقاط النهائية: { $score } نقطة
 
-milebymile-karma-clash-you-target = You and your target are both shunned! The attack is neutralized.
-milebymile-karma-clash-you-attacker = You and { $attacker } are both shunned! The attack is neutralized.
-milebymile-karma-clash-others = { $attacker } and { $target } are both shunned! The attack is neutralized.
-milebymile-karma-clash-your-team = Your team and your target are both shunned! The attack is neutralized.
-milebymile-karma-clash-target-team = You and Team { $team } are both shunned! The attack is neutralized.
-milebymile-karma-clash-other-teams = Team { $attacker } and Team { $target } are both shunned! The attack is neutralized.
+milebymile-karma-clash-you-target = لقد تم نبذك أنت وهدفك! تم إبطال الهجوم.
+milebymile-karma-clash-you-attacker = لقد تم نبذك أنت و { $attacker }! تم إبطال الهجوم.
+milebymile-karma-clash-others = تم نبذ { $attacker } و { $target }! تم إبطال الهجوم.
+milebymile-karma-clash-your-team = لقد تم نبذ فريقك وهدفك! تم إبطال الهجوم.
+milebymile-karma-clash-target-team = لقد تم نبذك أنت والفريق { $team }! تم إبطال الهجوم.
+milebymile-karma-clash-other-teams = تم نبذ الفريق { $attacker } والفريق { $target }! تم إبطال الهجوم.
 
-milebymile-karma-shunned-you = You have been shunned for your aggression! Your karma is lost.
-milebymile-karma-shunned-other = { $player } has been shunned for their aggression!
-milebymile-karma-shunned-your-team = Your team has been shunned for its aggression! Your team's karma is lost.
-milebymile-karma-shunned-other-team = Team { $team } has been shunned for its aggression!
+milebymile-karma-shunned-you = لقد تم نبذك بسبب عدوانيتك! لقد فقدت الكارما الخاصة بك.
+milebymile-karma-shunned-other = تم نبذ { $player } بسبب عدوانيته!
+milebymile-karma-shunned-your-team = لقد تم نبذ فريقك بسبب عدوانيته! فقد فريقك الكارما الخاصة به.
+milebymile-karma-shunned-other-team = تم نبذ الفريق { $team } بسبب عدوانيته!
 
-milebymile-false-virtue-you = You play False Virtue and regain your karma!
-milebymile-false-virtue-other = { $player } plays False Virtue and regains their karma!
-milebymile-false-virtue-your-team = Your team plays False Virtue and regains its karma!
-milebymile-false-virtue-other-team = Team { $team } plays False Virtue and regains its karma!
+milebymile-false-virtue-you = لقد لعبت "فضيلة زائفة" واستعدت الكارما الخاصة بك!
+milebymile-false-virtue-other = يلعب { $player } "فضيلة زائفة" ويستعيد الكارما الخاصة به!
+milebymile-false-virtue-your-team = يلعب فريقك "فضيلة زائفة" ويستعيد الكارما الخاصة به!
+milebymile-false-virtue-other-team = يلعب الفريق { $team } "فضيلة زائفة" ويستعيد الكارما الخاصة به!
 
-milebymile-none = none
+milebymile-none = لا يوجد
 
-milebymile-reason-not-on-team = you're not on a team
-milebymile-reason-stopped = you need a Green Light before you can drive
-milebymile-reason-has-problem = a road problem is stopping your car
-milebymile-reason-out-of-gas = you cannot move because you are out of gas; play Gasoline or Extra Tank first
-milebymile-reason-flat-tire = you cannot move because you have a flat tire; play Spare Tire or Puncture Proof first
-milebymile-reason-accident = you cannot move because you had an accident; play Repairs or Driving Ace first
-milebymile-reason-speed-limit = you are under a Speed Limit, so only 25 or 50 mile cards are allowed
-milebymile-reason-exceeds-distance = it would pass the finish; you need exactly { $miles } more miles
-milebymile-reason-too-many-200s = you have already played two 200-mile cards this race
-milebymile-reason-no-targets = no opponent can legally receive this hazard right now
-milebymile-reason-no-opponents = there are no opposing teams to target
-milebymile-reason-hazard-protected = every possible target is protected from { $card } by { $safety }
-milebymile-reason-hazard-karma = you have lost karma and can only attack a target that has also lost karma
-milebymile-reason-hazard-duplicate-speed-limit = every possible target is already under a Speed Limit
-milebymile-reason-hazard-duplicate = every possible target already has { $card }
-milebymile-reason-hazard-blocked = every possible target is already stopped by another hazard
-milebymile-reason-no-speed-limit = you're not under a speed limit
-milebymile-reason-has-right-of-way = Right of Way lets you go without green lights
-milebymile-reason-already-moving = you're already moving
-milebymile-reason-must-fix-first = you must fix the { $problem } first with { $remedy }
-milebymile-reason-has-gas = your car has gas
-milebymile-reason-tires-fine = your tires are fine
-milebymile-reason-no-accident = your car hasn't been in an accident
-milebymile-reason-has-safety = you already have that safety
-milebymile-reason-has-karma = you still have your karma
-milebymile-reason-generic = it can't be played right now
+milebymile-reason-not-on-team = لست في فريق
+milebymile-reason-stopped = تحتاج إلى "ضوء أخضر" لتتمكن من القيادة
+milebymile-reason-has-problem = هناك مشكلة على الطريق توقف سيارتك
+milebymile-reason-out-of-gas = لا يمكنك التحرك لقلة الوقود؛ العب "وقود" أو "خزان إضافي" أولاً
+milebymile-reason-flat-tire = لا يمكنك التحرك بسبب إطار مثقوب؛ العب "إطار احتياطي" أو "مقاوم للثقب" أولاً
+milebymile-reason-accident = لا يمكنك التحرك لتعرضك لحادث؛ العب "إصلاحات" أو "سائق ماهر" أولاً
+milebymile-reason-speed-limit = أنت تحت حد السرعة، لذا يُسمح ببطاقات 25 أو 50 ميلاً فقط
+milebymile-reason-exceeds-distance = سوف يتجاوز ذلك خط النهاية؛ تحتاج إلى { $miles } ميل إضافي بالضبط
+milebymile-reason-too-many-200s = لقد لعبت بالفعل بطاقتين من فئة 200 ميل في هذا السباق
+milebymile-reason-no-targets = لا يوجد خصم يمكنه استقبال هذا الخطر قانونيًا الآن
+milebymile-reason-no-opponents = لا توجد فرق خصمة لاستهدافها
+milebymile-reason-hazard-protected = كل هدف محتمل محمي ضد { $card } بواسطة { $safety }
+milebymile-reason-hazard-karma = لقد فقدت الكارما ولا يمكنك مهاجمة سوى هدف فقد الكارما أيضًا
+milebymile-reason-hazard-duplicate-speed-limit = كل هدف محتمل يقع بالفعل تحت حد السرعة
+milebymile-reason-hazard-duplicate = كل هدف محتمل لديه بالفعل { $card }
+milebymile-reason-hazard-blocked = كل هدف محتمل متوقف بالفعل بسبب خطر آخر
+milebymile-reason-no-speed-limit = لست تحت حد السرعة
+milebymile-reason-has-right-of-way = تتيح لك بطاقة "أولوية المرور" التحرك بدون أضواء خضراء
+milebymile-reason-already-moving = أنت تتحرك بالفعل
+milebymile-reason-must-fix-first = يجب عليك حل مشكلة { $problem } أولاً باستخدام { $remedy }
+milebymile-reason-has-gas = سيارتك بها وقود
+milebymile-reason-tires-fine = إطاراتك سليمة
+milebymile-reason-no-accident = لم تتعرض سيارتك لحادث
+milebymile-reason-has-safety = تملك بطاقة الأمان هذه بالفعل
+milebymile-reason-has-karma = ما زلت تملك الكارما الخاصة بك
+milebymile-reason-generic = لا يمكن لعبها الآن
 
-milebymile-card-out-of-gas = Out of Gas
-milebymile-card-flat-tire = Flat Tire
-milebymile-card-accident = Accident
-milebymile-card-speed-limit = Speed Limit
-milebymile-card-stop = Stop
-milebymile-card-gasoline = Gasoline
-milebymile-card-spare-tire = Spare Tire
-milebymile-card-repairs = Repairs
-milebymile-card-end-of-limit = End of Limit
-milebymile-card-green-light = Green Light
-milebymile-card-extra-tank = Extra Tank
-milebymile-card-puncture-proof = Puncture Proof
-milebymile-card-driving-ace = Driving Ace
-milebymile-card-right-of-way = Right of Way
-milebymile-card-false-virtue = False Virtue
-milebymile-card-miles = { $miles } miles
+milebymile-card-out-of-gas = نفاد الوقود
+milebymile-card-flat-tire = إطار مثقوب
+milebymile-card-accident = حادث
+milebymile-card-speed-limit = حد السرعة
+milebymile-card-stop = قف
+milebymile-card-gasoline = وقود
+milebymile-card-spare-tire = إطار احتياطي
+milebymile-card-repairs = إصلاحات
+milebymile-card-end-of-limit = نهاية الحد
+milebymile-card-green-light = ضوء أخضر
+milebymile-card-extra-tank = خزان إضافي
+milebymile-card-puncture-proof = مقاوم للثقب
+milebymile-card-driving-ace = سائق ماهر
+milebymile-card-right-of-way = أولوية المرور
+milebymile-card-false-virtue = فضيلة زائفة
+milebymile-card-miles = { $miles } ميل
 
-milebymile-no-dirty-trick-window = No dirty trick window is active.
-milebymile-not-your-dirty-trick = It's not your team's dirty trick window.
-milebymile-between-races = Wait for the next race to start.
+milebymile-no-dirty-trick-window = لا توجد نافذة نشطة للخدع القذرة.
+milebymile-not-your-dirty-trick = ليست نافذة الخدع القذرة الخاصة بفريقك.
+milebymile-between-races = انتظر حتى يبدأ السباق التالي.
 
-milebymile-error-karma-needs-three-teams = Karma rule requires at least 3 distinct cars/teams.
-milebymile-error-perfect-distance-step = Exact finish requires a race distance divisible by 25, because all distance cards are multiples of 25.
+milebymile-error-karma-needs-three-teams = تتطلب قاعدة الكارما وجود 3 سيارات/فرق مختلفة على الأقل.
+milebymile-error-perfect-distance-step = يتطلب الوصول الدقيق أن تكون مسافة السباق قابلة للقسمة على 25، لأن جميع بطاقات المسافة هي مضاعفات الرقم 25.
 
 milebymile-line-format = { $rank }. { $name }: { $points }
 
-milebymile-target-individual = { $name } ({ $miles } miles)
-milebymile-target-team = Team { $team }: { $members } ({ $miles } miles)
+milebymile-target-individual = { $name } ({ $miles } ميل)
+milebymile-target-team = الفريق { $team }: { $members } ({ $miles } ميل)
 
-milebymile-discard-card = Discard card
-milebymile-detailed-status = Detailed status
-milebymile-check-status = Check status
-milebymile-dirty-trick = Play dirty trick
-milebymile-info-button = Info
-milebymile-info-msg-individual = { $player }: Hazards: { $hazards }. Safeties: { $safeties }. Distance: { $miles } miles.
-milebymile-info-msg-team = { $team } ({ $members }): Hazards: { $hazards }. Safeties: { $safeties }. Distance: { $miles } miles.
+milebymile-discard-card = استبعاد بطاقة
+milebymile-detailed-status = الحالة التفصيلية
+milebymile-check-status = التحقق من الحالة
+milebymile-dirty-trick = لعب خدعة قذرة
+milebymile-info-button = معلومات
+milebymile-info-msg-individual = { $player }: الأخطار: { $hazards }، وسائل الأمان: { $safeties }، المسافة: { $miles } ميل.
+milebymile-info-msg-team = { $team } ({ $members }): الأخطار: { $hazards }، وسائل الأمان: { $safeties }، المسافة: { $miles } ميل.

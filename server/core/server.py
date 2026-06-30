@@ -21,7 +21,7 @@ from ..auth.rate_limit import RateLimiter
 from ..auth.chat_rate_limit import ChatRateLimiter
 from ..auth.voice_rate_limit import VoiceRateLimiter
 from ..tables.manager import TableManager
-from ..users.network_user import NetworkUser
+from ..users.network_user import NetworkUser, is_handling_keybind
 from ..users.base import MenuItem, EscapeBehavior
 from ..users.preferences import UserPreferences, DiceKeepingStyle, PREF_CATEGORIES
 from ..games.registry import GameRegistry, get_game_class
@@ -6786,36 +6786,40 @@ PlayAural Server
 
     async def _handle_keybind(self, client: ClientConnection, packet: dict) -> None:
         """Handle keybind press."""
-        username = client.username
-        if not username:
-            return
-
-        user = self._users.get(username)
-
-        state = self._user_states.get(username, {})
-        current_menu = state.get("menu")
-
-        # In a Game Options preference menu, space speaks the focused pref's
-        # description (an accessibility aid); it is otherwise inert there.
-        if user and current_menu in ("pref_category_menu", "pref_detail_menu"):
-            key = (packet.get("key") or "").lower()
-            menu_item_id = packet.get("menu_item_id")
-            if key == "space" and menu_item_id and self._speak_pref_description(
-                user, menu_item_id
-            ):
+        token = is_handling_keybind.set(True)
+        try:
+            username = client.username
+            if not username:
                 return
 
-        if current_menu not in self.GLOBAL_SYSTEM_MENUS:
-            table = self._tables.find_user_table(username)
-            if table and table.game and user:
-                player = table.game.get_player_by_id(user.uuid)
-                if player:
-                    table.game.handle_event(player, packet)
-                    # Check if player left the game (user replaced by bot or removed)
-                    game_user = table.game._users.get(user.uuid)
-                    if game_user is not user:
-                        table.remove_member(username)
-                        self._show_main_menu(user)
+            user = self._users.get(username)
+
+            state = self._user_states.get(username, {})
+            current_menu = state.get("menu")
+
+            # In a Game Options preference menu, space speaks the focused pref's
+            # description (an accessibility aid); it is otherwise inert there.
+            if user and current_menu in ("pref_category_menu", "pref_detail_menu"):
+                key = (packet.get("key") or "").lower()
+                menu_item_id = packet.get("menu_item_id")
+                if key == "space" and menu_item_id and self._speak_pref_description(
+                    user, menu_item_id
+                ):
+                    return
+
+            if current_menu not in self.GLOBAL_SYSTEM_MENUS:
+                table = self._tables.find_user_table(username)
+                if table and table.game and user:
+                    player = table.game.get_player_by_id(user.uuid)
+                    if player:
+                        table.game.handle_event(player, packet)
+                        # Check if player left the game (user replaced by bot or removed)
+                        game_user = table.game._users.get(user.uuid)
+                        if game_user is not user:
+                            table.remove_member(username)
+                            self._show_main_menu(user)
+        finally:
+            is_handling_keybind.reset(token)
 
     async def _handle_editbox(self, client: ClientConnection, packet: dict) -> None:
         """Handle editbox submission."""

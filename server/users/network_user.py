@@ -1,6 +1,7 @@
-"""Network user implementation for real players."""
-
+import contextvars
 from typing import Any, TYPE_CHECKING
+
+is_handling_keybind = contextvars.ContextVar("is_handling_keybind", default=False)
 
 from .base import User, MenuItem, EscapeBehavior, generate_uuid
 from .preferences import UserPreferences
@@ -174,6 +175,8 @@ class NetworkUser(User):
 
     def speak(self, text: str, buffer: str = "misc") -> None:
         packet = {"type": "speak", "text": text, "buffer": buffer}
+        if is_handling_keybind.get():
+            packet["from_keybind"] = True
         self._queue_packet(packet)
 
     def speak_l(self, message_id: str, buffer: str = "misc", **kwargs) -> None:
@@ -192,6 +195,8 @@ class NetworkUser(User):
             "params": kwargs,    # The params for client-side functionality
             "buffer": buffer,
         }
+        if is_handling_keybind.get():
+            packet["from_keybind"] = True
 
         self._queue_packet(packet)
 

@@ -1,290 +1,290 @@
-game-name-ludo = Ludo
+game-name-ludo = لودو
 
-ludo-roll-die = Roll die
-ludo-move-token = Move token
-ludo-move-token-n = Move token { $token }
-ludo-check-board = View board status
-ludo-select-token = Select token to move:
+ludo-roll-die = رمي النرد
+ludo-move-token = تحريك الرمز
+ludo-move-token-n = تحريك الرمز { $token }
+ludo-check-board = عرض حالة اللوحة
+ludo-select-token = اختر الرمز المراد تحريكه:
 
-ludo-roll = { $player } rolls a { $roll }.
-ludo-you-roll = You roll a { $roll }.
-ludo-no-moves = { $player } has no valid moves.
-ludo-you-no-moves = You have no valid moves.
+ludo-roll = يرمي { $player } النرد ويحصل على { $roll }.
+ludo-you-roll = لقد رميت النرد وحصلت على { $roll }.
+ludo-no-moves = لا توجد حركات صالحة للاعب { $player }.
+ludo-you-no-moves = ليس لديك حركات صالحة.
 ludo-you-enter-board =
     { $brief ->
         [yes] { $safe ->
-            [yes] You: token { $token } out +{ $spaces } to { $position }, safe.
-           *[no] You: token { $token } out +{ $spaces } to { $position }.
+            [yes] أنت: الرمز { $token } خارج +{ $spaces } إلى { $position }، آمن.
+           *[no] أنت: الرمز { $token } خارج +{ $spaces } إلى { $position }.
         }
        *[no] { $safe ->
-            [yes] You enter token { $token } onto position { $position }, which is a safe square.
-           *[no] You enter token { $token } onto position { $position }.
+            [yes] لقد أدخلت الرمز { $token } إلى الموضع { $position }، وهو مربع آمن.
+           *[no] لقد أدخلت الرمز { $token } إلى الموضع { $position }.
         }
     }
 ludo-enter-board =
     { $brief ->
         [yes] { $safe ->
             [yes] { $player } ({ $color ->
-                [red] Red
-                [blue] Blue
-                [green] Green
-                [yellow] Yellow
+                [red] أحمر
+                [blue] أزرق
+                [green] أخضر
+                [yellow] أصفر
                *[other] { $color }
-            }): token { $token } out +{ $spaces } to { $position }, safe.
+            }): الرمز { $token } خارج +{ $spaces } إلى { $position }، آمن.
            *[no] { $player } ({ $color ->
-                [red] Red
-                [blue] Blue
-                [green] Green
-                [yellow] Yellow
+                [red] أحمر
+                [blue] أزرق
+                [green] أخضر
+                [yellow] أصفر
                *[other] { $color }
-            }): token { $token } out +{ $spaces } to { $position }.
+            }): الرمز { $token } خارج +{ $spaces } إلى { $position }.
         }
        *[no] { $safe ->
-            [yes] { $player } ({ $color ->
-                [red] Red
-                [blue] Blue
-                [green] Green
-                [yellow] Yellow
+            [yes] يُدخل { $player } ({ $color ->
+                [red] أحمر
+                [blue] أزرق
+                [green] أخضر
+                [yellow] أصفر
                *[other] { $color }
-            }) enters token { $token } onto position { $position }, which is a safe square.
-           *[no] { $player } ({ $color ->
-                [red] Red
-                [blue] Blue
-                [green] Green
-                [yellow] Yellow
+            }) الرمز { $token } إلى الموضع { $position }، وهو مربع آمن.
+           *[no] يُدخل { $player } ({ $color ->
+                [red] أحمر
+                [blue] أزرق
+                [green] أخضر
+                [yellow] أصفر
                *[other] { $color }
-            }) enters token { $token } onto position { $position }.
+            }) الرمز { $token } إلى الموضع { $position }.
         }
     }
 ludo-you-move-track =
     { $brief ->
         [yes] { $safe ->
-            [yes] You: token { $token } +{ $spaces } to { $position }, safe.
-           *[no] You: token { $token } +{ $spaces } to { $position }.
+            [yes] أنت: الرمز { $token } +{ $spaces } إلى { $position }، آمن.
+           *[no] أنت: الرمز { $token } +{ $spaces } إلى { $position }.
         }
        *[no] { $safe ->
-            [yes] You move token { $token } to position { $position }, which is a safe square.
-           *[no] You move token { $token } to position { $position }.
+            [yes] لقد نقلت الرمز { $token } إلى الموضع { $position }، وهو مربع آمن.
+           *[no] لقد نقلت الرمز { $token } إلى الموضع { $position }.
         }
     }
 ludo-move-track =
     { $brief ->
         [yes] { $safe ->
             [yes] { $player } ({ $color ->
-                [red] Red
-                [blue] Blue
-                [green] Green
-                [yellow] Yellow
+                [red] أحمر
+                [blue] أزرق
+                [green] أخضر
+                [yellow] أصفر
                *[other] { $color }
-            }): token { $token } +{ $spaces } to { $position }, safe.
+            }): الرمز { $token } +{ $spaces } إلى { $position }، آمن.
            *[no] { $player } ({ $color ->
-                [red] Red
-                [blue] Blue
-                [green] Green
-                [yellow] Yellow
+                [red] أحمر
+                [blue] أزرق
+                [green] أخضر
+                [yellow] أصفر
                *[other] { $color }
-            }): token { $token } +{ $spaces } to { $position }.
+            }): الرمز { $token } +{ $spaces } إلى { $position }.
         }
        *[no] { $safe ->
-            [yes] { $player } ({ $color ->
-                [red] Red
-                [blue] Blue
-                [green] Green
-                [yellow] Yellow
+            [yes] ينقل { $player } ({ $color ->
+                [red] أحمر
+                [blue] أزرق
+                [green] أخضر
+                [yellow] أصفر
                *[other] { $color }
-            }) moves token { $token } to position { $position }, which is a safe square.
-           *[no] { $player } ({ $color ->
-                [red] Red
-                [blue] Blue
-                [green] Green
-                [yellow] Yellow
+            }) الرمز { $token } إلى الموضع { $position }، وهو مربع آمن.
+           *[no] ينقل { $player } ({ $color ->
+                [red] أحمر
+                [blue] أزرق
+                [green] أخضر
+                [yellow] أصفر
                *[other] { $color }
-            }) moves token { $token } to position { $position }.
+            }) الرمز { $token } إلى الموضع { $position }.
         }
     }
 ludo-you-enter-home =
     { $brief ->
-        [yes] You: token { $token } +{ $spaces } to home { $position }/{ $total }.
-       *[no] You move token { $token } into your home column ({ $position }/{ $total }).
+        [yes] أنت: الرمز { $token } +{ $spaces } إلى العمود الداخلي { $position }/{ $total }.
+       *[no] لقد نقلت الرمز { $token } إلى العمود الداخلي الخاص بك ({ $position }/{ $total }).
     }
 ludo-enter-home =
     { $brief ->
         [yes] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
            *[other] { $color }
-        }): token { $token } +{ $spaces } to home { $position }/{ $total }.
-       *[no] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+        }): الرمز { $token } +{ $spaces } إلى العمود الداخلي { $position }/{ $total }.
+       *[no] ينقل { $player } ({ $color ->
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
             *[other] { $color }
-        }) moves token { $token } into the home column ({ $position }/{ $total }).
+        }) الرمز { $token } إلى العمود الداخلي ({ $position }/{ $total }).
     }
 ludo-you-home-finish =
     { $brief ->
-        [yes] You: token { $token } home ({ $finished }/4).
-       *[no] Your token { $token } reaches home. ({ $finished }/4 finished)
+        [yes] أنت: الرمز { $token } في النهاية ({ $finished }/4).
+       *[no] وصل رمزك { $token } إلى النهاية. (اكتمل { $finished }/4)
     }
 ludo-home-finish =
     { $brief ->
         [yes] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
            *[other] { $color }
-        }): token { $token } home ({ $finished }/4).
-       *[no] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+        }): الرمز { $token } في النهاية ({ $finished }/4).
+       *[no] وصل رمز { $player } ({ $color ->
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
             *[other] { $color }
-        }) token { $token } reaches home. ({ $finished }/4 finished)
+        }) الرمز { $token } إلى النهاية. (اكتمل { $finished }/4)
     }
 ludo-you-move-home =
     { $brief ->
-        [yes] You: token { $token } +{ $spaces } to home { $position }/{ $total }.
-       *[no] You move token { $token } in your home column ({ $position }/{ $total }).
+        [yes] أنت: الرمز { $token } +{ $spaces } إلى العمود الداخلي { $position }/{ $total }.
+       *[no] لقد نقلت الرمز { $token } في العمود الداخلي الخاص بك ({ $position }/{ $total }).
     }
 ludo-move-home =
     { $brief ->
         [yes] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
            *[other] { $color }
-        }): token { $token } +{ $spaces } to home { $position }/{ $total }.
-       *[no] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+        }): الرمز { $token } +{ $spaces } إلى العمود الداخلي { $position }/{ $total }.
+       *[no] ينقل { $player } ({ $color ->
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
            *[other] { $color }
-        }) moves token { $token } in the home column ({ $position }/{ $total }).
+        }) الرمز { $token } في العمود الداخلي ({ $position }/{ $total }).
     }
 ludo-you-capture =
     { $brief ->
-        [yes] You: capture { $count } of { $captured_player } ({ $captured_color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+        [yes] أنت: أسرت { $count } لـ { $captured_player } ({ $captured_color ->
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
            *[other] { $captured_color }
-        }) to yard.
-       *[no] You capture { $count ->
-            [one] 1 token
-           *[other] { $count } tokens
-        } of { $captured_player } ({ $captured_color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
-            *[other] { $captured_color }
-        }) and send { $count ->
-            [one] it
-           *[other] them
-        } back to yard.
+        }) إلى الساحة.
+       *[no] لقد أسرت { $count ->
+            [one] رمزًا واحدًا
+           *[other] { $count } رموز
+        } لـ { $captured_player } ({ $captured_color ->
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
+             *[other] { $captured_color }
+        }) وأعدت { $count ->
+            [one] الرمز
+           *[other] الرموز
+        } إلى الساحة.
     }
 ludo-your-token-captured =
     { $brief ->
         [yes] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
            *[other] { $color }
-        }): { $count ->
-            [one] your token
-           *[other] your { $count } tokens
-        } to yard.
-       *[no] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
-            *[other] { $color }
-        }) captures { $count ->
-            [one] your token
-           *[other] { $count } of your tokens
-        } and sends { $count ->
-            [one] it
-           *[other] them
-        } back to yard.
-    }
+        }): أرسل { $count ->
+            [one] رمزك
+           *[other] رموزك الـ { $count }
+        } إلى الساحة.
+       *[no] أسر { $player } ({ $color ->
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
+             *[other] { $color }
+         }) { $count ->
+             [one] رمزًا لك
+            *[other] { $count } رموز لك
+         } وأعاد { $count ->
+             [one] الرمز
+            *[other] الرموز
+         } إلى الساحة.
+     }
 ludo-captures =
     { $brief ->
         [yes] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
            *[other] { $color }
-        }): capture { $count } of { $captured_player } ({ $captured_color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
+        }): أسر { $count } لـ { $captured_player } ({ $captured_color ->
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
            *[other] { $captured_color }
-        }) to yard.
-       *[no] { $player } ({ $color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
-            *[other] { $color }
-        }) captures { $count ->
-            [one] 1 token
-           *[other] { $count } tokens
-        } of { $captured_player } ({ $captured_color ->
-            [red] Red
-            [blue] Blue
-            [green] Green
-            [yellow] Yellow
-            *[other] { $captured_color }
-        }). Sent back to yard.
-    }
-ludo-extra-turn = { $player } rolled a 6. Extra turn.
-ludo-you-extra-turn = You rolled a 6. Extra turn.
-ludo-you-too-many-sixes = You rolled { $count } sixes in a row. Your moves from this turn sequence are undone, and your turn ends.
-ludo-too-many-sixes = { $player } rolled { $count } sixes in a row. Moves undone. Turn ends.
-ludo-you-winner = You win! All 4 tokens are home.
-ludo-winner = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+        }) إلى الساحة.
+       *[no] أسر { $player } ({ $color ->
+            [red] أحمر
+            [blue] أزرق
+            [green] أخضر
+            [yellow] أصفر
+             *[other] { $color }
+         }) { $count ->
+             [one] رمزًا واحدًا
+            *[other] { $count } رموز
+         } لـ { $captured_player } ({ $captured_color ->
+             [red] أحمر
+             [blue] أزرق
+             [green] أخضر
+             [yellow] أصفر
+             *[other] { $captured_color }
+         })، وتم إعادتها إلى الساحة.
+     }
+ludo-extra-turn = حصل { $player } على الرقم 6. دور إضافي.
+ludo-you-extra-turn = حصلت على الرقم 6. دور إضافي.
+ludo-you-too-many-sixes = لقد حصلت على الرقم 6 لـ { $count } مرات متتالية. تم التراجع عن حركاتك لهذا الدور، وانتهى دورك.
+ludo-too-many-sixes = حصل { $player } على الرقم 6 لـ { $count } مرات متتالية. تم التراجع عن حركاته وانتهى دوره.
+ludo-you-winner = لقد فزت! وصلت جميع الرموز الأربعة إلى النهاية.
+ludo-winner = فاز { $player } ({ $color ->
+    [red] أحمر
+    [blue] أزرق
+    [green] أخضر
+    [yellow] أصفر
     *[other] { $color }
-}) wins! All 4 tokens are home.
+})! وصلت جميع الرموز الأربعة إلى النهاية.
 ludo-end-score-line = { $index }. { $player }: { $count ->
-    [one] 1 token home
-   *[other] { $count } tokens home
+    [one] رمز واحد في النهاية
+   *[other] { $count } رموز في النهاية
 }
 
 ludo-board-player = { $player } ({ $color ->
-    [red] Red
-    [blue] Blue
-    [green] Green
-    [yellow] Yellow
+    [red] أحمر
+    [blue] أزرق
+    [green] أخضر
+    [yellow] أصفر
     *[other] { $color }
-}): { $finished }/4 finished
-ludo-token-yard = Token { $token } (yard)
+}): اكتمل { $finished }/4
+ludo-token-yard = الرمز { $token } (في الساحة)
 ludo-token-track =
     { $safe ->
-        [yes] Token { $token } (position { $position }, safe square)
-       *[no] Token { $token } (position { $position })
+        [yes] الرمز { $token } (الموضع { $position }، مربع آمن)
+       *[no] الرمز { $token } (الموضع { $position })
     }
-ludo-token-home = Token { $token } (home column { $position }/{ $total })
-ludo-token-finished = Token { $token } (finished)
-ludo-last-roll = Last roll: { $roll }
+ludo-token-home = الرمز { $token } (العمود الداخلي { $position }/{ $total })
+ludo-token-finished = الرمز { $token } (مكتمل)
+ludo-last-roll = الرمية الأخيرة: { $roll }
 
-ludo-set-max-sixes = Max consecutive sixes: { $max_consecutive_sixes }
-ludo-enter-max-sixes = Enter max consecutive sixes
-ludo-option-changed-max-sixes = Max consecutive sixes set to { $max_consecutive_sixes }.
-ludo-set-safe-start-squares = Safe start squares: { $enabled }
-ludo-option-changed-safe-start-squares = Safe start squares set to { $enabled }.
+ludo-set-max-sixes = الحد الأقصى للرقم 6 المتتالي: { $max_consecutive_sixes }
+ludo-enter-max-sixes = أدخل الحد الأقصى للرقم 6 المتتالي
+ludo-option-changed-max-sixes = تم ضبط الحد الأقصى للرقم 6 المتتالي إلى { $max_consecutive_sixes }.
+ludo-set-safe-start-squares = مربعات بدء آمنة: { $enabled }
+ludo-option-changed-safe-start-squares = تم ضبط مربعات البدء الآمنة إلى { $enabled }.
