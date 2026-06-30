@@ -780,16 +780,21 @@ class MileByMileGame(Game):
                         is_own_team = (player.team_index == team_idx)
 
             if is_own_team:
-                name = "You" if locale == "en" else "Bạn"
+                name = Localization.get(locale, "milebymile-you")
 
             # Get total score
             team = self._team_manager.teams[team_idx] if team_idx < len(self._team_manager.teams) else None
             score = team.total_score if team else 0
 
-            miles_label = "miles" if locale == "en" else "dặm"
-            points_label = "points" if locale == "en" else "điểm"
-
-            parts.append(f"{name}: {race_state.miles} {miles_label}, {score} {points_label}")
+            parts.append(
+                Localization.get(
+                    locale,
+                    "milebymile-status-score",
+                    name=name,
+                    miles=race_state.miles,
+                    score=score,
+                )
+            )
 
         return " | ".join(parts)
 

@@ -173,3 +173,12 @@ milebymile-dirty-trick = لعب خدعة قذرة
 milebymile-info-button = معلومات
 milebymile-info-msg-individual = { $player }: الأخطار: { $hazards }، وسائل الأمان: { $safeties }، المسافة: { $miles } ميل.
 milebymile-info-msg-team = { $team } ({ $members }): الأخطار: { $hazards }، وسائل الأمان: { $safeties }، المسافة: { $miles } ميل.
+
+milebymile-you = أنت
+milebymile-status-score = { $name }: { $miles } { $miles ->
+    [one] ميل
+   *[other] ميل
+}، { $score } { $score ->
+    [one] نقطة
+   *[other] نقطة
+}

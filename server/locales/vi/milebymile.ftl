@@ -173,3 +173,12 @@ milebymile-dirty-trick = Đánh Đòn Phản Công
 milebymile-info-button = Thông tin
 milebymile-info-msg-individual = { $player }: Sự cố: { $hazards }. Bảo hộ: { $safeties }. Quãng đường: { $miles } dặm.
 milebymile-info-msg-team = { $team } ({ $members }): Sự cố: { $hazards }. Bảo hộ: { $safeties }. Quãng đường: { $miles } dặm.
+
+milebymile-you = Bạn
+milebymile-status-score = { $name }: { $miles } { $miles ->
+    [one] dặm
+   *[other] dặm
+}, { $score } { $score ->
+    [one] điểm
+   *[other] điểm
+}
