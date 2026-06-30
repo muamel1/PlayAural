@@ -21,12 +21,12 @@ n99-card-skip = Skip
 n99-card-ninety-nine = Ninety Nine
 
 ninetynine-you-lose-tokens = You lose { $amount } { $amount ->
-    [one] token
-    *[other] tokens
+    [one] point
+    *[other] points
 }.
 ninetynine-player-loses-tokens = { $player } loses { $amount } { $amount ->
-    [one] token
-    *[other] tokens
+    [one] point
+    *[other] points
 }.
 
 ninetynine-you-eliminated = You have been eliminated!
@@ -35,8 +35,8 @@ ninetynine-player-eliminated = { $player } has been eliminated!
 ninetynine-you-win = You win the game!
 ninetynine-player-wins = { $player } wins the game!
 ninetynine-end-score = { $rank }. { $player }: { $tokens } { $tokens ->
-    [one] token
-   *[other] tokens
+    [one] point
+   *[other] points
 }
 
 ninetynine-you-deal = You deal out the cards.
@@ -66,9 +66,9 @@ ninetynine-choice-2 = Choice 2
 ninetynine-draw-card = Draw card
 ninetynine-draw-prompt = Please draw a card.
 
-ninetynine-set-tokens = Starting tokens: { $tokens }
-ninetynine-enter-tokens = Enter number of starting tokens:
-ninetynine-option-changed-tokens = Starting tokens set to { $tokens }.
+ninetynine-set-tokens = Starting points: { $tokens }
+ninetynine-enter-tokens = Enter number of starting points:
+ninetynine-option-changed-tokens = Starting points set to { $tokens }.
 ninetynine-set-rules = Rules variant: { $rules }
 ninetynine-select-rules = Select rules variant
 ninetynine-option-changed-rules = Rules variant set to { $rules }.

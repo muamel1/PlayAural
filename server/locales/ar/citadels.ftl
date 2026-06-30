@@ -1,4 +1,4 @@
-game-name-citadels = سيتاديلز (الحصون)
+game-name-citadels = الحصون
 
 citadels-character-1 = القاتل
 citadels-character-2 = اللص
@@ -48,7 +48,7 @@ citadels-district-statue = التمثال
 citadels-district-thieves_den = وكر اللصوص
 citadels-district-wishing_well = بئر الأمنيات
 
-citadels-game-start = لقد بدأت لعبة سيتاديلز.
+citadels-game-start = لقد بدأت لعبة الحصون.
 citadels-selection-start = الجولة { $round }. يختار { $player } شخصية أولاً.
 citadels-selection-prompt = اختر شخصية الآن.
 citadels-you-chose-character = لقد اخترت شخصية.
@@ -205,7 +205,7 @@ citadels-character-line = { $brief ->
 citadels-discards-none = لا يوجد
 citadels-faceup-discards-line = شخصيات مكشوفة تم استبعادها: { $characters }
 
-citadels-status-header = حالة سيتاديلز
+citadels-status-header = حالة اللعبة
 citadels-status-crown = صاحب التاج: { $player }
 citadels-status-selection = اختيار الشخصيات. { $player } يختار حالياً.
 citadels-status-rank-resolution = { $brief ->
