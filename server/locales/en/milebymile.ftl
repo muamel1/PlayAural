@@ -173,3 +173,13 @@ milebymile-dirty-trick = Play dirty trick
 milebymile-info-button = Info
 milebymile-info-msg-individual = { $player }: Hazards: { $hazards }. Safeties: { $safeties }. Distance: { $miles } miles.
 milebymile-info-msg-team = { $team } ({ $members }): Hazards: { $hazards }. Safeties: { $safeties }. Distance: { $miles } miles.
+
+milebymile-you = You
+milebymile-status-score = { $name }: { $miles } { $miles ->
+    [one] mile
+   *[other] miles
+}, { $score } { $score ->
+    [one] point
+   *[other] points
+}
+
